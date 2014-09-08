@@ -1,0 +1,23 @@
+{
+    "name": "cundd/persistent-object-store",
+    "description": "A document storage entirely written in PHP",
+    "require": {
+        "react/react": "0.4.*",
+		"mnapoli/php-di": "~4.0"
+    },
+	"require-dev": {
+		"doctrine/dbal": "~2.4"
+	},
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Daniel Corn",
+            "email": "info@cundd.net"
+        }
+    ],
+	"autoload": {
+		"psr-4": {
+			"Cundd\\PersistentObjectStore\\": "Classes/"
+		}
+	}
+}

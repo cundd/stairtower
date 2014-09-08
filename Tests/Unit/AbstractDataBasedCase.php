@@ -1,0 +1,40 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: daniel
+ * Date: 31.08.14
+ * Time: 16:39
+ */
+
+namespace Cundd\PersistentObjectStore;
+use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+
+/**
+ * Abstract data based test case
+ *
+ * @package Cundd\PersistentObjectStore
+ */
+class AbstractDataBasedCase extends AbstractCase {
+	/**
+	 * Returns the raw test data
+	 *
+	 * @return array
+	 */
+	public function getAllTestData() {
+		return json_decode(file_get_contents(__DIR__ . '/../Resources/contacts.json'), TRUE);
+	}
+
+	/**
+	 * @param $database
+	 * @return array
+	 */
+	public function databaseToDataArray($database) {
+		$foundData = array();
+
+		/** @var DataInterface $dataObject */
+		foreach ($database as $dataObject) {
+			$foundData[] = $dataObject->getData();
+		}
+		return $foundData;
+	}
+} 
