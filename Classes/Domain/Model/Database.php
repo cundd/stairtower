@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
+use Cundd\PersistentObjectStore\Filter\Filter;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
@@ -46,5 +47,16 @@ class Database extends \SplObjectStorage {
 		foreach ($collection as $element) {
 			$this->attach($element);
 		}
+	}
+
+	/**
+	 * Filters the database using the given comparisons
+	 *
+	 * @param array $comparisons
+	 * @return \Cundd\PersistentObjectStore\Filter\FilterResultInterface
+	 */
+	public function filter($comparisons) {
+		$filter = new Filter($comparisons);
+		return $filter->filterCollection($this);
 	}
 }

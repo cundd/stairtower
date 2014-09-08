@@ -85,13 +85,11 @@ class Reader {
 	 *
 	 * @param string $database
 	 * @return array<Data>
-	 * @throws ReaderException if the database could not be found
 	 */
 	protected function _loadMetaDataCollection($database) {
 		$path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $database . '.meta.json';
 		if (!file_exists($path)) {
 			return array();
-			throw new ReaderException("Database with name '$database' not found", 1408127629);
 		}
 
 		$serializer = new JsonSerializer();

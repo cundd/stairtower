@@ -22,7 +22,11 @@ class JsonSerializer implements SerializerInterface {
 	 * @return string
 	 */
 	public function serialize($data) {
-		$serializedData = json_encode($data);
+		if (defined('JSON_PRETTY_PRINT')) {
+			$serializedData = json_encode($data, JSON_PRETTY_PRINT);
+		} else {
+			$serializedData = json_encode($data);
+		}
 		if ($serializedData === FALSE) throw $this->_createExceptionFromLastError();
 		return $serializedData;
 	}

@@ -30,9 +30,11 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 	static protected $sharedInstance;
 
 	function __construct() {
-		$this->configuration = array(
-			'dataPath' => __DIR__ . '/../../Tests/Resources/'
-		);
+		$configurationReader = new ConfigurationReader();
+		$this->configuration = array_merge_recursive(array(
+			'dataPath' => __DIR__ . '/../../Tests/Resources/',
+			'writeDataPath' => __DIR__ . '/../../Data/'
+		), $configurationReader->readConfigurationFiles());
 
 		self::$sharedInstance = $this;
 	}
@@ -56,6 +58,7 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 	 * @return $this
 	 */
 	public function setConfigurationForKeyPath($keyPath, $value) {
+		throw new \UnexpectedValueException('Not implemented');
 		return $this;
 	}
 

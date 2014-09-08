@@ -7,12 +7,13 @@
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess;
+
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
+use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Driver\Driver;
-use Cundd\PersistentObjectStore\Filter\Comparison;
-use Cundd\PersistentObjectStore\Filter\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Filter;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Test for Cundd\PersistentObjectStore\DataAccess\Coordinator
@@ -25,57 +26,93 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	 */
 	protected $fixture;
 
-
 	/**
 	 * @test
 	 */
-	public function filterTestsCongressMembers() {
+	public function readTestsCongressMembers() {
 		/** @var Database $database */
 		$database = $this->fixture->getDataByDatabase('congress_members');
 		$this->assertEquals(4800, $database->count());
-
-
-		$filter = new Filter();
-		$filter->addComparison(new Comparison('description', ComparisonInterface::TYPE_EQUAL_TO, 'Representative for Hawaii\'s 1st congressional district'));
-		$filterResult = $filter->filterCollection($database);
-
-		$this->assertEquals(60, $filterResult->count());
-		$this->assertNotNull($filterResult->current());
-		$this->assertSame('Neil', $filterResult->current()->valueForKeyPath('person.firstname'));
-
-
-//		$filter = new Filter();
-//		$filter->addComparison(new Comparison('description', ComparisonInterface::TYPE_CONTAINS, 'New York'));
-//		$filterResult = $filter->filterCollection($database);
-//		$this->assertEquals(256, $filterResult->count());
-//		$this->assertNotNull($filterResult->current());
-//		$this->assertSame('Gary', $filterResult->current()->valueForKeyPath('person.firstname'));
-
-		echo $this->formatBytes(memory_get_peak_usage(TRUE)) . PHP_EOL;
-		echo $this->formatBytes(memory_get_usage(TRUE)) . PHP_EOL;
 	}
 
 	/**
 	 * @test
 	 */
-	public function filterTests() {
+	public function readTests() {
+		/** @var Database $database */
+		$database = $this->fixture->getDataByDatabase('contacts');
+		$this->assertEquals(2, $database->count());
+	}
+
+	/**
+	 * @test
+	 */
+	public function commitDatabaseTest() {
 		/** @var Database $database */
 		$database = $this->fixture->getDataByDatabase('contacts');
 
-		$filter = new Filter();
-		$filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_EQUAL_TO, 'spm@cundd.net'));
-		$filterResult = $filter->filterCollection($database);
-		$this->assertEquals(1, $filterResult->count());
-		$this->assertNotNull($filterResult->current());
-		$this->assertSame('spm@cundd.net', $filterResult->current()->valueForKey('email'));
+		$dataInstance = new Data();
+		$dataInstance->setData(array(
+			'firstName' => 'Oliver',
+			'lastName'  => 'Kane',
+			'email'     => 'o@kane.net'
+		));
+		$database->attach($dataInstance);
+		$this->fixture->commitDatabase($database);
+		$this->assertTrue(file_exists(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'contacts.json'));
+	}
 
+	/**
+	 * @test
+	 */
+	public function commitBigDatabaseTest() {
+		/** @var Database $database */
+		$database = $this->fixture->getDataByDatabase('congress_members');
 
-		$filter = new Filter();
-		$filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
-		$filterResult = $filter->filterCollection($database);
-		$this->assertEquals(2, $filterResult->count());
-		$this->assertNotNull($filterResult->current());
-		$this->assertSame('info@cundd.net', $filterResult->current()->valueForKey('email'));
+		$dataInstance = new Data();
+		$dataInstance->setData(array(
+			'congress_numbers' => array(102),
+			'current'          => FALSE,
+			'description'      => '',
+			'district'         => 1,
+			'enddate'          => '2014-10-09',
+			'id'               => 20000,
+			'leadership_title' => NULL,
+			'party'            => 'Avengers',
+			'person'           => array(
+				'bioguideid'   => 'A000014',
+				'birthday'     => '1986-11-13',
+				'cspanid'      => NULL,
+				'firstname'    => 'Daniel',
+				'gender'       => 'male',
+				'gender_label' => 'Male',
+				'id'           => 400001,
+				'lastname'     => 'Corn',
+				'link'         => 'http://www.cundd.net',
+				'middlename'   => '',
+				'name'         => 'Avenger Corn Daniel [D-HI1, 1991-2010]',
+				'namemod'      => '',
+				'nickname'     => '',
+				'osid'         => 'N00007665',
+				'pvsid'        => '26827',
+				'sortname'     => 'Corn, Daniel (Ave.) [D-HI1, 1991-2010]',
+				'twitterid'    => NULL,
+				'youtubeid'    => NULL
+			),
+			'phone'            => NULL,
+			'role_type'        => 'representative',
+			'role_type_label'  => 'Representative',
+			'senator_class'    => NULL,
+			'senator_rank'     => NULL,
+			'startdate'        => '1991-01-03',
+			'state'            => 'HI',
+			'title'            => 'Rep.',
+			'title_long'       => 'Representative',
+			'website'          => 'http://www.cundd.net'
+		));
+		$database->attach($dataInstance);
+		$this->fixture->commitDatabase($database);
+		$this->assertTrue(file_exists(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'congress_members.json'));
 	}
 
 	/**
@@ -103,15 +140,13 @@ class CoordinatorTest extends AbstractDataBasedCase {
 			->select('id', 'name')
 			->from('contacts', 'users')
 			->where('email = ?')
-		->andWhere('email = ?')
-		->orWhere('email = ?')
-		->andWhere('email = ?')
-		->orWhere('email = ?')
-			->setParameter(0, 'spm@cundd.net')
-		;
+			->andWhere('email = ?')
+			->orWhere('email = ?')
+			->andWhere('email = ?')
+			->orWhere('email = ?')
+			->setParameter(0, 'spm@cundd.net');
 		$database = $this->fixture->getDataByQuery($queryBuilder);
 		$this->assertSame($this->getAllTestData(), $this->databaseToDataArray($database));
-
 
 
 		return;
@@ -120,7 +155,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 			->where('c.email = :email');
 
 		$queryBuilder->setParameters(array(
-			'email' => 'spm@cundd.net',
+			'email'    => 'spm@cundd.net',
 			'lastName' => 'Jobs',
 		));
 

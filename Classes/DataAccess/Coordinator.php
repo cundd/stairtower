@@ -97,6 +97,15 @@ class Coordinator implements CoordinatorInterface {
 	}
 
 	/**
+	 * Commit the database to the file system
+	 *
+	 * @param Database $database
+	 */
+	public function commitDatabase($database) {
+		$this->dataWriter->writeDatabase($database);
+	}
+
+	/**
 	 * Performs the query from the given query parts on the database
 	 *
 	 * @param array $queryParts

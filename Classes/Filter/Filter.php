@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Filter;
+
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
@@ -28,13 +29,30 @@ class Filter implements FilterInterface {
 	/**
 	 * Creates a new filter
 	 *
-	 * @param \SplObjectStorage $comparisons The comparisons
+	 * @param \SplObjectStorage|array $comparisons The comparisons
 	 */
 	function __construct($comparisons = NULL) {
 		if (!$comparisons) {
 			$comparisons = new \SplObjectStorage();
+		} else {
+			$this->initWithComparisons($comparisons);
 		}
 		$this->comparisons = $comparisons;
+	}
+
+	/**
+	 * Initialize the filter with the given comparisons
+	 *
+	 * @param $comparisons
+	 * @return \SplObjectStorage
+	 */
+	public function initWithComparisons($comparisons) {
+		$tempComparisons = new \SplObjectStorage();
+		foreach ($comparisons as $comparison) {
+			$tempComparisons->attach($comparison);
+		}
+		$tempComparisons->rewind();
+		$this->comparisons = $tempComparisons;
 	}
 
 
@@ -105,7 +123,7 @@ class Filter implements FilterInterface {
 		$comparisonCollection = $this->getComparisons();
 		$comparisonCollection->rewind();
 
-		while($comparisonCollection->valid()) {
+		while ($comparisonCollection->valid()) {
 			/** @var ComparisonInterface $comparison */
 			$comparison = $comparisonCollection->current();
 			if (!$this->performComparison($item, $comparison)) {
@@ -119,7 +137,7 @@ class Filter implements FilterInterface {
 	/**
 	 * Executes the comparison on the item
 	 *
-	 * @param $item
+	 * @param                     $item
 	 * @param ComparisonInterface $comparison
 	 * @return boolean
 	 */
@@ -167,7 +185,7 @@ class Filter implements FilterInterface {
 
 	/**
 	 * @param array|\Traversable $collection
-	 * @param mixed $search
+	 * @param mixed              $search
 	 * @return bool
 	 */
 	protected function performsContains($collection, $search) {

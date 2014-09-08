@@ -34,30 +34,6 @@ class FilterResultTest extends AbstractDataBasedCase {
 	 */
 	protected $filter;
 
-//	protected function setUp() {
-//		echo __LINE__ . PHP_EOL;
-//
-//
-//		$builder = new ContainerBuilder();
-//		$builder->setDefinitionCache(new \Doctrine\Common\Cache\ArrayCache());
-//		$builder->addDefinitions(__DIR__ . '/../../../Classes/Configuration/dependencyInjectionConfiguration.php');
-//		$diContainer = $builder->build();
-//
-//		/** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
-//		$coordinator = $diContainer->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-////		$coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-//		$database = $coordinator->getDataByDatabase('congress_members');
-//
-//		echo __LINE__ . PHP_EOL;
-//
-//		$this->filter = new Filter();
-//		$this->filter->addComparison(new Comparison('description', ComparisonInterface::TYPE_EQUAL_TO, 'Representative for Hawaii\'s 1st congressional district'));
-//		$this->fixture = $this->filter->filterCollection($database);
-//
-//		echo __LINE__ . PHP_EOL;
-//
-//	}
-
 	protected function setUp() {
 		/** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
 		$coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
@@ -84,20 +60,23 @@ class FilterResultTest extends AbstractDataBasedCase {
 		$currentObject = $this->fixture->current();
 		$this->assertNotNull($currentObject);
 
-		DebugUtility::var_dump($currentObject);
-		echo PHP_EOL;
-		echo PHP_EOL;
 		$this->assertNotNull($this->fixture->current());
 		$this->assertSame($currentObject, $this->fixture->current());
 		$this->fixture->next();
 		$this->assertNotNull($this->fixture->current());
 
 		$this->assertSame('Neil', $this->fixture->current()->valueForKeyPath('person.firstname'));
-
-		echo $this->formatBytes(memory_get_peak_usage(TRUE)) . PHP_EOL;
-		echo $this->formatBytes(memory_get_usage(TRUE)) . PHP_EOL;
 	}
 
+
+	/**
+	 * @test
+	 */
+	public function nextTest() {
+		$this->fixture->next();
+		$this->assertNotNull($this->fixture->current());
+		$this->assertSame('Neil', $this->fixture->current()->valueForKeyPath('person.firstname'));
+	}
 
 	/**
 	 * @test
@@ -108,14 +87,11 @@ class FilterResultTest extends AbstractDataBasedCase {
 
 		iterator_to_array($this->fixture);
 		$this->assertEquals(60, $this->fixture->count());
-
-		echo $this->formatBytes(memory_get_peak_usage(TRUE)) . PHP_EOL;
-		echo $this->formatBytes(memory_get_usage(TRUE)) . PHP_EOL;
 	}
 
 	/**
 	 * @test
-	 * @expected \Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException
+	 * @expectedException \Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException
 	 */
 	public function iterateAndGetCurrentShouldThrowAnException() {
 		$this->assertEquals(60, $this->fixture->count());
@@ -124,18 +100,6 @@ class FilterResultTest extends AbstractDataBasedCase {
 		iterator_to_array($this->fixture);
 		$this->assertEquals(60, $this->fixture->count());
 		$this->assertNotNull($this->fixture->current());
-	}
-
-	/**
-	 * @test
-	 */
-	public function nextTest() {
-		$this->fixture->next();
-		$this->assertNotNull($this->fixture->current());
-		$this->assertSame('Neil', $this->fixture->current()->valueForKeyPath('person.firstname'));
-
-		echo $this->formatBytes(memory_get_peak_usage(TRUE)) . PHP_EOL;
-		echo $this->formatBytes(memory_get_usage(TRUE)) . PHP_EOL;
 	}
 }
  

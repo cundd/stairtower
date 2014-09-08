@@ -39,28 +39,6 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 */
 	protected $fullyFiltered = FALSE;
 
-//	/**
-//	 * Filtered collection
-//	 *
-//	 * @var \SplFixedArray
-//	 */
-//	protected $filteredCollection;
-
-//	/**
-//	 * Current index of the filtered collection
-//	 *
-//	 * @var int
-//	 */
-//	protected $filteredCollectionCurrentIndex = 0;
-
-
-//	/**
-//	 * Number of filtered objects
-//	 *
-//	 * @var int
-//	 */
-//	protected $filteredCount = -1;
-
 
 
 	/**
@@ -80,9 +58,7 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 * @return mixed Can return any type.
 	 */
 	public function current() {
-		DebugUtility::var_dump(__METHOD__);
 		$this->_initFilteredCollection();
-		DebugUtility::var_dump($this->key());
 		return parent::current();
 	}
 
@@ -94,7 +70,8 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 * @return void Any returned value is ignored.
 	 */
 	public function next() {
-		DebugUtility::var_dump(__METHOD__, $this->currentIndex);
+		$this->_initFilteredCollection();
+
 		$this->_findNext();
 		$this->currentIndex++;
 	}
@@ -107,8 +84,6 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 * @return mixed scalar on success, or null on failure.
 	 */
 	public function key() {
-		DebugUtility::var_dump(__METHOD__);
-
 		$this->_initFilteredCollection();
 		return parent::key();
 	}
@@ -122,8 +97,6 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 *       Returns true on success or false on failure.
 	 */
 	public function valid() {
-		DebugUtility::var_dump(__METHOD__);
-
 		$this->_initFilteredCollection();
 		return parent::valid();
 	}
@@ -136,21 +109,7 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 * @return void Any returned value is ignored.
 	 */
 	public function rewind() {
-		DebugUtility::var_dump(__METHOD__);
 		$this->currentIndex = 0;
-		return;
-
-
-
-
-
-		// TODO: check if this makes sense
-		if ($this->filteredCollection) {
-			$this->filteredCollection->rewind();
-		}
-		$this->collection->rewind();
-//		$this->_initFilteredCollection();
-//		$this->filteredCollection->rewind();
 	}
 
 	/**
@@ -164,8 +123,6 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 *       The return value is cast to an integer.
 	 */
 	public function count() {
-		DebugUtility::var_dump(__METHOD__);
-
 		if (!$this->fullyFiltered) {
 			$this->_findAll();
 		}
@@ -201,40 +158,31 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 * @return mixed
 	 */
 	protected function _findNext() {
-		DebugUtility::var_dump(__METHOD__);
 		// If the filtered collection is fully populated
 		if ($this->fullyFiltered) {
 			$this->currentIndex++;
 			return parent::current();
 		}
-//		if (!$this->filteredCollection) {
-//			$this->filteredCollection = new \SplFixedArray(1);
-//		}
-
 		$foundObject = NULL;
 
 		$collection = $this->collection;
 		$filter     = $this->filter;
 
-		DebugUtility::var_dump('coljey:', $collection->key());
-		DebugUtility::var_dump($collection->valid());
 		// Loop through the collection until one matching object was found
 		while ($collection->valid()) {
 			$item = $collection->current();
-//			echo 'check ' . spl_object_hash($item) . PHP_EOL;
-			DebugUtility::debug($filter->checkItem($item));
+			// echo 'check ' . spl_object_hash($item) . PHP_EOL;
 			if ($filter->checkItem($item)) {
 				$foundObject = $item;
 				$collection->next();
-				DebugUtility::var_dump($item);
 				break;
 			}
 			$collection->next();
 		}
 
-		if (!$foundObject) {
-			throw new \Exception('nothing found');
-		}
+//		if (!$foundObject) {
+//			throw new \Exception('nothing found');
+//		}
 
 		$this->push($foundObject);
 		return $foundObject;
@@ -244,15 +192,8 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 * Find all matching objects
 	 */
 	protected function _findAll() {
-//		unset($this->filteredCollection);
-
 		$collection = $this->collection;
-//		$collection->rewind();
 		$filter = $this->filter;
-
-		DebugUtility::var_dump($collection->count());
-		DebugUtility::var_dump($collection->key());
-
 		while ($collection->valid()) {
 			$item = $collection->current();
 			if ($filter->checkItem($item)) {
@@ -260,7 +201,6 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 			}
 			$collection->next();
 		}
-
 		$this->fullyFiltered = TRUE;
 	}
 
@@ -276,8 +216,6 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 			$collection->attach(clone $item);
 		}
 		$collection->rewind();
-		DebugUtility::var_dump('L:' . __LINE__, $collection->key());
-
 		return $collection;
 	}
 } 
