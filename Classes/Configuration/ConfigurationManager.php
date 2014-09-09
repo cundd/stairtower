@@ -32,6 +32,7 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 	function __construct() {
 		$configurationReader = new ConfigurationReader();
 		$this->configuration = array_merge_recursive(array(
+			'basePath' => __DIR__ . '/../../',
 			'dataPath' => __DIR__ . '/../../Tests/Resources/',
 			'writeDataPath' => __DIR__ . '/../../Data/'
 		), $configurationReader->readConfigurationFiles());

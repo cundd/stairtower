@@ -55,19 +55,6 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	protected function tearDown() {
 		unset($this->fixture);
 		unset($this->diContainer);
-
-//		xdebug_debug_zval('this');
-		var_dump(gc_enabled());
-		parent::tearDown();
-
-		echo $this->formatBytes(memory_get_peak_usage(TRUE)) . ' / ';
-		echo $this->formatBytes(memory_get_usage(TRUE)) . PHP_EOL;
-
-		gc_collect_cycles();
-
-		echo $this->formatBytes(memory_get_peak_usage(TRUE)) . ' / ';
-		echo $this->formatBytes(memory_get_usage(TRUE)) . PHP_EOL;
-
 	}
 
 	function formatBytes($bytes, $precision = 2) {

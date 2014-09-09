@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess;
+
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Exception\WriterException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
@@ -33,17 +34,20 @@ class Writer {
 	 */
 	public function writeDatabase($database) {
 		$this->_prepareWriteDirectory();
-		$path =  $this->_getWriteDirectory() . $database->getIdentifier() . '.json';
+		$path = $this->_getWriteDirectory() . $database->getIdentifier() . '.json';
 
 		DebugUtility::var_dump($path);
 
 		$result = $this->_writeData($this->_getDataToWrite($database), $path);
 		if ($result === FALSE) {
-			throw new WriterException(sprintf(
-				'Could not write data from database %s to file "%s"',
-				$database->getIdentifier(),
-				$path
-			));
+			throw new WriterException(
+				sprintf(
+					'Could not write data from database %s to file "%s"',
+					$database->getIdentifier(),
+					$path
+				),
+				1410291420
+			);
 		}
 	}
 
@@ -65,17 +69,23 @@ class Writer {
 	 * @return int Returns the number of bytes that were written to the file, or FALSE on failure
 	 */
 	protected function _writeData($data, $file) {
-		$fileHandle = fopen($file, 'r+');
+		$fileHandle = @fopen($file, 'w+');
+		if (!$fileHandle) {
+			$error = error_get_last();
+			throw new WriterException($error['message'], 1410290532);
+		}
 
-		if (flock($fileHandle, LOCK_EX)) {	// acquire an exclusive lock
-			ftruncate($fileHandle, 0);		// truncate file
+		if (flock($fileHandle, LOCK_EX)) { // acquire an exclusive lock
+			ftruncate($fileHandle, 0); // truncate file
 			$bytesWritten = fwrite($fileHandle, $data);
-			fflush($fileHandle);			// flush output before releasing the lock
-			flock($fileHandle, LOCK_UN);	// release the lock
+			fflush($fileHandle); // flush output before releasing the lock
+			flock($fileHandle, LOCK_UN); // release the lock
 		} else {
-			throw new WriterException(sprintf(
+			throw new WriterException(
+				sprintf(
 					'Unable to acquire an exclusive lock for file "%s"',
-					$file)
+					$file),
+				1410290540
 			);
 		}
 		fclose($fileHandle);
@@ -124,7 +134,7 @@ class Writer {
 	 */
 	protected function _getDataToWrite($database) {
 		$objectsToWrite = $this->_getObjectsWrite($database);
-		$serializer = new JsonSerializer();
+		$serializer     = new JsonSerializer();
 		return $serializer->serialize($objectsToWrite);
 	}
 

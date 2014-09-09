@@ -59,7 +59,10 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		));
 		$database->attach($dataInstance);
 		$this->fixture->commitDatabase($database);
-		$this->assertTrue(file_exists(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'contacts.json'));
+
+		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'contacts.json';
+		$this->assertTrue(file_exists($expectedPath));
+		unlink($expectedPath);
 	}
 
 	/**
@@ -112,7 +115,10 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		));
 		$database->attach($dataInstance);
 		$this->fixture->commitDatabase($database);
-		$this->assertTrue(file_exists(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'congress_members.json'));
+
+		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'congress_members.json';
+		$this->assertTrue(file_exists($expectedPath));
+		unlink($expectedPath);
 	}
 
 	/**

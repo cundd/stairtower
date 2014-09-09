@@ -40,15 +40,15 @@ class DebugUtility {
 		if ($htmlOutput) echo '</code>';
 
 		// Debug info
-		$file = $caller['file'];
 		$line = $caller['line'];
+		$file = $caller['file'];
 		if ($htmlOutput) {
 			echo "<span class='rest-debug-path' style='font-size:9px'><a href='file:$file'>see $file($line)</a></span>";
 			echo "</pre>";
 		} else if ($colorOutput) {
 			echo "\033[0;35m" . "$file($line)" . "\033[0m";
 		} else {
-			echo "$file($line)";
+			echo "($file:$line)";
 		}
 
 		if ($htmlOutput) echo '</pre>';
@@ -72,12 +72,18 @@ class DebugUtility {
 	 * @return array
 	 */
 	static public function getCaller() {
+		static $basePathLength = '';
+		if (!$basePathLength) {
+			$basePathLength = strlen(realpath(__DIR__ . '/../../'));
+		}
 		if (version_compare(PHP_VERSION, '5.4.0') >= 0) {
 			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
 		} else {
 			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		}
-		return $backtrace[static::$backtraceOffset];
+		$caller = $backtrace[static::$backtraceOffset];
+		$caller['relativePath'] = '.' . substr($caller['file'], $basePathLength);
+		return $caller;
 	}
 
 }
