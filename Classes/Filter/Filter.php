@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Filter;
 
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
@@ -109,7 +110,8 @@ class Filter implements FilterInterface {
 	 * @return FilterResultInterface
 	 */
 	public function filterCollection($collection) {
-		if (!($collection instanceof \Iterator)) throw new \Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException('No object', 1409603143);
+		if (!is_object($collection)) throw new InvalidCollectionException('No object given', 1410628879);
+		if (!($collection instanceof \Iterator)) throw new InvalidCollectionException('Can not iterate over the given object', 1409603143);
 		return new FilterResult($collection, $this);
 	}
 
@@ -169,10 +171,10 @@ class Filter implements FilterInterface {
 				return $propertyValue === $comparison->getValue();
 
 			case ComparisonInterface::TYPE_CONTAINS:
-				return $this->performsContains($propertyValue, $comparison->getValue());
+				return $this->performContains($propertyValue, $comparison->getValue());
 
 			case ComparisonInterface::TYPE_IN:
-				return $this->performsContains($comparison->getValue(), $propertyValue);
+				return $this->performContains($comparison->getValue(), $propertyValue);
 
 			case ComparisonInterface::TYPE_IS_NULL:
 				return is_null($propertyValue);
@@ -188,7 +190,7 @@ class Filter implements FilterInterface {
 	 * @param mixed              $search
 	 * @return bool
 	 */
-	protected function performsContains($collection, $search) {
+	protected function performContains($collection, $search) {
 		if ($collection instanceof \Traversable) {
 			$collection = iterator_to_array($collection);
 		}

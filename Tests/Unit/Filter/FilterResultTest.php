@@ -101,5 +101,22 @@ class FilterResultTest extends AbstractDataBasedCase {
 		$this->assertEquals(60, $this->fixture->count());
 		$this->assertNotNull($this->fixture->current());
 	}
+
+	/**
+	 * @test
+	 */
+	public function orFilterTest() {
+		/** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
+		$coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
+
+		$this->filter = new Filter();
+
+//		$database = $coordinator->getDataByDatabase('contacts');
+//		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
+
+		$database = $coordinator->getDataByDatabase('congress_members');
+		$this->filter->addComparison(new Comparison('description', ComparisonInterface::TYPE_EQUAL_TO, 'Representative for Hawaii\'s 1st congressional district'));
+		$this->fixture = $this->filter->filterCollection($database);
+	}
 }
  

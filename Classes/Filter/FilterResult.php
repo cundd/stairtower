@@ -10,6 +10,8 @@ namespace Cundd\PersistentObjectStore\Filter;
 
 use Cundd\PersistentObjectStore\Core\IndexArray;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Exception\ImmutableException;
+use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
@@ -17,7 +19,7 @@ use Cundd\PersistentObjectStore\Utility\DebugUtility;
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-class FilterResult extends IndexArray implements FilterResultInterface {
+class FilterResult extends IndexArray implements FilterResultInterface, Immutable {
 	/**
 	 * Collection to filter
 	 *
@@ -38,7 +40,6 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 * @var bool
 	 */
 	protected $fullyFiltered = FALSE;
-
 
 
 	/**
@@ -180,11 +181,16 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 			$collection->next();
 		}
 
+		// We reached the end
+		if (!$collection->valid()) {
+			$this->fullyFiltered = TRUE;
+		}
+
 //		if (!$foundObject) {
 //			throw new \Exception('nothing found');
 //		}
 
-		$this->push($foundObject);
+		parent::push($foundObject);
 		return $foundObject;
 	}
 
@@ -192,30 +198,102 @@ class FilterResult extends IndexArray implements FilterResultInterface {
 	 * Find all matching objects
 	 */
 	protected function _findAll() {
+		$start = microtime(TRUE);
+
 		$collection = $this->collection;
-		$filter = $this->filter;
+		$filter     = $this->filter;
 		while ($collection->valid()) {
 			$item = $collection->current();
 			if ($filter->checkItem($item)) {
-				$this->push($item);
+				parent::push($item);
 			}
 			$collection->next();
 		}
+
+
+		$end = microtime(TRUE);
+
+//		printf("Full filter: %0.6f\n", $end - $start);
+
 		$this->fullyFiltered = TRUE;
 	}
 
 	/**
-	 * Creates a deep clone of the given colleciton
+	 * Creates a deep clone of the given collection
 	 *
 	 * @param Database|\Iterator $originalCollection
 	 * @return \SplObjectStorage
 	 */
-	protected function _cloneCollection($originalCollection){
+	protected function _cloneCollection($originalCollection) {
+		// If the collection is immutable just return it
+		if ($originalCollection instanceof Immutable) {
+			return $originalCollection;
+		}
+
+		$start = microtime(TRUE);
 		$collection = new \SplObjectStorage();
 		foreach ($originalCollection as $item) {
 			$collection->attach(clone $item);
 		}
 		$collection->rewind();
+		$end = microtime(TRUE);
+
+//		printf("Time: %0.6f\n", $end - $start);
 		return $collection;
+	}
+
+
+	/**
+	 * Adds an element to the end of the array
+	 *
+	 * @param mixed $value
+	 * @throws \Cundd\PersistentObjectStore\Exception\ImmutableException
+	 */
+	public function push($value) {
+		throw new ImmutableException('Can not modify this immutable', 1410628420);
+	}
+
+	/**
+	 * Pops the element from the end of the array
+	 *
+	 * @throws \Cundd\PersistentObjectStore\Exception\ImmutableException
+	 * @return mixed
+	 */
+	public function pop() {
+		throw new ImmutableException('Can not modify this immutable', 1410628420);
+	}
+
+	/**
+	 * (PHP 5 &gt;= 5.0.0)<br/>
+	 * Offset to set
+	 *
+	 * @link http://php.net/manual/en/arrayaccess.offsetset.php
+	 * @param mixed $offset <p>
+	 *                      The offset to assign the value to.
+	 *                      </p>
+	 * @param mixed $value  <p>
+	 *                      The value to set.
+	 *                      </p>
+	 * @throws \Cundd\PersistentObjectStore\Exception\ImmutableException
+	 * @return void
+	 */
+	public function offsetSet($offset, $value) {
+		throw new ImmutableException('Can not modify this immutable', 1410628420);
+
+	}
+
+	/**
+	 * (PHP 5 &gt;= 5.0.0)<br/>
+	 * Offset to unset
+	 *
+	 * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+	 * @param mixed $offset <p>
+	 *                      The offset to unset.
+	 *                      </p>
+	 * @throws \Cundd\PersistentObjectStore\Exception\ImmutableException
+	 * @return void
+	 */
+	public function offsetUnset($offset) {
+		throw new ImmutableException('Can not modify this immutable', 1410628420);
 	}
 } 
