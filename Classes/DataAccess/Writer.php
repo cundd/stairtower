@@ -36,8 +36,6 @@ class Writer {
 		$this->_prepareWriteDirectory();
 		$path = $this->_getWriteDirectory() . $database->getIdentifier() . '.json';
 
-		DebugUtility::var_dump($path);
-
 		$result = $this->_writeData($this->_getDataToWrite($database), $path);
 		if ($result === FALSE) {
 			throw new WriterException(

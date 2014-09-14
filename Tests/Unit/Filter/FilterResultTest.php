@@ -11,8 +11,8 @@ use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Driver\Driver;
-use Cundd\PersistentObjectStore\Filter\Comparison;
-use Cundd\PersistentObjectStore\Filter\ComparisonInterface;
+use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
+use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Filter;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use DI\ContainerBuilder;
@@ -44,7 +44,7 @@ class FilterResultTest extends AbstractDataBasedCase {
 //		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
 
 		$database = $coordinator->getDataByDatabase('congress_members');
-		$this->filter->addComparison(new Comparison('description', ComparisonInterface::TYPE_EQUAL_TO, 'Representative for Hawaii\'s 1st congressional district'));
+		$this->filter->addComparison(new PropertyComparison('description', ComparisonInterface::TYPE_EQUAL_TO, 'Representative for Hawaii\'s 1st congressional district'));
 		$this->fixture = $this->filter->filterCollection($database);
 	}
 
@@ -100,23 +100,6 @@ class FilterResultTest extends AbstractDataBasedCase {
 		iterator_to_array($this->fixture);
 		$this->assertEquals(60, $this->fixture->count());
 		$this->assertNotNull($this->fixture->current());
-	}
-
-	/**
-	 * @test
-	 */
-	public function orFilterTest() {
-		/** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
-		$coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-
-		$this->filter = new Filter();
-
-//		$database = $coordinator->getDataByDatabase('contacts');
-//		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
-
-		$database = $coordinator->getDataByDatabase('congress_members');
-		$this->filter->addComparison(new Comparison('description', ComparisonInterface::TYPE_EQUAL_TO, 'Representative for Hawaii\'s 1st congressional district'));
-		$this->fixture = $this->filter->filterCollection($database);
 	}
 }
  

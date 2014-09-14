@@ -6,7 +6,7 @@
  * Time: 21:04
  */
 
-namespace Cundd\PersistentObjectStore\Filter;
+namespace Cundd\PersistentObjectStore\Filter\Comparison;
 
 /**
  * Comparison interface
@@ -92,23 +92,31 @@ interface ComparisonInterface {
 	const TYPE_IS_EMPTY = 11;
 
 	/**
-	 * Gets the first operand
+	 * The 'and' comparison operator for collections
 	 *
-	 * @return mixed
+	 * @api
 	 */
-	public function getProperty();
+	const TYPE_AND = 'AND';
 
 	/**
-	 * Gets the operator
+	 * The 'or' comparison operator for collections
+	 *
+	 * @api
+	 */
+	const TYPE_OR = 'OR';
+
+	/**
+	 * Performs the comparison against the given test value
+	 *
+	 * @param mixed $testValue
+	 * @return bool
+	 */
+	public function perform($testValue);
+
+	/**
+	 * Returns the type of the comparison from the comparison value against the given test data's property
 	 *
 	 * @return string one of the TYPE constants
 	 */
 	public function getOperator();
-
-	/**
-	 * Gets the second operand
-	 *
-	 * @return mixed
-	 */
-	public function getValue();
 }

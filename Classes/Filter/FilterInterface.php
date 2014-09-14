@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Filter;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 
 /**
  * Interface for collection filters
@@ -20,7 +21,7 @@ interface FilterInterface {
 	 *
 	 * Multiple comparisons will be added as "or"
 	 *
-	 * @param ComparisonInterface $comparison
+	 * @param PropertyComparisonInterface $comparison
 	 * @return $this
 	 */
 	public function addComparison($comparison);
@@ -28,7 +29,7 @@ interface FilterInterface {
 	/**
 	 * Removes the given comparison
 	 *
-	 * @param ComparisonInterface $comparison
+	 * @param PropertyComparisonInterface $comparison
 	 * @throws Exception\InvalidComparisonException if the given comparison is not in the list
 	 * @return $this
 	 */

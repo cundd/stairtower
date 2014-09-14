@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Filter;
 
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
@@ -62,7 +63,7 @@ class Filter implements FilterInterface {
 	 *
 	 * Multiple comparisons will be added as "or"
 	 *
-	 * @param ComparisonInterface $comparison
+	 * @param PropertyComparisonInterface $comparison
 	 * @return $this
 	 */
 	public function addComparison($comparison) {
@@ -72,7 +73,7 @@ class Filter implements FilterInterface {
 	/**
 	 * Removes the given comparison
 	 *
-	 * @param ComparisonInterface $comparison
+	 * @param PropertyComparisonInterface $comparison
 	 * @throws Exception\InvalidComparisonException if the given comparison is not in the list
 	 * @return $this
 	 */
@@ -126,81 +127,13 @@ class Filter implements FilterInterface {
 		$comparisonCollection->rewind();
 
 		while ($comparisonCollection->valid()) {
-			/** @var ComparisonInterface $comparison */
+			/** @var PropertyComparisonInterface $comparison */
 			$comparison = $comparisonCollection->current();
-			if (!$this->performComparison($item, $comparison)) {
+			if (!$comparison->perform($item)) {
 				return FALSE;
 			}
 			$comparisonCollection->next();
 		}
 		return TRUE;
 	}
-
-	/**
-	 * Executes the comparison on the item
-	 *
-	 * @param                     $item
-	 * @param ComparisonInterface $comparison
-	 * @return boolean
-	 */
-	protected function performComparison($item, $comparison) {
-		if ($item instanceof DataInterface) {
-			$item = $item->getData();
-		}
-		$propertyValue = ObjectUtility::valueForKeyPathOfObject($comparison->getProperty(), $item);
-		switch ($comparison->getOperator()) {
-			case ComparisonInterface::TYPE_EQUAL_TO:
-				return $propertyValue === $comparison->getValue();
-
-			case ComparisonInterface::TYPE_NOT_EQUAL_TO:
-				return $propertyValue !== $comparison->getValue();
-
-			case ComparisonInterface::TYPE_LESS_THAN:
-				return $propertyValue < $comparison->getValue();
-
-			case ComparisonInterface::TYPE_LESS_THAN_OR_EQUAL_TO:
-				return $propertyValue <= $comparison->getValue();
-
-			case ComparisonInterface::TYPE_GREATER_THAN:
-				return $propertyValue > $comparison->getValue();
-
-			case ComparisonInterface::TYPE_GREATER_THAN_OR_EQUAL_TO:
-				return $propertyValue >= $comparison->getValue();
-
-			case ComparisonInterface::TYPE_LIKE:
-				return $propertyValue === $comparison->getValue();
-
-			case ComparisonInterface::TYPE_CONTAINS:
-				return $this->performContains($propertyValue, $comparison->getValue());
-
-			case ComparisonInterface::TYPE_IN:
-				return $this->performContains($comparison->getValue(), $propertyValue);
-
-			case ComparisonInterface::TYPE_IS_NULL:
-				return is_null($propertyValue);
-
-			case ComparisonInterface::TYPE_IS_EMPTY:
-				return !$propertyValue;
-		}
-		return FALSE;
-	}
-
-	/**
-	 * @param array|\Traversable $collection
-	 * @param mixed              $search
-	 * @return bool
-	 */
-	protected function performContains($collection, $search) {
-		if ($collection instanceof \Traversable) {
-			$collection = iterator_to_array($collection);
-		}
-		if (is_array($collection)) {
-			return in_array($search, $collection);
-		}
-		if (is_string($collection)) {
-			return strpos($collection, (string)$search) !== FALSE;
-		}
-		return FALSE;
-	}
-
-} 
+}
