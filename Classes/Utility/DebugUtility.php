@@ -86,4 +86,16 @@ class DebugUtility {
 		return $caller;
 	}
 
+	/**
+	 * Prints the memory usage
+	 */
+	public static function printMemorySample() {
+		static::$backtraceOffset += 1;
+		static::debug(sprintf('Memory: %s (max: %s)',
+			GeneralUtility::formatBytes(memory_get_usage(TRUE)),
+			GeneralUtility::formatBytes(memory_get_peak_usage(TRUE))
+		));
+		static::$backtraceOffset -= 1;
+	}
+
 }

@@ -230,15 +230,21 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 			return $originalCollection;
 		}
 
+		DebugUtility::printMemorySample();
+
 		$start = microtime(TRUE);
-		$collection = new \SplObjectStorage();
+		$collection = new \SplFixedArray($originalCollection->count());
+		$i = 0;
 		foreach ($originalCollection as $item) {
-			$collection->attach(clone $item);
+			$collection[$i] = clone $item;
+//			$collection->attach(clone $item);
+			$i++;
 		}
 		$collection->rewind();
-		$end = microtime(TRUE);
 
-//		printf("Time: %0.6f\n", $end - $start);
+		DebugUtility::printMemorySample();
+		$end = microtime(TRUE);
+//		printf("Clone Time: %0.6f\n", $end - $start);
 		return $collection;
 	}
 

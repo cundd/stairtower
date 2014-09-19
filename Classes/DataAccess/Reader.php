@@ -12,6 +12,8 @@ use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
  * Class to read data from it's source
@@ -76,8 +78,13 @@ class Reader {
 			throw new ReaderException("Database with name '$database' not found", 1408127629);
 		}
 
+		$fileData = file_get_contents($path);
+		DebugUtility::printMemorySample();
 		$serializer = new JsonSerializer();
-		return $serializer->unserialize(file_get_contents($path));
+		$dataCollection = $serializer->unserialize($fileData);
+		DebugUtility::printMemorySample();
+
+		return $dataCollection;
 	}
 
 	/**
@@ -92,7 +99,12 @@ class Reader {
 			return array();
 		}
 
+		$fileData = file_get_contents($path);
+		DebugUtility::printMemorySample();
 		$serializer = new JsonSerializer();
-		return $serializer->unserialize(file_get_contents($path));
+		$dataCollection = $serializer->unserialize($fileData);
+		DebugUtility::printMemorySample();
+
+		return $dataCollection;
 	}
 }
