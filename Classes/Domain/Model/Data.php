@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 use Cundd\PersistentObjectStore\LogicException;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
 
@@ -22,6 +23,8 @@ class Data implements DataInterface {
 	protected $databaseIdentifier;
 	protected $id;
 	protected $data;
+	protected $identifierKey;
+
 
 
 	/**
@@ -86,9 +89,38 @@ class Data implements DataInterface {
 	 * @param string $databaseIdentifier
 	 */
 	public function setDatabaseIdentifier($databaseIdentifier) {
+		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
 		$this->databaseIdentifier = $databaseIdentifier;
 	}
 
+	/**
+	 * Returns the key for the identifier of the Data object
+	 *
+	 * @return string
+	 */
+	public function getIdentifierKey() {
+		if (!$this->identifierKey) {
+			// If no identifier key is defined check the most common
+			$commonIdentifiers = array('id', 'uid', 'email');
+			foreach ($commonIdentifiers as $identifier) {
+				if (isset($this->data[$identifier])) {
+					$this->identifierKey = $identifier;
+					break;
+				}
+			}
+		}
+		return $this->identifierKey;
+	}
+
+	/**
+	 * Sets the key for the identifier of the Data object
+	 * @param string $identifierKey
+	 * @return $this
+	 */
+	public function setIdentifierKey($identifierKey) {
+		$this->identifierKey = $identifierKey;
+		return $this;
+	}
 
 	/**
 	 * Returns the ID
@@ -96,18 +128,11 @@ class Data implements DataInterface {
 	 * @return string
 	 */
 	public function getId() {
+		if (!$this->id) {
+			$this->id = $this->valueForKeyPath($this->getIdentifierKey());
+		}
 		return $this->id;
 	}
-
-	/**
-	 * Returns the ID
-	 *
-	 * @param string $id
-	 */
-	public function setId($id) {
-		$this->id = $id;
-	}
-
 
 	/**
 	 * Returns the underlying data
