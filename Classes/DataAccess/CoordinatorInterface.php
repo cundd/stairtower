@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess;
+use Cundd\PersistentObjectStore\Domain\Model\Database;
 
 /**
  * Interface for coordinators responsible for managing the data
@@ -18,7 +19,7 @@ interface CoordinatorInterface {
 	 * Returns all data of the given database
 	 *
 	 * @param string $database
-	 * @return array
+	 * @return Database|array
 	 */
 	public function getDataByDatabase($database);
 

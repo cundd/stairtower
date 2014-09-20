@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Filter;
 
 use Cundd\PersistentObjectStore\Core\IndexArray;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Exception\ImmutableException;
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
@@ -227,6 +228,9 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 		// If the collection is immutable just return it
 		if ($originalCollection instanceof Immutable) {
 			return $originalCollection;
+		}
+		if ($originalCollection instanceof DatabaseInterface) {
+			return clone $originalCollection;
 		}
 
 		DebugUtility::printMemorySample();

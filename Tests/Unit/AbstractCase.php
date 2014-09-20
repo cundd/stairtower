@@ -25,6 +25,11 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	protected $diContainer;
 
 	/**
+	 * @var bool
+	 */
+	static protected $didSetupXhprof = FALSE;
+
+	/**
 	 * Returns the dependency injection container
 	 *
 	 * @return \DI\Container
@@ -64,8 +69,7 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	 * Configure Xhprof
 	 */
 	protected function setUpXhprof() {
-		static $didSetup = FALSE;
-		if (!$didSetup && extension_loaded('xhprof')) {
+		if (!self::$didSetupXhprof && extension_loaded('xhprof')) {
 			ini_set('xhprof.output_dir', '/Users/daniel/Sites/xhprof/runs');
 
 			$XHPROF_ROOT = __DIR__ . '/../../xhprof-0.9.4/';
@@ -74,7 +78,7 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 
 			xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 
-			$didSetup = TRUE;
+			self::$didSetupXhprof = TRUE;
 			register_shutdown_function(array(__CLASS__, 'tearDownXhprof'));
 		}
 	}

@@ -9,8 +9,11 @@
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
+use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
 use Cundd\PersistentObjectStore\Filter\Filter;
 use Cundd\PersistentObjectStore\LogicException;
+use Cundd\PersistentObjectStore\RuntimeException;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
@@ -43,18 +46,18 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	protected $totalCount = -1;
 
 	/**
-	 * Collection of converted objects
-	 *
-	 * @var array
-	 */
-	protected $objectCollection = array();
-
-	/**
 	 * Raw data array
 	 *
 	 * @var array
 	 */
 	protected $rawData = array();
+
+	/**
+	 * Collection of converted objects mapped to their database identifier
+	 *
+	 * @var array
+	 */
+	static protected $objectCollectionMap = array();
 
 
 	/**
@@ -70,7 +73,28 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 		if ($rawData) {
 			$this->setRawData($rawData);
 		}
+
+		$this->_increaseObjectCollectionReferenceCount();
 	}
+
+	function __clone() {
+		$this->_increaseObjectCollectionReferenceCount();
+	}
+
+	function __wakeup() {
+		$this->_increaseObjectCollectionReferenceCount();
+	}
+
+	function __destruct() {
+		$this->_decreaseObjectCollectionReferenceCount();
+		$this->_deleteObjectCollectionIfNecessary();
+	}
+
+	function __sleep() {
+		$this->_decreaseObjectCollectionReferenceCount();
+		$this->_deleteObjectCollectionIfNecessary();
+	}
+
 
 	/**
 	 * Returns the database identifier
@@ -106,12 +130,24 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	// MANAGING OBJECTS
 	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 	/**
+	 * Returns if the database contains the given data instance
+	 *
+	 * @param DataInterface|string $dataInstance
+	 * @return boolean
+	 */
+	public function contains($dataInstance){
+		return $this->_contains($dataInstance);
+	}
+
+	/**
 	 * Adds the given data instance to the database
 	 *
 	 * @param DataInterface $dataInstance
 	 */
 	public function add($dataInstance){
-		$this->objectCollection[$this->totalCount] = $dataInstance;
+		$newIndex = $this->count();
+		$this->_addDataInstanceAtIndex($dataInstance, $newIndex);
+//		$this->objectCollection[$this->totalCount] = $dataInstance;
 		$this->totalCount++;
 	}
 
@@ -162,20 +198,66 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 * @return mixed Can return any type.
 	 */
 	public function current() {
-		if (!isset($this->objectCollection[$this->index])) {
-			if (!isset($this->rawData[$this->index])) throw new IndexOutOfRangeException('Invalid index ' . $this->index);
-			$rawData    = $this->rawData[$this->index];
-			$dataObject = new Data();
-			$dataObject->setData($rawData);
+		$currentIndex = $this->index;
 
-			$dataObject->setDatabaseIdentifier($this->getIdentifier());
-			$dataObject->setId(isset($rawMetaData['id']) ? $rawMetaData['id'] : NULL);
-			$dataObject->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : NULL);
-			$dataObject->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
-
-			$this->objectCollection[$this->index] = $dataObject;
+		// Try to read the object from the object collection map
+		$this->_prepareObjectCollectionMap();
+		$currentObject = $this->_getObjectForIndex($currentIndex);
+		if ($currentObject) {
+//			DebugUtility::pl('found one');
+			return $currentObject;
 		}
-		return $this->objectCollection[$this->index];
+
+//		DebugUtility::pl('convert one');
+//		DebugUtility::pl('need to convert for index %s', $currentIndex);
+//		DebugUtility::var_dump('need to convert for index %s', $currentIndex);
+		$currentObject = $this->_convertDataAtIndexToObject($currentIndex);
+		$this->_addDataInstanceAtIndex($currentObject, $currentIndex);
+		return $currentObject;
+
+
+//		if (!isset($this->objectCollection[$this->index])) {
+//			$this->objectCollection[$this->index] = $this->_convertDataAtIndexToObject($this->index);
+//		}
+//		return $this->objectCollection[$this->index];
+	}
+
+	/**
+	 * Converts the raw data at the given index to a Data instance
+	 *
+	 * @param integer $index
+	 * @return DataInterface
+	 */
+	protected function _convertDataAtIndexToObject($index) {
+		if (!isset($this->rawData[$index])) {
+			DebugUtility::var_dump(
+				__METHOD__ . ' valid',
+				$this->index < $this->count() || isset($this->rawData[$this->index]) || $this->_getObjectForIndex($this->index),
+				$this->index < $this->count(),
+				isset($this->rawData[$this->index]),
+				!!$this->_getObjectForIndex($this->index)
+			);
+			DebugUtility::var_dump(
+				$index,
+				$index < $this->count() || isset($this->rawData[$index]) || $this->_getObjectForIndex($index),
+				$index < $this->count(),
+				isset($this->rawData[$index]),
+				!!$this->_getObjectForIndex($index)
+			);
+			throw new IndexOutOfRangeException('Invalid index ' . $index);
+
+		}
+//		if (!isset($this->rawData[$index])) throw new IndexOutOfRangeException('Invalid index ' . $index);
+		$rawData    = $this->rawData[$index];
+		$dataObject = new Data();
+		$dataObject->setData($rawData);
+
+		$dataObject->setDatabaseIdentifier($this->getIdentifier());
+		$dataObject->setId(isset($rawMetaData['id']) ? $rawMetaData['id'] : NULL);
+		$dataObject->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : NULL);
+		$dataObject->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
+
+		return $dataObject;
 	}
 
 	/**
@@ -187,6 +269,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 */
 	public function next() {
 		$this->index++;
+
 	}
 
 	/**
@@ -209,7 +292,8 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 *       Returns true on success or false on failure.
 	 */
 	public function valid() {
-		return $this->index < $this->count() || isset($this->objectCollection[$this->index]) || isset($this->rawData[$this->index]);
+		return $this->index < $this->count() || isset($this->rawData[$this->index]) || $this->_getObjectForIndex($this->index);
+//		return $this->index < $this->count() || isset($this->objectCollection[$this->index]) || isset($this->rawData[$this->index]);
 	}
 
 	/**
@@ -235,7 +319,101 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 //	}
 
 
+	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+	// HELPER METHODS
+	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+	/**
+	 * Returns the Data instance for the given index or NULL if it does not exist
+	 *
+	 * @param integer $index
+	 * @return DataInterface|NULL
+	 */
+	protected function _getObjectForIndex($index) {
+		if (!is_integer($index) && !((string)(int)$index === $index)) {
+			throw new InvalidIndexException('Offset could not be converted to integer', 1410167582);
+		}
 
+		if (isset(static::$objectCollectionMap[$this->getIdentifier()]['hash_to_index_map'][$index])) {
+			$objectHash = static::$objectCollectionMap[$this->getIdentifier()]['hash_to_index_map'][$index];
+			return static::$objectCollectionMap[$this->getIdentifier()]['objects'][$objectHash];
+		}
+		return NULL;
+	}
 
+	/**
+	 * Returns if the database contains the given data instance
+	 *
+	 * @param DataInterface|string $dataInstance Actual Data instance or it'S object hash
+	 * @return boolean
+	 */
+	protected function _contains($dataInstance){
+		$databaseIdentifier = $this->getIdentifier();
+		$this->_prepareObjectCollectionMap();
+		if (is_object($dataInstance)) {
+			$objectHash = spl_object_hash($dataInstance);
+		} else {
+			$objectHash = $dataInstance;
+		}
 
+		return isset(static::$objectCollectionMap[$databaseIdentifier]['objects'][$objectHash]);
+	}
+
+	/**
+	 * Makes sure the object collection map contains an entry for the current database
+	 */
+	protected function _prepareObjectCollectionMap() {
+		$databaseIdentifier = $this->getIdentifier();
+		if (!isset(static::$objectCollectionMap[$databaseIdentifier])) {
+			static::$objectCollectionMap[$databaseIdentifier] = array(
+				'ref_count' => 0,
+				'hash_to_index_map' => array(),
+				'objects' => array()
+			);
+		}
+	}
+
+	/**
+	 * Increases the reference count of the object collection map for the given database
+	 */
+	protected function _increaseObjectCollectionReferenceCount() {
+		$this->_prepareObjectCollectionMap();
+		static::$objectCollectionMap[$this->getIdentifier()]['ref_count']++;
+	}
+
+	/**
+	 * Decreases the reference count of the object collection map for the given database
+	 */
+	protected function _decreaseObjectCollectionReferenceCount() {
+		$this->_prepareObjectCollectionMap();
+		static::$objectCollectionMap[$this->getIdentifier()]['ref_count']--;
+	}
+
+	/**
+	 * Removes the cached object collection for the given database if the reference count is less than 1
+	 */
+	protected function _deleteObjectCollectionIfNecessary() {
+		$databaseIdentifier = $this->getIdentifier();
+		if (static::$objectCollectionMap[$databaseIdentifier]['ref_count'] < 1) {
+			unset(static::$objectCollectionMap[$databaseIdentifier]);
+		}
+	}
+
+	/**
+	 * Adds the given data instance to the database with the given index
+	 *
+	 * @param DataInterface $dataInstance
+	 * @param integer $index
+	 */
+	public function _addDataInstanceAtIndex($dataInstance, $index){
+		$objectUid = spl_object_hash($dataInstance);
+		$databaseIdentifier = $this->getIdentifier();
+		if ($this->_contains($dataInstance)) throw new RuntimeException(
+			sprintf('Object with hash %s already exists in the database', $objectUid),
+			1411205350
+		);
+		static::$objectCollectionMap[$databaseIdentifier]['objects'][$objectUid] = $dataInstance;
+
+		static::$objectCollectionMap[$databaseIdentifier]['hash_to_index_map'][$index] = $objectUid;
+//		$this->objectCollection[$index] = $dataInstance;
+	}
 }

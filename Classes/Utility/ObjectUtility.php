@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Utility;
+
 use Cundd\PersistentObjectStore\LogicException;
 
 /**
@@ -25,15 +26,15 @@ class ObjectUtility {
 	 * @return mixed
 	 */
 	static public function valueForKeyPathOfObject($keyPath, $object, $default = NULL) {
-		$i = 0;
-		$keyPathParts = explode('.', $keyPath);
-		$keyPathPartsLength = count($keyPathParts);
-		$currentValue = $object;
-
 		if (!is_string($keyPath)) throw new LogicException('Given key path is not of type string (maybe arguments are ordered incorrect)', 1395484136);
 
+		$keyPathParts       = explode('.', $keyPath);
+		$keyPathPartsLength = count($keyPathParts);
+		$currentValue       = $object;
+
+
 		for ($i = 0; $i < $keyPathPartsLength; $i++) {
-			$key = $keyPathParts[$i];
+			$key            = $keyPathParts[$i];
 			$accessorMethod = 'get' . ucfirst($key);
 
 			switch (TRUE) {
@@ -70,5 +71,40 @@ class ObjectUtility {
 			}
 		}
 		return $currentValue;
+	}
+
+	/**
+	 * Returns the value for the key path of the given object
+	 *
+	 * @param mixed        $value   New value to set
+	 * @param string       $keyPath Key path of the property to fetch
+	 * @param object|array $object  Source to fetch the data from
+	 * @throws LogicException if the given key path is no string
+	 */
+	static public function setValueForKeyPathOfObject($value, $keyPath, $object) {
+		if (!is_string($keyPath)) throw new LogicException('Given key path is not of type string (maybe arguments are ordered incorrect)', 1395484136);
+
+		$keyPathParts = explode('.', $keyPath);
+		$key          = array_pop($keyPathParts);
+		$currentValue = static::valueForKeyPathOfObject(implode('.', $keyPathParts), $object);
+
+		$accessorMethod = 'set' . ucfirst($key);
+
+		// Current value is an array
+		if (is_array($currentValue)) {
+			throw new LogicException('Setting nested array values is currently not supported', 1411209195);
+			//$currentValue[$key] = $value;
+		}
+
+		// Current value is an object
+		if (is_object($currentValue)) {
+			if (method_exists($currentValue, $accessorMethod)) { // Getter method
+				$currentValue->$accessorMethod($value);
+			} else if (method_exists($currentValue, 'set')) { // General "set" method
+				$currentValue->set($key);
+			} else if (array_key_exists($key, get_object_vars($currentValue))) { // Direct access
+				$currentValue->$key = $value;
+			}
+		}
 	}
 } 

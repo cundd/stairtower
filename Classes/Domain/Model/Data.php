@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
+use Cundd\PersistentObjectStore\LogicException;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
 
@@ -135,6 +136,19 @@ class Data implements DataInterface {
 	public function valueForKey($key) {
 		return ObjectUtility::valueForKeyPathOfObject($key, $this->getData());
 	}
+
+	/**
+	 * Sets the value for the given key from the data
+	 *
+	 * @param mixed  $value
+	 * @param string $key
+	 * @throws LogicException
+	 */
+	public function setValueForKey($value, $key) {
+		if (!is_string($key)) throw new LogicException('Given key path is not of type string (maybe arguments are ordered incorrect)', 1395484136);
+		$this->data[$key] = $value;
+	}
+
 
 	/**
 	 * Returns the value for the given key path from the data

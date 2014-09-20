@@ -11,6 +11,7 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\Driver\Driver;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
@@ -78,7 +79,6 @@ class FilterResultTest extends AbstractDataBasedCase {
 	 */
 	public function nextTest() {
 		$this->fixture->next();
-		var_dump($this->fixture->current());
 		$this->assertNotNull($this->fixture->current());
 		$this->assertSame('Neil', $this->fixture->current()->valueForKeyPath('person.firstname'));
 	}
@@ -120,24 +120,12 @@ class FilterResultTest extends AbstractDataBasedCase {
 
 		try {
 			$this->fixture->rewind();
-
-
-			var_dump($this->fixture->key());
-			var_dump($this->fixture->key());
-			var_dump($this->fixture->key());
-
 			$this->fixture->next();
-
-			var_dump($this->fixture->key());
-			var_dump($this->fixture->count());
-
 			iterator_to_array($this->fixture);
 			$this->fixture->rewind();
 
 			$i = 0;
 			while (++$i < $this->fixture->count()) {
-				echo $i . PHP_EOL;
-				var_dump($this->fixture->key());
 				$this->fixture->next();
 			}
 		} catch (\Exception $exception) {
@@ -165,11 +153,23 @@ class FilterResultTest extends AbstractDataBasedCase {
 		$newFilter->addComparison(new PropertyComparison('description', ComparisonInterface::TYPE_EQUAL_TO, 'Representative for Hawaii\'s 1st congressional district'));
 		$newFilterResult = $newFilter->filterCollection($database);
 
+		/** @var DataInterface $memberFromNewFilter */
 		$memberFromNewFilter = $newFilterResult->current();
+
+		/** @var DataInterface $memberFromFixture */
 		$memberFromFixture = $this->fixture->current();
 
 		$this->assertEquals($memberFromNewFilter, $memberFromFixture);
-		$this->assertSame($memberFromNewFilter, $memberFromFixture);
+
+		$movie = 'Star Wars';
+		$key = 'favorite_movie';
+
+		$memberFromNewFilter->setValueForKey($movie, $key);
+		$this->assertEquals($memberFromNewFilter, $memberFromFixture);
+		$this->assertEquals(spl_object_hash($memberFromNewFilter), spl_object_hash($memberFromFixture));
+		$this->assertEquals($movie, $memberFromNewFilter->valueForKey($key));
+		$this->assertEquals($movie, $memberFromFixture->valueForKey($key));
+
 	}
 }
  

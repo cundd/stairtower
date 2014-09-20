@@ -65,6 +65,14 @@ interface DataInterface {
 	public function valueForKey($key);
 
 	/**
+	 * Sets the value for the given key from the data
+	 *
+	 * @param mixed $value
+	 * @param string $key
+	 */
+	public function setValueForKey($value, $key);
+
+	/**
 	 * Returns the value for the given key path from the data
 	 *
 	 * @param string $keyPath

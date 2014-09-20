@@ -67,6 +67,44 @@ class DebugUtility {
 	}
 
 	/**
+	 * Print the given message
+	 *
+	 * @param string $message
+	 * @param mixed $additional...
+	 */
+	static public function pl($message, $additional = NULL) {
+		$caller = static::getCaller();
+		$htmlOutput = php_sapi_name() !== 'cli';
+		$colorOutput = isset($_SERVER['TERM']) && strtolower($_SERVER['TERM']) === 'xterm';
+
+		if ($htmlOutput) echo '<pre class="rest-debug"><code>';
+
+		if ($additional) {
+			$additional = func_get_args();
+			array_shift($additional);
+		}
+		echo vsprintf($message, $additional) . PHP_EOL;
+		if ($htmlOutput) echo '</code>';
+
+		// Debug info
+		$line = $caller['line'];
+		$file = $caller['file'];
+		if ($htmlOutput) {
+			echo "<span class='rest-debug-path' style='font-size:9px'><a href='file:$file'>see $file($line)</a></span>";
+			echo "</pre>";
+		} else if ($colorOutput) {
+			echo "\033[0;35m" . "$file($line)" . "\033[0m";
+		} else {
+			echo "($file:$line)";
+		}
+
+		if ($htmlOutput) echo '</pre>';
+		echo PHP_EOL;
+		echo PHP_EOL;
+		echo PHP_EOL;
+	}
+
+	/**
 	 * Returns the caller of the previous method
 	 *
 	 * @return array
