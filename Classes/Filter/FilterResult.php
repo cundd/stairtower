@@ -161,7 +161,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 	protected function _findNext() {
 		// If the filtered collection is fully populated
 		if ($this->fullyFiltered) {
-			$this->currentIndex++;
 			return parent::current();
 		}
 		$foundObject = NULL;
@@ -172,7 +171,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 		// Loop through the collection until one matching object was found
 		while ($collection->valid()) {
 			$item = $collection->current();
-			// echo 'check ' . spl_object_hash($item) . PHP_EOL;
+//			echo 'check ' . spl_object_hash($item) . PHP_EOL;
 			if ($filter->checkItem($item)) {
 				$foundObject = $item;
 				$collection->next();
@@ -237,14 +236,13 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 		$i = 0;
 		foreach ($originalCollection as $item) {
 			$collection[$i] = clone $item;
-//			$collection->attach(clone $item);
 			$i++;
 		}
 		$collection->rewind();
 
 		DebugUtility::printMemorySample();
 		$end = microtime(TRUE);
-//		printf("Clone Time: %0.6f\n", $end - $start);
+		printf("Clone Time: %0.6f\n", $end - $start);
 		return $collection;
 	}
 

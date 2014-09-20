@@ -51,8 +51,24 @@ class Reader {
 	protected function _fillDatabaseWithData($database, $dataCollection, $metaDataCollection) {
 		$databaseIdentifier = $database->getIdentifier();
 		$rawData = reset($dataCollection);
-		do {
-			$rawMetaData = reset($metaDataCollection);
+		$rawMetaData = reset($metaDataCollection);
+
+		$database->setRawData($dataCollection);
+		return;
+
+//		do {
+//			$dataObject = new Data();
+//			$dataObject->setData($rawData);
+//
+//			$dataObject->setDatabaseIdentifier($databaseIdentifier);
+//			$dataObject->setId(isset($rawMetaData['id']) ? $rawMetaData['id'] : NULL);
+//			$dataObject->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : NULL);
+//			$dataObject->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
+//
+//			$database->attach($dataObject);
+//		} while ($rawData = next($dataCollection));
+
+		foreach ($dataCollection as $rawData) {
 			$dataObject = new Data();
 			$dataObject->setData($rawData);
 
@@ -62,7 +78,7 @@ class Reader {
 			$dataObject->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
 
 			$database->attach($dataObject);
-		} while ($rawData = next($dataCollection));
+		}
 	}
 
 	/**

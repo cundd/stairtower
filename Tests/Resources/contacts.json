@@ -8,5 +8,20 @@
 		"firstName": "Steve",
 		"lastName": "Laim",
 		"email": "spm@cundd.net"
+	},
+	{
+		"firstName": "Paul",
+		"lastName": "McKenzy",
+		"email": "paul@mckenzy.net"
+	},
+	{
+		"firstName": "Alice",
+		"lastName": "McKenzy",
+		"email": "alice@mckenzy.net"
+	},
+	{
+		"firstName": "Robert",
+		"lastName": "Ellson",
+		"email": "rob@ells.on"
 	}
 ]

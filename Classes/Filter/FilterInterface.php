@@ -55,7 +55,7 @@ interface FilterInterface {
 	/**
 	 * Returns the filter result
 	 *
-	 * @param Database|\Iterator $collection
+	 * @param Database|\Iterator|array $collection
 	 * @return FilterResultInterface
 	 */
 	public function filterCollection($collection);

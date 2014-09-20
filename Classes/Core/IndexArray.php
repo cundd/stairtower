@@ -123,7 +123,7 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable {
 	 * @return mixed Can return any type.
 	 */
 	public function current() {
-		if ($this->currentIndex >= $this->length) throw new IndexOutOfRangeException('Index out of range', 1410183473);
+		if ($this->currentIndex >= $this->length) throw new IndexOutOfRangeException(sprintf('Index %d out of range', $this->currentIndex), 1410183473);
 		if (!isset($this->elements[$this->currentIndex])) {
 			return NULL;
 		}

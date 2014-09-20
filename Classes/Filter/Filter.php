@@ -106,7 +106,7 @@ class Filter implements FilterInterface {
 	/**
 	 * Returns the filter result
 	 *
-	 * @param Database|\Iterator $collection
+	 * @param Database|\Iterator|array $collection
 	 * @throws Exception\InvalidCollectionException if the given collection is not valid
 	 * @return FilterResultInterface
 	 */
