@@ -30,6 +30,8 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	 * @test
 	 */
 	public function readTestsCongressMembers() {
+		$this->checkCongressMemberFile();
+
 		/** @var Database $database */
 		$database = $this->fixture->getDataByDatabase('congress_members');
 		$this->assertEquals(4800, $database->count());
@@ -69,6 +71,8 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	 * @test
 	 */
 	public function commitBigDatabaseTest() {
+		$this->checkCongressMemberFile();
+
 		/** @var Database $database */
 		$database = $this->fixture->getDataByDatabase('congress_members');
 

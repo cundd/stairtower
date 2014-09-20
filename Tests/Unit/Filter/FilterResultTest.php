@@ -37,6 +37,8 @@ class FilterResultTest extends AbstractDataBasedCase {
 	protected $filter;
 
 	protected function setUp() {
+		$this->checkCongressMemberFile();
+
 		$this->setUpXhprof();
 
 		/** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */

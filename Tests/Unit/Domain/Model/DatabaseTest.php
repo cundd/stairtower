@@ -24,6 +24,8 @@ class DatabaseTest extends AbstractCase {
 	protected $coordinator;
 
 	protected function setUp() {
+		$this->checkCongressMemberFile();
+
 		$this->setUpXhprof();
 
 		/** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */

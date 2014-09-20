@@ -66,6 +66,17 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	}
 
 	/**
+	 * Checks if the congress member file exists
+	 */
+	protected function checkCongressMemberFile() {
+		$congressMembersDataPath = __DIR__ . '/../Resources/congress_members.json';
+		if (!file_exists($congressMembersDataPath)) {
+			printf('Please unzip the file %s.zip to %s to run this tests', $congressMembersDataPath, $congressMembersDataPath);
+			die(1);
+		}
+	}
+
+	/**
 	 * Configure Xhprof
 	 */
 	protected function setUpXhprof() {
