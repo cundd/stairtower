@@ -34,6 +34,8 @@ class ExampleTest extends AbstractDataBasedCase {
 	 * @test
 	 */
 	public function exampleTest() {
+		$startTime = microtime(TRUE);
+
 		// Load a database called 'people'
 		/** @var Database $database */
 		$database = $this->fixture->getDataByDatabase('people');
@@ -88,5 +90,8 @@ class ExampleTest extends AbstractDataBasedCase {
 		$this->assertSame('frankiehorn@cundd.net', $currentObject->valueForKeyPath('email'));
 		$this->assertSame('Frankie Horn', $currentObject->valueForKeyPath('name'));
 		$this->assertContains('blue', $currentObject->valueForKeyPath('eyeColor'));
+
+		$endTime = microtime(TRUE);
+		printf('All this took us %0.6f seconds', $endTime - $startTime);
 	}
 } 
