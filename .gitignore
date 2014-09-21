@@ -1,6 +1,7 @@
 #################################
 ### PROJECT SETTINGS
 xhprof-0.9*
+Tests/Resources/people.json
 
 #################################
 ### GENERAL SETTINGS

@@ -13,6 +13,7 @@ use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
 /**
@@ -35,11 +36,10 @@ class Filter implements FilterInterface {
 	 */
 	function __construct($comparisons = NULL) {
 		if (!$comparisons) {
-			$comparisons = new \SplObjectStorage();
+			$this->comparisons = new \SplObjectStorage();
 		} else {
 			$this->initWithComparisons($comparisons);
 		}
-		$this->comparisons = $comparisons;
 	}
 
 	/**

@@ -11,6 +11,7 @@ namespace Cundd\PersistentObjectStore\Domain\Model;
 use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\DatabaseMismatchException;
+use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Filter;
 use Cundd\PersistentObjectStore\LogicException;
 use Cundd\PersistentObjectStore\RuntimeException;
@@ -135,10 +136,13 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	/**
 	 * Filters the database using the given comparisons
 	 *
-	 * @param array $comparisons
+	 * @param array|ComparisonInterface $comparisons
 	 * @return \Cundd\PersistentObjectStore\Filter\FilterResultInterface
 	 */
 	public function filter($comparisons) {
+		if (!is_array($comparisons)) {
+			$comparisons = func_get_args();
+		}
 		$filter = new Filter($comparisons);
 		return $filter->filterCollection($this);
 	}
