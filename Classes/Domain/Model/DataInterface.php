@@ -36,6 +36,13 @@ interface DataInterface {
 	public function getDatabaseIdentifier();
 
 	/**
+	 * Returns the key for the identifier of the Data object
+	 *
+	 * @return string
+	 */
+	public function getIdentifierKey();
+
+	/**
 	 * Returns the global unique identifier
 	 *
 	 * @return string

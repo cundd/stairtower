@@ -27,6 +27,13 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	protected $fixture;
 
 	/**
+	 * Number of congress members in the database
+	 *
+	 * @var int
+	 */
+	protected $numberOfCongressMembers = 4800;
+
+	/**
 	 * @test
 	 */
 	public function readTestsCongressMembers() {
@@ -34,7 +41,11 @@ class CoordinatorTest extends AbstractDataBasedCase {
 
 		/** @var Database $database */
 		$database = $this->fixture->getDataByDatabase('congress_members');
-		$this->assertEquals(4800, $database->count());
+		$this->assertEquals($this->numberOfCongressMembers, $database->count());
+
+		$this->assertEquals($this->numberOfCongressMembers, count(iterator_to_array($database)));
+
+
 	}
 
 	/**
@@ -117,7 +128,10 @@ class CoordinatorTest extends AbstractDataBasedCase {
 			'title_long'       => 'Representative',
 			'website'          => 'http://www.cundd.net'
 		));
-		$database->add($dataInstance);
+
+//		$database->add($dataInstance);
+//		$this->assertEquals($this->numberOfCongressMembers + 1, $database->count());
+
 		$this->fixture->commitDatabase($database);
 
 		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'congress_members.json';

@@ -10,11 +10,13 @@ namespace Cundd\PersistentObjectStore\Domain\Model;
 
 use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
+use Cundd\PersistentObjectStore\Domain\Model\Exception\DatabaseMismatchException;
 use Cundd\PersistentObjectStore\Filter\Filter;
 use Cundd\PersistentObjectStore\LogicException;
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Doctrine\Common\Util\Debug;
 
 /**
  * Database class which holds the Data instances
@@ -24,6 +26,21 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
 class Database implements DatabaseInterface, \Iterator, \Countable {
+	/**
+	 * Object collection key for the mapping of the GUID to the object
+	 */
+	const OBJ_COL_KEY_GUID_TO_OBJECT = 'objects';
+
+	/**
+	 * Object collection key for the mapping of the index to the GUID
+	 */
+	const OBJ_COL_KEY_INDEX_TO_GUID = 'index_to_identifier_map';
+
+	/**
+	 * Object collection key for the reference count
+	 */
+	const OBJ_COL_KEY_REFERENCE_COUNT = 'ref_count';
+
 	/**
 	 * Database identifier
 	 *
@@ -64,7 +81,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 * Creates a new database
 	 *
 	 * @param string $identifier
-	 * @param array $rawData
+	 * @param array  $rawData
 	 */
 	function __construct($identifier, $rawData = array()) {
 		GeneralUtility::assertDatabaseIdentifier($identifier);
@@ -111,7 +128,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 * @param $rawData
 	 */
 	public function setRawData($rawData) {
-		$this->rawData = $rawData;
+		$this->rawData    = $rawData;
 		$this->totalCount = count($rawData);
 	}
 
@@ -135,7 +152,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 * @param DataInterface|string $dataInstance
 	 * @return boolean
 	 */
-	public function contains($dataInstance){
+	public function contains($dataInstance) {
 		return $this->_contains($dataInstance);
 	}
 
@@ -144,8 +161,10 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 *
 	 * @param DataInterface $dataInstance
 	 */
-	public function add($dataInstance){
+	public function add($dataInstance) {
+		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
 		$newIndex = $this->count();
+		DebugUtility::var_dump('Add data instance at', $newIndex);
 		$this->_addDataInstanceAtIndex($dataInstance, $newIndex);
 //		$this->objectCollection[$this->totalCount] = $dataInstance;
 		$this->totalCount++;
@@ -157,7 +176,10 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 * @param DataInterface $dataInstance
 	 */
 	public function update($dataInstance) {
-		throw new LogicException('Missing implementation for ' . __METHOD__);
+		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
+
+		$identifier = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
+		static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier] = $dataInstance;
 	}
 
 	/**
@@ -166,7 +188,38 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 * @param DataInterface $dataInstance
 	 */
 	public function remove($dataInstance) {
-		throw new LogicException('Missing implementation for ' . __METHOD__);
+		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
+
+		$identifier = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
+		unset(static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier]);
+	}
+
+	/**
+	 * Returns the object with the given identifier
+	 *
+	 * @param string $identifier
+	 * @return DataInterface|NULL
+	 */
+	public function findByIdentifier($identifier) {
+		$foundObject = $this->_getObjectForIdentifier($identifier);
+		if ($foundObject) {
+			return $foundObject;
+		}
+
+		$lastIndex = $this->index;
+		$this->rewind();
+
+		while ($this->valid()) {
+			/** @var DataInterface $element */
+			$element = $this->current();
+			if ($element->getId() === $identifier) {
+				$foundObject = $element;
+				break;
+			}
+			$this->next();
+		}
+		$this->index = $lastIndex;
+		return $foundObject;
 	}
 
 
@@ -210,9 +263,29 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 
 //		DebugUtility::pl('convert one');
 //		DebugUtility::pl('need to convert for index %s', $currentIndex);
-//		DebugUtility::var_dump('need to convert for index %s', $currentIndex);
 		$currentObject = $this->_convertDataAtIndexToObject($currentIndex);
-		$this->_addDataInstanceAtIndex($currentObject, $currentIndex);
+//		DebugUtility::pl('converted object with GUID %s', $currentObject->getGuid());
+
+		try {
+			$this->_addDataInstanceAtIndex($currentObject, $currentIndex);
+		} catch (\Exception $ex) {
+//
+//			DebugUtility::var_dump($currentIndex);
+//			DebugUtility::var_dump($this->rawData[$currentIndex], $this->rawData[2], $this->rawData[$currentIndex] == $this->rawData[2]);
+//			DebugUtility::var_dump($currentObject);
+//			throw new \Exception("Object with GUID {$currentObject->getGuid()} already exists in the database but does not match index {$currentIndex}");
+//
+//			DebugUtility::var_dump($currentIndex);
+//			DebugUtility::var_dump($this->valid());
+//			DebugUtility::var_dump(isset(static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_INDEX_TO_GUID][$currentIndex])
+//			? (static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_INDEX_TO_GUID][$currentIndex])
+//			: self::OBJ_COL_KEY_INDEX_TO_GUID
+//			);
+//			DebugUtility::var_dump(static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_INDEX_TO_GUID]);
+//			DebugUtility::var_dump(array_keys(static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_GUID_TO_OBJECT]));
+
+			throw $ex;
+		}
 		return $currentObject;
 
 
@@ -244,7 +317,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 				isset($this->rawData[$index]),
 				!!$this->_getObjectForIndex($index)
 			);
-			throw new IndexOutOfRangeException('Invalid index ' . $index);
+			throw new IndexOutOfRangeException('Invalid index ' . $index, 1411316363);
 
 		}
 //		if (!isset($this->rawData[$index])) throw new IndexOutOfRangeException('Invalid index ' . $index);
@@ -253,7 +326,6 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 		$dataObject->setData($rawData);
 
 		$dataObject->setDatabaseIdentifier($this->getIdentifier());
-		$dataObject->setId(isset($rawMetaData['id']) ? $rawMetaData['id'] : NULL);
 		$dataObject->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : NULL);
 		$dataObject->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
 
@@ -333,11 +405,46 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 			throw new InvalidIndexException('Offset could not be converted to integer', 1410167582);
 		}
 
-		if (isset(static::$objectCollectionMap[$this->getIdentifier()]['hash_to_index_map'][$index])) {
-			$objectHash = static::$objectCollectionMap[$this->getIdentifier()]['hash_to_index_map'][$index];
-			return static::$objectCollectionMap[$this->getIdentifier()]['objects'][$objectHash];
+		$identifier = $this->getIdentifier();
+		if (isset(static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index])) {
+			$objectHash = static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index];
+			return static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectHash];
 		}
 		return NULL;
+	}
+
+	/**
+	 * Returns the Data instance for the given identifier or NULL if it does not exist
+	 *
+	 * @param string $identifier
+	 * @return DataInterface|NULL
+	 */
+	protected function _getObjectForIdentifier($identifier) {
+		if (isset(static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier])) {
+			return static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier];
+		}
+		return NULL;
+	}
+
+	/**
+	 * Adds the given data instance to the database with the given index
+	 *
+	 * @param DataInterface $dataInstance
+	 * @param integer       $index
+	 */
+	public function _addDataInstanceAtIndex($dataInstance, $index) {
+		$objectUid          = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
+		$databaseIdentifier = $this->getIdentifier();
+		if ($this->_contains($dataInstance)) {
+			throw new RuntimeException(
+				sprintf('Object with GUID %s already exists in the database. Maybe the values of the identifier %s are not unique', $objectUid, $dataInstance->getIdentifierKey()),
+				1411205350
+			);
+		}
+		static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid] = $dataInstance;
+
+		static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index] = $objectUid;
+//		$this->objectCollection[$index] = $dataInstance;
 	}
 
 	/**
@@ -346,16 +453,17 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 * @param DataInterface|string $dataInstance Actual Data instance or it'S object hash
 	 * @return boolean
 	 */
-	protected function _contains($dataInstance){
+	protected function _contains($dataInstance) {
 		$databaseIdentifier = $this->getIdentifier();
 		$this->_prepareObjectCollectionMap();
 		if (is_object($dataInstance)) {
-			$objectHash = spl_object_hash($dataInstance);
+			$objectId = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
 		} else {
-			$objectHash = $dataInstance;
+			throw new RuntimeException("Given value $dataInstance is of type " .gettype($dataInstance));
+			$objectId = $dataInstance;
 		}
 
-		return isset(static::$objectCollectionMap[$databaseIdentifier]['objects'][$objectHash]);
+		return isset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectId]);
 	}
 
 	/**
@@ -365,9 +473,31 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 		$databaseIdentifier = $this->getIdentifier();
 		if (!isset(static::$objectCollectionMap[$databaseIdentifier])) {
 			static::$objectCollectionMap[$databaseIdentifier] = array(
-				'ref_count' => 0,
-				'hash_to_index_map' => array(),
-				'objects' => array()
+				self::OBJ_COL_KEY_REFERENCE_COUNT         => 0,
+				self::OBJ_COL_KEY_INDEX_TO_GUID => array(),
+				self::OBJ_COL_KEY_GUID_TO_OBJECT           => array()
+			);
+		}
+	}
+
+	/**
+	 * Checks if the Data instance's database identifier is correct
+	 *
+	 * @param DataInterface $dataInstance
+	 */
+	protected function _assertDataInstancesDatabaseIdentifier($dataInstance) {
+		if (!$dataInstance->getDatabaseIdentifier()) {
+			if ($dataInstance instanceof Data) {
+				$dataInstance->setDatabaseIdentifier($this->identifier);
+			}
+		} else if ($dataInstance->getDatabaseIdentifier() !== $this->getIdentifier()) {
+			throw new DatabaseMismatchException(
+				sprintf(
+					'The given Data instance does not belong to this database (Data instance database identifier: %s, Database identifier: %s',
+					$dataInstance->getDatabaseIdentifier(),
+					$this->getIdentifier()
+				),
+				1411315947
 			);
 		}
 	}
@@ -377,7 +507,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 */
 	protected function _increaseObjectCollectionReferenceCount() {
 		$this->_prepareObjectCollectionMap();
-		static::$objectCollectionMap[$this->getIdentifier()]['ref_count']++;
+		static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_REFERENCE_COUNT]++;
 	}
 
 	/**
@@ -385,7 +515,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 */
 	protected function _decreaseObjectCollectionReferenceCount() {
 		$this->_prepareObjectCollectionMap();
-		static::$objectCollectionMap[$this->getIdentifier()]['ref_count']--;
+		static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_REFERENCE_COUNT]--;
 	}
 
 	/**
@@ -393,27 +523,8 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 */
 	protected function _deleteObjectCollectionIfNecessary() {
 		$databaseIdentifier = $this->getIdentifier();
-		if (static::$objectCollectionMap[$databaseIdentifier]['ref_count'] < 1) {
-			unset(static::$objectCollectionMap[$databaseIdentifier]);
+		if (static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_REFERENCE_COUNT] < 1) {
+		#	unset(static::$objectCollectionMap[$databaseIdentifier]);
 		}
-	}
-
-	/**
-	 * Adds the given data instance to the database with the given index
-	 *
-	 * @param DataInterface $dataInstance
-	 * @param integer $index
-	 */
-	public function _addDataInstanceAtIndex($dataInstance, $index){
-		$objectUid = spl_object_hash($dataInstance);
-		$databaseIdentifier = $this->getIdentifier();
-		if ($this->_contains($dataInstance)) throw new RuntimeException(
-			sprintf('Object with hash %s already exists in the database', $objectUid),
-			1411205350
-		);
-		static::$objectCollectionMap[$databaseIdentifier]['objects'][$objectUid] = $dataInstance;
-
-		static::$objectCollectionMap[$databaseIdentifier]['hash_to_index_map'][$index] = $objectUid;
-//		$this->objectCollection[$index] = $dataInstance;
 	}
 }

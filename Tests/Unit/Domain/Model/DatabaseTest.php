@@ -38,6 +38,15 @@ class DatabaseTest extends AbstractCase {
 //		unset($this->coordinator);
 		$this->tearDownXhprof();
 	}
+
+	/**
+	 * @test
+	 */
+	public function findByIdentifierTest() {
+		$congressMember = $this->fixture->findByIdentifier(1);
+		$this->assertSame('Neil', $congressMember->valueForKeyPath('person.firstname'));
+	}
+
 	/**
 	 * A test that should validate the behavior of data object references in a database
 	 *

@@ -25,6 +25,15 @@ class AbstractDataBasedCase extends AbstractCase {
 	}
 
 	/**
+	 * Returns the number of items in the raw test data
+	 *
+	 * @return array
+	 */
+	public function countAllTestData() {
+		return count($this->getAllTestData());
+	}
+
+	/**
 	 * @param $database
 	 * @return array
 	 */
