@@ -37,7 +37,7 @@ class FilterResultTest extends AbstractDataBasedCase {
 	protected $filter;
 
 	protected function setUp() {
-		$this->checkCongressMemberFile();
+		$this->checkPersonFile();
 
 		$this->setUpXhprof();
 
@@ -49,8 +49,8 @@ class FilterResultTest extends AbstractDataBasedCase {
 //		$database = $coordinator->getDataByDatabase('contacts');
 //		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
 
-		$database = $coordinator->getDataByDatabase('congress_members');
-		$this->filter->addComparison(new PropertyComparison('description', ComparisonInterface::TYPE_EQUAL_TO, 'Representative for Hawaii\'s 1st congressional district'));
+		$database = $coordinator->getDataByDatabase('people');
+		$this->filter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
 		$this->fixture = $this->filter->filterCollection($database);
 	}
 
@@ -70,10 +70,15 @@ class FilterResultTest extends AbstractDataBasedCase {
 
 		$this->assertNotNull($this->fixture->current());
 		$this->assertSame($currentObject, $this->fixture->current());
+
+		$this->assertSame('Nolan Byrd', $this->fixture->current()->valueForKeyPath('name'));
+		$this->assertContains('labore', $this->fixture->current()->valueForKeyPath('tags'));
+
 		$this->fixture->next();
 		$this->assertNotNull($this->fixture->current());
 
-		$this->assertSame('Neil', $this->fixture->current()->valueForKeyPath('person.firstname'));
+		$this->assertSame('Booker Oneil', $this->fixture->current()->valueForKeyPath('name'));
+		$this->assertContains('laboris', $this->fixture->current()->valueForKeyPath('tags'));
 	}
 
 	/**
@@ -82,30 +87,30 @@ class FilterResultTest extends AbstractDataBasedCase {
 	public function nextTest() {
 		$this->fixture->next();
 		$this->assertNotNull($this->fixture->current());
-		$this->assertSame('Neil', $this->fixture->current()->valueForKeyPath('person.firstname'));
+		$this->assertSame('Booker Oneil', $this->fixture->current()->valueForKeyPath('name'));
+		$this->assertContains('laboris', $this->fixture->current()->valueForKeyPath('tags'));
 	}
 
 	/**
 	 * @test
 	 */
 	public function countTest() {
-		$this->assertEquals(60, $this->fixture->count());
+		$this->assertEquals(1713, $this->fixture->count());
 		$this->assertNotNull($this->fixture->current());
 
 		iterator_to_array($this->fixture);
-		$this->assertEquals(60, $this->fixture->count());
+		$this->assertEquals(1713, $this->fixture->count());
 	}
 
 	/**
-	 * @test
 	 * @expectedException \Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException
 	 */
 	public function iterateAndGetCurrentShouldThrowAnException() {
-		$this->assertEquals(60, $this->fixture->count());
+		$this->assertEquals(1713, $this->fixture->count());
 		$this->assertNotNull($this->fixture->current());
 
 		iterator_to_array($this->fixture);
-		$this->assertEquals(60, $this->fixture->count());
+		$this->assertEquals(1713, $this->fixture->count());
 		$this->assertNotNull($this->fixture->current());
 	}
 
@@ -114,11 +119,11 @@ class FilterResultTest extends AbstractDataBasedCase {
 	 */
 	public function doALotOfThings() {
 		$exception = NULL;
-		$this->assertEquals(60, $this->fixture->count());
+		$this->assertEquals(1713, $this->fixture->count());
 		$this->assertNotNull($this->fixture->current());
 
 		iterator_to_array($this->fixture);
-		$this->assertEquals(60, $this->fixture->count());
+		$this->assertEquals(1713, $this->fixture->count());
 
 		try {
 			$this->fixture->rewind();
@@ -150,9 +155,8 @@ class FilterResultTest extends AbstractDataBasedCase {
 //		$database = $coordinator->getDataByDatabase('contacts');
 //		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
 
-		$database = $coordinator->getDataByDatabase('congress_members');
-//		$newFilter->addComparison(new PropertyComparison('description', ComparisonInterface::TYPE_EQUAL_TO, 'Representative for Wisconsin\'s 2nd congressional district'));
-		$newFilter->addComparison(new PropertyComparison('description', ComparisonInterface::TYPE_EQUAL_TO, 'Representative for Hawaii\'s 1st congressional district'));
+		$database = $coordinator->getDataByDatabase('people');
+		$newFilter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
 		$newFilterResult = $newFilter->filterCollection($database);
 
 		/** @var DataInterface $memberFromNewFilter */

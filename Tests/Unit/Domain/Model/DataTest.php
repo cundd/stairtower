@@ -19,7 +19,7 @@ class DataTest extends AbstractCase {
 
 
 	protected function setUp() {
-		$this->checkCongressMemberFile();
+		$this->checkPersonFile();
 
 		$this->setUpXhprof();
 

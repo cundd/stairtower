@@ -24,13 +24,12 @@ class DatabaseTest extends AbstractCase {
 	protected $coordinator;
 
 	protected function setUp() {
-		$this->checkCongressMemberFile();
+		$this->checkPersonFile();
 
 		$this->setUpXhprof();
 
-		/** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
 		$this->coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-		$this->fixture = $this->coordinator->getDataByDatabase('congress_members');
+		$this->fixture = $this->coordinator->getDataByDatabase('people');
 	}
 
 	protected function tearDown() {
@@ -40,11 +39,24 @@ class DatabaseTest extends AbstractCase {
 	}
 
 	/**
+	 * @expectedException \Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException
+	 */
+	public function invalidDatabaseTest() {
+		$this->coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
+		$this->coordinator->getDataByDatabase('congress_members');
+	}
+
+	/**
 	 * @test
 	 */
 	public function findByIdentifierTest() {
-		$congressMember = $this->fixture->findByIdentifier(1);
-		$this->assertSame('Neil', $congressMember->valueForKeyPath('person.firstname'));
+		$person = $this->fixture->findByIdentifier('georgettebenjamin@andryx.com');
+		$this->assertNotNull($person);
+
+		$this->assertSame(31, $person->valueForKeyPath('age'));
+		$this->assertSame('green', $person->valueForKeyPath('eyeColor'));
+		$this->assertSame('Georgette Benjamin', $person->valueForKeyPath('name'));
+		$this->assertSame('female', $person->valueForKeyPath('gender'));
 	}
 
 	/**
@@ -53,25 +65,25 @@ class DatabaseTest extends AbstractCase {
 	 * @test
 	 */
 	public function objectLiveCycleTest() {
-		$database2 = $this->coordinator->getDataByDatabase('congress_members');
+		$database2 = $this->coordinator->getDataByDatabase('people');
 
-		/** @var DataInterface $memberFromDatabase2 */
-		$memberFromDatabase2 = $database2->current();
+		/** @var DataInterface $personFromDatabase2 */
+		$personFromDatabase2 = $database2->current();
 
-		/** @var DataInterface $memberFromFixture */
-		$memberFromFixture = $this->fixture->current();
+		/** @var DataInterface $personFromFixture */
+		$personFromFixture = $this->fixture->current();
 
-		$this->assertEquals($memberFromDatabase2, $memberFromFixture);
+		$this->assertEquals($personFromDatabase2, $personFromFixture);
 
 		$movie = 'Star Wars';
 		$key = 'favorite_movie';
 
-		$memberFromDatabase2->setValueForKey($movie, $key);
+		$personFromDatabase2->setValueForKey($movie, $key);
 
-		$this->assertEquals($memberFromDatabase2, $memberFromFixture);
-		$this->assertSame($memberFromDatabase2, $memberFromFixture);
-		$this->assertEquals($movie, $memberFromFixture->valueForKey($key));
-		$this->assertEquals($movie, $memberFromDatabase2->valueForKey($key));
+		$this->assertEquals($personFromDatabase2, $personFromFixture);
+		$this->assertSame($personFromDatabase2, $personFromFixture);
+		$this->assertEquals($movie, $personFromFixture->valueForKey($key));
+		$this->assertEquals($movie, $personFromDatabase2->valueForKey($key));
 	}
 
 
