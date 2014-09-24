@@ -7,13 +7,14 @@
  */
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
+use Cundd\PersistentObjectStore\KeyValueCodingInterface;
 
 /**
  * Abstract interface to describe the parameters of a persisted object
  *
  * @package Cundd\PersistentObjectStore
  */
-interface DataInterface {
+interface DataInterface extends KeyValueCodingInterface {
 	/**
 	 * Returns the timestamp of the creation
 	 *

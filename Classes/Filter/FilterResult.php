@@ -169,12 +169,24 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 		$collection = $this->collection;
 		$filter     = $this->filter;
 
+		$useRaw = method_exists($collection, 'currentRaw');
+		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
+
 		// Loop through the collection until one matching object was found
 		while ($collection->valid()) {
-			$item = $collection->current();
+			if ($useRaw) {
+				$item = $collection->currentRaw();
+			} else {
+				$item = $collection->current();
+			}
 //			echo 'check ' . spl_object_hash($item) . PHP_EOL;
 			if ($filter->checkItem($item)) {
-				$foundObject = $item;
+
+				if ($useRaw) {
+					$foundObject = $collection->current();
+				} else {
+					$foundObject = $item;
+				}
 				$collection->next();
 				break;
 			}
@@ -202,9 +214,21 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 
 		$collection = $this->collection;
 		$filter     = $this->filter;
+
+		$useRaw = method_exists($collection, 'currentRaw');
+		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
+
+
 		while ($collection->valid()) {
-			$item = $collection->current();
+			if ($useRaw) {
+				$item = $collection->currentRaw();
+			} else {
+				$item = $collection->current();
+			}
 			if ($filter->checkItem($item)) {
+				if ($useRaw) {
+					$item = $collection->current();
+				}
 				parent::push($item);
 			}
 			$collection->next();

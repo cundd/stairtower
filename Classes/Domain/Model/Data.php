@@ -159,7 +159,15 @@ class Data implements DataInterface {
 	 * @return mixed
 	 */
 	public function valueForKey($key) {
-		return ObjectUtility::valueForKeyPathOfObject($key, $this->getData());
+		if ($key === 'id') {
+			return $this->getId();
+		} else if ($key === 'guid') {
+			return $this->getGuid();
+		} else if (isset($this->data[$key])) {
+			return $this->data[$key];
+		}
+		return NULL;
+//		return ObjectUtility::valueForKeyPathOfObject($key, $this->getData());
 	}
 
 	/**
@@ -182,6 +190,9 @@ class Data implements DataInterface {
 	 * @return mixed
 	 */
 	public function valueForKeyPath($keyPath) {
+		if (!strpos($keyPath, '.')) {
+			return $this->valueForKey($keyPath);
+		}
 		return ObjectUtility::valueForKeyPathOfObject($keyPath, $this->getData());
 	}
 }

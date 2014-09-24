@@ -37,7 +37,8 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	public function getDiContainer() {
 		if (!$this->diContainer) {
 			$builder = new ContainerBuilder();
-			$builder->setDefinitionCache(new \Doctrine\Common\Cache\ArrayCache());
+//			$builder->setDefinitionCache(new \Doctrine\Common\Cache\ArrayCache());
+			$builder->setDefinitionCache(new \Doctrine\Common\Cache\FilesystemCache(__DIR__ . '/../../var/Cache/'));
 			$builder->addDefinitions(__DIR__ . '/../../Classes/Configuration/dependencyInjectionConfiguration.php');
 			$this->diContainer = $builder->build();
 //			$this->diContainer = ContainerBuilder::buildDevContainer();

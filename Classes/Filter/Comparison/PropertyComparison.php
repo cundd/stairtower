@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Filter\Comparison;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
+use Cundd\PersistentObjectStore\KeyValueCodingInterface;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
@@ -88,11 +89,12 @@ class PropertyComparison implements PropertyComparisonInterface {
 	 * @return bool
 	 */
 	public function perform($testValue) {
-		if ($testValue instanceof DataInterface) {
-			$testValue = $testValue->getData();
+		if ($testValue instanceof KeyValueCodingInterface) {
+//			$testValue = $testValue->getData();
+			$propertyValue = $testValue->valueForKeyPath($this->getProperty());
+		} else {
+			$propertyValue = ObjectUtility::valueForKeyPathOfObject($this->getProperty(), $testValue);
 		}
-
-		$propertyValue = ObjectUtility::valueForKeyPathOfObject($this->getProperty(), $testValue);
 		switch ($this->getOperator()) {
 			case PropertyComparisonInterface::TYPE_EQUAL_TO:
 				return $propertyValue === $this->getValue();
@@ -139,7 +141,7 @@ class PropertyComparison implements PropertyComparisonInterface {
 	 *
 	 * @param mixed  $testValue
 	 * @param string $operator
-	 * @throws Exception\InvalidComparisonException if the given operator is neither ComparisonInterface::TYPE_AND nor ComparisonInterface::TYPE_OR
+	 * @throws InvalidComparisonException if the given operator is neither ComparisonInterface::TYPE_AND nor ComparisonInterface::TYPE_OR
 	 * @return bool
 	 */
 	protected function performLogical($testValue, $operator) {

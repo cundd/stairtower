@@ -300,6 +300,78 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	}
 
 	/**
+	 * (PHP 5 &gt;= 5.0.0)<br/>
+	 * Return the current element
+	 *
+	 * @link http://php.net/manual/en/iterator.current.php
+	 * @return mixed Can return any type.
+	 */
+	public function currentRaw() {
+		$index = $this->index;
+
+
+
+
+		if (isset($this->rawData[$index]) && $this->rawData[$index]) {
+			return $this->rawData[$index];
+		}
+
+		/** @var DataInterface $currentObject */
+		$currentObject = $this->current();
+		if ($currentObject instanceof DataInterface) {
+			return $currentObject->getData();
+		}
+		throw new IndexOutOfRangeException('Invalid index ' . $index, 1411316363);
+
+		return $dataObject;
+
+
+
+
+
+		// Try to read the object from the object collection map
+		$this->_prepareObjectCollectionMap();
+		$currentObject = $this->_getObjectForIndex($index);
+		if ($currentObject) {
+//			DebugUtility::pl('found one');
+			return $currentObject;
+		}
+
+//		DebugUtility::pl('convert one');
+//		DebugUtility::pl('need to convert for index %s', $currentIndex);
+		$currentObject = $this->_convertDataAtIndexToObject($index);
+//		DebugUtility::pl('converted object with GUID %s', $currentObject->getGuid());
+
+		try {
+			$this->_addDataInstanceAtIndex($currentObject, $index);
+		} catch (\Exception $ex) {
+//
+//			DebugUtility::var_dump($currentIndex);
+//			DebugUtility::var_dump($this->rawData[$currentIndex], $this->rawData[2], $this->rawData[$currentIndex] == $this->rawData[2]);
+//			DebugUtility::var_dump($currentObject);
+//			throw new \Exception("Object with GUID {$currentObject->getGuid()} already exists in the database but does not match index {$currentIndex}");
+//
+//			DebugUtility::var_dump($currentIndex);
+//			DebugUtility::var_dump($this->valid());
+//			DebugUtility::var_dump(isset(static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_INDEX_TO_GUID][$currentIndex])
+//			? (static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_INDEX_TO_GUID][$currentIndex])
+//			: self::OBJ_COL_KEY_INDEX_TO_GUID
+//			);
+//			DebugUtility::var_dump(static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_INDEX_TO_GUID]);
+//			DebugUtility::var_dump(array_keys(static::$objectCollectionMap[$this->getIdentifier()][self::OBJ_COL_KEY_GUID_TO_OBJECT]));
+
+			throw $ex;
+		}
+		return $currentObject;
+
+
+//		if (!isset($this->objectCollection[$this->index])) {
+//			$this->objectCollection[$this->index] = $this->_convertDataAtIndexToObject($this->index);
+//		}
+//		return $this->objectCollection[$this->index];
+	}
+
+	/**
 	 * Converts the raw data at the given index to a Data instance
 	 *
 	 * @param integer $index
