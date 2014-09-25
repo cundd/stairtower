@@ -12,8 +12,12 @@ use Cundd\PersistentObjectStore\Core\IndexArray;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Exception\ImmutableException;
+use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
+use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparisonInterface;
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Iterator;
+use SplFixedArray;
 
 /**
  * Result of a filtered collection
@@ -24,7 +28,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 	/**
 	 * Collection to filter
 	 *
-	 * @var Database|\Iterator
+	 * @var Database|Iterator
 	 */
 	protected $collection;
 
@@ -44,7 +48,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 
 
 	/**
-	 * @param Database|\Iterator $originalCollection
+	 * @param Database|Iterator $originalCollection
 	 * @param FilterInterface    $filter
 	 */
 	function __construct($originalCollection, $filter) {
@@ -167,10 +171,24 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 		$foundObject = NULL;
 
 		$collection = $this->collection;
+//		$collection = $this->_preFilterCollection($this->collection);
 		$filter     = $this->filter;
 
 		$useRaw = method_exists($collection, 'currentRaw');
-		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
+//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
+
+
+//		$start = microtime(TRUE);
+//		while ($collection->valid()) {
+//			if ($useRaw) {
+//				$item = $collection->currentRaw();
+//			} else {
+//				$item = $collection->current();
+//			}
+//			$collection->next();
+//		}
+//		DebugUtility::pl('while %0.6f', microtime(TRUE) - $start);
+//		$collection->rewind();
 
 		// Loop through the collection until one matching object was found
 		while ($collection->valid()) {
@@ -181,7 +199,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 			}
 //			echo 'check ' . spl_object_hash($item) . PHP_EOL;
 			if ($filter->checkItem($item)) {
-
 				if ($useRaw) {
 					$foundObject = $collection->current();
 				} else {
@@ -212,11 +229,12 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 	protected function _findAll() {
 		$start = microtime(TRUE);
 
-		$collection = $this->collection;
+//		$collection = $this->collection;
+		$collection = $this->_preFilterCollection($this->collection);
 		$filter     = $this->filter;
 
 		$useRaw = method_exists($collection, 'currentRaw');
-		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
+//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
 
 
 		while ($collection->valid()) {
@@ -237,15 +255,69 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 
 		$end = microtime(TRUE);
 
-//		printf("Full filter: %0.6f\n", $end - $start);
+//		DebugUtility::pl("Full filter: %0.6f\n", $end - $start);
 
 		$this->fullyFiltered = TRUE;
 	}
 
 	/**
+	 * Apply the first comparison to the given collection
+	 *
+	 * @param Database|Iterator $collection
+	 * @return SplFixedArray|Iterator
+	 */
+	protected function _preFilterCollection($collection) {
+		$start = microtime(TRUE);
+
+		$comparisonCollection = $this->filter->getComparisons();
+		if (!$comparisonCollection || !$comparisonCollection->count()) {
+			return $collection;
+		}
+		/** @var ComparisonInterface $comparison */
+		$comparison = $comparisonCollection->current();
+		if (!$comparison) {
+			return $collection;
+		}
+		if ($comparison instanceof LogicalComparisonInterface && $comparison->getOperator() === ComparisonInterface::TYPE_AND) {
+			/** @var LogicalComparisonInterface $comparison */
+			$constraints = $comparison->getConstraints();
+			$firstLogicalComparison = reset($constraints);
+			if ($firstLogicalComparison) {
+				$comparison = $firstLogicalComparison;
+			}
+		}
+
+		$useRaw = method_exists($collection, 'currentRaw');
+//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
+
+		$matchingItems = array();
+
+		while ($collection->valid()) {
+			if ($useRaw) {
+				$item = $collection->currentRaw();
+			} else {
+				$item = $collection->current();
+			}
+			if ($comparison->perform($item)) {
+				if ($useRaw) {
+					$item = $collection->current();
+				}
+				$matchingItems[] = $item;
+			}
+			$collection->next();
+		}
+
+
+		$end = microtime(TRUE);
+
+//		DebugUtility::pl("Pre filter: %0.6f\n", $end - $start);
+		return SplFixedArray::fromArray($matchingItems);
+	}
+
+	/**
 	 * Creates a deep clone of the given collection
 	 *
-	 * @param Database|\Iterator $originalCollection
+	 * @param Database|Iterator $originalCollection
 	 * @return \SplObjectStorage
 	 */
 	protected function _cloneCollection($originalCollection) {
@@ -260,7 +332,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 		DebugUtility::printMemorySample();
 
 		$start = microtime(TRUE);
-		$collection = new \SplFixedArray($originalCollection->count());
+		$collection = new SplFixedArray($originalCollection->count());
 		$i = 0;
 		foreach ($originalCollection as $item) {
 			$collection[$i] = clone $item;

@@ -113,6 +113,8 @@ class Filter implements FilterInterface {
 	public function filterCollection($collection) {
 		if (!is_object($collection)) throw new InvalidCollectionException('No object given', 1410628879);
 		if (!($collection instanceof \Iterator)) throw new InvalidCollectionException('Can not iterate over the given object', 1409603143);
+
+//		return new FilterResult(new \IteratorIterator($collection), $this);
 		return new FilterResult($collection, $this);
 	}
 

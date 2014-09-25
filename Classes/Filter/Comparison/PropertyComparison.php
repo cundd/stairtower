@@ -95,7 +95,8 @@ class PropertyComparison implements PropertyComparisonInterface {
 		} else {
 			$propertyValue = ObjectUtility::valueForKeyPathOfObject($this->getProperty(), $testValue);
 		}
-		switch ($this->getOperator()) {
+		$operator = $this->getOperator();
+		switch ($operator) {
 			case PropertyComparisonInterface::TYPE_EQUAL_TO:
 				return $propertyValue === $this->getValue();
 

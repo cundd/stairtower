@@ -98,7 +98,7 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	/**
 	 * Write the Xhprof data
 	 */
-	static protected function tearDownXhprof() {
+	static public function tearDownXhprof() {
 		if (extension_loaded('xhprof')) {
 			$xhprofData = xhprof_disable();
 

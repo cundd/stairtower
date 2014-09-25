@@ -1,0 +1,141 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: daniel
+ * Date: 04.09.14
+ * Time: 21:01
+ */
+
+namespace Cundd\PersistentObjectStore\Filter;
+
+use ArrayIterator;
+use Cundd\PersistentObjectStore\Core\IndexArray;
+use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\PersistentObjectStore\Exception\ImmutableException;
+use Cundd\PersistentObjectStore\Immutable;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use DI\Debug;
+use FilterIterator;
+
+/**
+ * Result of a filtered collection
+ *
+ * @package Cundd\PersistentObjectStore\Filter
+ */
+class FilterResult extends FilterIterator implements FilterResultInterface, Immutable {
+	/**
+	 * Filter to apply to the collection
+	 *
+	 * @var FilterInterface
+	 */
+	protected $filter;
+
+	/**
+	 * Defines if the collection has been filtered once
+	 *
+	 * @var bool
+	 */
+	protected $fullyFiltered = FALSE;
+
+
+	/**
+	 * @param Database|\Iterator $originalCollection
+	 * @param FilterInterface    $filter
+	 */
+	function __construct($originalCollection, $filter) {
+//		if (!($originalCollection instanceof ArrayIterator)) {
+//			$originalCollection = new ArrayIterator(iterator_to_array($originalCollection));
+//		}
+		parent::__construct($originalCollection);
+//		$this->collection = $this->_cloneCollection($originalCollection);
+		$this->filter     = $filter;
+	}
+
+	public function next() {
+		DebugUtility::pl('next');
+		parent::next();
+	}
+
+	public function key() {
+		DebugUtility::pl(parent::key());
+		return parent::key();
+	}
+
+
+	public function valid() {
+		$res = parent::valid();
+		DebugUtility::pl('valid ' . ($res ? 'yes' : 'no'));
+		return $res;
+	}
+
+	public function current() {
+//		DebugUtility::var_dump($this->getInnerIterator());
+		DebugUtility::var_dump($this->getInnerIterator()->current());
+		$currentItem = parent::current();
+		DebugUtility::var_dump($currentItem, $this->getInnerIterator()->current());
+		return $currentItem;
+	}
+
+
+	/**
+	 * (PHP 5 &gt;= 5.1.0)<br/>
+	 * Check whether the current element of the iterator is acceptable
+	 *
+	 * @link http://php.net/manual/en/filteriterator.accept.php
+	 * @return bool true if the current element is acceptable, otherwise false.
+	 */
+	public function accept() {
+//		$useRaw = method_exists($collection, 'currentRaw');
+//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
+//
+//
+//		while ($collection->valid()) {
+//			if ($useRaw) {
+//				$item = $collection->currentRaw();
+//			} else {
+//				$item = $collection->current();
+//			}
+
+		DebugUtility::pl('accept');
+		$innerIterator = $this->getInnerIterator();
+//		$useRaw = method_exists($innerIterator, 'currentRaw');
+
+		$currentItem = $innerIterator->current();
+		DebugUtility::var_dump(parent::current());
+		return $this->filter->checkItem($currentItem);
+	}
+
+
+	/**
+	 * (PHP 5 &gt;= 5.1.0)<br/>
+	 * Count elements of an object
+	 *
+	 * @link http://php.net/manual/en/countable.count.php
+	 * @return int The custom count as an integer.
+	 *       </p>
+	 *       <p>
+	 *       The return value is cast to an integer.
+	 */
+	public function count() {
+		return 0;
+//		if (!$this->fullyFiltered) {
+//			$this->_findAll();
+//		}
+//		return parent::count();
+	}
+
+	/**
+	 * Returns the filtered items as array
+	 *
+	 * @return array
+	 */
+	public function toArray() {
+//		if (!$this->fullyFiltered) {
+//			$this->_findAll();
+//		}
+//		return $this->elements;
+	}
+
+
+} 

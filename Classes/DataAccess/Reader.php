@@ -95,10 +95,10 @@ class Reader {
 		}
 
 		$fileData = file_get_contents($path);
-		DebugUtility::printMemorySample();
+//		DebugUtility::printMemorySample();
 		$serializer = new JsonSerializer();
 		$dataCollection = $serializer->unserialize($fileData);
-		DebugUtility::printMemorySample();
+//		DebugUtility::printMemorySample();
 
 		return $dataCollection;
 	}
@@ -116,10 +116,10 @@ class Reader {
 		}
 
 		$fileData = file_get_contents($path);
-		DebugUtility::printMemorySample();
+//		DebugUtility::printMemorySample();
 		$serializer = new JsonSerializer();
 		$dataCollection = $serializer->unserialize($fileData);
-		DebugUtility::printMemorySample();
+//		DebugUtility::printMemorySample();
 
 		return $dataCollection;
 	}

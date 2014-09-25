@@ -28,9 +28,11 @@ class ObjectUtility {
 	static public function valueForKeyPathOfObject($keyPath, $object, $default = NULL) {
 		if (!is_string($keyPath)) throw new LogicException('Given key path is not of type string (maybe arguments are ordered incorrect)', 1395484136);
 
-		$keyPathParts = explode('.', $keyPath);
 		$currentValue = $object;
-		$key          = current($keyPathParts);
+//		$keyPathParts = explode('.', $keyPath);
+//		$key          = current($keyPathParts);
+
+		$key = strtok($keyPath, '.');
 		do {
 			// Current value is an array
 			if (is_array($currentValue) && isset($currentValue[$key])) {
@@ -56,15 +58,53 @@ class ObjectUtility {
 
 			if ($currentValue === NULL) break;
 
-		} while ($key = next($keyPathParts));
+		} while ($key = strtok('.'));
 
-		if (next($keyPathParts) && func_num_args() > 2) {
+		if (strtok('.') && func_num_args() > 2) {
 			if (is_object($default) && ($default instanceof \Closure)) {
 				$currentValue = $default();
 			} else {
 				$currentValue = $default;
 			}
 		}
+
+
+//		$keyPathParts = explode('.', $keyPath);
+//		$key          = current($keyPathParts);
+//		do {
+//			// Current value is an array
+//			if (is_array($currentValue) && isset($currentValue[$key])) {
+//				$currentValue = $currentValue[$key];
+//			} else
+//
+//			// Current value is an object
+//			if (is_object($currentValue)) {
+//				$accessorMethod = 'get' . ucfirst($key);
+//
+//				if (method_exists($currentValue, $accessorMethod)) { // Getter method
+//					$currentValue = $currentValue->$accessorMethod();
+//				} else if (method_exists($currentValue, 'get')) { // General "get" method
+//					$currentValue = $currentValue->get($key);
+//				} else if (array_key_exists($key, get_object_vars($currentValue))) { // Direct access
+//					$currentValue = $currentValue->$key;
+//				} else {
+//					$currentValue = NULL;
+//				}
+//			} else {
+//				$currentValue = NULL;
+//			}
+//
+//			if ($currentValue === NULL) break;
+//
+//		} while ($key = next($keyPathParts));
+//
+//		if (next($keyPathParts) && func_num_args() > 2) {
+//			if (is_object($default) && ($default instanceof \Closure)) {
+//				$currentValue = $default();
+//			} else {
+//				$currentValue = $default;
+//			}
+//		}
 		return $currentValue;
 	}
 
