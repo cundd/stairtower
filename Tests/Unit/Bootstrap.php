@@ -6,6 +6,12 @@
  * Time: 16:25
  */
 
+$XHPROF_ROOT = __DIR__ . '/../../xhprof-0.9.4/';
+if (file_exists($XHPROF_ROOT)) {
+	require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_lib.php';
+	require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_runs.php';
+}
+
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ .'/AbstractCase.php';
 require_once __DIR__ .'/AbstractDataBasedCase.php';

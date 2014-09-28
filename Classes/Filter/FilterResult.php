@@ -170,8 +170,8 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 		}
 		$foundObject = NULL;
 
-		$collection = $this->collection;
-//		$collection = $this->_preFilterCollection($this->collection);
+//		$collection = $this->collection;
+		$collection = $this->_preFilterCollection($this->collection);
 		$filter     = $this->filter;
 
 		$useRaw = method_exists($collection, 'currentRaw');
@@ -224,40 +224,103 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 	}
 
 	/**
-	 * Find all matching objects
+	 * Finds all matching object by choosing the right implementation for Databases or regular collections
 	 */
 	protected function _findAll() {
-		$start = microtime(TRUE);
+		if ($this->collection instanceof Database) {
+			$this->_findAllFromDatabase();
+		} else {
+			$this->_findAllFromCollection();
+		}
+	}
 
-//		$collection = $this->collection;
-		$collection = $this->_preFilterCollection($this->collection);
+	/**
+	 * Loops through each of the items in the given collection and tests if it matches the Filter conditions
+	 */
+	protected function _findAllFromCollection() {
+		$dataCollection = $this->collection;
 		$filter     = $this->filter;
 
-		$useRaw = method_exists($collection, 'currentRaw');
-//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
-
-
-		while ($collection->valid()) {
-			if ($useRaw) {
-				$item = $collection->currentRaw();
-			} else {
-				$item = $collection->current();
-			}
+		while ($dataCollection->valid()) {
+			$item = $dataCollection->current();
 			if ($filter->checkItem($item)) {
-				if ($useRaw) {
-					$item = $collection->current();
-				}
 				parent::push($item);
 			}
-			$collection->next();
+			$dataCollection->next();
 		}
+		$this->fullyFiltered = TRUE;
+	}
 
+	/**
+	 * Loops through each of the items in the given Database and tests if it matches the Filter conditions
+	 */
+	protected function _findAllFromDatabase() {
+//		$start = microtime(TRUE);
+		$this->_filterCollectionWithComparisons($this->collection, $this->filter->getComparisons(), TRUE);
 
-		$end = microtime(TRUE);
-
+//		$end = microtime(TRUE);
 //		DebugUtility::pl("Full filter: %0.6f\n", $end - $start);
 
 		$this->fullyFiltered = TRUE;
+	}
+
+	/**
+	 * Filter the given Database by the given comparisons
+	 *
+	 * @param Database            $dataCollection Database instance to filter
+	 * @param array|SplFixedArray $comparisonCollection Filter conditions
+	 * @param bool                $pushMatchesToResult If set to TRUE the matching objects will be added to the result through calling parent::push()
+	 * @return SplFixedArray
+	 */
+	protected function _filterCollectionWithComparisons($dataCollection, $comparisonCollection, $pushMatchesToResult = FALSE) {
+		$start = microtime(TRUE);
+
+		if (is_array($comparisonCollection)) {
+			$comparisonCollection = SplFixedArray::fromArray($comparisonCollection);
+		} else {
+			$comparisonCollection->rewind();
+			$comparisonCollection = SplFixedArray::fromArray(iterator_to_array($comparisonCollection));
+		}
+		$comparisonCollectionCount = $comparisonCollection->getSize();
+		if ($comparisonCollectionCount == 0) {
+			return $dataCollection;
+		}
+
+		$dataCollectionRaw = SplFixedArray::fromArray($dataCollection->getRawData());
+		$dataCollectionCount = $dataCollectionRaw->getSize();
+
+		$resultArray = new SplFixedArray($dataCollectionCount);
+
+
+//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
+		$i = 0;
+		$matchesIndex = 0;
+		while ($i < $dataCollectionCount) {
+			$j = 0;
+			$item = $dataCollectionRaw[$i];
+
+			$comparisonResult = TRUE;
+			while ($j < $comparisonCollectionCount) {
+				$comparison = $comparisonCollection[$j];
+				if (!$comparison->perform($item)) {
+					$comparisonResult = FALSE;
+				}
+				$j++;
+			}
+
+			if ($comparisonResult) {
+				$matchingItem = $dataCollection->getObjectForIndex($i);
+				$resultArray[$matchesIndex] = $matchingItem;
+				$matchesIndex++;
+
+				if ($pushMatchesToResult) {
+					parent::push($matchingItem);
+				}
+			}
+			$i++;
+		}
+		$resultArray->setSize($matchesIndex + 1);
+		return SplFixedArray::fromArray($resultArray->toArray());
 	}
 
 	/**
@@ -267,51 +330,42 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 	 * @return SplFixedArray|Iterator
 	 */
 	protected function _preFilterCollection($collection) {
-		$start = microtime(TRUE);
+		return $collection;
 
-		$comparisonCollection = $this->filter->getComparisons();
-		if (!$comparisonCollection || !$comparisonCollection->count()) {
-			return $collection;
-		}
-		/** @var ComparisonInterface $comparison */
-		$comparison = $comparisonCollection->current();
-		if (!$comparison) {
-			return $collection;
-		}
-		if ($comparison instanceof LogicalComparisonInterface && $comparison->getOperator() === ComparisonInterface::TYPE_AND) {
-			/** @var LogicalComparisonInterface $comparison */
-			$constraints = $comparison->getConstraints();
-			$firstLogicalComparison = reset($constraints);
-			if ($firstLogicalComparison) {
-				$comparison = $firstLogicalComparison;
+		if ($collection instanceof Database) {
+			$start = microtime(TRUE);
+
+
+			$comparisonCollection = $this->filter->getComparisons();
+			if (!$comparisonCollection || !$comparisonCollection->count()) {
+				return $collection;
 			}
-		}
-
-		$useRaw = method_exists($collection, 'currentRaw');
-//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
-
-		$matchingItems = array();
-
-		while ($collection->valid()) {
-			if ($useRaw) {
-				$item = $collection->currentRaw();
-			} else {
-				$item = $collection->current();
+			/** @var ComparisonInterface $comparison */
+			$comparison = $comparisonCollection->current();
+			if (!$comparison) {
+				return $collection;
 			}
-			if ($comparison->perform($item)) {
-				if ($useRaw) {
-					$item = $collection->current();
+			if ($comparison instanceof LogicalComparisonInterface && $comparison->getOperator() === ComparisonInterface::TYPE_AND) {
+				/** @var LogicalComparisonInterface $comparison */
+				$constraints = $comparison->getConstraints();
+				$firstLogicalComparison = reset($constraints);
+				if ($firstLogicalComparison) {
+					$comparison = $firstLogicalComparison;
 				}
-				$matchingItems[] = $item;
 			}
-			$collection->next();
+
+			$lastIndex = $collection->key();
+			$matchingObjects = $this->_filterCollectionWithComparisons($collection, array($comparison));
+			$collection->seek($lastIndex);
+
+
+			$end = microtime(TRUE);
+			DebugUtility::pl("Pre filter: %0.6f\n", $end - $start);
+
+			DebugUtility::var_dump($matchingObjects);
+			return $matchingObjects;
 		}
-
-
-		$end = microtime(TRUE);
-
-//		DebugUtility::pl("Pre filter: %0.6f\n", $end - $start);
-		return SplFixedArray::fromArray($matchingItems);
+		return $collection;
 	}
 
 	/**

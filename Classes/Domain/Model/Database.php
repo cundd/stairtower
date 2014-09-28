@@ -26,7 +26,7 @@ use Doctrine\Common\Util\Debug;
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-class Database implements DatabaseInterface, \Iterator, \Countable {
+class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIterator {
 	/**
 	 * Object collection key for the mapping of the GUID to the object
 	 */
@@ -240,7 +240,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 
 
 	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
-	// ITERATOR AND COUNTABLE
+	// ITERATOR, COUNTABLE AND SEEKABLE
 	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 	/**
 	 * (PHP 5 &gt;= 5.1.0)<br/>
@@ -302,10 +302,6 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 	 */
 	public function currentRaw() {
 		$index = $this->index;
-
-
-
-
 		if (isset($this->rawData[$index]) && $this->rawData[$index]) {
 			return $this->rawData[$index];
 		}
@@ -316,8 +312,6 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 			return $currentObject->getData();
 		}
 		throw new IndexOutOfRangeException('Invalid index ' . $index, 1411316363);
-
-		return $dataObject;
 	}
 
 	/**
@@ -418,6 +412,22 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 //		}
 //	}
 
+	/**
+	 * (PHP 5 &gt;= 5.1.0)<br/>
+	 * Seeks to a position
+	 *
+	 * @link http://php.net/manual/en/seekableiterator.seek.php
+	 * @param int $position <p>
+	 *                      The position to seek to.
+	 *                      </p>
+	 * @return void
+	 */
+	public function seek($position) {
+		return $this->index = $position;
+	}
+
+
+
 
 	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 	// HELPER METHODS
@@ -439,6 +449,14 @@ class Database implements DatabaseInterface, \Iterator, \Countable {
 			return static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectHash];
 		}
 		return NULL;
+	}
+
+	/**
+	 * @see _getObjectForIndex()
+	 * @internal
+	 */
+	public function getObjectForIndex($index) {
+		return $this->_getObjectForIndex($index);
 	}
 
 	/**

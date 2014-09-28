@@ -61,8 +61,6 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	protected function tearDown() {
 //		unset($this->fixture);
 //		unset($this->diContainer);
-
-		$this->tearDownXhprof();
 		gc_collect_cycles();
 	}
 
@@ -84,9 +82,6 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 		if (!self::$didSetupXhprof && extension_loaded('xhprof')) {
 			ini_set('xhprof.output_dir', '/Users/daniel/Sites/xhprof/runs');
 
-			$XHPROF_ROOT = __DIR__ . '/../../xhprof-0.9.4/';
-			include_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_lib.php';
-			include_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_runs.php';
 
 			xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 
@@ -101,6 +96,10 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	static public function tearDownXhprof() {
 		if (extension_loaded('xhprof')) {
 			$xhprofData = xhprof_disable();
+
+//			$XHPROF_ROOT = __DIR__ . '/../../xhprof-0.9.4/';
+//			require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_lib.php';
+//			require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_runs.php';
 
 			$xhprofRuns = new \XHProfRuns_Default();
 			$runId      = $xhprofRuns->save_run($xhprofData, 'cundd_pos');

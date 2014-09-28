@@ -27,7 +27,7 @@ class ExampleTest extends AbstractDataBasedCase {
 
 
 	protected function setUp() {
-		parent::setUp();
+//		$this->setUpXhprof();
 
 		$this->checkPersonFile();
 		$this->fixture = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
@@ -101,8 +101,8 @@ class ExampleTest extends AbstractDataBasedCase {
 
 		// Let's see how many people in the database have blue eyes
 		$filterResult = $database->filter(new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'));
-//		$blueEyes     = $filterResult->count();
-//		$this->assertSame(1684, $blueEyes);
+		$blueEyes     = $filterResult->count();
+		$this->assertSame(1684, $blueEyes);
 
 		$endTime = microtime(TRUE);
 		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
@@ -110,8 +110,8 @@ class ExampleTest extends AbstractDataBasedCase {
 
 		// Let's see how many people in the database have brown eyes
 		$filterResult = $database->filter(new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'brown'));
-//		$brownEyes    = $filterResult->count();
-//		$this->assertSame(1601, $brownEyes);
+		$brownEyes    = $filterResult->count();
+		$this->assertSame(1601, $brownEyes);
 
 		$endTime = microtime(TRUE);
 		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
@@ -119,8 +119,8 @@ class ExampleTest extends AbstractDataBasedCase {
 
 		// Let's see how many people in the database have brown or blue eyes
 		$filterResult  = $database->filter(new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_IN, array('blue', 'brown')));
-//		$blueBrownEyes = $filterResult->count();
-//		$this->assertSame($blueEyes + $brownEyes, $blueBrownEyes);
+		$blueBrownEyes = $filterResult->count();
+		$this->assertSame($blueEyes + $brownEyes, $blueBrownEyes);
 
 		$endTime = microtime(TRUE);
 		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);

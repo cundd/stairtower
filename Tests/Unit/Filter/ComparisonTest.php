@@ -7,9 +7,12 @@
  */
 
 namespace Cundd\PersistentObjectStore\Filter;
+use Cundd\PersistentObjectStore\AbstractCase;
+use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
+use Cundd\PersistentObjectStore\KeyValueCodingInterface;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 use stdClass;
@@ -20,11 +23,20 @@ use stdClass;
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-class ComparisonTest extends \PHPUnit_Framework_TestCase {
+class ComparisonTest extends AbstractCase {
 	/**
 	 * @var PropertyComparisonInterface
 	 */
 	protected $fixture;
+
+	protected function setUp() {
+		$this->setUpXhprof();
+	}
+
+	protected function tearDown() {
+		unset($this->fixture);
+		$this->tearDownXhprof();
+	}
 
 	/**
 	 * @test
@@ -185,11 +197,30 @@ class ComparisonTest extends \PHPUnit_Framework_TestCase {
 		$this->fixture = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_IS_EMPTY, $testValue);
 		$this->assertTrue($this->fixture->perform($testObject));
 
+		$i = 0;
+		while ($i++ < 10000) {
+			$this->assertTrue($this->fixture->perform($testObject));
+		}
+
 		$testObject->name = array();
 		$this->assertTrue($this->fixture->perform($testObject));
 
 		$testObject->name = NULL;
 		$this->assertTrue($this->fixture->perform($testObject));
+	}
+
+	/**
+	 * @test
+	 */
+	public function bbTest(){
+		$testValue = new Data();
+
+		$i = 0;
+		while ($i++ < 1000000) {
+			if ($testValue instanceof KeyValueCodingInterface) {
+
+			}
+		}
 	}
 
 	/**
@@ -205,8 +236,11 @@ class ComparisonTest extends \PHPUnit_Framework_TestCase {
 			new PropertyComparison('name', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Yvonne'),
 			new PropertyComparison('status', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Girlfriend')
 		);
+		$i = 0;
+		while ($i++ < 10000) {
+			$this->assertTrue($this->fixture->perform($testObject));
+		}
 
-		$this->assertTrue($this->fixture->perform($testObject));
 
 		$testObject->status = 'Ex';
 		$this->assertFalse($this->fixture->perform($testObject));
@@ -225,6 +259,11 @@ class ComparisonTest extends \PHPUnit_Framework_TestCase {
 			new PropertyComparison('name', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Yvonne'),
 			new PropertyComparison('status', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Girlfriend')
 		);
+
+		$i = 0;
+		while ($i++ < 100000) {
+			$this->assertTrue($this->fixture->perform($testObject));
+		}
 
 		$this->assertTrue($this->fixture->perform($testObject));
 
