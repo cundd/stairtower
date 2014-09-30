@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
+
 use Cundd\PersistentObjectStore\LogicException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
@@ -25,6 +26,18 @@ class Data implements DataInterface {
 	protected $data;
 	protected $identifierKey;
 
+	function __construct($data = array(), $databaseIdentifier = '', $identifierKey = '') {
+		if ($data) {
+			$this->data = $data;
+		}
+		if ($databaseIdentifier) {
+			GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
+			$this->databaseIdentifier = $databaseIdentifier;
+		}
+		if ($identifierKey) {
+			$this->identifierKey = $identifierKey;
+		}
+	}
 
 
 	/**
@@ -114,6 +127,7 @@ class Data implements DataInterface {
 
 	/**
 	 * Sets the key for the identifier of the Data object
+	 *
 	 * @param string $identifierKey
 	 * @return $this
 	 */
@@ -129,7 +143,7 @@ class Data implements DataInterface {
 	 */
 	public function getId() {
 		if (!$this->id) {
-			$this->id = $this->valueForKeyPath($this->getIdentifierKey());
+			$this->id = $this->_valueForKey($this->getIdentifierKey());
 		}
 		return $this->id;
 	}
@@ -163,11 +177,21 @@ class Data implements DataInterface {
 			return $this->getId();
 		} else if ($key === 'guid') {
 			return $this->getGuid();
-		} else if (isset($this->data[$key])) {
+		}
+		return $this->_valueForKey($key);
+	}
+
+	/**
+	 * Returns the value for the given key from the data
+	 *
+	 * @param string $key
+	 * @return mixed
+	 */
+	protected function _valueForKey($key) {
+		if (isset($this->data[$key])) {
 			return $this->data[$key];
 		}
 		return NULL;
-//		return ObjectUtility::valueForKeyPathOfObject($key, $this->getData());
 	}
 
 	/**

@@ -286,7 +286,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 			return $dataCollection;
 		}
 
-		$dataCollectionRaw = SplFixedArray::fromArray($dataCollection->getRawData());
+		$dataCollectionRaw = $dataCollection->getRawData();
 		$dataCollectionCount = $dataCollectionRaw->getSize();
 
 		$resultArray = new SplFixedArray($dataCollectionCount);

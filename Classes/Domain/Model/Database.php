@@ -12,12 +12,11 @@ use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\DatabaseMismatchException;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
+use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Filter;
-use Cundd\PersistentObjectStore\LogicException;
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use Doctrine\Common\Util\Debug;
 
 /**
  * Database class which holds the Data instances
@@ -66,9 +65,9 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 	/**
 	 * Raw data array
 	 *
-	 * @var array
+	 * @var \SplFixedArray
 	 */
-	protected $rawData = array();
+	protected $rawData;
 
 	/**
 	 * Collection of converted objects mapped to their database identifier
@@ -127,17 +126,25 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 	/**
 	 * Sets the raw data
 	 *
-	 * @param $rawData
+	 * @param \SplFixedArray|array|\Iterator $rawData
 	 */
 	public function setRawData($rawData) {
-		$this->rawData    = $rawData;
-		$this->totalCount = count($rawData);
+		if ($rawData instanceof \SplFixedArray) {
+			$this->rawData = $rawData;
+		} else if (is_array($rawData)) {
+			$this->rawData = \SplFixedArray::fromArray($rawData);
+		} else if ($rawData instanceof \Iterator) {
+			$this->rawData = \SplFixedArray::fromArray(iterator_to_array($rawData));
+		} else {
+			throw new InvalidCollectionException('Could not set raw data', 1412017652);
+		}
+		$this->totalCount = $this->rawData->getSize();
 	}
 
 	/**
 	 * Returns the raw data
 	 *
-	 * @return array
+	 * @return \SplFixedArray
 	 * @internal
 	 */
 	public function getRawData() {
@@ -180,9 +187,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 	public function add($dataInstance) {
 		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
 		$newIndex = $this->count();
-		DebugUtility::var_dump('Add data instance at', $newIndex);
 		$this->_addDataInstanceAtIndex($dataInstance, $newIndex);
-//		$this->objectCollection[$this->totalCount] = $dataInstance;
 		$this->totalCount++;
 	}
 
@@ -254,7 +259,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 	 */
 	public function count() {
 		if ($this->totalCount === -1) {
-			$this->totalCount = count($this->rawData);
+			$this->totalCount = $this->rawData->count();
 		}
 		return $this->totalCount;
 	}
@@ -341,14 +346,49 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 		}
 //		if (!isset($this->rawData[$index])) throw new IndexOutOfRangeException('Invalid index ' . $index);
 		$rawData    = $this->rawData[$index];
-		$dataObject = new Data();
-		$dataObject->setData($rawData);
+		$dataObject = new Data($rawData, $this->identifier);
 
-		$dataObject->setDatabaseIdentifier($this->identifier);
-		$dataObject->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : NULL);
-		$dataObject->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
+//		if (isset($rawMetaData['creation_time'])) {
+//			$dataObject->setCreationTime($rawMetaData['creation_time']);
+//		}
+//		if (isset($rawMetaData['modification_time'])) {
+//			$dataObject->setModificationTime($rawMetaData['modification_time']);
+//		}
 
 		return $dataObject;
+	}
+
+	/**
+	 *
+	 */
+	public function prepareAll() {
+		$start = microtime(TRUE);
+		$identifier = $this->identifier;
+
+		$rawDataCollection = $this->rawData;
+		$rawDataCount = $rawDataCollection->getSize();
+
+//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
+		$i = 0;
+		while ($i < $rawDataCount) {
+			$rawData = $rawDataCollection[$i];
+
+			if ($this->_getObjectForIndex($i)) {
+				$i++;
+				continue;
+			}
+
+//			$currentObject = $this->_convertDataAtIndexToObject($currentIndex);
+			$currentObject = new Data($rawData, $identifier);
+			$this->_addDataInstanceAtIndex($currentObject, $i);
+			$i++;
+		}
+
+		$allObjects = static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT];
+
+		$end = microtime(True);
+		DebugUtility::pl('Prepare all %0.6f', $end - $start);
+		return \SplFixedArray::fromArray(array_values($allObjects));
 	}
 
 	/**
@@ -423,7 +463,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 	 * @return void
 	 */
 	public function seek($position) {
-		return $this->index = $position;
+		$this->index = $position;
 	}
 
 

@@ -7,12 +7,13 @@
  */
 
 namespace Cundd\PersistentObjectStore\Filter;
+use Cundd\PersistentObjectStore\Result\ResultInterface;
 
 /**
  * Interface for filter results
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-interface FilterResultInterface extends \Iterator, \Countable {
+interface FilterResultInterface extends ResultInterface {
 
-} 
+}

@@ -197,30 +197,11 @@ class ComparisonTest extends AbstractCase {
 		$this->fixture = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_IS_EMPTY, $testValue);
 		$this->assertTrue($this->fixture->perform($testObject));
 
-		$i = 0;
-		while ($i++ < 10000) {
-			$this->assertTrue($this->fixture->perform($testObject));
-		}
-
 		$testObject->name = array();
 		$this->assertTrue($this->fixture->perform($testObject));
 
 		$testObject->name = NULL;
 		$this->assertTrue($this->fixture->perform($testObject));
-	}
-
-	/**
-	 * @test
-	 */
-	public function bbTest(){
-		$testValue = new Data();
-
-		$i = 0;
-		while ($i++ < 1000000) {
-			if ($testValue instanceof KeyValueCodingInterface) {
-
-			}
-		}
 	}
 
 	/**
@@ -236,11 +217,6 @@ class ComparisonTest extends AbstractCase {
 			new PropertyComparison('name', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Yvonne'),
 			new PropertyComparison('status', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Girlfriend')
 		);
-		$i = 0;
-		while ($i++ < 10000) {
-			$this->assertTrue($this->fixture->perform($testObject));
-		}
-
 
 		$testObject->status = 'Ex';
 		$this->assertFalse($this->fixture->perform($testObject));
@@ -259,11 +235,6 @@ class ComparisonTest extends AbstractCase {
 			new PropertyComparison('name', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Yvonne'),
 			new PropertyComparison('status', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Girlfriend')
 		);
-
-		$i = 0;
-		while ($i++ < 100000) {
-			$this->assertTrue($this->fixture->perform($testObject));
-		}
 
 		$this->assertTrue($this->fixture->perform($testObject));
 
