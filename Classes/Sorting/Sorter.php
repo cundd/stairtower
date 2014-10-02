@@ -12,6 +12,7 @@ namespace Cundd\PersistentObjectStore\Sorting;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\KeyValueCodingInterface;
+use Cundd\PersistentObjectStore\Sorting\Exception\SortingException;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 use Doctrine\DBAL\Driver;
@@ -54,20 +55,83 @@ class Sorter {
 	}
 
 
+//	/**
+//	 * Sort the collection of objects by the given key
+//	 *
+//	 * @param Database|\Iterator|array $collection
+//	 * @param string                   $keyPath
+//	 * @param bool                     $descending
+//	 * @return SortResult
+//	 */
+//	public function sortCollectionByPropertyKeyPath($collection, $keyPath, $descending = FALSE) {
+//		$start = microtime(TRUE);
+//
+//
+//		if (is_array($collection)) {
+//			$dataCollectionRaw = SplFixedArray::fromArray($collection);
+//		} else if ($collection instanceof Database) {
+////			$dataCollectionRaw = $collection->getRawData();
+//			$dataCollectionRaw = $collection->prepareAll();
+//		} else {
+//			$dataCollectionRaw = SplFixedArray::fromArray(iterator_to_array($collection));
+//		}
+//		$dataCollectionCount = $dataCollectionRaw->getSize();
+//
+//		$end = microtime(TRUE);
+//		DebugUtility::pl("Get: %0.6f\n", $end - $start);
+//
+//		$resultArray = array();
+//
+//
+//		$start = microtime(TRUE);
+//
+//		$i = 0;
+//		while ($i < $dataCollectionCount) {
+//			$item = $dataCollectionRaw[$i];
+//
+//			if ($item instanceof KeyValueCodingInterface) {
+//				$propertyValue = $item->valueForKeyPath($keyPath);
+//			} else {
+//				$propertyValue = ObjectUtility::valueForKeyPathOfObject($keyPath, $item);
+//			}
+//			$resultArray[$propertyValue] = $item;
+//			$i++;
+//		}
+//		$end = microtime(TRUE);
+//		DebugUtility::pl("Prepare: %0.6f\n", $end - $start);
+//
+//
+//		if (!$descending) {
+//			$result = ksort($resultArray, $this->sortFlags);
+//		} else {
+//			$result = krsort($resultArray, $this->sortFlags);
+//		}
+//		if (!$result) {
+//			throw new SortingException('Could not sort the database', 1412021636);
+//		}
+//
+////		if ($collection instanceof Database) {
+////			Dynamic
+////		}
+//		return SortResult::fromArray(array_values($resultArray));
+//	}
+
 	/**
 	 * Sort the collection of objects by the given key
 	 *
 	 * @param Database|\Iterator|array $collection
 	 * @param string                   $keyPath
 	 * @param bool                     $descending
-	 * @return \SplFixedArray
+	 * @return SortResult
 	 */
 	public function sortCollectionByPropertyKeyPath($collection, $keyPath, $descending = FALSE) {
-		$start = microtime(TRUE);
-
+		$packedObjectsKey = 'objects';
+		$resultArray = array();
 
 		if (is_array($collection)) {
 			$dataCollectionRaw = SplFixedArray::fromArray($collection);
+		} else if ($collection instanceof SplFixedArray) {
+			$dataCollectionRaw = $collection;
 		} else if ($collection instanceof Database) {
 //			$dataCollectionRaw = $collection->getRawData();
 			$dataCollectionRaw = $collection->prepareAll();
@@ -76,42 +140,103 @@ class Sorter {
 		}
 		$dataCollectionCount = $dataCollectionRaw->getSize();
 
-		$end = microtime(TRUE);
-		DebugUtility::pl("Get: %0.6f\n", $end - $start);
 
-		$resultArray = array();
-
-
-		$start = microtime(TRUE);
-
+		// Pack the objects grouped by the property value
 		$i = 0;
 		while ($i < $dataCollectionCount) {
 			$item = $dataCollectionRaw[$i];
 
+			// Fetch to property value
 			if ($item instanceof KeyValueCodingInterface) {
 				$propertyValue = $item->valueForKeyPath($keyPath);
 			} else {
 				$propertyValue = ObjectUtility::valueForKeyPathOfObject($keyPath, $item);
 			}
-			$resultArray[$propertyValue] = $item;
+
+			// Prepare the packed result array
+			if (is_float($propertyValue)) {
+				$propertyValue .= '';
+			} else if ($propertyValue !== NULL && !is_scalar($propertyValue)) throw new SortingException(
+				sprintf(
+					'Could not sort by property key path %s, because one value is of type %s',
+					$keyPath,
+					gettype($propertyValue)
+				),
+				1412021636
+			);
+			if (!isset($resultArray[$propertyValue])) {
+				$resultArray[$propertyValue] = array(
+					$packedObjectsKey => array()
+				);
+			}
+			$resultArray[$propertyValue][$packedObjectsKey][] = $item;
+
 			$i++;
 		}
-		$end = microtime(TRUE);
-		DebugUtility::pl("Prepare: %0.6f\n", $end - $start);
 
-
+		// Sort the objects
 		if (!$descending) {
 			$result = ksort($resultArray, $this->sortFlags);
 		} else {
 			$result = krsort($resultArray, $this->sortFlags);
 		}
 		if (!$result) {
-			throw new \UnexpectedValueException('Could not sort the database', 1412021636);
+			throw new SortingException('Could not sort the database', 1412021636);
 		}
 
-//		if ($collection instanceof Database) {
-//			Dynamic
-//		}
-		return SortResult::fromArray(array_values($resultArray));
+		// Unpack the objects
+		$i = 0;
+		$j = 0;
+		$resultFixedArray = new SortResult($dataCollectionCount);
+		$resultArray = SplFixedArray::fromArray(array_values($resultArray));
+		$resultArrayCount = $resultArray->count();
+		while ($i < $resultArrayCount) {
+			$packedObjects = $resultArray[$i][$packedObjectsKey];
+			$item = current($packedObjects);
+			do {
+				$resultFixedArray[$j] = $item;
+				$j++;
+			} while ($item = next($packedObjects));
+			$i++;
+		}
+
+		if ($j != $dataCollectionCount) {
+			throw new SortingException(sprintf('Number of result items does not match the number of input items (%d/%d)', $j, $dataCollectionCount), 1412243235);
+		}
+		return $resultFixedArray;
+	}
+
+	/**
+	 * Sort the collection of objects by invoking the given callback
+	 *
+	 * @param Database|\Iterator|array $collection
+	 * @param callback                   $callback
+	 * @param bool                     $descending
+	 * @return SortResult
+	 */
+	public function sortCollectionByCallback($collection, $callback, $descending = FALSE) {
+		$start = microtime(TRUE);
+
+
+		if (is_array($collection)) {
+			$dataCollection = SplFixedArray::fromArray($collection);
+		} else if ($collection instanceof Database) {
+//			$dataCollectionRaw = $collection->getRawData();
+			$dataCollection = $collection->prepareAll();
+		} else {
+			$dataCollection = SplFixedArray::fromArray(iterator_to_array($collection));
+		}
+
+		$end = microtime(TRUE);
+		DebugUtility::pl("Get: %0.6f\n", $end - $start);
+
+
+		$dataCollectionRaw = $dataCollection->toArray();
+		if (!uasort($dataCollectionRaw, $callback))	throw new SortingException('Could not sort the database', 1412021637);
+
+		if ($descending) {
+			array_reverse($dataCollectionRaw);
+		}
+		return SortResult::fromArray(array_values($dataCollectionRaw));
 	}
 }
