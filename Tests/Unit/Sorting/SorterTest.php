@@ -44,7 +44,7 @@ class SorterTest extends AbstractDataBasedCase {
 	protected function tearDown() {
 		unset($this->fixture);
 //		unset($this->coordinator);
-		$this->tearDownXhprof();
+	#$this->tearDownXhprof();
 	}
 
 

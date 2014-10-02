@@ -479,7 +479,8 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 	 * @return DataInterface|NULL
 	 */
 	protected function _getObjectForIndex($index) {
-		if (!is_integer($index) && !((string)(int)$index === $index)) {
+		$index = GeneralUtility::validateInteger($index);
+		if ($index === NULL) {
 			throw new InvalidIndexException('Offset could not be converted to integer', 1410167582);
 		}
 
@@ -530,6 +531,19 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 		static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid] = $dataInstance;
 
 		static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index] = $objectUid;
+
+		if ($index > $this->totalCount) {
+			throw new InvalidIndexException(
+				sprintf('Index %d out of bound', $index),
+				1412277617
+			);
+		}
+		if ($index === $this->totalCount) {
+			$this->rawData->setSize($this->totalCount);
+		}
+		if ($this->rawData->offsetExists($index)) {
+			$this->rawData[$index] = $dataInstance->getData();
+		}
 //		$this->objectCollection[$index] = $dataInstance;
 	}
 

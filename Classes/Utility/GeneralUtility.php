@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Utility;
 use Cundd\PersistentObjectStore\Exception\InvalidDatabaseIdentifierException;
+use ProxyManagerTest\Factory\NullObjectFactoryTest;
 
 /**
  * Interface GeneralUtilityInterface
@@ -44,5 +45,18 @@ abstract class GeneralUtility {
 		// $bytes /= (1 << (10 * $pow));
 
 		return round($bytes, $precision) . ' ' . $units[$pow];
+	}
+
+	/**
+	 * Returns the integer value of the given variable or NULL if it is no valid integer
+	 *
+	 * @param $var
+	 * @return int|null
+	 */
+	static public function validateInteger($var) {
+		if (is_integer($var) || ((string)(int)$var === $var)) {
+			return intval($var);
+		}
+		return NULL;
 	}
 } 

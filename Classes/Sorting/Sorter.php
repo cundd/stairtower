@@ -54,7 +54,7 @@ class Sorter {
 		return $this;
 	}
 
-
+//
 //	/**
 //	 * Sort the collection of objects by the given key
 //	 *
@@ -215,9 +215,6 @@ class Sorter {
 	 * @return SortResult
 	 */
 	public function sortCollectionByCallback($collection, $callback, $descending = FALSE) {
-		$start = microtime(TRUE);
-
-
 		if (is_array($collection)) {
 			$dataCollection = SplFixedArray::fromArray($collection);
 		} else if ($collection instanceof Database) {
@@ -226,10 +223,6 @@ class Sorter {
 		} else {
 			$dataCollection = SplFixedArray::fromArray(iterator_to_array($collection));
 		}
-
-		$end = microtime(TRUE);
-		DebugUtility::pl("Get: %0.6f\n", $end - $start);
-
 
 		$dataCollectionRaw = $dataCollection->toArray();
 		if (!uasort($dataCollectionRaw, $callback))	throw new SortingException('Could not sort the database', 1412021637);
