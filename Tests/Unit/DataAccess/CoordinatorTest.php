@@ -48,11 +48,35 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	/**
 	 * @test
 	 */
-	public function readTestsPersons() {
+	public function readPersonsTests() {
 		$this->checkPersonFile();
 
 		/** @var Database $database */
+
+
+//		$m = memory_get_peak_usage();
+//		$database = $this->fixture->getDataByDatabase('people');
+//		DebugUtility::pl('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $m, memory_get_peak_usage() / memory_get_usage());
+
+		$memoryPeakUsage = memory_get_peak_usage();
+		$database = $this->fixture->getDataByDatabase('contacts');
+		$path = __DIR__ . '/../../../Tests/Resources/contacts.json';
+		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
+		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
+
+		$memoryPeakUsage = memory_get_peak_usage();
+		$database = $this->fixture->getDataByDatabase('people-small');
+		$path = __DIR__ . '/../../../Tests/Resources/people-small.json';
+		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
+		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
+
+		$memoryPeakUsage = memory_get_peak_usage();
 		$database = $this->fixture->getDataByDatabase('people');
+		$path = __DIR__ . '/../../../Tests/Resources/people.json';
+		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
+		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
+
+
 		$this->assertEquals($this->numberOfPersons, $database->count());
 		$this->assertEquals($this->numberOfPersons, count(iterator_to_array($database)));
 	}
@@ -210,10 +234,18 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		$database->add($dataInstance);
 		$this->assertEquals($this->numberOfPersons + 1, $database->count());
 
+		// A database just loaded from the filesystem should only contain the original number of entries
 		/** @var DatabaseInterface $newlyLoadedDatabase */
 		$newlyLoadedDatabase = $this->databaseReader->loadDatabase('people');
-		$this->assertEquals($this->numberOfPersons + 1, $newlyLoadedDatabase->count());
-		$this->assertEquals($database->count(), $newlyLoadedDatabase->count());
+		$this->assertEquals($this->numberOfPersons, $newlyLoadedDatabase->count());
+		$this->assertEquals($database->count() - 1, $newlyLoadedDatabase->count());
+
+		// A database again retrieved from the coordinator should contain the added entry
+		/** @var DatabaseInterface $databaseRetrievedFromTheCoordinator */
+		$databaseRetrievedFromTheCoordinator = $this->fixture->getDataByDatabase('people');
+		$this->assertEquals($this->numberOfPersons + 1, $databaseRetrievedFromTheCoordinator->count());
+		$this->assertEquals($database->count(), $databaseRetrievedFromTheCoordinator->count());
+
 
 	}
 

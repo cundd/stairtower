@@ -10,6 +10,8 @@ namespace Cundd\PersistentObjectStore\Sorting;
 
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
+use Cundd\PersistentObjectStore\DataAccess\Reader;
+use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\KeyValueCodingInterface;
@@ -66,6 +68,109 @@ class SorterTest extends AbstractDataBasedCase {
 		$maxIterations = $database->count();
 
 		$this->assertEquals($database->count(), $sortedDatabase->count());
+
+//		var_dump($sortedDatabase[$sortedDatabase->count() - 1]);
+
+		$lastLatitude = -PHP_INT_MAX;
+		for ($i = 0; $i < $maxIterations; $i++) {
+			/** @var DataInterface $item */
+			$item = $sortedDatabase[$i];
+			$this->assertNotNull($item);
+
+//			printf('%d: Last latitude %0.9f to current %0.9f' . PHP_EOL, $i, $lastLatitude, $item->valueForKey('latitude'));
+
+			$this->assertGreaterThan($lastLatitude, $item->valueForKey('latitude'));
+			$lastLatitude = $item->valueForKey('latitude');
+		}
+
+
+//		$sortedDatabase = $this->fixture->sortCollectionByPropertyKeyPath($database, 'latitude', TRUE);
+//
+//		$this->assertEquals($database->count(), $sortedDatabase->count());
+//
+//		$lastLatitude = PHP_INT_MAX;
+//		for ($i = 0; $i < $maxIterations; $i++) {
+//			/** @var DataInterface $item */
+//			$item = $sortedDatabase[$i];
+//			$this->assertNotNull($item);
+//
+//			$this->assertLessThan($lastLatitude, $item->valueForKey('latitude'));
+//			$lastLatitude = $item->valueForKey('latitude');
+//		}
+	}
+
+	/**
+	 * @test
+	 */
+	public function sortPersonsByLatitudeAfterAddingAPersonTest() {
+		$this->checkPersonFile();
+
+		/** @var Reader $databaseReader */
+		$databaseReader = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Reader');
+		$newlyLoadedDatabase = $databaseReader->loadDatabase('people');
+		$dataInstance = new Data();
+		$dataInstance->setData(array(
+			'_id'           => '541f004ef8f4d2df32ca60c2',
+			'index'         => 5000,
+			'isActive'      => FALSE,
+			'balance'       => '$2,925.56',
+			'picture'       => 'http://placehold.it/32x32',
+			'age'           => 31,
+			'eyeColor'      => 'brown',
+			'name'          => 'Daniel Corn',
+			'gender'        => 'male',
+			'company'       => 'FARMEX',
+			'email'         => 'info2@cundd.net',
+			'phone'         => '+1 (973) 480-3194',
+			'address'       => '125 Stone Avenue, Worton, Alabama, 6669',
+			'about'         => 'Dolore in excepteur nisi dolor laboris ipsum proident cupidatat proident. Aliquip commodo culpa adipisicing ullamco ad. Ut ex duis tempor do id enim. Proident exercitation officia veniam magna mollit nostrud duis do qui reprehenderit. Ea culpa anim ullamco aliqua culpa nulla ex nisi irure qui incididunt reprehenderit. Labore do velit amet duis aute occaecat. Et sunt ex Lorem qui do deserunt ullamco labore.\r\n',
+			'registered'    => '2014-06-29T15:29:47 -02:00',
+			'latitude'      => 52.372839,
+			'longitude'     => -70.88926,
+			'tags'          => [
+				'id',
+				'consequat',
+				'aute',
+				'deserunt',
+				'in',
+				'enim',
+				'veniam'
+			],
+			'friends'       => [
+				array(
+					'id'   => 0,
+					'name' => 'Bray Ruiz'
+				),
+				array(
+					'id'   => 1,
+					'name' => 'Carr Kerr'
+				),
+				array(
+					'id'   => 2,
+					'name' => 'Carter Dejesus'
+				)
+			],
+			'greeting'      => 'Hello, Conway Burch! You have 3 unread messages.',
+			'favoriteFruit' => 'apple'
+		));
+
+		$newlyLoadedDatabase->add($dataInstance);
+
+
+		/** @var Database $database */
+		$database = $this->coordinator->getDataByDatabase('people');
+
+		$start = microtime(TRUE);
+		$sortedDatabase = $this->fixture->sortCollectionByPropertyKeyPath($newlyLoadedDatabase, 'latitude');
+		$end = microtime(TRUE);
+		printf("Sort %0.8f\n", $end - $start);
+
+		$maxIterations = 100;
+		$maxIterations = $database->count();
+
+		$this->assertEquals($database->count(), $sortedDatabase->count());
+		$this->assertEquals($database->count(), $newlyLoadedDatabase->count());
+
 
 //		var_dump($sortedDatabase[$sortedDatabase->count() - 1]);
 

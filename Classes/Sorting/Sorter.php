@@ -134,7 +134,7 @@ class Sorter {
 			$dataCollectionRaw = $collection;
 		} else if ($collection instanceof Database) {
 //			$dataCollectionRaw = $collection->getRawData();
-			$dataCollectionRaw = $collection->prepareAll();
+			$dataCollectionRaw = $collection->toFixedArray();
 		} else {
 			$dataCollectionRaw = SplFixedArray::fromArray(iterator_to_array($collection));
 		}
@@ -219,7 +219,7 @@ class Sorter {
 			$dataCollection = SplFixedArray::fromArray($collection);
 		} else if ($collection instanceof Database) {
 //			$dataCollectionRaw = $collection->getRawData();
-			$dataCollection = $collection->prepareAll();
+			$dataCollection = $collection->toFixedArray();
 		} else {
 			$dataCollection = SplFixedArray::fromArray(iterator_to_array($collection));
 		}

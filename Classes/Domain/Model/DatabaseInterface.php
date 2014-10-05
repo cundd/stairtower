@@ -9,7 +9,7 @@
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 
-interface DatabaseInterface {
+interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	/**
 	 * Returns the database identifier
 	 *

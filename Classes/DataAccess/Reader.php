@@ -94,6 +94,7 @@ class Reader {
 			throw new ReaderException("Database with name '$database' not found", 1408127629);
 		}
 
+//		DebugUtility::printMemorySample();
 		$fileData = file_get_contents($path);
 //		DebugUtility::printMemorySample();
 		$serializer = new JsonSerializer();

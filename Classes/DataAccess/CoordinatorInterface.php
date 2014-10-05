@@ -15,6 +15,7 @@ use Cundd\PersistentObjectStore\Domain\Model\Database;
  * @package Cundd\PersistentObjectStore\DataAccess
  */
 interface CoordinatorInterface {
+
 	/**
 	 * Returns all data of the given database
 	 *
@@ -30,4 +31,11 @@ interface CoordinatorInterface {
 	 * @return array
 	 */
 	public function getDataByQuery($query);
+
+	/**
+	 * Commit the database to the file system
+	 *
+	 * @param Database $database
+	 */
+	public function commitDatabase($database);
 }

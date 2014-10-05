@@ -25,7 +25,7 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIterator {
+class Database implements DatabaseInterface {
 	/**
 	 * Object collection key for the mapping of the GUID to the object
 	 */
@@ -359,9 +359,21 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 	}
 
 	/**
+	 * Returns all Data instances of this database
 	 *
+	 * @return \SplFixedArray<DatabaseInterface>
 	 */
-	public function prepareAll() {
+	public function toFixedArray() {
+		$allObjects = $this->toArray();
+		return \SplFixedArray::fromArray(array_values($allObjects));
+	}
+
+	/**
+	 * Returns all Data instances of this database
+	 *
+	 * @return array<DatabaseInterface>
+	 */
+	public function toArray() {
 		$start = microtime(TRUE);
 		$identifier = $this->identifier;
 
@@ -373,7 +385,7 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 		while ($i < $rawDataCount) {
 			$rawData = $rawDataCollection[$i];
 
-			if ($this->_getObjectForIndex($i)) {
+			if ($this->_hasObjectForIndex($i)) {
 				$i++;
 				continue;
 			}
@@ -384,12 +396,14 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 			$i++;
 		}
 
-		$allObjects = static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT];
 
+		$allObjects = static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT];
+		DebugUtility::pl('Raw data count: %d / All obj count: %d', $rawDataCount, count($allObjects));
 		$end = microtime(True);
 		DebugUtility::pl('Prepare all %0.6f', $end - $start);
-		return \SplFixedArray::fromArray(array_values($allObjects));
+		return $allObjects;
 	}
+
 
 	/**
 	 * (PHP 5 &gt;= 5.0.0)<br/>
@@ -472,6 +486,17 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 	// HELPER METHODS
 	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+
+	/**
+	 * Returns if an object for the given index already exists
+	 *
+	 * @param integer $index
+	 * @return bool
+	 */
+	protected function _hasObjectForIndex($index) {
+		return isset(static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index]);
+	}
+
 	/**
 	 * Returns the Data instance for the given index or NULL if it does not exist
 	 *
@@ -479,11 +504,6 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 	 * @return DataInterface|NULL
 	 */
 	protected function _getObjectForIndex($index) {
-		$index = GeneralUtility::validateInteger($index);
-		if ($index === NULL) {
-			throw new InvalidIndexException('Offset could not be converted to integer', 1410167582);
-		}
-
 		$identifier = $this->identifier;
 		if (isset(static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index])) {
 			$objectHash = static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index];
@@ -497,6 +517,9 @@ class Database implements DatabaseInterface, \Iterator, \Countable, \SeekableIte
 	 * @internal
 	 */
 	public function getObjectForIndex($index) {
+		$index = GeneralUtility::validateInteger($index);
+		if ($index === NULL) throw new InvalidIndexException('Offset could not be converted to integer', 1410167582);
+
 		return $this->_getObjectForIndex($index);
 	}
 
