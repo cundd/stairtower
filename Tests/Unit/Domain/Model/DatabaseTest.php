@@ -29,7 +29,7 @@ class DatabaseTest extends AbstractCase {
 		$this->setUpXhprof();
 
 		$this->coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-		$this->fixture = $this->coordinator->getDataByDatabase('people');
+		$this->fixture = $this->coordinator->getDatabase('people');
 	}
 
 	protected function tearDown() {
@@ -43,7 +43,7 @@ class DatabaseTest extends AbstractCase {
 	 */
 	public function invalidDatabaseTest() {
 		$this->coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-		$this->coordinator->getDataByDatabase('congress_members');
+		$this->coordinator->getDatabase('congress_members');
 	}
 
 	/**
@@ -65,7 +65,7 @@ class DatabaseTest extends AbstractCase {
 	 * @test
 	 */
 	public function objectLiveCycleTest() {
-		$database2 = $this->coordinator->getDataByDatabase('people');
+		$database2 = $this->coordinator->getDatabase('people');
 
 		/** @var DataInterface $personFromDatabase2 */
 		$personFromDatabase2 = $database2->current();

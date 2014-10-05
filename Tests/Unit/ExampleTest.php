@@ -43,7 +43,7 @@ class ExampleTest extends AbstractDataBasedCase {
 
 		// Load a database called 'people'
 		/** @var Database $database */
-		$database = $this->fixture->getDataByDatabase('people');
+		$database = $this->fixture->getDatabase('people');
 
 		// Count the number of people in the database
 		$this->assertGreaterThan(0, $database->count());

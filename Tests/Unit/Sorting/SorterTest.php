@@ -57,7 +57,7 @@ class SorterTest extends AbstractDataBasedCase {
 		$this->checkPersonFile();
 
 		/** @var Database $database */
-		$database = $this->coordinator->getDataByDatabase('people');
+		$database = $this->coordinator->getDatabase('people');
 
 		$start = microtime(TRUE);
 		$sortedDatabase = $this->fixture->sortCollectionByPropertyKeyPath($database, 'latitude');
@@ -158,7 +158,7 @@ class SorterTest extends AbstractDataBasedCase {
 
 
 		/** @var Database $database */
-		$database = $this->coordinator->getDataByDatabase('people');
+		$database = $this->coordinator->getDatabase('people');
 
 		$start = microtime(TRUE);
 		$sortedDatabase = $this->fixture->sortCollectionByPropertyKeyPath($newlyLoadedDatabase, 'latitude');
@@ -209,7 +209,7 @@ class SorterTest extends AbstractDataBasedCase {
 		$this->checkPersonFile();
 
 		/** @var Database $database */
-		$database = $this->coordinator->getDataByDatabase('people');
+		$database = $this->coordinator->getDatabase('people');
 
 		$start = microtime(TRUE);
 		$sortedDatabase = $this->fixture->sortCollectionByCallback($database, function($itemA, $itemB) {
@@ -253,7 +253,7 @@ class SorterTest extends AbstractDataBasedCase {
 		$this->checkPersonFile();
 
 		/** @var Database $database */
-		$database = $this->coordinator->getDataByDatabase('people');
+		$database = $this->coordinator->getDatabase('people');
 
 
 		// Sort the people database by comparing the persons distance to me (47.235934, 9.599398)

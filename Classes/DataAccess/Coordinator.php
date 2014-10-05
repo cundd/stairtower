@@ -48,7 +48,7 @@ class Coordinator implements CoordinatorInterface {
 	 * @param string $database
 	 * @return Database|array
 	 */
-	public function getDataByDatabase($database) {
+	public function getDatabase($database) {
 		return $this->_getDatabase($database);
 	}
 

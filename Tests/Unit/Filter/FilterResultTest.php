@@ -49,7 +49,7 @@ class FilterResultTest extends AbstractDataBasedCase {
 //		$database = $coordinator->getDataByDatabase('contacts');
 //		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
 
-		$database = $coordinator->getDataByDatabase('people');
+		$database = $coordinator->getDatabase('people');
 		$this->filter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
 		$this->fixture = $this->filter->filterCollection($database);
 	}
@@ -155,7 +155,7 @@ class FilterResultTest extends AbstractDataBasedCase {
 //		$database = $coordinator->getDataByDatabase('contacts');
 //		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
 
-		$database = $coordinator->getDataByDatabase('people');
+		$database = $coordinator->getDatabase('people');
 		$newFilter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
 		$newFilterResult = $newFilter->filterCollection($database);
 

@@ -59,19 +59,19 @@ class CoordinatorTest extends AbstractDataBasedCase {
 //		DebugUtility::pl('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $m, memory_get_peak_usage() / memory_get_usage());
 
 		$memoryPeakUsage = memory_get_peak_usage();
-		$database = $this->fixture->getDataByDatabase('contacts');
+		$database = $this->fixture->getDatabase('contacts');
 		$path = __DIR__ . '/../../../Tests/Resources/contacts.json';
 		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
 		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
 
 		$memoryPeakUsage = memory_get_peak_usage();
-		$database = $this->fixture->getDataByDatabase('people-small');
+		$database = $this->fixture->getDatabase('people-small');
 		$path = __DIR__ . '/../../../Tests/Resources/people-small.json';
 		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
 		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
 
 		$memoryPeakUsage = memory_get_peak_usage();
-		$database = $this->fixture->getDataByDatabase('people');
+		$database = $this->fixture->getDatabase('people');
 		$path = __DIR__ . '/../../../Tests/Resources/people.json';
 		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
 		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
@@ -86,7 +86,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	 */
 	public function readTests() {
 		/** @var Database $database */
-		$database = $this->fixture->getDataByDatabase('contacts');
+		$database = $this->fixture->getDatabase('contacts');
 		$this->assertEquals(5, $database->count());
 	}
 
@@ -95,7 +95,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	 */
 	public function commitDatabaseTest() {
 		/** @var Database $database */
-		$database = $this->fixture->getDataByDatabase('contacts');
+		$database = $this->fixture->getDatabase('contacts');
 
 		$dataInstance = new Data();
 		$dataInstance->setData(array(
@@ -118,7 +118,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		$this->checkPersonFile();
 
 		/** @var Database $database */
-		$database = $this->fixture->getDataByDatabase('people');
+		$database = $this->fixture->getDatabase('people');
 
 		$dataInstance = new Data();
 		$dataInstance->setData(array(
@@ -183,7 +183,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		$this->checkPersonFile();
 
 		/** @var Database $database */
-		$database = $this->fixture->getDataByDatabase('people');
+		$database = $this->fixture->getDatabase('people');
 
 		$dataInstance = new Data();
 		$dataInstance->setData(array(
@@ -242,7 +242,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 
 		// A database again retrieved from the coordinator should contain the added entry
 		/** @var DatabaseInterface $databaseRetrievedFromTheCoordinator */
-		$databaseRetrievedFromTheCoordinator = $this->fixture->getDataByDatabase('people');
+		$databaseRetrievedFromTheCoordinator = $this->fixture->getDatabase('people');
 		$this->assertEquals($this->numberOfPersons + 1, $databaseRetrievedFromTheCoordinator->count());
 		$this->assertEquals($database->count(), $databaseRetrievedFromTheCoordinator->count());
 

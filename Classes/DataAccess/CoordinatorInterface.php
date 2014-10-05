@@ -22,7 +22,7 @@ interface CoordinatorInterface {
 	 * @param string $database
 	 * @return Database|array
 	 */
-	public function getDataByDatabase($database);
+	public function getDatabase($database);
 
 	/**
 	 * Returns all data matching the given query
