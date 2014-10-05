@@ -6,6 +6,8 @@
  * Time: 16:25
  */
 
+use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+
 $XHPROF_ROOT = __DIR__ . '/../../xhprof-0.9.4/';
 if (file_exists($XHPROF_ROOT)) {
 	require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_lib.php';
@@ -15,3 +17,6 @@ if (file_exists($XHPROF_ROOT)) {
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ .'/AbstractCase.php';
 require_once __DIR__ .'/AbstractDataBasedCase.php';
+
+ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('dataPath', __DIR__ . '/../Resources/');
+ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('writeDataPath', __DIR__ . '/../../var/Temp/');

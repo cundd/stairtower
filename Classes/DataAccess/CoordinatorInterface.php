@@ -15,14 +15,59 @@ use Cundd\PersistentObjectStore\Domain\Model\Database;
  * @package Cundd\PersistentObjectStore\DataAccess
  */
 interface CoordinatorInterface {
+	/**
+	 * Returns the database with the given identifier
+	 *
+	 * @param string $databaseIdentifier
+	 * @return Database
+	 */
+	public function getDatabase($databaseIdentifier);
 
 	/**
-	 * Returns all data of the given database
+	 * Creates a new database with the given identifier and options
 	 *
-	 * @param string $database
-	 * @return Database|array
+	 * @param string $databaseIdentifier Unique identifier of the database
+	 * @param array  $options Additional options for the created database
+	 * @return Database
 	 */
-	public function getDatabase($database);
+	public function createDatabase($databaseIdentifier, $options = array());
+
+	/**
+	 * Drops the database with the given identifier
+	 *
+	 * @param string $databaseIdentifier Unique identifier of the database
+	 * @return void
+	 */
+	public function dropDatabase($databaseIdentifier);
+
+	/**
+	 * Returns if the database with the given identifier exists
+	 *
+	 * @param string $databaseIdentifier Unique identifier of the database
+	 * @return bool
+	 */
+	public function databaseExists($databaseIdentifier);
+
+	/**
+	 * Returns an array of the identifiers of available databases
+	 *
+	 * @return array
+	 */
+	public function listDatabases();
+
+	/**
+	 * Returns an array of the identifiers of databases that are not already persisted
+	 *
+	 * @return array<string>
+	 */
+	public function listInMemoryDatabases();
+
+	/**
+	 * Returns an array of the identifiers of databases that are already persisted
+	 *
+	 * @return array<string>
+	 */
+	public function listPersistedDatabases();
 
 	/**
 	 * Returns all data matching the given query

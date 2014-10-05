@@ -148,6 +148,10 @@ class Database implements DatabaseInterface {
 	 * @internal
 	 */
 	public function getRawData() {
+		if (!$this->rawData) {
+			$this->rawData = new \SplFixedArray(0);
+			$this->totalCount = 0;
+		}
 		return $this->rawData;
 	}
 

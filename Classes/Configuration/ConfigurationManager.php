@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Configuration;
+use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
 /**
@@ -33,8 +34,8 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 		$configurationReader = new ConfigurationReader();
 		$this->configuration = array_merge_recursive(array(
 			'basePath' => __DIR__ . '/../../',
-			'dataPath' => __DIR__ . '/../../Tests/Resources/',
-			'writeDataPath' => __DIR__ . '/../../Data/'
+			'dataPath' => __DIR__ . '/../../var/Data/',
+			'writeDataPath' => __DIR__ . '/../../var/Data/'
 		), $configurationReader->readConfigurationFiles());
 
 		self::$sharedInstance = $this;
@@ -59,7 +60,11 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 	 * @return $this
 	 */
 	public function setConfigurationForKeyPath($keyPath, $value) {
-		throw new \UnexpectedValueException('Not implemented');
+		if (strpos($keyPath, '.') !== FALSE) {
+			throw new RuntimeException('Dot notation is currently not supported');
+		}
+		$this->configuration[$keyPath] = $value;
+//		ObjectUtility::setValueForKeyPathOfObject($value, $keyPath, $this->configuration);
 		return $this;
 	}
 

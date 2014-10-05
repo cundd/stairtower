@@ -3,7 +3,8 @@
     "description": "A document storage entirely written in PHP",
     "require": {
         "react/react": "0.4.*",
-		"mnapoli/php-di": "~4.0"
+		"mnapoli/php-di": "~4.0",
+		"symfony/console": "2.5.5"
     },
 	"require-dev": {
 		"doctrine/dbal": "~2.4"

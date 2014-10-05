@@ -27,7 +27,7 @@ class Writer {
 	const DATA_ENCODING = 'json';
 
 	/**
-	 * Write the database with the given identifier
+	 * Write the given database to the disk
 	 *
 	 * @param Database $database
 	 * @throws Exception\WriterException if the data could not be written
@@ -50,12 +50,87 @@ class Writer {
 	}
 
 	/**
+	 * Creates a new database with the given identifier and options
+	 *
+	 * @param string $databaseIdentifier Unique identifier of the database
+	 * @param array  $options Additional options for the created database
+	 * @return Database
+	 */
+	public function createDatabase($databaseIdentifier, $options = array()) {
+		$this->_prepareWriteDirectory();
+		$path = $this->_getWriteDirectory() . $databaseIdentifier . '.json';
+
+		if (file_exists($path)) throw new WriterException(sprintf('Database with identifier %s already exists', $databaseIdentifier), 1412509808);
+		if (!is_writable($path) && !is_writable(dirname($path))) throw new WriterException(
+			sprintf('No access to write the database with identifier %s to %s', $databaseIdentifier, $path),
+			1412509809
+		);
+
+		$result = $this->_writeData('[]', $path);
+		if ($result === FALSE) {
+			throw new WriterException(
+				sprintf(
+					'Could not create database %s in file "%s"',
+					$databaseIdentifier,
+					$path
+				),
+				1410291420
+			);
+		}
+	}
+
+	/**
+	 * Deletes the database with the given identifier
+	 *
+	 * @param string $databaseIdentifier Unique identifier of the database
+	 * @return void
+	 */
+	public function dropDatabase($databaseIdentifier) {
+		$path = $this->_getReadDirectory() . $databaseIdentifier . '.json';
+
+		if (!file_exists($path)) throw new WriterException(sprintf('Database with identifier %s does not exist', $databaseIdentifier), 1412526598);
+		if (!is_writable($path) && !is_writable(dirname($path))) throw new WriterException(
+			sprintf('No access to write the database with identifier %s to %s', $databaseIdentifier, $path),
+			1412526604
+		);
+
+		$fileHandle = @fopen($path, 'w+');
+		if (!$fileHandle) {
+			$error = error_get_last();
+			throw new WriterException($error['message'], 1412526609);
+		}
+
+		if (flock($fileHandle, LOCK_EX)) { // acquire an exclusive lock
+			ftruncate($fileHandle, 0); // truncate file
+			fflush($fileHandle); // flush output before releasing the lock
+			unlink($path);
+			flock($fileHandle, LOCK_UN); // release the lock
+		} else {
+			throw new WriterException(
+				sprintf(
+					'Unable to acquire an exclusive lock for file "%s"',
+					$path),
+				1412526613
+			);
+		}
+	}
+
+	/**
 	 * Returns the directory path to write data in
 	 *
 	 * @return string
 	 */
 	protected function _getWriteDirectory() {
 		return ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath');
+	}
+
+	/**
+	 * Returns the directory path to read data from
+	 *
+	 * @return string
+	 */
+	protected function _getReadDirectory() {
+		return ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath');
 	}
 
 	/**
@@ -128,7 +203,7 @@ class Writer {
 	 * Returns the string that will be written to the file system
 	 *
 	 * @param Database $database
-	 * @return array
+	 * @return string
 	 */
 	protected function _getDataToWrite($database) {
 		$objectsToWrite = $this->_getObjectsWrite($database);

@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\PersistentObjectStore\DataAccess\Exception\InvalidDatabaseException;
 use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
@@ -44,6 +45,56 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		$this->databaseReader = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Reader');
 	}
 
+	/**
+	 * @test
+	 */
+	public function listDatabasesTest() {
+		$database = $this->fixture->getDatabase('contacts');
+
+		$allDatabases = $this->fixture->listDatabases();
+		$persistedDatabases = $this->fixture->listPersistedDatabases();
+		$inMemoryDatabases = $this->fixture->listInMemoryDatabases();
+		$this->assertNotEmpty($allDatabases);
+		$this->assertNotEmpty($persistedDatabases);
+		$this->assertEmpty($inMemoryDatabases);
+	}
+
+
+	/**
+	 * @test
+	 */
+	public function createDatabaseTest() {
+		$databaseIdentifier = 'test-db-' . time();
+		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
+
+		$this->fixture->createDatabase($databaseIdentifier);
+
+		$this->assertFileExists($expectedPath);
+		unlink($expectedPath);
+	}
+
+	/**
+	 * @test
+	 */
+	public function dropDatabaseTest() {
+		$databaseIdentifier = 'test-db-' . time();
+		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.json';
+
+		file_put_contents($expectedPath, '[]');
+		$this->assertFileExists($expectedPath);
+
+		$this->fixture->dropDatabase($databaseIdentifier);
+
+		$this->assertFileNotExists($expectedPath);
+	}
+
+	/**
+	 * @expectedException     InvalidDatabaseException
+	 */
+	public function dropNotExistingDatabaseTest() {
+		$databaseIdentifier = 'test-db-' . time();
+		$this->fixture->dropDatabase($databaseIdentifier);
+	}
 
 	/**
 	 * @test
@@ -108,7 +159,6 @@ class CoordinatorTest extends AbstractDataBasedCase {
 
 		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'contacts.json';
 		$this->assertTrue(file_exists($expectedPath));
-		unlink($expectedPath);
 	}
 
 	/**
@@ -173,7 +223,6 @@ class CoordinatorTest extends AbstractDataBasedCase {
 
 		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'people.json';
 		$this->assertTrue(file_exists($expectedPath));
-		unlink($expectedPath);
 	}
 
 	/**

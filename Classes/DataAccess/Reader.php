@@ -49,7 +49,7 @@ class Reader {
 	 * @param array<Data> $metaData
 	 */
 	protected function _fillDatabaseWithData($database, $dataCollection, $metaDataCollection) {
-		$databaseIdentifier = $database->getIdentifier();
+		#$databaseIdentifier = $database->getIdentifier();
 		$rawData = reset($dataCollection);
 		$rawMetaData = reset($metaDataCollection);
 
@@ -77,22 +77,22 @@ class Reader {
 			$dataObject->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : NULL);
 			$dataObject->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
 
-			$database->attach($dataObject);
+			$databaseIdentifier->attach($dataObject);
 		}
 	}
 
 	/**
 	 * Loads the given raw database
 	 *
-	 * @param string $database
+	 * @param string $databaseIdentifier
 	 * @return array<Data>
 	 * @throws ReaderException if the database could not be found
 	 */
-	protected function _loadDataCollection($database) {
-		$path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $database . '.json';
-		if (!file_exists($path)) {
-			throw new ReaderException("Database with name '$database' not found", 1408127629);
-		}
+	protected function _loadDataCollection($databaseIdentifier) {
+		$path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.json';
+		$error = NULL;
+		$this->databaseExists($databaseIdentifier, $error);
+		if ($error instanceof ReaderException) throw $error;
 
 //		DebugUtility::printMemorySample();
 		$fileData = file_get_contents($path);
@@ -102,6 +102,43 @@ class Reader {
 //		DebugUtility::printMemorySample();
 
 		return $dataCollection;
+	}
+
+	/**
+	 * Returns if a database with the given identifier exists
+	 *
+	 * @param string $databaseIdentifier Unique identifier of the database
+	 * @param ReaderException $error Reference to be filled with an exception describing the error if the database could not be read
+	 * @return bool
+	 */
+	public function databaseExists($databaseIdentifier, &$error = NULL) {
+		$path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.json';
+		if (!file_exists($path)) {
+			$error = new ReaderException("Database with name '$databaseIdentifier' not found", 1408127629);
+			return FALSE;
+		}
+		if (!is_readable($path)) {
+			$error = new ReaderException("Database with name '$databaseIdentifier' is not readable", 1412509416);
+			return FALSE;
+		}
+		return TRUE;
+	}
+
+	/**
+	 * Returns an array of the identifiers of databases that are already persisted
+	 *
+	 * @return array<string>
+	 */
+	public function listPersistedDatabases() {
+		$foundDatabases = glob(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . '*.json', GLOB_MARK);
+		$foundDatabases = array_filter($foundDatabases, function($item) {
+			return substr($item, -1) !== DIRECTORY_SEPARATOR;
+		});
+		$foundDatabases = array_map(function($item) {
+			// Get the basename and strip '.json'
+			return substr(basename($item), 0, -5);
+		}, $foundDatabases);
+		return $foundDatabases;
 	}
 
 	/**

@@ -7,7 +7,10 @@
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess;
+use Cundd\PersistentObjectStore\DataAccess\Exception\InvalidDatabaseException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Query\QueryBuilder;
 
@@ -43,14 +46,95 @@ class Coordinator implements CoordinatorInterface {
 	protected $objectStore = array();
 
 	/**
-	 * Returns all data of the given database
+	 * Returns the database with the given identifier
 	 *
-	 * @param string $database
-	 * @return Database|array
+	 * @param string $databaseIdentifier
+	 * @return Database
 	 */
-	public function getDatabase($database) {
-		return $this->_getDatabase($database);
+	public function getDatabase($databaseIdentifier) {
+		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
+		return $this->_getDatabase($databaseIdentifier);
 	}
+
+	/**
+	 * Creates a new database with the given identifier and options
+	 *
+	 * @param string $databaseIdentifier Unique identifier of the database
+	 * @param array  $options            Additional options for the created database
+	 * @return Database
+	 */
+	public function createDatabase($databaseIdentifier, $options = array()) {
+		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
+		if ($this->databaseExists($databaseIdentifier)) throw new InvalidDatabaseException(sprintf('Database "%s" already exists', $databaseIdentifier), 1412524749);
+		if (isset($this->objectStore[$databaseIdentifier])) throw new InvalidDatabaseException(sprintf('Database "%s" already exists in memory', $databaseIdentifier), 1412524750);
+
+		$this->dataWriter->createDatabase($databaseIdentifier, $options);
+		return $this->objectStore[$databaseIdentifier] = new Database($databaseIdentifier);
+	}
+
+	/**
+	 * Drops the database with the given identifier
+	 *
+	 * @param string $databaseIdentifier Unique identifier of the database
+	 * @return void
+	 */
+	public function dropDatabase($databaseIdentifier) {
+		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
+
+		// If the database is in the object store remove it
+		if (isset($this->objectStore[$databaseIdentifier])) {
+			unset($this->objectStore[$databaseIdentifier]);
+		}
+		if (!$this->databaseExists($databaseIdentifier)) throw new InvalidDatabaseException(sprintf('Database "%s" does not exist', $databaseIdentifier), 1412525836);
+
+		$this->dataWriter->dropDatabase($databaseIdentifier);
+	}
+
+	/**
+	 * Returns if the database with the given identifier exists
+	 *
+	 * @param string $databaseIdentifier Unique identifier of the database
+	 * @return bool
+	 */
+	public function databaseExists($databaseIdentifier) {
+		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
+		return $this->dataReader->databaseExists($databaseIdentifier);
+	}
+
+	/**
+	 * Returns an array of the identifiers of available databases
+	 *
+	 * @return array
+	 */
+	public function listDatabases() {
+		$persistedDatabases = $this->listPersistedDatabases();
+		$persistedDatabases = array_combine($persistedDatabases, $persistedDatabases);
+
+		$inMemoryDatabases = array_keys($this->objectStore);
+		$inMemoryDatabases = array_combine($inMemoryDatabases, $inMemoryDatabases);
+
+		$allDatabases = array_merge($persistedDatabases, $inMemoryDatabases);
+		return array_keys($allDatabases);
+	}
+
+	/**
+	 * Returns an array of the identifiers of databases that are not already persisted
+	 *
+	 * @return array<string>
+	 */
+	public function listInMemoryDatabases() {
+		return array_diff($this->listDatabases(), $this->listPersistedDatabases());
+	}
+
+	/**
+	 * Returns an array of the identifiers of databases that are already persisted
+	 *
+	 * @return array<string>
+	 */
+	public function listPersistedDatabases() {
+		return $this->dataReader->listPersistedDatabases();
+	}
+
 
 	/**
 	 * Returns all data matching the given query
