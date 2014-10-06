@@ -402,9 +402,9 @@ class Database implements DatabaseInterface {
 
 
 		$allObjects = static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT];
-		DebugUtility::pl('Raw data count: %d / All obj count: %d', $rawDataCount, count($allObjects));
-		$end = microtime(True);
-		DebugUtility::pl('Prepare all %0.6f', $end - $start);
+//		DebugUtility::pl('Raw data count: %d / All obj count: %d', $rawDataCount, count($allObjects));
+//		$end = microtime(True);
+//		DebugUtility::pl('Prepare all %0.6f', $end - $start);
 		return $allObjects;
 	}
 
@@ -651,7 +651,7 @@ class Database implements DatabaseInterface {
 	protected function _deleteObjectCollectionIfNecessary() {
 		$databaseIdentifier = $this->identifier;
 		if (static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_REFERENCE_COUNT] < 1) {
-		#	unset(static::$objectCollectionMap[$databaseIdentifier]);
+			unset(static::$objectCollectionMap[$databaseIdentifier]);
 		}
 	}
 }

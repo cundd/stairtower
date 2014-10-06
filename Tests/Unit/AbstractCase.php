@@ -79,7 +79,7 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	 * Configure Xhprof
 	 */
 	protected function setUpXhprof() {
-		if (!self::$didSetupXhprof && extension_loaded('xhprof')) {
+		if (!self::$didSetupXhprof && extension_loaded('xhprof') && class_exists('XHProfRuns_Default')) {
 			ini_set('xhprof.output_dir', '/Users/daniel/Sites/xhprof/runs');
 
 

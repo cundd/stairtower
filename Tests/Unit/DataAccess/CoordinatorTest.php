@@ -109,23 +109,23 @@ class CoordinatorTest extends AbstractDataBasedCase {
 //		$database = $this->fixture->getDataByDatabase('people');
 //		DebugUtility::pl('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $m, memory_get_peak_usage() / memory_get_usage());
 
-		$memoryPeakUsage = memory_get_peak_usage();
-		$database = $this->fixture->getDatabase('contacts');
-		$path = __DIR__ . '/../../../Tests/Resources/contacts.json';
-		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
-		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
+//		$memoryPeakUsage = memory_get_peak_usage();
+//		$database = $this->fixture->getDatabase('contacts');
+//		$path = __DIR__ . '/../../../Tests/Resources/contacts.json';
+//		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
+//		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
 
-		$memoryPeakUsage = memory_get_peak_usage();
-		$database = $this->fixture->getDatabase('people-small');
-		$path = __DIR__ . '/../../../Tests/Resources/people-small.json';
-		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
-		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
+//		$memoryPeakUsage = memory_get_peak_usage();
+//		$database = $this->fixture->getDatabase('people-small');
+//		$path = __DIR__ . '/../../../Tests/Resources/people-small.json';
+//		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
+//		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
 
-		$memoryPeakUsage = memory_get_peak_usage();
+//		$memoryPeakUsage = memory_get_peak_usage();
 		$database = $this->fixture->getDatabase('people');
-		$path = __DIR__ . '/../../../Tests/Resources/people.json';
-		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
-		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
+//		$path = __DIR__ . '/../../../Tests/Resources/people.json';
+//		printf('Ratio peak A/B: %0.4f peak/current %0.4f' . PHP_EOL, memory_get_peak_usage() / $memoryPeakUsage, memory_get_peak_usage() / memory_get_usage());
+//		printf('Ratio peak/size: %0.4f current/size: %0.4f' . PHP_EOL . PHP_EOL, (memory_get_peak_usage() - $memoryPeakUsage) / filesize($path), memory_get_usage() / filesize($path));
 
 
 		$this->assertEquals($this->numberOfPersons, $database->count());
@@ -187,8 +187,8 @@ class CoordinatorTest extends AbstractDataBasedCase {
 			'address'       => '125 Stone Avenue, Worton, Alabama, 6669',
 			'about'         => 'Dolore in excepteur nisi dolor laboris ipsum proident cupidatat proident. Aliquip commodo culpa adipisicing ullamco ad. Ut ex duis tempor do id enim. Proident exercitation officia veniam magna mollit nostrud duis do qui reprehenderit. Ea culpa anim ullamco aliqua culpa nulla ex nisi irure qui incididunt reprehenderit. Labore do velit amet duis aute occaecat. Et sunt ex Lorem qui do deserunt ullamco labore.\r\n',
 			'registered'    => '2014-06-29T15:29:47 -02:00',
-			'latitude'      => 52.372838,
-			'longitude'     => -70.88925,
+			'latitude'      => 51.372838,
+			'longitude'     => -71.88925,
 			'tags'          => [
 				'id',
 				'consequat',
@@ -251,8 +251,8 @@ class CoordinatorTest extends AbstractDataBasedCase {
 			'address'       => '125 Stone Avenue, Worton, Alabama, 6669',
 			'about'         => 'Dolore in excepteur nisi dolor laboris ipsum proident cupidatat proident. Aliquip commodo culpa adipisicing ullamco ad. Ut ex duis tempor do id enim. Proident exercitation officia veniam magna mollit nostrud duis do qui reprehenderit. Ea culpa anim ullamco aliqua culpa nulla ex nisi irure qui incididunt reprehenderit. Labore do velit amet duis aute occaecat. Et sunt ex Lorem qui do deserunt ullamco labore.\r\n',
 			'registered'    => '2014-06-29T15:29:47 -02:00',
-			'latitude'      => 52.372838,
-			'longitude'     => -70.88925,
+			'latitude'      => 52.372848,
+			'longitude'     => -70.88935,
 			'tags'          => [
 				'id',
 				'consequat',
