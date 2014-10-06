@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+
+$bootstrap = new \Cundd\PersistentObjectStore\Bootstrap();
+
+/** @var DI\Container $diContainer */
+$diContainer = $bootstrap->getDiContainer();
+
+/** @var \Cundd\PersistentObjectStore\Console\ConsoleCommand $consoleCommand */
+$consoleCommand = $diContainer->get('Cundd\\PersistentObjectStore\\Console\\ConsoleCommand');
+
+
+$application = new Application();
+$application->add($consoleCommand);
+$application->run();

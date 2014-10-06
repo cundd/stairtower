@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+$bootstrap = new \Cundd\PersistentObjectStore\Bootstrap();
+
+/** @var DI\Container $diContainer */
+$diContainer = $bootstrap->getDiContainer();
+
+/** @var \Cundd\PersistentObjectStore\Server $server */
+$server = $diContainer->get('Cundd\\PersistentObjectStore\\Server');
+if ($argc > 1) {
+	$port = $argv[1];
+	$server->setPort($port);
+}
+$server->start();
+
+
