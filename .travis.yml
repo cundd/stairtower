@@ -17,7 +17,7 @@ before_script:
   - composer install --prefer-source
 
 script:
-  phpunit --bootstrap ./Tests/Unit/Bootstrap.php
+  phpunit --bootstrap ./Tests/Unit/Bootstrap.php ./Tests/Unit
 
 #git:
 #  depth: 5
