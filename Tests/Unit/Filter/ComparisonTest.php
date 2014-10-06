@@ -35,7 +35,6 @@ class ComparisonTest extends AbstractCase {
 
 	protected function tearDown() {
 		unset($this->fixture);
-		$this->tearDownXhprof();
 	}
 
 	/**

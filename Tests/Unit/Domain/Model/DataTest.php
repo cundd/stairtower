@@ -81,7 +81,6 @@ FIXTURE;
 
 	protected function tearDown() {
 		unset($this->fixture);
-		$this->tearDownXhprof();
 	}
 
 	/**

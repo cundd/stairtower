@@ -35,7 +35,6 @@ class DatabaseTest extends AbstractCase {
 	protected function tearDown() {
 //		unset($this->fixture);
 //		unset($this->coordinator);
-		$this->tearDownXhprof();
 	}
 
 	/**

@@ -57,8 +57,6 @@ class FilterResultTest extends AbstractDataBasedCase {
 	protected function tearDown() {
 		unset($this->filter);
 		unset($this->fixture);
-
-		$this->tearDownXhprof();
 	}
 
 	/**
