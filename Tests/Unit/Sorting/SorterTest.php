@@ -66,7 +66,8 @@ class SorterTest extends AbstractDataBasedCase {
 		$maxIterations = 100;
 		$maxIterations = $database->count();
 
-//		$this->assertEquals($database->count(), $sortedDatabase->count());
+		// TODO: Make this work
+		// $this->assertEquals($database->count(), $sortedDatabase->count());
 
 //		var_dump($sortedDatabase[$sortedDatabase->count() - 1]);
 

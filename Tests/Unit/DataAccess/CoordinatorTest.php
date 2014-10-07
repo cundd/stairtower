@@ -246,7 +246,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 			'name'          => 'Daniel Corn',
 			'gender'        => 'male',
 			'company'       => 'FARMEX',
-			'email'         => 'info2@cundd.net',
+			'email'         => 'support@cundd.net',
 			'phone'         => '+1 (973) 480-3194',
 			'address'       => '125 Stone Avenue, Worton, Alabama, 6669',
 			'about'         => 'Dolore in excepteur nisi dolor laboris ipsum proident cupidatat proident. Aliquip commodo culpa adipisicing ullamco ad. Ut ex duis tempor do id enim. Proident exercitation officia veniam magna mollit nostrud duis do qui reprehenderit. Ea culpa anim ullamco aliqua culpa nulla ex nisi irure qui incididunt reprehenderit. Labore do velit amet duis aute occaecat. Et sunt ex Lorem qui do deserunt ullamco labore.\r\n',
@@ -346,4 +346,3 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		$this->assertSame($this->getAllTestData(), $this->databaseToDataArray($database));
 	}
 }
- 
