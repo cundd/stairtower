@@ -25,6 +25,13 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	protected $diContainer;
 
 	/**
+	 * Defines if Xhprof should be used
+	 *
+	 * @var bool
+	 */
+	static protected $useXhprof = FALSE;
+
+	/**
 	 * @var bool
 	 */
 	static protected $didSetupXhprof = FALSE;
@@ -79,6 +86,9 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	 * Configure Xhprof
 	 */
 	protected function setUpXhprof() {
+		if (!self::$useXhprof) {
+			return;
+		}
 		if (!self::$didSetupXhprof && extension_loaded('xhprof') && class_exists('XHProfRuns_Default')) {
 			ini_set('xhprof.output_dir', '/Users/daniel/Sites/xhprof/runs');
 
@@ -94,6 +104,10 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	 * Write the Xhprof data
 	 */
 	static public function tearDownXhprof() {
+		if (!self::$useXhprof) {
+			return;
+		}
+
 		if (self::$didSetupXhprof && extension_loaded('xhprof')) {
 			$xhprofData = xhprof_disable();
 
@@ -107,4 +121,4 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 			echo PHP_EOL . 'http://localhost:8080/index.php?run=' . $runId . '&source=cundd_pos' . PHP_EOL;
 		}
 	}
-} 
+}
