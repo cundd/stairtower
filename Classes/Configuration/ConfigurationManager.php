@@ -31,14 +31,28 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 	static protected $sharedInstance;
 
 	function __construct() {
+		$basePath = $this->getBasePath();
 		$configurationReader = new ConfigurationReader();
 		$this->configuration = array_merge_recursive(array(
-			'basePath' => __DIR__ . '/../../',
-			'dataPath' => __DIR__ . '/../../var/Data/',
-			'writeDataPath' => __DIR__ . '/../../var/Data/'
+			'basePath' => $basePath,
+			'dataPath' => $basePath . '/var/Data/',
+			'writeDataPath' => $basePath . '/var/Data/',
+			'lockPath' => $basePath . '/var/Lock/',
 		), $configurationReader->readConfigurationFiles());
 
 		self::$sharedInstance = $this;
+	}
+
+	/**
+	 * Returns the path to the installation
+	 * @return string
+	 */
+	public function getBasePath() {
+		static $basePath;
+		if (!$basePath) {
+			$basePath = realpath(__DIR__ . '/../../') ?: __DIR__ . '/../../';
+		}
+		return $basePath;
 	}
 
 
