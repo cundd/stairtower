@@ -13,6 +13,7 @@ use Cundd\PersistentObjectStore\DataAccess\Exception\WriterException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
+use Cundd\PersistentObjectStore\System\Lock\Factory;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
@@ -34,9 +35,10 @@ class Writer {
 	 */
 	public function writeDatabase($database) {
 		$this->_prepareWriteDirectory();
-		$path = $this->_getWriteDirectory() . $database->getIdentifier() . '.json';
+		$databaseIdentifier = $database->getIdentifier();
+		$path = $this->_getWriteDirectory() . $databaseIdentifier . '.json';
 
-		$result = $this->_writeData($this->_getDataToWrite($database), $path);
+		$result = $this->_writeData($this->_getDataToWrite($database), $path, $databaseIdentifier);
 		if ($result === FALSE) {
 			throw new WriterException(
 				sprintf(
@@ -66,7 +68,7 @@ class Writer {
 			1412509809
 		);
 
-		$result = $this->_writeData('[]', $path);
+		$result = $this->_writeData('[]', $path, $databaseIdentifier);
 		if ($result === FALSE) {
 			throw new WriterException(
 				sprintf(
@@ -100,11 +102,12 @@ class Writer {
 			throw new WriterException($error['message'], 1412526609);
 		}
 
-		if (flock($fileHandle, LOCK_EX)) { // acquire an exclusive lock
+		$lock = $this->_getLockForDatabase($databaseIdentifier);
+		if ($lock->tryLock()) { // acquire an exclusive lock
 			ftruncate($fileHandle, 0); // truncate file
 			fflush($fileHandle); // flush output before releasing the lock
 			unlink($path);
-			flock($fileHandle, LOCK_UN); // release the lock
+			$lock->unlock(); // release the lock
 		} else {
 			throw new WriterException(
 				sprintf(
@@ -134,25 +137,37 @@ class Writer {
 	}
 
 	/**
+	 * Return a lock for the given database
+	 *
+	 * @param string $databaseIdentifier
+	 * @return \Cundd\PersistentObjectStore\System\Lock\LockInterface
+	 */
+	protected function _getLockForDatabase($databaseIdentifier) {
+		return Factory::createLock($databaseIdentifier);
+	}
+
+	/**
 	 * Writes the data string to the file system
 	 *
 	 * @param string $data
 	 * @param string $file
+	 * @param string $databaseIdentifier
 	 * @throws Exception\WriterException if the lock could not be acquired
 	 * @return int Returns the number of bytes that were written to the file, or FALSE on failure
 	 */
-	protected function _writeData($data, $file) {
+	protected function _writeData($data, $file, $databaseIdentifier) {
 		$fileHandle = @fopen($file, 'w+');
 		if (!$fileHandle) {
 			$error = error_get_last();
 			throw new WriterException($error['message'], 1410290532);
 		}
 
-		if (flock($fileHandle, LOCK_EX)) { // acquire an exclusive lock
+		$lock = $this->_getLockForDatabase($databaseIdentifier);
+		if ($lock->tryLock()) { // acquire an exclusive lock
 			ftruncate($fileHandle, 0); // truncate file
 			$bytesWritten = fwrite($fileHandle, $data);
 			fflush($fileHandle); // flush output before releasing the lock
-			flock($fileHandle, LOCK_UN); // release the lock
+			$lock->unlock(); // release the lock
 		} else {
 			throw new WriterException(
 				sprintf(

@@ -215,8 +215,39 @@ class Database implements DatabaseInterface {
 	public function remove($dataInstance) {
 		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
 
-		$identifier = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
-		unset(static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier]);
+		$objectUid          = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
+		$databaseIdentifier = $this->identifier;
+		if (!$this->_contains($dataInstance)) {
+			throw new RuntimeException(
+				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier %s are not expressive', $objectUid, $dataInstance->getIdentifierKey()),
+				1412800595
+			);
+		}
+
+		$index = array_search($objectUid, static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID], TRUE);
+		if ($index === FALSE) {
+			throw new RuntimeException(
+				sprintf('Could not determine the index of object with GUID %s', $objectUid),
+				1412801014
+			);
+		}
+		unset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid]);
+		unset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index]);
+
+		if ($index > $this->totalCount) {
+			throw new InvalidIndexException(
+				sprintf('Index %d out of bound', $index),
+				1412277617
+			);
+		}
+
+		$this->totalCount--;
+		if ($index < $this->totalCount) {
+			$this->rawData->setSize($this->totalCount);
+		}
+		if ($this->rawData->offsetExists($index)) {
+			$this->rawData[$index] = NULL;
+		}
 	}
 
 	/**
@@ -289,6 +320,10 @@ class Database implements DatabaseInterface {
 //		DebugUtility::pl('convert one');
 //		DebugUtility::pl('need to convert for index %s', $currentIndex);
 		$currentObject = $this->_convertDataAtIndexToObject($currentIndex);
+		if ($currentObject === NULL) {
+			$this->index++;
+			return $this->current();
+		}
 //		DebugUtility::pl('converted object with GUID %s', $currentObject->getGuid());
 
 		$this->_addDataInstanceAtIndex($currentObject, $currentIndex);
@@ -330,6 +365,9 @@ class Database implements DatabaseInterface {
 	 * @return DataInterface
 	 */
 	protected function _convertDataAtIndexToObject($index) {
+		if (isset($this->rawData[$index]) && $this->rawData[$index] === NULL) {
+			return NULL;
+		}
 		if (!isset($this->rawData[$index])) {
 			DebugUtility::var_dump(
 				__METHOD__ . ' valid',
@@ -555,9 +593,6 @@ class Database implements DatabaseInterface {
 				1411205350
 			);
 		}
-		static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid] = $dataInstance;
-
-		static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index] = $objectUid;
 
 		if ($index > $this->totalCount) {
 			throw new InvalidIndexException(
@@ -565,6 +600,10 @@ class Database implements DatabaseInterface {
 				1412277617
 			);
 		}
+
+		static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid] = $dataInstance;
+		static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index] = $objectUid;
+
 		if ($index === $this->totalCount) {
 			$this->rawData->setSize($this->totalCount);
 		}
@@ -586,7 +625,7 @@ class Database implements DatabaseInterface {
 		if (is_object($dataInstance)) {
 			$objectId = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
 		} else {
-			throw new RuntimeException("Given value $dataInstance is of type " .gettype($dataInstance));
+			throw new RuntimeException("Given value $dataInstance is of type " . gettype($dataInstance));
 			$objectId = $dataInstance;
 		}
 

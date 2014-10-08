@@ -12,6 +12,7 @@ use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
+use Cundd\PersistentObjectStore\System\Lock\Factory;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
@@ -49,36 +50,7 @@ class Reader {
 	 * @param array<Data> $metaData
 	 */
 	protected function _fillDatabaseWithData($database, $dataCollection, $metaDataCollection) {
-		#$databaseIdentifier = $database->getIdentifier();
-		$rawData = reset($dataCollection);
-		$rawMetaData = reset($metaDataCollection);
-
 		$database->setRawData($dataCollection);
-		return;
-
-//		do {
-//			$dataObject = new Data();
-//			$dataObject->setData($rawData);
-//
-//			$dataObject->setDatabaseIdentifier($databaseIdentifier);
-//			$dataObject->setId(isset($rawMetaData['id']) ? $rawMetaData['id'] : NULL);
-//			$dataObject->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : NULL);
-//			$dataObject->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
-//
-//			$database->attach($dataObject);
-//		} while ($rawData = next($dataCollection));
-
-		foreach ($dataCollection as $rawData) {
-			$dataObject = new Data();
-			$dataObject->setData($rawData);
-
-			$dataObject->setDatabaseIdentifier($databaseIdentifier);
-			$dataObject->setId(isset($rawMetaData['id']) ? $rawMetaData['id'] : NULL);
-			$dataObject->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : NULL);
-			$dataObject->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
-
-			$databaseIdentifier->attach($dataObject);
-		}
 	}
 
 	/**
@@ -95,7 +67,10 @@ class Reader {
 		if ($error instanceof ReaderException) throw $error;
 
 //		DebugUtility::printMemorySample();
+		$lock = Factory::createLock($databaseIdentifier);
+		$lock->lock();
 		$fileData = file_get_contents($path);
+		$lock->unlock();
 //		DebugUtility::printMemorySample();
 		$serializer = new JsonSerializer();
 		$dataCollection = $serializer->unserialize($fileData);
@@ -144,16 +119,19 @@ class Reader {
 	/**
 	 * Loads the given meta database
 	 *
-	 * @param string $database
+	 * @param string $databaseIdentifier
 	 * @return array<Data>
 	 */
-	protected function _loadMetaDataCollection($database) {
-		$path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $database . '.meta.json';
+	protected function _loadMetaDataCollection($databaseIdentifier) {
+		$path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.meta.json';
 		if (!file_exists($path)) {
 			return array();
 		}
 
+		$lock = Factory::createLock($databaseIdentifier);
+		$lock->lock();
 		$fileData = file_get_contents($path);
+		$lock->unlock();
 //		DebugUtility::printMemorySample();
 		$serializer = new JsonSerializer();
 		$dataCollection = $serializer->unserialize($fileData);

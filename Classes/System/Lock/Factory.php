@@ -17,9 +17,10 @@ class Factory {
 	/**
 	 * Creates a new Lock instance
 	 *
+	 * @param string $name Name of a named lock
 	 * @return LockInterface
 	 */
-	static public function createLock() {
-		return new FileLock();
+	static public function createLock($name = NULL) {
+		return new FileLock($name);
 	}
 } 

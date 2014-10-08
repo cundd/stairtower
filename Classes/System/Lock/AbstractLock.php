@@ -67,7 +67,7 @@ abstract class AbstractLock implements LockInterface {
 	 * @return string
 	 */
 	public function getName() {
-		if (!$this->name) {
+		if ($this->name === NULL) {
 			return (string)getmypid();
 		}
 		return $this->name;

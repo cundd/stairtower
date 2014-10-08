@@ -29,11 +29,18 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	protected $fixture;
 
 	/**
-	 * Number of congress members in the database
+	 * Number of persons in the people database
 	 *
 	 * @var int
 	 */
 	protected $numberOfPersons = 4998;
+
+	/**
+	 * Number of persons in the contacts database
+	 *
+	 * @var int
+	 */
+	protected $numberOfContacts = 5;
 
 	/**
 	 * @var \Cundd\PersistentObjectStore\DataAccess\Reader
@@ -45,12 +52,16 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		$this->databaseReader = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Reader');
 	}
 
+	protected function tearDown() {
+		unset($this->fixture);
+		parent::tearDown();
+	}
+
+
 	/**
 	 * @test
 	 */
 	public function listDatabasesTest() {
-		$database = $this->fixture->getDatabase('contacts');
-
 		$allDatabases = $this->fixture->listDatabases();
 		$persistedDatabases = $this->fixture->listPersistedDatabases();
 		$inMemoryDatabases = $this->fixture->listInMemoryDatabases();
@@ -159,6 +170,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 
 		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'contacts.json';
 		$this->assertTrue(file_exists($expectedPath));
+		unlink($expectedPath);
 	}
 
 	/**
@@ -223,6 +235,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 
 		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'people.json';
 		$this->assertTrue(file_exists($expectedPath));
+		unlink($expectedPath);
 	}
 
 	/**
@@ -294,6 +307,56 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		$databaseRetrievedFromTheCoordinator = $this->fixture->getDatabase('people');
 		$this->assertEquals($this->numberOfPersons + 1, $databaseRetrievedFromTheCoordinator->count());
 		$this->assertEquals($database->count(), $databaseRetrievedFromTheCoordinator->count());
+
+
+	}
+
+	/**
+	 * @test
+	 */
+	public function removeFromDatabaseTest() {
+		$databaseIdentifier = 'contacts';
+		$testEmail = 'paul@mckenzy.net';
+
+		/** @var Database $database */
+		$database = $this->fixture->getDatabase($databaseIdentifier);
+
+		$dataInstance = new Data();
+		$dataInstance->setData(array(
+			'firstName' => 'Paul',
+			'lastName' => 'McKenzy',
+			'email' => $testEmail,
+		));
+
+		$database->remove($dataInstance);
+		$this->assertEquals($this->numberOfContacts - 1, $database->count());
+
+		// A database just loaded from the filesystem should only contain the original number of entries
+		/** @var DatabaseInterface $newlyLoadedDatabase */
+		$newlyLoadedDatabase = $this->databaseReader->loadDatabase($databaseIdentifier);
+		$this->assertEquals($this->numberOfContacts, $newlyLoadedDatabase->count());
+		$this->assertEquals($database->count() + 1, $newlyLoadedDatabase->count());
+
+		// A database again retrieved from the coordinator should contain the added entry
+		/** @var DatabaseInterface $databaseRetrievedFromTheCoordinator */
+		$databaseRetrievedFromTheCoordinator = $this->fixture->getDatabase($databaseIdentifier);
+		$this->assertEquals($this->numberOfContacts - 1, $databaseRetrievedFromTheCoordinator->count());
+		$this->assertEquals($database->count(), $databaseRetrievedFromTheCoordinator->count());
+
+
+		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
+		$this->fixture->commitDatabase($database);
+		$this->assertFileExists($expectedPath);
+
+		$writtenData = json_decode(file_get_contents($expectedPath), TRUE);
+		$this->assertTrue($writtenData !== FALSE);
+
+		foreach ($writtenData as $data) {
+			$this->assertNotNull($data['email']);
+			$this->assertNotEquals($testEmail, $data['email']);
+		}
+//		$this->assertEquals($database->count(), count($writtenData));
+//		$this->assertEquals($this->numberOfContacts - 1, count($writtenData));
 
 
 	}

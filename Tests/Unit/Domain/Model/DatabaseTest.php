@@ -56,6 +56,13 @@ class DatabaseTest extends AbstractCase {
 		$this->assertSame('green', $person->valueForKeyPath('eyeColor'));
 		$this->assertSame('Georgette Benjamin', $person->valueForKeyPath('name'));
 		$this->assertSame('female', $person->valueForKeyPath('gender'));
+
+		$this->fixture = $this->coordinator->getDatabase('contacts');
+		$person = $this->fixture->findByIdentifier('paul@mckenzy.net');
+		$this->assertNotNull($person);
+
+		$this->assertSame('McKenzy', $person->valueForKeyPath('lastName'));
+		$this->assertSame('Paul', $person->valueForKeyPath('firstName'));
 	}
 
 	/**
