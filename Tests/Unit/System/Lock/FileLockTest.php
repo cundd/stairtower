@@ -83,5 +83,53 @@ class FileLockTest extends AbstractCase {
 		$this->fixture->unlock();
 		$this->assertFalse($this->fixture->isLocked());
 	}
+
+	/**
+	 * @test
+	 */
+	public function namedLockTest() {
+		$this->fixture = new FileLockWithAccessToFilePath('lock-name');
+
+		$this->assertFalse($this->fixture->isLocked());
+		$this->fixture->lock();
+		$this->assertTrue($this->fixture->isLocked());
+		$this->fixture->unlock();
+		$this->assertFalse($this->fixture->isLocked());
+	}
+
+	/**
+	 * @test
+	 */
+	public function namedUnlockTest() {
+		$this->fixture = new FileLockWithAccessToFilePath('lock-name');
+		$lockPath = $this->fixture->getLockPath();
+
+		$this->assertFalse($this->fixture->isLocked());
+		$this->fixture->lock();
+		$this->assertTrue($this->fixture->isLocked());
+		$this->fixture->unlock();
+		$this->assertFalse($this->fixture->isLocked());
+		$this->assertFileNotExists($lockPath);
+
+		$this->fixture->lock();
+		$this->assertTrue($this->fixture->isLocked());
+		$this->assertFileExists($lockPath);
+
+		unset($this->fixture);
+		$this->assertFileNotExists($lockPath);
+	}
+
+	/**
+	 * @test
+	 */
+	public function namedTryLockTest() {
+		$this->fixture = new FileLockWithAccessToFilePath('lock-name');
+
+		$this->assertFalse($this->fixture->isLocked());
+		$this->fixture->tryLock();
+		$this->assertTrue($this->fixture->isLocked());
+		$this->fixture->unlock();
+		$this->assertFalse($this->fixture->isLocked());
+	}
 }
  
