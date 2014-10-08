@@ -88,7 +88,7 @@ class FileLockTest extends AbstractCase {
 	 * @test
 	 */
 	public function namedLockTest() {
-		$this->fixture = new FileLockWithAccessToFilePath('lock-name');
+		$this->fixture = new FileLockWithAccessToFilePath('lock-name/with-a-slash');
 
 		$this->assertFalse($this->fixture->isLocked());
 		$this->fixture->lock();
@@ -101,7 +101,7 @@ class FileLockTest extends AbstractCase {
 	 * @test
 	 */
 	public function namedUnlockTest() {
-		$this->fixture = new FileLockWithAccessToFilePath('lock-name');
+		$this->fixture = new FileLockWithAccessToFilePath('lock-name/with-a-slash');
 		$lockPath = $this->fixture->getLockPath();
 
 		$this->assertFalse($this->fixture->isLocked());
@@ -123,7 +123,7 @@ class FileLockTest extends AbstractCase {
 	 * @test
 	 */
 	public function namedTryLockTest() {
-		$this->fixture = new FileLockWithAccessToFilePath('lock-name');
+		$this->fixture = new FileLockWithAccessToFilePath('lock-name/with-a-slash');
 
 		$this->assertFalse($this->fixture->isLocked());
 		$this->fixture->tryLock();
