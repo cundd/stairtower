@@ -15,6 +15,17 @@ namespace Cundd\PersistentObjectStore\System\Lock;
  */
 abstract class AbstractLock implements LockInterface {
 	/**
+	 * Identifier for the lock
+	 *
+	 * @var string
+	 */
+	protected $name;
+
+	function __construct($name = NULL) {
+		$this->name = $name;
+	}
+
+	/**
 	 * Attempts to acquire a lock, blocking a thread’s execution until the lock can be acquired
 	 *
 	 * @return void
@@ -49,12 +60,17 @@ abstract class AbstractLock implements LockInterface {
 	}
 
 	/**
-	 * Returns an ID for the lock
+	 * Returns the identifier of the named lock
+	 *
+	 * This can be used to get an exclusive lock that is defined through this identifier
 	 *
 	 * @return string
 	 */
-	public function getId() {
-		return (string)getmypid();
+	public function getName() {
+		if (!$this->name) {
+			return (string)getmypid();
+		}
+		return $this->name;
 	}
 
 	function __destruct() {

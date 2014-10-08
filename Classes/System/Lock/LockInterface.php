@@ -42,4 +42,13 @@ interface LockInterface {
 	 * @return bool
 	 */
 	public function isLocked();
+
+	/**
+	 * Returns the identifier of the named lock
+	 *
+	 * This can be used to get an exclusive lock that is defined through this identifier
+	 *
+	 * @return string
+	 */
+	public function getName();
 }

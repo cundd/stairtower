@@ -60,7 +60,7 @@ class FileLock extends AbstractLock {
 			}
 			$lockPathExists = TRUE;
 		}
-		return $lockPath . 'lock_' . $this->getId();
+		return $lockPath . 'lock_' . $this->getName();
 	}
 
 } 
