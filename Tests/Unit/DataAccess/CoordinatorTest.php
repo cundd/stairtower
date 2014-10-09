@@ -10,7 +10,7 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\DataAccess\Exception\InvalidDatabaseException;
+use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException;
 use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
@@ -100,7 +100,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	}
 
 	/**
-	 * @expectedException     InvalidDatabaseException
+	 * @expectedException     \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException
 	 */
 	public function dropNotExistingDatabaseTest() {
 		$databaseIdentifier = 'test-db-' . time();

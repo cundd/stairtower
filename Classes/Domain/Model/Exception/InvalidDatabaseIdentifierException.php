@@ -6,13 +6,13 @@
  * Time: 21:42
  */
 
-namespace Cundd\PersistentObjectStore\Exception;
+namespace Cundd\PersistentObjectStore\Domain\Model\Exception;
 
 
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**
- * Exception thrown if an invalid database identifier is detected
+ * Exception thrown if an invalid data identifier is detected
  *
  * @package Cundd\PersistentObjectStore\Exception
  */

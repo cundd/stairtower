@@ -7,7 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess;
-use Cundd\PersistentObjectStore\DataAccess\Exception\InvalidDatabaseException;
+use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;

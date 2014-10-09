@@ -15,6 +15,11 @@ namespace Cundd\PersistentObjectStore;
  */
 interface Constants {
 	/**
+	 * Version number
+	 */
+	const VERSION = '0.1.0';
+
+	/**
 	 * Key used to store meta data in JSON
 	 */
 	const DATA_META_KEY = '__meta';

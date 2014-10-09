@@ -7,7 +7,8 @@
  */
 
 namespace Cundd\PersistentObjectStore\Utility;
-use Cundd\PersistentObjectStore\Exception\InvalidDatabaseIdentifierException;
+use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
+use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException;
 use ProxyManagerTest\Factory\NullObjectFactoryTest;
 
 /**
@@ -17,13 +18,23 @@ use ProxyManagerTest\Factory\NullObjectFactoryTest;
  */
 abstract class GeneralUtility {
 	/**
-	 * Checks if the given identifier is valid
+	 * Checks if the given database identifier is valid
 	 *
 	 * @param string $identifier
-	 * @throws InvalidDatabaseIdentifierException if the database isn't valid
+	 * @throws \Cundd\PersistentObjectStore\DataAccess\Exception\\Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException if the database isn't valid
 	 */
 	static public function assertDatabaseIdentifier($identifier) {
 		if (!preg_match('(^([a-zA-Z]{1}[a-zA-Z0-9_\-]{0,})$)', $identifier)) throw new InvalidDatabaseIdentifierException("Invalid database identifier '$identifier'", 1408996075);
+	}
+
+	/**
+	 * Checks if the given data identifier is valid
+	 *
+	 * @param string $identifier
+	 * @throws \Cundd\PersistentObjectStore\DataAccess\Exception\\Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException if the database isn't valid
+	 */
+	static public function assertDataIdentifier($identifier) {
+		if (!preg_match('(^([a-zA-Z]{1}[a-zA-Z0-9_\-]{0,})$)', $identifier)) throw new InvalidDataIdentifierException("Invalid data identifier '$identifier'", 1412889537);
 	}
 
 	/**

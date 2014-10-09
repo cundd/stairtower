@@ -13,6 +13,7 @@ use Cundd\PersistentObjectStore\Console\AbstractCommand;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -42,6 +43,7 @@ class AbstractDataCommand extends AbstractCommand {
 	 */
 	protected function findDataInstanceFromInput(InputInterface $input, $graceful = FALSE) {
 		$objectIdentifier = $input->getArgument('identifier');
+		GeneralUtility::assertDataIdentifier($objectIdentifier);
 		$database = $this->findDatabaseInstanceFromInput($input);
 		$dataInstance = $database->findByIdentifier($objectIdentifier);
 		if (!$dataInstance && !$graceful) throw new InvalidDataException(sprintf('Object with ID "%s" not found in database %s', $objectIdentifier, $database->getIdentifier()));

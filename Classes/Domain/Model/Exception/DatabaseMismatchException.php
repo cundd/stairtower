@@ -6,7 +6,7 @@ namespace Cundd\PersistentObjectStore\Domain\Model\Exception;
  * Date: 21.09.14
  * Time: 18:05
  */
-use Cundd\PersistentObjectStore\Exception\InvalidDatabaseIdentifierException;
+use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
 
 /**
  * Exception thrown if a Data instance is added to the database and the database identifier don't match

@@ -6,7 +6,7 @@
  * Time: 20:32
  */
 
-namespace Cundd\PersistentObjectStore\DataAccess\Exception;
+namespace Cundd\PersistentObjectStore\Domain\Model\Exception;
 
 
 use Cundd\PersistentObjectStore\RuntimeException;
