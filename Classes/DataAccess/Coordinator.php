@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\DataAccess;
 use Cundd\PersistentObjectStore\DataAccess\Exception\InvalidDatabaseException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Doctrine\DBAL\DriverManager;
@@ -49,7 +50,7 @@ class Coordinator implements CoordinatorInterface {
 	 * Returns the database with the given identifier
 	 *
 	 * @param string $databaseIdentifier
-	 * @return Database
+	 * @return DatabaseInterface
 	 */
 	public function getDatabase($databaseIdentifier) {
 		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
@@ -61,7 +62,7 @@ class Coordinator implements CoordinatorInterface {
 	 *
 	 * @param string $databaseIdentifier Unique identifier of the database
 	 * @param array  $options            Additional options for the created database
-	 * @return Database
+	 * @return DatabaseInterface
 	 */
 	public function createDatabase($databaseIdentifier, $options = array()) {
 		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
@@ -183,7 +184,7 @@ class Coordinator implements CoordinatorInterface {
 	/**
 	 * Commit the database to the file system
 	 *
-	 * @param Database $database
+	 * @param DatabaseInterface $database
 	 */
 	public function commitDatabase($database) {
 		$this->dataWriter->writeDatabase($database);

@@ -26,6 +26,14 @@ interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	public function filter($comparisons);
 
 	/**
+	 * Returns the object with the given identifier
+	 *
+	 * @param string $identifier
+	 * @return DataInterface|NULL
+	 */
+	public function findByIdentifier($identifier);
+
+	/**
 	 * Sets the raw data
 	 *
 	 * [Optional]
@@ -57,4 +65,13 @@ interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	 * @param DataInterface $dataInstance
 	 */
 	public function remove($dataInstance);
+
+	/**
+	 * Returns if the database contains the given data instance
+	 *
+	 * @param DataInterface|string $dataInstance
+	 * @return boolean
+	 */
+	public function contains($dataInstance);
+
 } 

@@ -35,6 +35,7 @@ class ConsoleCommand extends Command {
   |   ___    |    |   |–_  |
   |   |_| [] | [] |   |  –_|
 
+         STAIRTOWER
    PERSISTENT OBJECT STORE
     a home for your data
 
@@ -60,7 +61,7 @@ WELCOME;
 	 */
 	protected function configure() {
 		$this
-			->setName('pos:console')
+			->setName('console')
 			->setDescription('Run an interactive session')
 //			->addArgument(
 //				'name',

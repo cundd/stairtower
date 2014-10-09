@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 
 /**
  * Interface for coordinators responsible for managing the data
@@ -19,7 +20,7 @@ interface CoordinatorInterface {
 	 * Returns the database with the given identifier
 	 *
 	 * @param string $databaseIdentifier
-	 * @return Database
+	 * @return DatabaseInterface
 	 */
 	public function getDatabase($databaseIdentifier);
 
@@ -28,7 +29,7 @@ interface CoordinatorInterface {
 	 *
 	 * @param string $databaseIdentifier Unique identifier of the database
 	 * @param array  $options Additional options for the created database
-	 * @return Database
+	 * @return DatabaseInterface
 	 */
 	public function createDatabase($databaseIdentifier, $options = array());
 
@@ -80,7 +81,7 @@ interface CoordinatorInterface {
 	/**
 	 * Commit the database to the file system
 	 *
-	 * @param Database $database
+	 * @param DatabaseInterface $database
 	 */
 	public function commitDatabase($database);
 }

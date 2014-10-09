@@ -14,5 +14,13 @@ $consoleCommand = $diContainer->get('Cundd\\PersistentObjectStore\\Console\\Cons
 
 
 $application = new Application();
-$application->add($consoleCommand);
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\ConsoleCommand'));
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Database\\ListCommand'));
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Database\\CreateCommand'));
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Database\\DropCommand'));
+
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\ListCommand'));
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\AddCommand'));
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\FindCommand'));
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\RemoveCommand'));
 $application->run();

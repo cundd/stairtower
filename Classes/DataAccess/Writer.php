@@ -11,6 +11,7 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Exception\WriterException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
@@ -30,7 +31,7 @@ class Writer {
 	/**
 	 * Write the given database to the disk
 	 *
-	 * @param Database $database
+	 * @param DatabaseInterface $database
 	 * @throws Exception\WriterException if the data could not be written
 	 */
 	public function writeDatabase($database) {
@@ -56,7 +57,7 @@ class Writer {
 	 *
 	 * @param string $databaseIdentifier Unique identifier of the database
 	 * @param array  $options Additional options for the created database
-	 * @return Database
+	 * @return DatabaseInterface
 	 */
 	public function createDatabase($databaseIdentifier, $options = array()) {
 		$this->_prepareWriteDirectory();
@@ -184,7 +185,7 @@ class Writer {
 	/**
 	 * Prepares the directory for writing
 	 *
-	 * @throws Exception\WriterException if the folder exists but is not writeable
+	 * @throws Exception\WriterException if the folder exists but is not writable
 	 */
 	protected function _prepareWriteDirectory() {
 		$writeFolder = $this->_getWriteDirectory();
@@ -198,7 +199,7 @@ class Writer {
 	/**
 	 * Returns the Data objects that will be written to the file system
 	 *
-	 * @param Database $database
+	 * @param DatabaseInterface $database
 	 * @return array
 	 */
 	protected function _getObjectsWrite($database) {
@@ -207,8 +208,11 @@ class Writer {
 		while ($database->valid()) {
 			/** @var DataInterface $item */
 			$item = $database->current();
-
-			$objectsToWrite[] = $item->getData();
+			if ($item) {
+				$objectsToWrite[] = $item->getData();
+			} else {
+				DebugUtility::pl('Current item is NULL');
+			}
 			$database->next();
 		}
 		return $objectsToWrite;
@@ -217,7 +221,7 @@ class Writer {
 	/**
 	 * Returns the string that will be written to the file system
 	 *
-	 * @param Database $database
+	 * @param DatabaseInterface $database
 	 * @return string
 	 */
 	protected function _getDataToWrite($database) {

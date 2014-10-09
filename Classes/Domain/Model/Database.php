@@ -11,6 +11,7 @@ namespace Cundd\PersistentObjectStore\Domain\Model;
 use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\DatabaseMismatchException;
+use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Filter;
@@ -320,14 +321,15 @@ class Database implements DatabaseInterface {
 //		DebugUtility::pl('convert one');
 //		DebugUtility::pl('need to convert for index %s', $currentIndex);
 		$currentObject = $this->_convertDataAtIndexToObject($currentIndex);
-		if ($currentObject === NULL) {
+		if ($currentObject === NULL && $this->index < $this->totalCount) {
 			$this->index++;
 			return $this->current();
 		}
 //		DebugUtility::pl('converted object with GUID %s', $currentObject->getGuid());
 
-		$this->_addDataInstanceAtIndex($currentObject, $currentIndex);
-
+		if ($currentObject) {
+			$this->_addDataInstanceAtIndex($currentObject, $currentIndex);
+		}
 		return $currentObject;
 
 
@@ -652,6 +654,7 @@ class Database implements DatabaseInterface {
 	 * @param DataInterface $dataInstance
 	 */
 	protected function _assertDataInstancesDatabaseIdentifier($dataInstance) {
+		if (!is_object($dataInstance)) throw new InvalidDataException(sprintf('Given data instance is not of type object but %s', gettype($dataInstance)), 1412859398);
 		if (!$dataInstance->getDatabaseIdentifier()) {
 			if ($dataInstance instanceof Data) {
 				$dataInstance->setDatabaseIdentifier($this->identifier);
