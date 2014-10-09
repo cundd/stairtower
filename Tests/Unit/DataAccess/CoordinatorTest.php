@@ -357,8 +357,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		}
 //		$this->assertEquals($database->count(), count($writtenData));
 //		$this->assertEquals($this->numberOfContacts - 1, count($writtenData));
-
-
+		unlink($expectedPath);
 	}
 
 	/**
