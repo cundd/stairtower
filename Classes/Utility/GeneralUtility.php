@@ -34,7 +34,7 @@ abstract class GeneralUtility {
 	 * @throws \Cundd\PersistentObjectStore\DataAccess\Exception\\Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException if the database isn't valid
 	 */
 	static public function assertDataIdentifier($identifier) {
-		if (!preg_match('(^([a-zA-Z]{1}[a-zA-Z0-9_\-]{0,})$)', $identifier)) throw new InvalidDataIdentifierException("Invalid data identifier '$identifier'", 1412889537);
+		if (!preg_match('(^([a-zA-Z]{1}[a-zA-Z0-9_\-\.@]{0,})$)', $identifier)) throw new InvalidDataIdentifierException("Invalid data identifier '$identifier'", 1412889537);
 	}
 
 	/**

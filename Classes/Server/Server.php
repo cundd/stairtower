@@ -6,7 +6,7 @@
  * Time: 19:38
  */
 
-namespace Cundd\PersistentObjectStore;
+namespace Cundd\PersistentObjectStore\Server;
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
 use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Driver\Connection;

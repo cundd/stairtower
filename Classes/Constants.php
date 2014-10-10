@@ -15,6 +15,29 @@ namespace Cundd\PersistentObjectStore;
  */
 interface Constants {
 	/**
+	 * Welcome message
+	 */
+	const MESSAGE_WELCOME = <<<WELCOME
+
+
+                        /\
+                       /  \
+                      /____\
+      __________      |    |
+    /__________/\     |[]_ |
+   /__________/()\    |   -|_
+  /__________/    \   |    |
+  | [] [] [] | [] |  _|    |
+  |   ___    |    |   |–_  |
+  |   |_| [] | [] |   |  –_|
+
+         STAIRTOWER
+   PERSISTENT OBJECT STORE
+    a home for your data
+
+WELCOME;
+
+	/**
 	 * Version number
 	 */
 	const VERSION = '0.1.0';

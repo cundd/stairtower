@@ -21,26 +21,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package Cundd\PersistentObjectStore\Console
  */
 abstract class AbstractCommand extends Command {
-	const MESSAGE_WELCOME = <<<WELCOME
-
-
-                        /\
-                       /  \
-                      /____\
-      __________      |    |
-    /__________/\     |[]_ |
-   /__________/()\    |   -|_
-  /__________/    \   |    |
-  | [] [] [] | [] |  _|    |
-  |   ___    |    |   |–_  |
-  |   |_| [] | [] |   |  –_|
-
-         STAIRTOWER
-   PERSISTENT OBJECT STORE
-    a home for your data
-
-WELCOME;
-
 	/**
 	 * Data Access Coordinator
 	 *
