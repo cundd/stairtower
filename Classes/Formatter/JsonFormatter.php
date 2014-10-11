@@ -28,16 +28,26 @@ class JsonFormatter extends AbstractFormatter {
 	 * @return string
 	 */
 	public function format($inputModel) {
-		$foundData = array();
-
 		if (is_array($inputModel) || $inputModel instanceof \Iterator) {
+			$foundData = array();
 			/** @var DataInterface $dataObject */
 			foreach ($inputModel as $dataObject) {
 				$foundData[] = $dataObject->getData();
 			}
 			return $this->serializer->serialize($foundData);
+		} else if (is_scalar($inputModel)) {
+			return $this->serializer->serialize(array('message' => $inputModel));
 		}
 		return $this->serializer->serialize($inputModel);
+	}
+
+	/**
+	 * Returns the content suffix for the formatter
+	 *
+	 * @return string
+	 */
+	public function getContentSuffix() {
+		return 'json';
 	}
 
 } 

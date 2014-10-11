@@ -7,13 +7,8 @@
  */
 
 namespace Cundd\PersistentObjectStore\Server;
-use Cundd\PersistentObjectStore\DataAccess\Coordinator;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
-use Cundd\PersistentObjectStore\Driver\Connection;
-use Cundd\PersistentObjectStore\Driver\Driver;
-use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
-use Doctrine\DBAL\DriverManager;
+use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
 
 /**
  * Abstract server
@@ -52,13 +47,19 @@ abstract class AbstractServer {
 	protected $serializer;
 
 	/**
-	 * Formatter
+	 * DI container
 	 *
-	 * @var \Cundd\PersistentObjectStore\Formatter\JsonFormatter
+	 * @var \DI\Container
 	 * @Inject
 	 */
-	protected $formatter;
+	protected $diContainer;
 
+	/**
+	 * Formatter
+	 *
+	 * @var \Cundd\PersistentObjectStore\Formatter\FormatterInterface
+	 */
+	protected $formatter;
 
 	/**
 	 * Event loop
@@ -69,12 +70,43 @@ abstract class AbstractServer {
 	protected $eventLoop;
 
 	/**
+	 * Indicates if the server is currently running
+	 *
+	 * @var bool
+	 */
+	protected $isRunning = FALSE;
+
+	/**
+	 * Create and configure the server objects
+	 */
+	abstract protected function setupServer();
+
+	/**
+	 * Starts the request loop
+	 */
+	public function start() {
+		$this->setupServer();
+		$this->isRunning = TRUE;
+		$this->eventLoop->run();
+		$this->isRunning = FALSE;
+	}
+
+	/**
+	 * Stops to listen for connections
+	 */
+	public function stop() {
+		$this->getEventLoop()->stop();
+		$this->isRunning = FALSE;
+	}
+
+	/**
 	 * Sets the IP to listen on
 	 *
 	 * @param string $ip
 	 * @return $this
 	 */
 	public function setIp($ip) {
+		if ($this->isRunning) throw new InvalidServerChangeException('Can not change IP when server is running', 1412956590);
 		$this->ip = $ip;
 		return $this;
 	}
@@ -94,6 +126,7 @@ abstract class AbstractServer {
 	 * @return $this
 	 */
 	public function setPort($port) {
+		if ($this->isRunning) throw new InvalidServerChangeException('Can not change port when server is running', 1412956591);
 		$this->port = $port;
 		return $this;
 	}
@@ -124,23 +157,19 @@ abstract class AbstractServer {
 	 * @return $this
 	 */
 	public function setEventLoop($eventLoop) {
+		if ($this->isRunning) throw new InvalidServerChangeException('Can not change the event loop when server is running', 1412956592);
 		$this->eventLoop = $eventLoop;
 		return $this;
 	}
 
 	/**
-	 * Stops to listen for connections
-	 */
-	public function stop() {
-		$this->getEventLoop()->stop();
-	}
-
-	/**
 	 * Handles the given exception
 	 *
-	 * @param \Exception $error
+	 * @param \Exception           $error
+	 * @param \React\Http\Response $response
+	 * @throws \Exception
 	 */
-	protected function handleError($error) {
+	protected function handleError($error, \React\Http\Response $response) {
 		throw $error;
 	}
 
@@ -172,9 +201,4 @@ abstract class AbstractServer {
 
 		$this->write(PHP_EOL);
 	}
-
-	/**
-	 * Starts to listen for connections
-	 */
-	abstract public function start();
 }

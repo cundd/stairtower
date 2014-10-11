@@ -9,21 +9,19 @@
 namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\DataAccess\Coordinator;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
-use Cundd\PersistentObjectStore\Driver\Connection;
-use Cundd\PersistentObjectStore\Driver\Driver;
-use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
-use Cundd\PersistentObjectStore\Server\ValueObject\PathInfoFactory;
+use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
+use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodServerException;
+use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
+use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
+use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
+use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use Doctrine\DBAL\DriverManager;
 use React\Http\Server as HttpServer;
-use \React\Http\Request;
+use React\Http\Request;
+use React\Http\Response;
 use React\Socket\Server as SocketServer;
+use React\Stream\BufferedSink;
 
 /**
  * REST server
@@ -45,54 +43,104 @@ class RestServer extends AbstractServer {
 	 * @param \React\Http\Response $response
 	 */
 	public function handle($request, $response) {
-		$response->writeHead(200, array('Content-Type' => 'application/json'));
-
-
 		try {
-			$pathInfo = $this->getPathPartsForRequest($request);
+			$handler     = $this->getHandlerForRequest($request);
+			$requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
 
-			if ($pathInfo->getDataIdentifier()) {
-				$response->write("Give me object ID {$pathInfo->getDataIdentifier()} from database {$pathInfo->getDatabaseIdentifier()}\n");
+			$requestResult = NULL;
+			$method = $request->getMethod();
 
-				DebugUtility::var_dump($this->getDataForRequest($request));
+			switch ($method) {
+				case 'POST':
+				case 'PUT':
+					$promise = $this->getRequestBodyPromiseForRequest($request);
+					$self    = $this;
+					$promise->then(function ($body) use ($self, $handler, $request, $response, $requestInfo) {
+						if ($request->getMethod() === 'POST') {
+							$requestResult = $handler->create($requestInfo, $body);
+						} else {
+							$requestResult = $handler->update($requestInfo, $body);
+						}
+						$self->handleResult($requestResult, $request, $response);
+					});
+					break;
 
-				$response->end($this->formatter->format($this->getDataForRequest($request)));
-			} else if ($pathInfo->getDatabaseIdentifier()) {
-				$response->write("Give me database {$pathInfo->getDatabaseIdentifier()} \n");
+				case 'GET':
+					$requestResult = $handler->read($requestInfo);
+					break;
 
-				$response->end($this->formatter->format($this->getDatabaseForRequest($request)));
-			} else {
-				$response->end("Hallo World\n");
+				case 'DELETE':
+					$requestResult = $handler->delete($requestInfo);
+					break;
+
+				default:
+					$requestResult = new HandlerResult(405, new InvalidRequestMethodServerException(sprintf('Request method "%s" not valid', $method)), 1413033763);
 			}
+			$this->handleResult($requestResult, $request, $response);
+			DebugUtility::var_dump($requestResult, $request->getMethod());
 		} catch (\Exception $exception) {
-			$this->handleError($exception);
+			$this->handleError($exception, $response);
 		}
-
-
-//		if ($request->getPath() === '/') {
-//		} else {
-//
-//
-//			$databaseIdentifier = $input->getArgument('database');
-//			return
-//			$objectIdentifier = $input->getArgument('identifier');
-//			GeneralUtility::assertDataIdentifier($objectIdentifier);
-//			$database = $this->findDatabaseInstanceFromInput($input);
-//			$dataInstance = $database->findByIdentifier($objectIdentifier);
-//			if (!$dataInstance && !$graceful) throw new InvalidDataException(sprintf('Object with ID "%s" not found in database %s', $objectIdentifier, $database->getIdentifier()));
-//			return $dataInstance;
-//
-//		}
-
-//		$coordinator = $this->coordinator;
-//		$serializer = $this->serializer;
-//		$formatter = $this->formatter;
 	}
 
 	/**
-	 * Starts the request loop
+	 * Handle the given request result
+	 *
+	 * @param HandlerResultInterface $result
+	 * @param Request $request
+	 * @param Response $response
 	 */
-	public function start() {
+	public function handleResult($result, $request, $response) {
+		$formatter = $this->getFormatterForRequest($request);
+		if ($result) {
+			$response->writeHead(
+				$result->getStatusCode(),
+				array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()))
+			);
+			$response->end($formatter->format($result->getData()));
+		} else {
+			$response->writeHead(
+				204,
+				array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()))
+			);
+			$response->end($formatter->format('No content'));
+		}
+	}
+
+	/**
+	 * Returns a promise for the request body of the given request
+	 *
+	 * @param Request $request
+	 * @return \React\Promise\Promise
+	 */
+	public function getRequestBodyPromiseForRequest($request) {
+		return BufferedSink::createPromise($request);
+	}
+
+	/**
+	 * Returns the formatter for the given request
+	 *
+	 * @param Request $request
+	 * @return FormatterInterface
+	 */
+	public function getFormatterForRequest(Request $request) {
+		return $this->diContainer->get('Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter');
+	}
+
+	/**
+	 * Returns the handler for the given request
+	 *
+	 * @param Request $request
+	 * @return HandlerInterface
+	 */
+	public function getHandlerForRequest(Request $request) {
+		return $this->diContainer->get('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface');
+	}
+
+	/**
+	 * Create and configure the server objects
+	 */
+	protected function setupServer() {
 		$socketServer = new SocketServer($this->getEventLoop());
 		$httpServer   = new HttpServer($socketServer, $this->getEventLoop());
 		$httpServer->on('request', array($this, 'handle'));
@@ -100,43 +148,5 @@ class RestServer extends AbstractServer {
 
 		$this->writeln(Constants::MESSAGE_WELCOME . PHP_EOL);
 		$this->writeln('Start listening on %s:%s', $this->ip, $this->port);
-
-		$this->eventLoop->run();
-	}
-
-	/**
-	 * Returns the PathInfo for the given request
-	 *
-	 * @param Request $request
-	 * @return \Cundd\PersistentObjectStore\Server\ValueObject\PathInfo
-	 */
-	public function getPathPartsForRequest(Request $request) {
-		return PathInfoFactory::buildPathInfoFromPath($request->getPath());
-	}
-
-	/**
-	 * Returns the database for the given request or NULL if it is not specified
-	 *
-	 * @param Request $request
-	 * @return DatabaseInterface|NULL
-	 */
-	public function getDatabaseForRequest(Request $request) {
-		$pathInfo = $this->getPathPartsForRequest($request);
-		return $pathInfo->getDatabaseIdentifier() ? $this->coordinator->getDatabase($pathInfo->getDatabaseIdentifier()) : NULL;
-	}
-
-	/**
-	 * Returns the data instance for the given request or NULL if it is not specified
-	 *
-	 * @param Request $request
-	 * @return DataInterface|NULL
-	 */
-	public function getDataForRequest(Request $request) {
-		$pathInfo = $this->getPathPartsForRequest($request);
-		if (!$pathInfo->getDataIdentifier()) {
-			return NULL;
-		}
-		$database = $this->getDatabaseForRequest($request);
-		return $database ? $database->findByIdentifier($pathInfo->getDataIdentifier()) : NULL;
 	}
 }

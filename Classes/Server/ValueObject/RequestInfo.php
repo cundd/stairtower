@@ -7,15 +7,16 @@
  */
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
+use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 
 /**
- * Object that holds information about an parsed request path
+ * Object that holds information about a parsed request
  *
  * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class PathInfo {
+class RequestInfo implements Immutable {
 	/**
 	 * Identifier for the database
 	 *
@@ -31,14 +32,24 @@ class PathInfo {
 	protected $dataIdentifier = '';
 
 	/**
-	 * Create a new Path Info object
+	 * Current request method
 	 *
-	 * @param $dataIdentifier
-	 * @param $databaseIdentifier
+	 * @var string
 	 */
-	function __construct($dataIdentifier, $databaseIdentifier) {
+	protected $method;
+
+	/**
+	 * Create a new RequestInfo object
+	 *
+	 * @param string $dataIdentifier
+	 * @param string $databaseIdentifier
+	 * @param string $method
+	 */
+	function __construct($dataIdentifier, $databaseIdentifier, $method) {
+		if ($method) GeneralUtility::assertRequestMethod($method);
 		if ($dataIdentifier) GeneralUtility::assertDataIdentifier($dataIdentifier);
 		if ($databaseIdentifier) GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
+		$this->method = $method;
 		$this->dataIdentifier     = $dataIdentifier;
 		$this->databaseIdentifier = $databaseIdentifier;
 	}
@@ -61,4 +72,33 @@ class PathInfo {
 	public function getDatabaseIdentifier() {
 		return $this->databaseIdentifier;
 	}
+
+	/**
+	 * Returns the request method
+	 *
+	 * @return string
+	 */
+	public function getMethod() {
+		return $this->method;
+	}
+
+	/**
+	 * Returns if the request is a read request
+	 *
+	 * @return bool
+	 */
+	public function isReadRequest() {
+		return $this->method === 'GET' || $this->method === 'HEAD';
+	}
+
+	/**
+	 * Returns if the request is a write request
+	 *
+	 * @return bool
+	 */
+	public function isWriteRequest() {
+		return !$this->isReadRequest();
+	}
+
+
 }

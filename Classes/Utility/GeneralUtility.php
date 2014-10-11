@@ -9,7 +9,7 @@
 namespace Cundd\PersistentObjectStore\Utility;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException;
-use ProxyManagerTest\Factory\NullObjectFactoryTest;
+use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodServerException;
 
 /**
  * Interface GeneralUtilityInterface
@@ -21,7 +21,7 @@ abstract class GeneralUtility {
 	 * Checks if the given database identifier is valid
 	 *
 	 * @param string $identifier
-	 * @throws \Cundd\PersistentObjectStore\DataAccess\Exception\\Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException if the database isn't valid
+	 * @throws \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException if the database isn't valid
 	 */
 	static public function assertDatabaseIdentifier($identifier) {
 		if (!preg_match('(^([a-zA-Z]{1}[a-zA-Z0-9_\-]{0,})$)', $identifier)) throw new InvalidDatabaseIdentifierException("Invalid database identifier '$identifier'", 1408996075);
@@ -31,10 +31,20 @@ abstract class GeneralUtility {
 	 * Checks if the given data identifier is valid
 	 *
 	 * @param string $identifier
-	 * @throws \Cundd\PersistentObjectStore\DataAccess\Exception\\Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException if the database isn't valid
+	 * @throws \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException if the database isn't valid
 	 */
 	static public function assertDataIdentifier($identifier) {
 		if (!preg_match('(^([a-zA-Z]{1}[a-zA-Z0-9_\-\.@]{0,})$)', $identifier)) throw new InvalidDataIdentifierException("Invalid data identifier '$identifier'", 1412889537);
+	}
+
+	/**
+	 * Checks if the given method is a valid HTTP method
+	 *
+	 * @param string $method
+	 * @throw \Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodServerException
+	 */
+	static public function assertRequestMethod($method) {
+		if (!in_array($method, array('GET', 'POST', 'PUT', 'DELETE', 'HEAD'))) throw new InvalidRequestMethodServerException("Invalid method '$method'", 1413052000);
 	}
 
 	/**

@@ -6,9 +6,9 @@
  * Time: 12:56
  */
 $persistentObjectStoreClassBase = 'Cundd\\PersistentObjectStore\\';
-
 return array(
 	$persistentObjectStoreClassBase . 'Formatter\\FormatterInterface' => DI\object($persistentObjectStoreClassBase . 'Formatter\\Formatter'),
+	$persistentObjectStoreClassBase . 'Server\\Handler\\HandlerInterface' => DI\object($persistentObjectStoreClassBase . 'Server\\Handler\\Handler'),
 	$persistentObjectStoreClassBase . 'DataAccess\\CoordinatorInterface' => DI\object($persistentObjectStoreClassBase . 'DataAccess\\Coordinator'),
 	$persistentObjectStoreClassBase . 'DataAccess\\ObjectFinderInterface' => DI\object($persistentObjectStoreClassBase . 'DataAccess\\ObjectFinder'),
 	$persistentObjectStoreClassBase . 'Serializer\\SerializerInterface' => DI\object($persistentObjectStoreClassBase . 'Serializer\\JsonSerializer'),

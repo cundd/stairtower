@@ -7,7 +7,6 @@
  */
 
 namespace Cundd\PersistentObjectStore\Formatter;
-use Cundd\PersistentObjectStore\DataInterface;
 
 /**
  * Interface for data formatter responsible to transform Data objects into matching string representations
@@ -30,4 +29,11 @@ interface FormatterInterface {
 	 * @return string
 	 */
 	public function format($inputModel);
-} 
+
+	/**
+	 * Returns the content suffix for the formatter
+	 *
+	 * @return string
+	 */
+	public function getContentSuffix();
+}
