@@ -48,4 +48,12 @@ interface HandlerInterface {
 	 * @return HandlerResultInterface
 	 */
 	public function delete(RequestInfo $requestInfo);
+
+	/**
+	 * Action to display server statistics
+	 *
+	 * @param RequestInfo $requestInfo
+	 * @return HandlerResultInterface
+	 */
+	public function getStatsAction(RequestInfo $requestInfo);
 }

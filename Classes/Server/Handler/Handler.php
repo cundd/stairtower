@@ -28,6 +28,14 @@ class Handler implements HandlerInterface {
 	protected $coordinator;
 
 	/**
+	 * Server instance
+	 *
+	 * @var \Cundd\PersistentObjectStore\Server\ServerInterface
+	 * @Inject
+	 */
+	protected $server;
+
+	/**
 	 * Creates a new Data instance with the given data for the given RequestInfo
 	 *
 	 * @param RequestInfo $requestInfo
@@ -91,6 +99,17 @@ class Handler implements HandlerInterface {
 		$this->getDatabaseForRequestInfo($requestInfo)->remove($dataInstance);
 		return new HandlerResult(200);
 	}
+
+	/**
+	 * Action to display server statistics
+	 *
+	 * @param RequestInfo $requestInfo
+	 * @return HandlerResultInterface
+	 */
+	public function getStatsAction(RequestInfo $requestInfo) {
+		return new HandlerResult(200, $this->server->collectStatistics());
+	}
+
 
 	/**
 	 * Returns the database for the given request or NULL if it is not specified

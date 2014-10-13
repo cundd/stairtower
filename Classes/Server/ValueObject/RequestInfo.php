@@ -39,19 +39,28 @@ class RequestInfo implements Immutable {
 	protected $method;
 
 	/**
+	 * A special handler action that is implemented in the handler
+	 *
+	 * @var string
+	 */
+	protected $specialHandlerAction;
+
+	/**
 	 * Create a new RequestInfo object
 	 *
 	 * @param string $dataIdentifier
 	 * @param string $databaseIdentifier
 	 * @param string $method
+	 * @param string $specialHandlerAction
 	 */
-	function __construct($dataIdentifier, $databaseIdentifier, $method) {
+	function __construct($dataIdentifier, $databaseIdentifier, $method, $specialHandlerAction = NULL) {
 		if ($method) GeneralUtility::assertRequestMethod($method);
 		if ($dataIdentifier) GeneralUtility::assertDataIdentifier($dataIdentifier);
 		if ($databaseIdentifier) GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
 		$this->method = $method;
 		$this->dataIdentifier     = $dataIdentifier;
 		$this->databaseIdentifier = $databaseIdentifier;
+		$this->specialHandlerAction = $specialHandlerAction ?: NULL;
 	}
 
 
@@ -80,6 +89,15 @@ class RequestInfo implements Immutable {
 	 */
 	public function getMethod() {
 		return $this->method;
+	}
+
+	/**
+	 * Returns the special handler action
+	 *
+	 * @return string
+	 */
+	public function getSpecialHandlerAction() {
+		return $this->specialHandlerAction;
 	}
 
 	/**

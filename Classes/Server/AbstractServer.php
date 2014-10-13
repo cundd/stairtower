@@ -7,15 +7,19 @@
  */
 
 namespace Cundd\PersistentObjectStore\Server;
+use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
+use Cundd\PersistentObjectStore\Server\Exception\ServerException;
+use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
+use DateTime;
 
 /**
  * Abstract server
  *
  * @package Cundd\PersistentObjectStore
  */
-abstract class AbstractServer {
+abstract class AbstractServer implements ServerInterface {
 	/**
 	 * Port number to listen on
 	 *
@@ -74,7 +78,14 @@ abstract class AbstractServer {
 	 *
 	 * @var bool
 	 */
-	protected $isRunning = FALSE;
+	protected $_isRunning = FALSE;
+
+	/**
+	 * Servers start time
+	 *
+	 * @var DateTime
+	 */
+	protected $startTime;
 
 	/**
 	 * Create and configure the server objects
@@ -86,9 +97,10 @@ abstract class AbstractServer {
 	 */
 	public function start() {
 		$this->setupServer();
-		$this->isRunning = TRUE;
+		$this->startTime = new DateTime();
+		$this->_isRunning = TRUE;
 		$this->eventLoop->run();
-		$this->isRunning = FALSE;
+		$this->_isRunning = FALSE;
 	}
 
 	/**
@@ -96,8 +108,18 @@ abstract class AbstractServer {
 	 */
 	public function stop() {
 		$this->getEventLoop()->stop();
-		$this->isRunning = FALSE;
+		$this->_isRunning = FALSE;
 	}
+
+	/**
+	 * Restarts the server
+	 */
+	public function restart() {
+		if (!$this->isRunning()) throw new ServerException('Server is currently not running', 1413201286);
+		$this->stop();
+		$this->start();
+	}
+
 
 	/**
 	 * Sets the IP to listen on
@@ -106,7 +128,7 @@ abstract class AbstractServer {
 	 * @return $this
 	 */
 	public function setIp($ip) {
-		if ($this->isRunning) throw new InvalidServerChangeException('Can not change IP when server is running', 1412956590);
+		if ($this->_isRunning) throw new InvalidServerChangeException('Can not change IP when server is running', 1412956590);
 		$this->ip = $ip;
 		return $this;
 	}
@@ -126,7 +148,7 @@ abstract class AbstractServer {
 	 * @return $this
 	 */
 	public function setPort($port) {
-		if ($this->isRunning) throw new InvalidServerChangeException('Can not change port when server is running', 1412956591);
+		if ($this->_isRunning) throw new InvalidServerChangeException('Can not change port when server is running', 1412956591);
 		$this->port = $port;
 		return $this;
 	}
@@ -157,9 +179,49 @@ abstract class AbstractServer {
 	 * @return $this
 	 */
 	public function setEventLoop($eventLoop) {
-		if ($this->isRunning) throw new InvalidServerChangeException('Can not change the event loop when server is running', 1412956592);
+		if ($this->_isRunning) throw new InvalidServerChangeException('Can not change the event loop when server is running', 1412956592);
 		$this->eventLoop = $eventLoop;
 		return $this;
+	}
+
+	/**
+	 * Returns the servers global unique identifier
+	 * @return string
+	 */
+	public function getGuid() {
+		return sprintf('stairtower_%s_%s_%s_%d',
+			Constants::VERSION,
+			getmypid(),
+			$this->getIp(),
+			$this->getPort()
+		);
+	}
+
+	/**
+	 * Returns the servers start time
+	 *
+	 * @return DateTime
+	 */
+	public function getStartTime() {
+		return $this->startTime;
+	}
+
+	/**
+	 * Returns if the server is running
+	 *
+	 * @return bool
+	 */
+	public function isRunning() {
+		return $this->_isRunning;
+	}
+
+	/**
+	 * Collects and returns the current server statistics
+	 *
+	 * @return Statistics
+	 */
+	public function collectStatistics() {
+		return new Statistics(Constants::VERSION, $this->getGuid(), $this->getStartTime(), memory_get_usage(TRUE), memory_get_peak_usage(TRUE));
 	}
 
 	/**
@@ -169,7 +231,7 @@ abstract class AbstractServer {
 	 * @param \React\Http\Response $response
 	 * @throws \Exception
 	 */
-	protected function handleError($error, \React\Http\Response $response) {
+	public function handleError($error, \React\Http\Response $response) {
 		throw $error;
 	}
 

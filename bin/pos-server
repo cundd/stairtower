@@ -13,6 +13,7 @@ $diContainer->set('React\\EventLoop\\LoopInterface', $eventLoop);
 
 /** @var \Cundd\PersistentObjectStore\Server\RestServer $server */
 $server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\RestServer');
+$diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $server);
 if ($argc > 1) {
 	$port = $argv[1];
 	$server->setPort($port);
