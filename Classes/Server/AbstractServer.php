@@ -32,7 +32,7 @@ abstract class AbstractServer implements ServerInterface {
 	 *
 	 * @var string
 	 */
-	protected $ip = '0.0.0.0';
+	protected $ip = '127.0.0.1';
 
 	/**
 	 * Data Access Coordinator
@@ -218,10 +218,19 @@ abstract class AbstractServer implements ServerInterface {
 	/**
 	 * Collects and returns the current server statistics
 	 *
-	 * @return Statistics
+	 * @param bool $detailed If detailed is TRUE more data will be collected and an array will be returned
+	 * @return Statistics|array
 	 */
-	public function collectStatistics() {
-		return new Statistics(Constants::VERSION, $this->getGuid(), $this->getStartTime(), memory_get_usage(TRUE), memory_get_peak_usage(TRUE));
+	public function collectStatistics($detailed = FALSE) {
+		$statistics = new Statistics(Constants::VERSION, $this->getGuid(), $this->getStartTime(), memory_get_usage(TRUE), memory_get_peak_usage(TRUE));
+		if (!$detailed) {
+			return $statistics;
+		}
+
+		$detailedStatistics = $statistics->jsonSerialize() + [
+			'eventLoopImplementation' => get_class($this->getEventLoop()),
+		];
+		return $detailedStatistics;
 	}
 
 	/**
@@ -262,5 +271,9 @@ abstract class AbstractServer implements ServerInterface {
 		call_user_func_array(array($this, 'write'), $arguments);
 
 		$this->write(PHP_EOL);
+	}
+
+	protected function log() {
+
 	}
 }

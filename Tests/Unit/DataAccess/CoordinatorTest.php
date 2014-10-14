@@ -100,6 +100,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	}
 
 	/**
+	 * @test
 	 * @expectedException     \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException
 	 */
 	public function dropNotExistingDatabaseTest() {

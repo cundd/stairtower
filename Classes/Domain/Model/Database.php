@@ -177,11 +177,34 @@ class Database implements DatabaseInterface {
 	/**
 	 * Returns if the database contains the given data instance
 	 *
-	 * @param DataInterface|string $dataInstance
+	 * @param DataInterface|string $dataInstance Actual Data instance or it's GUID
 	 * @return boolean
 	 */
 	public function contains($dataInstance) {
-		return $this->_contains($dataInstance);
+		$databaseIdentifier = $this->identifier;
+
+		if ($dataInstance instanceof DataInterface) {
+			$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
+			$objectGuid = $dataInstance->getGuid();
+			$objectId = $dataInstance->getId();
+		} else if (is_object($dataInstance)) {
+			$objectGuid = spl_object_hash($dataInstance);
+		} else if (is_string($dataInstance)) {
+			$databaseIdentifierLength = strlen($databaseIdentifier);
+			$objectGuid = $dataInstance;
+			if (strlen($objectGuid) <= $databaseIdentifierLength
+				|| substr($objectGuid, 0, $databaseIdentifierLength) !== $databaseIdentifier) {
+				$objectGuid = $databaseIdentifier . '-' . $objectGuid;
+			}
+			$objectId = substr($objectGuid, $databaseIdentifierLength + 1);
+		} else {
+			throw new RuntimeException("Given value $dataInstance is of type " . gettype($dataInstance));
+		}
+
+		if (isset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectGuid])) {
+			return TRUE;
+		}
+		return $this->findByIdentifier($objectId) ? TRUE : FALSE;
 	}
 
 	/**
@@ -192,6 +215,13 @@ class Database implements DatabaseInterface {
 	public function add($dataInstance) {
 		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
 		$newIndex = $this->count();
+
+		if ($this->contains($dataInstance)) {
+			throw new RuntimeException(
+				sprintf('Object with GUID %s already exists in the database. Maybe the values of the identifier %s are not unique', $dataInstance->getGuid(), $dataInstance->getIdentifierKey()),
+				1411205350
+			);
+		}
 		$this->_addDataInstanceAtIndex($dataInstance, $newIndex);
 		$this->totalCount++;
 	}
@@ -218,7 +248,7 @@ class Database implements DatabaseInterface {
 
 		$objectUid          = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
 		$databaseIdentifier = $this->identifier;
-		if (!$this->_contains($dataInstance)) {
+		if (!$this->contains($dataInstance)) {
 			throw new RuntimeException(
 				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier %s are not expressive', $objectUid, $dataInstance->getIdentifierKey()),
 				1412800595
@@ -249,6 +279,10 @@ class Database implements DatabaseInterface {
 		if ($this->rawData->offsetExists($index)) {
 			$this->rawData[$index] = NULL;
 		}
+
+		if ($this->contains($dataInstance)) {
+			throw new RuntimeException(sprintf('Database still contains object %s', $dataInstance->getGuid()), 1413290094);
+		}
 	}
 
 	/**
@@ -258,10 +292,36 @@ class Database implements DatabaseInterface {
 	 * @return DataInterface|NULL
 	 */
 	public function findByIdentifier($identifier) {
+		static $b = 0;
+
+		#print($this->identifier . ': ' . $b++ . PHP_EOL);
+		if ($b > 10) {
+			throw new \Exception('fff');
+		}
+
+//		DebugUtility::printMemorySample();
 		$foundObject = $this->_getObjectForIdentifier($identifier);
 		if ($foundObject) {
 			return $foundObject;
 		}
+
+//		$lastIndex = $this->index;
+//
+//		$dataCollection = $this->toFixedArray();
+//		$dataCollectionCount = $dataCollection->getSize();
+//
+//		$i = 0;
+//		while ($i < $dataCollectionCount) {
+//			$item = $dataCollection[$i];
+//			if ($item->getIdentifier() === $identifier) {
+//				$foundObject = $item;
+//				break;
+//			}
+//			$i++;
+//		}
+//
+//		$this->index = $lastIndex;
+//		return $foundObject;
 
 		$lastIndex = $this->index;
 		$this->rewind();
@@ -421,31 +481,27 @@ class Database implements DatabaseInterface {
 		$start = microtime(TRUE);
 		$identifier = $this->identifier;
 
-		$rawDataCollection = $this->rawData;
-		$rawDataCount = $rawDataCollection->getSize();
+		if (!$this->_allObjectsArePrepared()) {
+			$rawDataCollection = $this->rawData;
+			$rawDataCount = $rawDataCollection->getSize();
 
-//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
-		$i = 0;
-		while ($i < $rawDataCount) {
-			$rawData = $rawDataCollection[$i];
+	//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
+			$i = 0;
+			while ($i < $rawDataCount) {
+				$rawData = $rawDataCollection[$i];
 
-			if ($this->_hasObjectForIndex($i)) {
+				if ($this->_hasObjectForIndex($i)) {
+					$i++;
+					continue;
+				}
+
+	//			$currentObject = $this->_convertDataAtIndexToObject($currentIndex);
+				$currentObject = new Data($rawData, $identifier);
+				$this->_addDataInstanceAtIndex($currentObject, $i);
 				$i++;
-				continue;
 			}
-
-//			$currentObject = $this->_convertDataAtIndexToObject($currentIndex);
-			$currentObject = new Data($rawData, $identifier);
-			$this->_addDataInstanceAtIndex($currentObject, $i);
-			$i++;
 		}
-
-
-		$allObjects = static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT];
-//		DebugUtility::pl('Raw data count: %d / All obj count: %d', $rawDataCount, count($allObjects));
-//		$end = microtime(True);
-//		DebugUtility::pl('Prepare all %0.6f', $end - $start);
-		return $allObjects;
+		return static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT];
 	}
 
 
@@ -589,7 +645,9 @@ class Database implements DatabaseInterface {
 	public function _addDataInstanceAtIndex($dataInstance, $index) {
 		$objectUid          = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
 		$databaseIdentifier = $this->identifier;
-		if ($this->_contains($dataInstance)) {
+
+
+		if (isset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid])) {
 			throw new RuntimeException(
 				sprintf('Object with GUID %s already exists in the database. Maybe the values of the identifier %s are not unique', $objectUid, $dataInstance->getIdentifierKey()),
 				1411205350
@@ -613,25 +671,6 @@ class Database implements DatabaseInterface {
 			$this->rawData[$index] = $dataInstance->getData();
 		}
 //		$this->objectCollection[$index] = $dataInstance;
-	}
-
-	/**
-	 * Returns if the database contains the given data instance
-	 *
-	 * @param DataInterface|string $dataInstance Actual Data instance or it'S object hash
-	 * @return boolean
-	 */
-	protected function _contains($dataInstance) {
-		$databaseIdentifier = $this->identifier;
-//		$this->_prepareObjectCollectionMap();
-		if (is_object($dataInstance)) {
-			$objectId = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
-		} else {
-			throw new RuntimeException("Given value $dataInstance is of type " . gettype($dataInstance));
-			$objectId = $dataInstance;
-		}
-
-		return isset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectId]);
 	}
 
 	/**
@@ -669,6 +708,14 @@ class Database implements DatabaseInterface {
 				1411315947
 			);
 		}
+	}
+
+	/**
+	 * Returns if all objects are prepared
+	 * @return bool
+	 */
+	protected function _allObjectsArePrepared() {
+		return $this->rawData->count() === count(static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT]);
 	}
 
 	/**

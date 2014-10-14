@@ -15,9 +15,14 @@ namespace Cundd\PersistentObjectStore;
  */
 interface Constants {
 	/**
-	 * Welcome message
+	 * JSON welcome message
 	 */
-	const MESSAGE_WELCOME = <<<WELCOME
+	const MESSAGE_JSON_WELCOME = 'STAIRTOWER - PERSISTENT OBJECT STORE';
+
+	/**
+	 * CLI welcome message
+	 */
+	const MESSAGE_CLI_WELCOME = <<<WELCOME
 
 
                         /\

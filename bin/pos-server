@@ -3,6 +3,8 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+ini_set('display_errors', TRUE);
+
 $bootstrap = new \Cundd\PersistentObjectStore\Bootstrap();
 
 /** @var DI\Container $diContainer */

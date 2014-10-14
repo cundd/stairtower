@@ -16,6 +16,14 @@ use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
  */
 interface HandlerInterface {
 	/**
+	 * Invoked if no route is given (e.g. if the request path is empty)
+	 *
+	 * @param RequestInfo $requestInfo
+	 * @return HandlerResultInterface
+	 */
+	public function noRoute(RequestInfo $requestInfo);
+
+	/**
 	 * Creates a new Data instance with the given data for the given RequestInfo
 	 *
 	 * @param RequestInfo $requestInfo

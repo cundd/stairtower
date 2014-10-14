@@ -9,7 +9,7 @@
 namespace Cundd\PersistentObjectStore\Utility;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodServerException;
+use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
 
 /**
  * Interface GeneralUtilityInterface
@@ -44,7 +44,7 @@ abstract class GeneralUtility {
 	 * @throw \Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodServerException
 	 */
 	static public function assertRequestMethod($method) {
-		if (!in_array($method, array('GET', 'POST', 'PUT', 'DELETE', 'HEAD'))) throw new InvalidRequestMethodServerException("Invalid method '$method'", 1413052000);
+		if (!in_array($method, array('GET', 'POST', 'PUT', 'DELETE', 'HEAD'))) throw new InvalidRequestMethodException("Invalid method '$method'", 1413052000);
 	}
 
 	/**

@@ -7,8 +7,11 @@
  */
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
+use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
@@ -36,6 +39,17 @@ class Handler implements HandlerInterface {
 	protected $server;
 
 	/**
+	 * Invoked if no route is given (e.g. if the request path is empty)
+	 *
+	 * @param RequestInfo $requestInfo
+	 * @return HandlerResultInterface
+	 */
+	public function noRoute(RequestInfo $requestInfo) {
+		return new HandlerResult(200, Constants::MESSAGE_JSON_WELCOME);
+	}
+
+
+	/**
 	 * Creates a new Data instance with the given data for the given RequestInfo
 	 *
 	 * @param RequestInfo $requestInfo
@@ -43,7 +57,24 @@ class Handler implements HandlerInterface {
 	 * @return HandlerResultInterface
 	 */
 	public function create(RequestInfo $requestInfo, $data) {
-		// TODO: Implement create() method.
+		$database = $this->getDatabaseForRequestInfo($requestInfo);
+		$dataInstance = new Data($data);
+
+		if ($requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException(
+			'Data identifier in request path is not allowed when creating a Data instance. Use PUT to update',
+			1413278767
+		);
+		if ($database->contains($dataInstance)) throw new InvalidBodyException('Database already contains the given data', 1413215990);
+
+		$database->add($dataInstance);
+		if ($database->contains($dataInstance)) {
+			return new HandlerResult(
+				201,
+				$dataInstance
+			);
+		} else {
+			return new HandlerResult(400);
+		}
 	}
 
 	/**
@@ -53,17 +84,23 @@ class Handler implements HandlerInterface {
 	 * @return HandlerResultInterface
 	 */
 	public function read(RequestInfo $requestInfo) {
-		if ($requestInfo->getDataIdentifier()) {
-			return new HandlerResult(
-				200,
-				$this->getDataForRequest($requestInfo)
-			);
+		if ($requestInfo->getDataIdentifier()) { // Load Data instance
+			$dataInstance = $this->getDataForRequest($requestInfo);
+			if ($dataInstance) {
+				return new HandlerResult(
+					200,
+					$dataInstance
+				);
+			} else {
+				return new HandlerResult(404);
+			}
+		} else {
+			$database = $this->getDatabaseForRequestInfo($requestInfo);
+			if ($database) {
+				return new HandlerResult(200, $database);
+			}
+			return new HandlerResult(404);
 		}
-		$database = $this->getDatabaseForRequestInfo($requestInfo);
-		if ($database) {
-
-		}
-		return new HandlerResult(200, $database);
 	}
 
 	/**
@@ -74,7 +111,21 @@ class Handler implements HandlerInterface {
 	 * @return HandlerResultInterface
 	 */
 	public function update(RequestInfo $requestInfo, $data) {
-		// TODO: Implement update() method.
+		if (!$requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException('Data identifier is missing', 1413292389);
+		$dataInstance = $this->getDataForRequest($requestInfo);
+		if (!$dataInstance) {
+			return new HandlerResult(404, sprintf(
+				'Data instance with identifier %s not found in database %s',
+				$requestInfo->getDataIdentifier(),
+				$requestInfo->getDatabaseIdentifier()
+			));
+		}
+
+		$database = $this->getDatabaseForRequestInfo($requestInfo);
+
+		$newDataInstance = new Data($data, $database->getIdentifier(), $dataInstance->getIdentifierKey());
+		$database->update($newDataInstance);
+		return new HandlerResult(200, $newDataInstance);
 	}
 
 	/**
@@ -84,6 +135,17 @@ class Handler implements HandlerInterface {
 	 * @return HandlerResultInterface
 	 */
 	public function delete(RequestInfo $requestInfo) {
+		$database = $this->getDatabaseForRequestInfo($requestInfo);
+		if (!$database) {
+			throw new InvalidRequestParameterException(
+				sprintf(
+					'Database with identifier "%s" not found',
+					$requestInfo->getDatabaseIdentifier()
+				),
+				1413035859
+			);
+		}
+
 		if (!$requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException('Data identifier is missing', 1413035855);
 		$dataInstance = $this->getDataForRequest($requestInfo);
 		if (!$dataInstance) {
@@ -96,8 +158,9 @@ class Handler implements HandlerInterface {
 				1413035855
 			);
 		}
-		$this->getDatabaseForRequestInfo($requestInfo)->remove($dataInstance);
-		return new HandlerResult(200);
+
+		$database->remove($dataInstance);
+		return new HandlerResult(204);
 	}
 
 	/**
@@ -107,7 +170,8 @@ class Handler implements HandlerInterface {
 	 * @return HandlerResultInterface
 	 */
 	public function getStatsAction(RequestInfo $requestInfo) {
-		return new HandlerResult(200, $this->server->collectStatistics());
+		$detailedStatistics = $requestInfo->getDataIdentifier() === 'detailed';
+		return new HandlerResult(200, $this->server->collectStatistics($detailedStatistics));
 	}
 
 

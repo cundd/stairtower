@@ -101,6 +101,7 @@ class FilterResultTest extends AbstractDataBasedCase {
 	}
 
 	/**
+	 * @test
 	 * @expectedException \Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException
 	 */
 	public function iterateAndGetCurrentShouldThrowAnException() {

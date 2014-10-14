@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Server;
 
 
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
+use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
@@ -85,17 +86,10 @@ interface ServerInterface {
 	/**
 	 * Collects and returns the current server statistics
 	 *
-	 * @return Statistics
+	 * @param bool $detailed If detailed is TRUE more data will be collected and an array will be returned
+	 * @return Statistics|array
 	 */
-	public function collectStatistics();
-
-	/**
-	 * Returns a promise for the request body of the given request
-	 *
-	 * @param Request $request
-	 * @return \React\Promise\Promise
-	 */
-	public function getRequestBodyPromiseForRequest($request);
+	public function collectStatistics($detailed = FALSE);
 
 	/**
 	 * Returns the formatter for the given request
@@ -112,6 +106,14 @@ interface ServerInterface {
 	 * @return HandlerInterface
 	 */
 	public function getHandlerForRequest(Request $request);
+
+	/**
+	 * Returns the body parser for the given request
+	 *
+	 * @param Request $request
+	 * @return BodyParserInterface
+	 */
+	public function getBodyParserForRequest(Request $request);
 
 
 	/**

@@ -30,9 +30,12 @@ class JsonFormatter extends AbstractFormatter {
 	public function format($inputModel) {
 		if (is_array($inputModel) || $inputModel instanceof \Iterator) {
 			$foundData = array();
-			/** @var DataInterface $dataObject */
 			foreach ($inputModel as $dataObject) {
-				$foundData[] = $dataObject->getData();
+				if ($dataObject instanceof DataInterface) {
+					$foundData[] = $dataObject->getData();
+				} else {
+					$foundData[] = $dataObject;
+				}
 			}
 			return $this->serializer->serialize($foundData);
 		} else if (is_scalar($inputModel)) {
