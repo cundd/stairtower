@@ -381,6 +381,24 @@ class RequestInfoTest extends \PHPUnit_Framework_TestCase {
 
 
 
+
+		$this->assertEquals('getAllDbsAction', RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/_all_dbs')));
+		$this->assertEquals('getAllDbsAction', RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/_all_dbs/')));
+
+		$this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('POST', '/_all_dbs')));
+		$this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('POST', '/_all_dbs/')));
+
+		$this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('PUT', '/_all_dbs')));
+		$this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('PUT', '/_all_dbs/')));
+
+		$this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('DELETE', '/_all_dbs')));
+		$this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('DELETE', '/_all_dbs/')));
+
+		$this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD', '/_all_dbs')));
+		$this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD', '/_all_dbs/')));
+
+
+
 //		$this->assertEquals('postRestartAction', RequestInfoFactory::getHandlerActionForRequest(new Request('POST', '/_restart')));
 //		$this->assertEquals('postRestartAction', RequestInfoFactory::getHandlerActionForRequest(new Request('POST', '/_restart/')));
 //		$this->assertEquals('postRestartAction', RequestInfoFactory::getHandlerActionForRequest(new Request('POST', '/_restart/something')));

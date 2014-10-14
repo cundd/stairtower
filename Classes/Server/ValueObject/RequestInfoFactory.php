@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use React\Http\Request;
 
 /**
@@ -98,7 +99,8 @@ class RequestInfoFactory {
 		}
 		if ($path[0] === '_') {
 			list($path,) = explode('/', $path, 2);
-			$handlerAction = strtolower($method) . ucfirst(substr($path, 1)) . 'Action';
+
+			$handlerAction = GeneralUtility::underscoreToCamelCase(strtolower($method) . '_' . substr($path, 1)) . 'Action';
 			if (method_exists($interface, $handlerAction)) {
 				return $handlerAction;
 			}

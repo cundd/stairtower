@@ -64,4 +64,12 @@ interface HandlerInterface {
 	 * @return HandlerResultInterface
 	 */
 	public function getStatsAction(RequestInfo $requestInfo);
+
+	/**
+	 * Action to display all databases
+	 *
+	 * @param RequestInfo $requestInfo
+	 * @return HandlerResultInterface
+	 */
+	public function getAllDbsAction(RequestInfo $requestInfo);
 }

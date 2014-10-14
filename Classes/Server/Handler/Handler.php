@@ -174,6 +174,15 @@ class Handler implements HandlerInterface {
 		return new HandlerResult(200, $this->server->collectStatistics($detailedStatistics));
 	}
 
+	/**
+	 * Action to display all databases
+	 *
+	 * @param RequestInfo $requestInfo
+	 * @return HandlerResultInterface
+	 */
+	public function getAllDbsAction(RequestInfo $requestInfo) {
+		return new HandlerResult(200, $this->coordinator->listDatabases());
+	}
 
 	/**
 	 * Returns the database for the given request or NULL if it is not specified
@@ -198,5 +207,6 @@ class Handler implements HandlerInterface {
 		$database = $this->getDatabaseForRequestInfo($requestInfo);
 		return $database ? $database->findByIdentifier($requestInfo->getDataIdentifier()) : NULL;
 	}
+
 
 } 

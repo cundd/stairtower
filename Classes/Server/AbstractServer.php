@@ -7,7 +7,9 @@
  */
 
 namespace Cundd\PersistentObjectStore\Server;
+use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
 use Cundd\PersistentObjectStore\Server\Exception\ServerException;
@@ -57,13 +59,6 @@ abstract class AbstractServer implements ServerInterface {
 	 * @Inject
 	 */
 	protected $diContainer;
-
-	/**
-	 * Formatter
-	 *
-	 * @var \Cundd\PersistentObjectStore\Formatter\FormatterInterface
-	 */
-	protected $formatter;
 
 	/**
 	 * Event loop
@@ -273,7 +268,40 @@ abstract class AbstractServer implements ServerInterface {
 		$this->write(PHP_EOL);
 	}
 
-	protected function log() {
+	/**
+	 * Prints the given log message very fast
+	 *
+	 * @experimental
+	 *
+	 * @param string $format
+	 * @param null $vars
+	 * @throws RuntimeException
+	 */
+	protected function log($format, $vars = NULL) {
+		if (func_num_args() > 1) {
+			$arguments = func_get_args();
+			array_shift($arguments);
+			$writeData = vsprintf($format, $arguments);
+		} else {
+			$writeData = $format;
+		}
 
+		$writeData = gmdate('r') . ': ' . $writeData . PHP_EOL;
+
+		$logFileDirectory = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logPath');
+		$logFilePath = $logFileDirectory . 'log-' . getmypid() . '.log';
+
+		if (!file_exists($logFileDirectory)) {
+			mkdir($logFileDirectory);
+		}
+		$fileHandle = fopen($logFilePath, 'w');
+
+		if (!$fileHandle) throw new RuntimeException(sprintf('Could not open file %s', $logFilePath), 1413294319);
+		stream_set_blocking($fileHandle, 0);
+
+		fwrite($fileHandle, $writeData);
+		fclose($fileHandle);
 	}
+
+
 }

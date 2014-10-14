@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Configuration;
+
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
@@ -31,13 +32,15 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 	static protected $sharedInstance;
 
 	function __construct() {
-		$basePath = $this->getBasePath();
+		$basePath            = $this->getBasePath();
+		$varPath            = $basePath . '/var/';
 		$configurationReader = new ConfigurationReader();
 		$this->configuration = array_merge_recursive(array(
-			'basePath' => $basePath,
-			'dataPath' => $basePath . '/var/Data/',
-			'writeDataPath' => $basePath . '/var/Data/',
-			'lockPath' => $basePath . '/var/Lock/',
+			'basePath'      => $basePath,
+			'dataPath'      => $varPath . 'Data/',
+			'writeDataPath' => $varPath . 'Data/',
+			'lockPath'      => $varPath . 'Lock/',
+			'logPath'       => $varPath . 'Log/',
 		), $configurationReader->readConfigurationFiles());
 
 		self::$sharedInstance = $this;
@@ -45,6 +48,7 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 
 	/**
 	 * Returns the path to the installation
+	 *
 	 * @return string
 	 */
 	public function getBasePath() {

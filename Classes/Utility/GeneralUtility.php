@@ -80,4 +80,15 @@ abstract class GeneralUtility {
 		}
 		return NULL;
 	}
+
+	/**
+	 * Transform the underscored_string to camelCase
+	 *
+	 * @param string $underscoreString
+	 * @return string
+	 */
+	static public function underscoreToCamelCase($underscoreString) {
+		$prefix = $underscoreString[0] === '_' ? '_' : '';
+		return $prefix . lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $underscoreString))));
+	}
 } 

@@ -83,20 +83,6 @@ class RestServer extends AbstractServer {
 					case 'PUT':
 						$delayedRequest = TRUE;
 					$this->waitForBodyAndPerformAction($request, $response, $requestInfo);
-
-
-//					$promise = $this->getRequestBodyPromiseForRequest($request);
-//						$promise->then(function ($body) use ($self, $handler, $request, $response, $requestInfo) {
-//							$this->writeln('Body');
-//							$this->writeln($body);
-//							$data = $this->getBodyParserForRequest($request)->parse($body, $request);
-//							if ($request->getMethod() === 'POST') {
-//								$requestResult = $handler->create($requestInfo, $data);
-//							} else {
-//								$requestResult = $handler->update($requestInfo, $data);
-//							}
-//							$self->handleResult($requestResult, $request, $response);
-//						});
 						break;
 
 					case 'GET':
