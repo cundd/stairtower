@@ -101,6 +101,14 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable {
 		$this->elements[$this->length] = $value;
 		$this->length++;
 	}
+	/**
+	 *
+	 * @see push()
+	 */
+	protected function _push($value) {
+		$this->elements[$this->length] = $value;
+		$this->length++;
+	}
 
 	/**
 	 * Pops the element from the end of the array
@@ -108,6 +116,13 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable {
 	 * @return mixed
 	 */
 	public function pop() {
+		return $this->_pop();
+	}
+
+	/**
+	 * @see pop()
+	 */
+	protected function _pop() {
 		$lastIndex = --$this->length;
 		$lastElement = $this->elements[$lastIndex];
 		unset($this->elements[$lastIndex]);
@@ -255,7 +270,7 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable {
 		if ($offset > $this->length) throw new IndexOutOfRangeException('Offset is out of range. Current maximum offset is ' . $this->length, 1410167584);
 
 		if ($offset == $this->length) { // Push the element if needed
-			$this->push($value);
+			$this->_push($value);
 		} else {
 			$this->elements[$offset] = $value;
 		}

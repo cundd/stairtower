@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Filter;
 
+use Cundd\PersistentObjectStore\ArrayableInterface;
 use Cundd\PersistentObjectStore\Core\IndexArray;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
@@ -15,6 +16,7 @@ use Cundd\PersistentObjectStore\Exception\ImmutableException;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparisonInterface;
 use Cundd\PersistentObjectStore\Immutable;
+use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Iterator;
 use SplFixedArray;
@@ -24,7 +26,7 @@ use SplFixedArray;
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-class FilterResult extends IndexArray implements FilterResultInterface, Immutable {
+class FilterResult extends IndexArray implements FilterResultInterface, ArrayableInterface, Immutable {
 	/**
 	 * Collection to filter
 	 *
@@ -103,6 +105,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 	 *       Returns true on success or false on failure.
 	 */
 	public function valid() {
+//		DebugUtility::var_dump('valid', parent::valid(), parent::valid(), parent::valid());
 		$this->_initFilteredCollection();
 		return parent::valid();
 	}
@@ -148,6 +151,15 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 	}
 
 	/**
+	 * Returns the filtered items as fixed array
+	 *
+	 * @return SplFixedArray
+	 */
+	public function toFixedArray() {
+		return SplFixedArray::fromArray($this->toArray());
+	}
+
+	/**
 	 * Initializes the filtered collection
 	 */
 	protected function _initFilteredCollection() {
@@ -170,8 +182,8 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 		}
 		$foundObject = NULL;
 
-//		$collection = $this->collection;
-		$collection = $this->_preFilterCollection($this->collection);
+		$collection = $this->collection;
+//		$collection = $this->_preFilterCollection($this->collection);
 		$filter     = $this->filter;
 
 		$useRaw = method_exists($collection, 'currentRaw');
@@ -227,11 +239,13 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 	 * Finds all matching object by choosing the right implementation for Databases or regular collections
 	 */
 	protected function _findAll() {
+		$lastIndex = $this->currentIndex;
 		if ($this->collection instanceof Database) {
 			$this->_findAllFromDatabase();
 		} else {
 			$this->_findAllFromCollection();
 		}
+		$this->currentIndex = $lastIndex;
 	}
 
 	/**
@@ -310,16 +324,20 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 
 			if ($comparisonResult) {
 				$matchingItem = $dataCollection->getObjectForIndex($i);
+				if ($matchingItem === NULL) {
+					DebugUtility::var_dump($item);
+					DebugUtility::pl('Object for index %d is NULL', $i);
+				}
 				$resultArray[$matchesIndex] = $matchingItem;
-				$matchesIndex++;
 
 				if ($pushMatchesToResult) {
-					parent::push($matchingItem);
+					parent::offsetSet($matchesIndex, $matchingItem);
 				}
+				$matchesIndex++;
 			}
 			$i++;
 		}
-		$resultArray->setSize($matchesIndex + 1);
+		$resultArray->setSize($matchesIndex);
 		return SplFixedArray::fromArray($resultArray->toArray());
 	}
 
@@ -330,41 +348,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 	 * @return SplFixedArray|Iterator
 	 */
 	protected function _preFilterCollection($collection) {
-		return $collection;
-
-		if ($collection instanceof Database) {
-			$start = microtime(TRUE);
-
-
-			$comparisonCollection = $this->filter->getComparisons();
-			if (!$comparisonCollection || !$comparisonCollection->count()) {
-				return $collection;
-			}
-			/** @var ComparisonInterface $comparison */
-			$comparison = $comparisonCollection->current();
-			if (!$comparison) {
-				return $collection;
-			}
-			if ($comparison instanceof LogicalComparisonInterface && $comparison->getOperator() === ComparisonInterface::TYPE_AND) {
-				/** @var LogicalComparisonInterface $comparison */
-				$constraints = $comparison->getConstraints();
-				$firstLogicalComparison = reset($constraints);
-				if ($firstLogicalComparison) {
-					$comparison = $firstLogicalComparison;
-				}
-			}
-
-			$lastIndex = $collection->key();
-			$matchingObjects = $this->_filterCollectionWithComparisons($collection, array($comparison));
-			$collection->seek($lastIndex);
-
-
-			$end = microtime(TRUE);
-			DebugUtility::pl("Pre filter: %0.6f\n", $end - $start);
-
-			DebugUtility::var_dump($matchingObjects);
-			return $matchingObjects;
-		}
 		return $collection;
 	}
 

@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
+use Cundd\PersistentObjectStore\ArrayableInterface;
 use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\DatabaseMismatchException;
@@ -26,7 +27,7 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-class Database implements DatabaseInterface {
+class Database implements DatabaseInterface, ArrayableInterface {
 	/**
 	 * Object collection key for the mapping of the GUID to the object
 	 */
@@ -182,7 +183,7 @@ class Database implements DatabaseInterface {
 	 */
 	public function contains($dataInstance) {
 		$databaseIdentifier = $this->identifier;
-
+		$objectId = NULL;
 		if ($dataInstance instanceof DataInterface) {
 			$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
 			$objectGuid = $dataInstance->getGuid();
@@ -620,7 +621,11 @@ class Database implements DatabaseInterface {
 		$index = GeneralUtility::validateInteger($index);
 		if ($index === NULL) throw new InvalidIndexException('Offset could not be converted to integer', 1410167582);
 
-		return $this->_getObjectForIndex($index);
+		$dataInstance = $this->_getObjectForIndex($index);
+		if ($dataInstance) {
+			return $dataInstance;
+		}
+		return $this->_convertDataAtIndexToObject($index);
 	}
 
 	/**

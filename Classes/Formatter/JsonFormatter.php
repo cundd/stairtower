@@ -28,20 +28,7 @@ class JsonFormatter extends AbstractFormatter {
 	 * @return string
 	 */
 	public function format($inputModel) {
-		if (is_array($inputModel) || $inputModel instanceof \Iterator) {
-			$foundData = array();
-			foreach ($inputModel as $dataObject) {
-				if ($dataObject instanceof DataInterface) {
-					$foundData[] = $dataObject->getData();
-				} else {
-					$foundData[] = $dataObject;
-				}
-			}
-			return $this->serializer->serialize($foundData);
-		} else if (is_scalar($inputModel)) {
-			return $this->serializer->serialize(array('message' => $inputModel));
-		}
-		return $this->serializer->serialize($inputModel);
+		return $this->serializer->serialize($this->_prepareData($inputModel));
 	}
 
 	/**

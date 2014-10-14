@@ -15,6 +15,7 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Handler implementation
@@ -37,6 +38,14 @@ class Handler implements HandlerInterface {
 	 * @Inject
 	 */
 	protected $server;
+
+	/**
+	 * FilterBuilder instance
+	 *
+	 * @var \Cundd\PersistentObjectStore\Filter\FilterBuilderInterface
+	 * @Inject
+	 */
+	protected $filterBuilder;
 
 	/**
 	 * Invoked if no route is given (e.g. if the request path is empty)
@@ -94,13 +103,19 @@ class Handler implements HandlerInterface {
 			} else {
 				return new HandlerResult(404);
 			}
-		} else {
-			$database = $this->getDatabaseForRequestInfo($requestInfo);
-			if ($database) {
-				return new HandlerResult(200, $database);
-			}
+		}
+
+		$database = $this->getDatabaseForRequestInfo($requestInfo);
+		if (!$database) {
 			return new HandlerResult(404);
 		}
+
+		if (!$requestInfo->getRequest()->getQuery()) {
+			return new HandlerResult(200, $database);
+		}
+
+		$filterResult = $this->filterBuilder->buildFilterFromQueryParts($requestInfo->getRequest()->getQuery(), $database);
+		return new HandlerResult(200, $filterResult);
 	}
 
 	/**

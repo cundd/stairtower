@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use React\Http\Request;
 
 
 /**
@@ -39,6 +40,13 @@ class RequestInfo implements Immutable {
 	protected $method;
 
 	/**
+	 * Original request
+	 *
+	 * @var Request
+	 */
+	protected $request;
+
+	/**
 	 * A special handler action that is implemented in the handler
 	 *
 	 * @var string
@@ -48,12 +56,13 @@ class RequestInfo implements Immutable {
 	/**
 	 * Create a new RequestInfo object
 	 *
+	 * @param Request $request
 	 * @param string $dataIdentifier
 	 * @param string $databaseIdentifier
 	 * @param string $method
 	 * @param string $specialHandlerAction
 	 */
-	function __construct($dataIdentifier, $databaseIdentifier, $method, $specialHandlerAction = NULL) {
+	function __construct($request, $dataIdentifier, $databaseIdentifier, $method, $specialHandlerAction = NULL) {
 		if ($method) GeneralUtility::assertRequestMethod($method);
 		if ($dataIdentifier) GeneralUtility::assertDataIdentifier($dataIdentifier);
 		if ($databaseIdentifier) GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
@@ -61,8 +70,17 @@ class RequestInfo implements Immutable {
 		$this->dataIdentifier     = $dataIdentifier;
 		$this->databaseIdentifier = $databaseIdentifier;
 		$this->specialHandlerAction = $specialHandlerAction ?: NULL;
+		$this->request = $request;
 	}
 
+	/**
+	 * Returns the original request
+	 *
+	 * @return Request
+	 */
+	public function getRequest() {
+		return $this->request;
+	}
 
 	/**
 	 * Returns the identifier for the Data instance

@@ -93,6 +93,10 @@ class FilterResultTest extends AbstractDataBasedCase {
 	 * @test
 	 */
 	public function countTest() {
+		$this->fixture->next();
+		$this->fixture->next();
+		$this->fixture->next();
+		$this->fixture->next();
 		$this->assertEquals(1713, $this->fixture->count());
 		$this->assertNotNull($this->fixture->current());
 

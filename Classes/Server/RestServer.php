@@ -19,6 +19,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use React\Http\Server as HttpServer;
 use React\Http\Request;
 use React\Http\Response;
@@ -67,6 +68,7 @@ class RestServer extends AbstractServer {
 			$delayedRequest       = FALSE;
 			$handler              = $this->getHandlerForRequest($request);
 			$requestInfo          = RequestInfoFactory::buildRequestInfoFromRequest($request);
+			DebugUtility::var_dump($request->getQuery(), $requestInfo->getRequest()->getQuery());
 			$specialHandlerAction = RequestInfoFactory::getHandlerActionForRequest($request);
 
 			$requestResult = FALSE;

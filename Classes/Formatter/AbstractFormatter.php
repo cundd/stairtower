@@ -7,6 +7,8 @@
  */
 
 namespace Cundd\PersistentObjectStore\Formatter;
+use Cundd\PersistentObjectStore\ArrayableInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 
 /**
  * Abstract formatter
@@ -27,5 +29,31 @@ abstract class AbstractFormatter implements FormatterInterface {
 	 */
 	public function setConfiguration($configuration) {
 		$this->configuration = $configuration;
+	}
+
+	/**
+	 * Prepares the given input data to be formatted
+	 *
+	 * @param mixed $data
+	 * @return array
+	 */
+	protected function _prepareData($data) {
+		if ($data instanceof ArrayableInterface) {
+			$data = $data->toFixedArray();
+		}
+		if (is_array($data) || $data instanceof \Iterator) {
+			$foundData = array();
+			foreach ($data as $dataObject) {
+				if ($dataObject instanceof DataInterface) {
+					$foundData[] = $dataObject->getData();
+				} else {
+					$foundData[] = $dataObject;
+				}
+			}
+			return $foundData;
+		} else if (is_scalar($data)) {
+			return array('message' => $data);
+		}
+		return $data;
 	}
 } 

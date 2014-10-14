@@ -30,7 +30,7 @@ class RequestInfoFactory {
 	 * @return RequestInfo
 	 */
 	static public function buildRequestInfoFromRequest(Request $request) {
-		$requestInfoIdentifier = sprintf('%s-%s', $request->getMethod(), $request->getPath());
+		$requestInfoIdentifier = sha1(sprintf('%s-%s-%s', $request->getMethod(), $request->getPath(), json_encode($request->getQuery())));
 		if (!isset(static::$pathToRequestInfoMap[$requestInfoIdentifier])) {
 			$pathParts = explode('/', $request->getPath());
 			$pathParts = array_values(array_filter($pathParts, function ($item) {
@@ -38,10 +38,7 @@ class RequestInfoFactory {
 			}));
 			$dataIdentifier = NULL;
 			$databaseIdentifier = NULL;
-//			$format = 'json';
-//			if (count($pathParts) >= 2) {
-//				$dataIdentifier = $pathParts[1];
-//			}
+
 			if (count($pathParts) >= 2) {
 				$dataIdentifier = $pathParts[1];
 			}
@@ -52,7 +49,7 @@ class RequestInfoFactory {
 			if ($handlerAction) {
 				$databaseIdentifier = '';
 			}
-			static::$pathToRequestInfoMap[$requestInfoIdentifier] = new RequestInfo($dataIdentifier, $databaseIdentifier, $request->getMethod(), $handlerAction);
+			static::$pathToRequestInfoMap[$requestInfoIdentifier] = new RequestInfo($request, $dataIdentifier, $databaseIdentifier, $request->getMethod(), $handlerAction);
 		}
 		return static::$pathToRequestInfoMap[$requestInfoIdentifier];
 	}
