@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess;
+use Cundd\PersistentObjectStore\DataAccess\Event;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
@@ -40,6 +41,12 @@ class Coordinator implements CoordinatorInterface {
 	protected $objectFinder;
 
 	/**
+	 * @var \Evenement\EventEmitterInterface
+	 * @Inject
+	 */
+	protected $eventEmitter;
+
+	/**
 	 * Array of databases and their objects
 	 *
 	 * @var array<array<mixed>>
@@ -70,6 +77,7 @@ class Coordinator implements CoordinatorInterface {
 		if (isset($this->objectStore[$databaseIdentifier])) throw new InvalidDatabaseException(sprintf('Database "%s" already exists in memory', $databaseIdentifier), 1412524750);
 
 		$this->dataWriter->createDatabase($databaseIdentifier, $options);
+		$this->eventEmitter->emit(Event::DATABASE_CREATED, array($databaseIdentifier));
 		return $this->objectStore[$databaseIdentifier] = new Database($databaseIdentifier);
 	}
 
@@ -89,6 +97,7 @@ class Coordinator implements CoordinatorInterface {
 		if (!$this->databaseExists($databaseIdentifier)) throw new InvalidDatabaseException(sprintf('Database "%s" does not exist', $databaseIdentifier), 1412525836);
 
 		$this->dataWriter->dropDatabase($databaseIdentifier);
+		$this->eventEmitter->emit(Event::DATABASE_DROPPED, array($databaseIdentifier));
 	}
 
 	/**
@@ -188,7 +197,18 @@ class Coordinator implements CoordinatorInterface {
 	 */
 	public function commitDatabase($database) {
 		$this->dataWriter->writeDatabase($database);
+		$this->eventEmitter->emit(Event::DATABASE_COMMITTED, array($database));
 	}
+
+	/**
+	 * Commit all changed databases to the file system
+	 */
+	public function commitDatabases() {
+		foreach ($this->objectStore as $database) {
+			$this->commitDatabase($database);
+		}
+	}
+
 
 	/**
 	 * Performs the query from the given query parts on the database

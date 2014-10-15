@@ -15,4 +15,5 @@ return array(
 	$persistentObjectStoreClassBase . 'Serializer\\SerializerInterface'         => DI\object($persistentObjectStoreClassBase . 'Serializer\\JsonSerializer'),
 	$persistentObjectStoreClassBase . 'Serializer\\SerializerInterface'         => DI\object($persistentObjectStoreClassBase . 'Serializer\\JsonSerializer'),
 	$persistentObjectStoreClassBase . 'Filter\\FilterBuilderInterface'          => DI\object($persistentObjectStoreClassBase . 'Filter\\FilterBuilder'),
+	'Evenement\\EventEmitterInterface'                                          => DI\object('Evenement\\EventEmitter'),
 );

@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore;
+use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
 use DI\ContainerBuilder;
 
 /**
@@ -22,10 +23,18 @@ class Bootstrap {
 	 */
 	protected $diContainer;
 
+	function __construct() {
+		$this->init();
+	}
+
 	/**
 	 * Sets up the environment
 	 */
 	public function init() {
+		// Make sure the shared Event Emitter exists
+
+		/** @var SharedEventEmitter $evEm */
+		$this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Event\\SharedEventEmitter');
 	}
 
 	/**

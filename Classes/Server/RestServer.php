@@ -77,7 +77,7 @@ class RestServer extends AbstractServer {
 					case 'POST':
 					case 'PUT':
 						$delayedRequest = TRUE;
-					$this->waitForBodyAndPerformAction($request, $response, $requestInfo);
+						$this->waitForBodyAndPerformAction($request, $response, $requestInfo);
 						break;
 
 					case 'GET':
@@ -96,7 +96,7 @@ class RestServer extends AbstractServer {
 				$this->handleResult($requestResult, $request, $response);
 			}
 		} catch (\Exception $exception) {
-			$this->handleError($exception, $response);
+			$this->handleError($exception, $request, $response);
 		}
 	}
 
@@ -175,8 +175,8 @@ class RestServer extends AbstractServer {
 	/**
 	 * Waits for the total request body and performs the needed action
 	 *
-	 * @param Request $request
-	 * @param Response $response
+	 * @param Request     $request
+	 * @param Response    $response
 	 * @param RequestInfo $requestInfo
 	 */
 	public function waitForBodyAndPerformAction($request, $response, $requestInfo) {
@@ -187,16 +187,20 @@ class RestServer extends AbstractServer {
 		$contentLength = (int)$headers['Content-Length'];
 		$receivedData  = 0;
 		$request->on('data', function ($data) use ($self, $request, $response, &$requestBody, &$receivedData, $contentLength, $requestInfo) {
-			$requestBody .= $data;
-			$receivedData += strlen($data);
-			if ($receivedData >= $contentLength) {
-				$requestBodyParsed = $self->getBodyParserForRequest($request)->parse($requestBody, $request);
-				if ($request->getMethod() === 'POST') {
-					$requestResult = $self->getHandlerForRequest($request)->create($requestInfo, $requestBodyParsed);
-				} else {
-					$requestResult = $self->getHandlerForRequest($request)->update($requestInfo, $requestBodyParsed);
+			try {
+				$requestBody .= $data;
+				$receivedData += strlen($data);
+				if ($receivedData >= $contentLength) {
+					$requestBodyParsed = $self->getBodyParserForRequest($request)->parse($requestBody, $request);
+					if ($request->getMethod() === 'POST') {
+						$requestResult = $self->getHandlerForRequest($request)->create($requestInfo, $requestBodyParsed);
+					} else {
+						$requestResult = $self->getHandlerForRequest($request)->update($requestInfo, $requestBodyParsed);
+					}
+					$self->handleResult($requestResult, $request, $response);
 				}
-				$self->handleResult($requestResult, $request, $response);
+			} catch (\Exception $exception) {
+				$this->handleError($exception, $request, $response);
 			}
 		});
 	}

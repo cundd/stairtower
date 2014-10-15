@@ -84,4 +84,9 @@ interface CoordinatorInterface {
 	 * @param DatabaseInterface $database
 	 */
 	public function commitDatabase($database);
+
+	/**
+	 * Commit all changed databases to the file system
+	 */
+	public function commitDatabases();
 }

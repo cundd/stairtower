@@ -41,10 +41,11 @@ interface ServerInterface {
 	 * Handles the given exception
 	 *
 	 * @param \Exception           $error
+	 * @param \React\Http\Request $request
 	 * @param \React\Http\Response $response
 	 * @throws \Exception
 	 */
-	public function handleError($error, \React\Http\Response $response);
+	public function handleError($error, $request, Response $response);
 
 
 	/**

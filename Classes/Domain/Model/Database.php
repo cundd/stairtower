@@ -11,8 +11,10 @@ namespace Cundd\PersistentObjectStore\Domain\Model;
 use Cundd\PersistentObjectStore\ArrayableInterface;
 use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
+use Cundd\PersistentObjectStore\DataAccess\Event;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\DatabaseMismatchException;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
+use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Filter;
@@ -225,6 +227,8 @@ class Database implements DatabaseInterface, ArrayableInterface {
 		}
 		$this->_addDataInstanceAtIndex($dataInstance, $newIndex);
 		$this->totalCount++;
+
+		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_ADDED, array($dataInstance));
 	}
 
 	/**
@@ -237,6 +241,8 @@ class Database implements DatabaseInterface, ArrayableInterface {
 
 		$identifier = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
 		static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier] = $dataInstance;
+
+		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_UPDATED, array($dataInstance));
 	}
 
 	/**
@@ -284,6 +290,8 @@ class Database implements DatabaseInterface, ArrayableInterface {
 		if ($this->contains($dataInstance)) {
 			throw new RuntimeException(sprintf('Database still contains object %s', $dataInstance->getGuid()), 1413290094);
 		}
+
+		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_REMOVED, array($dataInstance));
 	}
 
 	/**
@@ -330,7 +338,8 @@ class Database implements DatabaseInterface, ArrayableInterface {
 		while ($this->valid()) {
 			/** @var DataInterface $element */
 			$element = $this->current();
-			if ($element->getId() === $identifier) {
+			// Check if there is an element (could be NULL if it was just deleted) and if the identifier matches it's ID
+			if ($element && $element->getId() === $identifier) {
 				$foundObject = $element;
 				break;
 			}

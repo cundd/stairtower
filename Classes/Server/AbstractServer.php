@@ -17,6 +17,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use DateTime;
 use React\EventLoop\Timer\TimerInterface;
+use React\Http\Response;
 
 /**
  * Abstract server
@@ -154,8 +155,7 @@ abstract class AbstractServer implements ServerInterface {
 	 * A maintenance task that will be performed when the server becomes idle
 	 */
 	public function runMaintenance() {
-		$this->writeln('tick');
-
+		$this->coordinator->commitDatabases();
 	}
 
 	/**
@@ -287,11 +287,44 @@ abstract class AbstractServer implements ServerInterface {
 	 * Handles the given exception
 	 *
 	 * @param \Exception           $error
+	 * @param \React\Http\Request $request
 	 * @param \React\Http\Response $response
 	 * @throws \Exception
 	 */
-	public function handleError($error, \React\Http\Response $response) {
-		throw $error;
+	public function handleError($error, $request, Response $response) {
+		$this->handleResult(new HandlerResult($this->getStatusCodeForException($error), $error->getMessage()), $request, $response);
+		$this->writeln('Caught exception #%d: %s', $error->getCode(), $error->getMessage());
+		$this->writeln($error->getTraceAsString());
+	}
+
+	/**
+	 * Returns the status code that best describes the given error
+	 *
+	 * @param \Exception $error
+	 * @return int
+	 */
+	public function getStatusCodeForException($error) {
+		if (!$error || !($error instanceof \Exception)) {
+			return 500;
+		}
+		switch (get_class($error)) {
+			case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDatabaseException': $statusCode = 400; break;
+			case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDatabaseIdentifierException': $statusCode = 400; break;
+			case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDataException': $statusCode = 500; break;
+			case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDataIdentifierException': $statusCode = 400; break;
+			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidBodyException': $statusCode = 400; break;
+			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidEventLoopException': $statusCode = 500; break;
+			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidRequestException': $statusCode = 400; break;
+			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidRequestMethodException': $statusCode = 405; break;
+			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidRequestParameterException': $statusCode = 400; break;
+			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidServerChangeException': $statusCode = 500; break;
+			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\ServerException': $statusCode = 500; break;
+			case 'Cundd\\PersistentObjectStore\\Filter\\Exception\\InvalidCollectionException': $statusCode = 500; break;
+			case 'Cundd\\PersistentObjectStore\\Filter\\Exception\\InvalidComparisonException': $statusCode = 500; break;
+			case 'Cundd\\PersistentObjectStore\\Filter\\Exception\\InvalidOperatorException': $statusCode = 500; break;
+			default: $statusCode = 500;
+		}
+		return $statusCode;
 	}
 
 	/**

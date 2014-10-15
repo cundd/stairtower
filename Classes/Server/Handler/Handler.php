@@ -13,6 +13,7 @@ use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
+use Cundd\PersistentObjectStore\Server\Handler\Event;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 
@@ -47,6 +48,14 @@ class Handler implements HandlerInterface {
 	protected $filterBuilder;
 
 	/**
+	 * Event Emitter
+	 *
+	 * @var \Evenement\EventEmitterInterface
+	 * @Inject
+	 */
+	protected $eventEmitter;
+
+	/**
 	 * Invoked if no route is given (e.g. if the request path is empty)
 	 *
 	 * @param RequestInfo $requestInfo
@@ -76,6 +85,7 @@ class Handler implements HandlerInterface {
 
 		$database->add($dataInstance);
 		if ($database->contains($dataInstance)) {
+			$this->eventEmitter->emit(Event::DOCUMENT_CREATED, array($dataInstance));
 			return new HandlerResult(
 				201,
 				$dataInstance
@@ -140,6 +150,7 @@ class Handler implements HandlerInterface {
 
 		$newDataInstance = new Data($data, $database->getIdentifier(), $dataInstance->getIdentifierKey());
 		$database->update($newDataInstance);
+		$this->eventEmitter->emit(Event::DOCUMENT_UPDATED, array($dataInstance));
 		return new HandlerResult(200, $newDataInstance);
 	}
 
@@ -175,6 +186,7 @@ class Handler implements HandlerInterface {
 		}
 
 		$database->remove($dataInstance);
+		$this->eventEmitter->emit(Event::DOCUMENT_DELETED, array($dataInstance));
 		return new HandlerResult(204);
 	}
 
