@@ -13,8 +13,10 @@ use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
 use Cundd\PersistentObjectStore\Server\Exception\ServerException;
+use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use DateTime;
+use React\EventLoop\Timer\TimerInterface;
 
 /**
  * Abstract server
@@ -83,6 +85,20 @@ abstract class AbstractServer implements ServerInterface {
 	protected $startTime;
 
 	/**
+	 * Timer to schedule maintenance tasks
+	 *
+	 * @var TimerInterface
+	 */
+	protected $maintenanceTimer;
+
+	/**
+	 * The number of minimum seconds between maintenance tasks
+	 *
+	 * @var float
+	 */
+	protected $maintenanceInterval = 5.0;
+
+	/**
 	 * Create and configure the server objects
 	 */
 	abstract protected function setupServer();
@@ -91,6 +107,7 @@ abstract class AbstractServer implements ServerInterface {
 	 * Starts the request loop
 	 */
 	public function start() {
+		$this->prepareEventLoop();
 		$this->setupServer();
 		$this->startTime = new DateTime();
 		$this->_isRunning = TRUE;
@@ -115,6 +132,44 @@ abstract class AbstractServer implements ServerInterface {
 		$this->start();
 	}
 
+	/**
+	 * Total shutdown of the server
+	 *
+	 * Stops to listen for incoming connections, runs the maintenance task and terminates the programm
+	 */
+	public function shutdown() {
+		$this->stop();
+		$this->runMaintenance();
+		$this->writeln('Server is going to shut down now');
+	}
+
+	/**
+	 * Prepare the event loop
+	 */
+	public function prepareEventLoop() {
+		$this->postponeMaintenance();
+	}
+
+	/**
+	 * A maintenance task that will be performed when the server becomes idle
+	 */
+	public function runMaintenance() {
+		$this->writeln('tick');
+
+	}
+
+	/**
+	 * Postpone the maintenance run
+	 */
+	public function postponeMaintenance() {
+		if ($this->maintenanceTimer) {
+			$this->eventLoop->cancelTimer($this->maintenanceTimer);
+		}
+		$this->maintenanceTimer = $this->eventLoop->addTimer($this->maintenanceInterval, function($timer) {
+			$this->runMaintenance();
+			$this->postponeMaintenance();
+		});
+	}
 
 	/**
 	 * Sets the IP to listen on
@@ -237,6 +292,34 @@ abstract class AbstractServer implements ServerInterface {
 	 */
 	public function handleError($error, \React\Http\Response $response) {
 		throw $error;
+	}
+
+	/**
+	 * Handles the given server action
+	 *
+	 * @param string $serverAction
+	 * @param \React\Http\Request  $request
+	 * @param \React\Http\Response $response
+	 */
+	public function handleServerAction($serverAction, $request, $response) {
+		switch ($serverAction) {
+			case 'restart':
+				if (!$this->isRunning()) throw new ServerException('Server is currently not running', 1413201286);
+				$this->handleResult(new HandlerResult(200, 'Server is going to restart'), $request, $response);
+				$this->restart();
+				break;
+
+			case 'shutdown':
+				$this->handleResult(new HandlerResult(200, 'Server is going to shut down'), $request, $response);
+				$this->eventLoop->addTimer(0.5, array($this, 'shutdown'));
+				break;
+
+//			case 'stop':
+//				$this->handleResult(new HandlerResult(200, 'Server is going to stop'), $request, $response);
+//				$this->stop();
+////				$this->eventLoop->addTimer(0.5, array($this, 'shutdown'));
+//				break;
+		}
 	}
 
 	/**

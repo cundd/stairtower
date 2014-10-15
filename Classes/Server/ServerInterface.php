@@ -62,6 +62,13 @@ interface ServerInterface {
 	 */
 	public function restart();
 
+	/**
+	 * Total shutdown of the server
+	 *
+	 * Stops to listen for incoming connections, runs the maintenance task and terminates the programm
+	 */
+	public function shutdown();
+
 
 	/**
 	 * Returns the servers global unique identifier

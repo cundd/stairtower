@@ -358,7 +358,75 @@ class RequestInfoTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 */
-	public function pathContainsHandlerActionIdentifierTest() {
+	public function getServerActionForRequestTest() {
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('GET', '/_restart')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('GET', '/_restart/')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('GET', '/_restart/something')));
+
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('HEAD', '/_restart')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('HEAD', '/_restart/')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('HEAD', '/_restart/something')));
+
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('PUT', '/_restart')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('PUT', '/_restart/')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('PUT', '/_restart/something')));
+
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('DELETE', '/_restart')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('DELETE', '/_restart/')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('DELETE', '/_restart/something')));
+
+		$this->assertEquals('restart', RequestInfoFactory::getServerActionForRequest(new Request('POST', '/_restart')));
+		$this->assertEquals('restart', RequestInfoFactory::getServerActionForRequest(new Request('POST', '/_restart/')));
+		$this->assertEquals('restart', RequestInfoFactory::getServerActionForRequest(new Request('POST', '/_restart/something')));
+
+
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('GET', '/_shutdown')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('GET', '/_shutdown/')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('GET', '/_shutdown/something')));
+
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('HEAD', '/_shutdown')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('HEAD', '/_shutdown/')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('HEAD', '/_shutdown/something')));
+
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('PUT', '/_shutdown')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('PUT', '/_shutdown/')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('PUT', '/_shutdown/something')));
+
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('DELETE', '/_shutdown')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('DELETE', '/_shutdown/')));
+		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('DELETE', '/_shutdown/something')));
+
+		$this->assertEquals('shutdown', RequestInfoFactory::getServerActionForRequest(new Request('POST', '/_shutdown')));
+		$this->assertEquals('shutdown', RequestInfoFactory::getServerActionForRequest(new Request('POST', '/_shutdown/')));
+		$this->assertEquals('shutdown', RequestInfoFactory::getServerActionForRequest(new Request('POST', '/_shutdown/something')));
+
+
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('GET', '/_stop')));
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('GET', '/_stop/')));
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('GET', '/_stop/something')));
+//
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('HEAD', '/_stop')));
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('HEAD', '/_stop/')));
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('HEAD', '/_stop/something')));
+//
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('PUT', '/_stop')));
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('PUT', '/_stop/')));
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('PUT', '/_stop/something')));
+//
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('DELETE', '/_stop')));
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('DELETE', '/_stop/')));
+//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new Request('DELETE', '/_stop/something')));
+//
+//		$this->assertEquals('stop', RequestInfoFactory::getServerActionForRequest(new Request('POST', '/_stop')));
+//		$this->assertEquals('stop', RequestInfoFactory::getServerActionForRequest(new Request('POST', '/_stop/')));
+//		$this->assertEquals('stop', RequestInfoFactory::getServerActionForRequest(new Request('POST', '/_stop/something')));
+
+	}
+
+	/**
+	 * @test
+	 */
+	public function getHandlerActionForRequestTest() {
 		$this->assertEquals('getStatsAction', RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/_stats')));
 		$this->assertEquals('getStatsAction', RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/_stats/')));
 		$this->assertEquals('getStatsAction', RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/_stats/something')));

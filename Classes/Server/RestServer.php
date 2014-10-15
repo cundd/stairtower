@@ -12,7 +12,6 @@ use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
-use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
@@ -55,12 +54,8 @@ class RestServer extends AbstractServer {
 		try {
 			$serverAction = RequestInfoFactory::getServerActionForRequest($request);
 			if ($serverAction) { // Handle a very special server action
-
-				if ($serverAction === 'restart') {
-					$this->restartWithParameters($request, $response);
-					return;
-				}
-
+				$this->handleServerAction($serverAction, $request, $response);
+				return;
 			}
 
 
@@ -228,18 +223,6 @@ class RestServer extends AbstractServer {
 	public function stop() {
 		$this->socketServer->shutdown();
 		parent::stop();
-	}
-
-	/**
-	 * Inform the client and restart the server
-	 *
-	 * @param \React\Http\Request  $request
-	 * @param \React\Http\Response $response
-	 */
-	protected function restartWithParameters($request, $response) {
-		if (!$this->isRunning()) throw new ServerException('Server is currently not running', 1413201286);
-		$this->handleResult(new HandlerResult(200, 'Server is going to restart'), $request, $response);
-		$this->restart();
 	}
 
 }

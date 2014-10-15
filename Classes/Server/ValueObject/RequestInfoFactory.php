@@ -77,7 +77,15 @@ class RequestInfoFactory {
 		if ($path[0] === '/') {
 			$path = substr($path, 1);
 		}
-		return substr($path, 0, 8) === '_restart' && $method === 'POST' ? 'restart' : FALSE;
+		if ($path[0] !== '_' || $method !== 'POST') {
+			return FALSE;
+		}
+		list($action,) = explode('/', substr($path, 1), 2);
+
+		if (in_array($action, array('shutdown', 'restart',))) {
+			return $action;
+		}
+		return FALSE;
 	}
 
 

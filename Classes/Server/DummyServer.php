@@ -10,25 +10,17 @@ namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
-use Cundd\PersistentObjectStore\Server\AbstractServer;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
 use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
-use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
 use DateTime;
-use React\Http\Server as HttpServer;
 use React\Http\Request;
 use React\Http\Response;
-use React\Socket\Server as SocketServer;
-use React\Stream\BufferedSink;
 
 /**
  * A dummy server implementation for testing
@@ -121,6 +113,13 @@ class DummyServer implements ServerInterface {
 		$this->stop();
 		$this->start();
 	}
+
+	/**
+	 * Total shutdown of the server
+	 *
+	 * Stops to listen for incoming connections, runs the maintenance task and terminates the programm
+	 */
+	public function shutdown() {}
 
 	/**
 	 * Sets the IP to listen on
@@ -234,71 +233,6 @@ class DummyServer implements ServerInterface {
 	 * @param \React\Http\Response $response
 	 */
 	public function handle($request, $response) {
-		try {
-			$serverAction = RequestInfoFactory::getServerActionForRequest($request);
-			if ($serverAction) { // Handle a very special server action
-
-				if ($serverAction === 'restart') {
-					$this->restartWithParameters($request, $response);
-					return;
-				}
-
-			}
-
-
-			$delayedRequest       = FALSE;
-			$handler              = $this->getHandlerForRequest($request);
-			$requestInfo          = RequestInfoFactory::buildRequestInfoFromRequest($request);
-			$specialHandlerAction = RequestInfoFactory::getHandlerActionForRequest($request);
-
-			$requestResult = FALSE;
-
-			if ($specialHandlerAction) { // Handle a special handler action
-				$requestResult = call_user_func(array($handler, $specialHandlerAction), $requestInfo);
-			} else if (!$requestInfo->getDatabaseIdentifier()) { // Show the welcome message
-				$requestResult = $handler->noRoute($requestInfo);
-			} else { // Run normal methods
-				$method = $request->getMethod();
-
-				switch ($method) {
-					case 'POST':
-					case 'PUT':
-						$delayedRequest = TRUE;
-					$this->waitForBodyAndPerformAction($request, $response, $requestInfo);
-
-
-//					$promise = $this->getRequestBodyPromiseForRequest($request);
-//						$promise->then(function ($body) use ($self, $handler, $request, $response, $requestInfo) {
-//							$this->writeln('Body');
-//							$this->writeln($body);
-//							$data = $this->getBodyParserForRequest($request)->parse($body, $request);
-//							if ($request->getMethod() === 'POST') {
-//								$requestResult = $handler->create($requestInfo, $data);
-//							} else {
-//								$requestResult = $handler->update($requestInfo, $data);
-//							}
-//							$self->handleResult($requestResult, $request, $response);
-//						});
-						break;
-
-					case 'GET':
-						$requestResult = $handler->read($requestInfo);
-						break;
-
-					case 'DELETE':
-						$requestResult = $handler->delete($requestInfo);
-						break;
-
-					default:
-						$requestResult = new HandlerResult(405, new InvalidRequestMethodException(sprintf('Request method "%s" not valid', $method)), 1413033763);
-				}
-			}
-			if (!$delayedRequest) {
-				$this->handleResult($requestResult, $request, $response);
-			}
-		} catch (\Exception $exception) {
-			$this->handleError($exception, $response);
-		}
 	}
 
 	/**
@@ -309,38 +243,6 @@ class DummyServer implements ServerInterface {
 	 * @param Response               $response
 	 */
 	public function handleResult($result, $request, $response) {
-		$formatter = $this->getFormatterForRequest($request);
-		if ($result instanceof HandlerResultInterface) {
-			$response->writeHead(
-				$result->getStatusCode(),
-				array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()))
-			);
-			$responseData = $result->getData();
-			if ($responseData) {
-				$response->end($formatter->format($result->getData()));
-			} else {
-				$response->end();
-			}
-
-		} else if ($result === NULL) {
-			$response->writeHead(
-				204,
-				array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()))
-			);
-			$response->end($formatter->format('No content'));
-		} else {
-			throw new \UnexpectedValueException('Handler result is of type ' . gettype($result), 1413210970);
-		}
-	}
-
-	/**
-	 * Returns a promise for the request body of the given request
-	 *
-	 * @param Request $request
-	 * @return \React\Promise\Promise
-	 */
-	public function getRequestBodyPromiseForRequest($request) {
-		return BufferedSink::createPromise($request);
 	}
 
 	/**
@@ -372,35 +274,6 @@ class DummyServer implements ServerInterface {
 	public function getBodyParserForRequest(Request $request) {
 		return $this->diContainer->get('Cundd\\PersistentObjectStore\\Server\\BodyParser\\BodyParserInterface');
 	}
-
-//	/**
-//	 * Waits for the total request body and performs the needed action
-//	 *
-//	 * @param Request $request
-//	 * @param Response $response
-//	 * @param RequestInfo $requestInfo
-//	 */
-//	public function waitForBodyAndPerformAction($request, $response, $requestInfo) {
-//		$self = $this;
-//
-//		$requestBody   = '';
-//		$headers       = $request->getHeaders();
-//		$contentLength = (int)$headers['Content-Length'];
-//		$receivedData  = 0;
-//		$request->on('data', function ($data) use ($self, $request, $response, &$requestBody, &$receivedData, $contentLength, $requestInfo) {
-//			$requestBody .= $data;
-//			$receivedData += strlen($data);
-//			if ($receivedData >= $contentLength) {
-//				$requestBodyParsed = $self->getBodyParserForRequest($request)->parse($requestBody, $request);
-//				if ($request->getMethod() === 'POST') {
-//					$requestResult = $self->getHandlerForRequest($request)->create($requestInfo, $requestBodyParsed);
-//				} else {
-//					$requestResult = $self->getHandlerForRequest($request)->update($requestInfo, $requestBodyParsed);
-//				}
-//				$self->handleResult($requestResult, $request, $response);
-//			}
-//		});
-//	}
 
 	/**
 	 * Create and configure the server objects
