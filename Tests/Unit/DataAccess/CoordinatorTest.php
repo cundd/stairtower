@@ -10,12 +10,9 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException;
 use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Driver\Driver;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Test for Cundd\PersistentObjectStore\DataAccess\Coordinator
@@ -360,53 +357,5 @@ class CoordinatorTest extends AbstractDataBasedCase {
 //		$this->assertEquals($database->count(), count($writtenData));
 //		$this->assertEquals($this->numberOfContacts - 1, count($writtenData));
 		unlink($expectedPath);
-	}
-
-	/**
-	 * @test
-	 */
-	public function doctrineQueryBuilderTests() {
-		return;
-		$queryBuilder = new \Doctrine\DBAL\Query\QueryBuilder(new \Cundd\PersistentObjectStore\Connection(array(), new Driver()));
-//		$queryBuilder
-//			->from('contacts', 'contacts')
-//		;
-//		$database = $this->fixture->getDataByQuery($queryBuilder);
-//		$this->assertSame($this->getAllTestData(), $this->databaseToDataArray($database));
-//
-//
-//		$queryBuilder
-//			->select('id', 'name')
-//			->from('contacts', 'contacts')
-//		;
-//		$database = $this->fixture->getDataByQuery($queryBuilder);
-//		$this->assertSame($this->getAllTestData(), $this->databaseToDataArray($database));
-
-
-		$queryBuilder
-			->select('id', 'name')
-			->from('contacts', 'users')
-			->where('email = ?')
-			->andWhere('email = ?')
-			->orWhere('email = ?')
-			->andWhere('email = ?')
-			->orWhere('email = ?')
-			->setParameter(0, 'spm@cundd.net');
-		$database = $this->fixture->getDataByQuery($queryBuilder);
-		$this->assertSame($this->getAllTestData(), $this->databaseToDataArray($database));
-
-
-		return;
-		$queryBuilder->select('c')
-			->innerJoin('c.lastName', 'contacts', 'ON', $queryBuilder->expr()->eq('p.lastName', ':lastName'))
-			->where('c.email = :email');
-
-		$queryBuilder->setParameters(array(
-			'email'    => 'spm@cundd.net',
-			'lastName' => 'Jobs',
-		));
-
-		$database = $this->fixture->getDataByQuery($queryBuilder);
-		$this->assertSame($this->getAllTestData(), $this->databaseToDataArray($database));
 	}
 }
