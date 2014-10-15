@@ -41,6 +41,7 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 			'writeDataPath' => $varPath . 'Data/',
 			'lockPath'      => $varPath . 'Lock/',
 			'logPath'       => $varPath . 'Log/',
+			'rescuePath'    => $varPath . 'Rescue/',
 		), $configurationReader->readConfigurationFiles());
 
 		self::$sharedInstance = $this;

@@ -13,7 +13,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
-use Cundd\PersistentObjectStore\Server\Handler\Event;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 
@@ -74,14 +73,21 @@ class Handler implements HandlerInterface {
 	 * @return HandlerResultInterface
 	 */
 	public function create(RequestInfo $requestInfo, $data) {
-		$database = $this->getDatabaseForRequestInfo($requestInfo);
+		$database     = $this->getDatabaseForRequestInfo($requestInfo);
 		$dataInstance = new Data($data);
 
 		if ($requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException(
 			'Data identifier in request path is not allowed when creating a Data instance. Use PUT to update',
 			1413278767
 		);
-		if ($database->contains($dataInstance)) throw new InvalidBodyException('Database already contains the given data', 1413215990);
+		if ($database->contains($dataInstance)) throw new InvalidBodyException(
+			sprintf(
+				'Database %s already contains the given data. Maybe the values of the identifier \'%s\' are not expressive',
+				$database->getIdentifier(),
+				$dataInstance->getIdentifierKey()
+			),
+			1413215990
+		);
 
 		$database->add($dataInstance);
 		if ($database->contains($dataInstance)) {
@@ -124,7 +130,7 @@ class Handler implements HandlerInterface {
 		}
 
 		$filterResult = $this->filterBuilder->buildFilterFromQueryParts($requestInfo->getRequest()->getQuery(), $database);
-		$statusCode = $filterResult->count() > 0 ? 200 : 404;
+		$statusCode   = $filterResult->count() > 0 ? 200 : 404;
 		return new HandlerResult($statusCode, $filterResult);
 	}
 

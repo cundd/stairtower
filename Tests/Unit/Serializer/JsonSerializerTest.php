@@ -30,6 +30,9 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase {
 		$input = 'A string';
 		$this->assertSame($input, $this->fixture->unserialize($this->fixture->serialize($input)));
 
+		$input = 'This is some unicode äü ♞ <= do you see the horse?';
+		$this->assertSame($input, $this->fixture->unserialize($this->fixture->serialize($input)));
+
 		$input = 0.999009;
 		$this->assertSame($input, $this->fixture->unserialize($this->fixture->serialize($input)));
 

@@ -17,7 +17,7 @@ interface Constants {
 	/**
 	 * JSON welcome message
 	 */
-	const MESSAGE_JSON_WELCOME = 'STAIRTOWER - PERSISTENT OBJECT STORE';
+	const MESSAGE_JSON_WELCOME = '♜ - STAIRTOWER - PERSISTENT OBJECT STORE';
 
 	/**
 	 * CLI welcome message

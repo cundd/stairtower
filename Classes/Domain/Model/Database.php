@@ -220,8 +220,8 @@ class Database implements DatabaseInterface, ArrayableInterface {
 		$newIndex = $this->count();
 
 		if ($this->contains($dataInstance)) {
-			throw new RuntimeException(
-				sprintf('Object with GUID %s already exists in the database. Maybe the values of the identifier %s are not unique', $dataInstance->getGuid(), $dataInstance->getIdentifierKey()),
+			throw new InvalidDataException(
+				sprintf('Object with GUID %s already exists in the database. Maybe the values of the identifier \'%s\' are not expressive', $dataInstance->getGuid(), $dataInstance->getIdentifierKey()),
 				1411205350
 			);
 		}
@@ -256,8 +256,8 @@ class Database implements DatabaseInterface, ArrayableInterface {
 		$objectUid          = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
 		$databaseIdentifier = $this->identifier;
 		if (!$this->contains($dataInstance)) {
-			throw new RuntimeException(
-				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier %s are not expressive', $objectUid, $dataInstance->getIdentifierKey()),
+			throw new InvalidDataException(
+				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier \'%s\' are not expressive', $objectUid, $dataInstance->getIdentifierKey()),
 				1412800595
 			);
 		}
