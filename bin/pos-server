@@ -13,8 +13,7 @@ $diContainer = $bootstrap->getDiContainer();
 $eventLoop = \React\EventLoop\Factory::create();
 $diContainer->set('React\\EventLoop\\LoopInterface', $eventLoop);
 
-
-\Cundd\PersistentObjectStore\CrashHandler::register();
+$diContainer->get('Cundd\\PersistentObjectStore\\CrashHandler')->register();
 
 /** @var \Cundd\PersistentObjectStore\Server\RestServer $server */
 $server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\RestServer');

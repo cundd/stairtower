@@ -11,6 +11,7 @@ namespace Cundd\PersistentObjectStore;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
+use Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use DateTime;
@@ -29,16 +30,30 @@ class CrashHandler {
 	static protected $didRegister = FALSE;
 
 	/**
+	 * @var CoordinatorInterface
+	 * @Inject
+	 */
+	protected $coordinator;
+
+	static public $sharedCrashHandler;
+
+	function __construct() {
+		self::$sharedCrashHandler = $this;
+	}
+
+
+	/**
 	 * Registers the crash handler
 	 */
-	static public function register() {
-		register_shutdown_function(array(get_called_class(), 'handleCrash'));
+	public function register() {
+		register_shutdown_function(array($this, 'handleCrash'));
+//		register_shutdown_function(array(get_called_class(), 'handleCrash'));
 	}
 
 	/**
 	 * Tries to handle a crashed system
 	 */
-	static public function handleCrash() {
+	public function handleCrash() {
 		$error = error_get_last();
 		if ($error !== NULL) {
 			// Construct a helpful crash message
@@ -49,12 +64,12 @@ class CrashHandler {
 
 			$errorReport   = [];
 			$errorReport[] = sprintf('Server crashed with code %d and message "%s" in %s at %s', $errorNumber, $errorMessage, $errorFile, $errorLine);
-			$errorReport[] = sprintf('Date/time: %s', static::getTimeWithMicroseconds()->format('Y-m-d H:i:s.u'));
+			$errorReport[] = sprintf('Date/time: %s', $this->getTimeWithMicroseconds()->format('Y-m-d H:i:s.u'));
 			$errorReport[] = sprintf('Current memory usage: %s', GeneralUtility::formatBytes(memory_get_usage(TRUE)));
 			$errorReport[] = sprintf('Peak memory usage: %s', GeneralUtility::formatBytes(memory_get_peak_usage(TRUE)));
 
 			// Try to rescue data
-			$errorReport[] = static::rescueData();
+			$errorReport[] = $this->rescueData();
 
 			// Output and save the information
 			$errorReport = implode(PHP_EOL, $errorReport);
@@ -69,10 +84,10 @@ class CrashHandler {
 	 *
 	 * @return string Returns a message describing the result
 	 */
-	static public function rescueData() {
+	public function rescueData() {
 		$resultMessageParts = array();
-		$data               = Coordinator::getObjectStore();
-		$backupDirectory    = static::getRescueDirectory();
+		$data               = $this->coordinator->getObjectStore();
+		$backupDirectory    = $this->getRescueDirectory();
 		if ($data) {
 			foreach ($data as $databaseIdentifier => $database) {
 				$currentData = NULL;
@@ -114,7 +129,7 @@ class CrashHandler {
 	 *
 	 * @return DateTime
 	 */
-	static protected function getTimeWithMicroseconds() {
+	protected function getTimeWithMicroseconds() {
 		$t     = microtime(TRUE);
 		$micro = sprintf('%06d', ($t - floor($t)) * 1000000);
 		$now   = new DateTime(gmdate('Y-m-d H:i:s.') . $micro);
@@ -126,7 +141,7 @@ class CrashHandler {
 	 *
 	 * @return string
 	 */
-	static protected function getRescueDirectory() {
+	protected function getRescueDirectory() {
 		$backupDirectory = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('rescuePath');
 		$backupDirectory .= gmdate('Y-m-d-H-i-s') . '/';
 		if (!file_exists($backupDirectory)) {

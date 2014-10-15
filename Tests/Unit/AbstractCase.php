@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore;
+use Cundd\PersistentObjectStore\DataAccess\Coordinator;
 use DI\ContainerBuilder;
 
 /**
@@ -49,10 +50,17 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 			$builder->addDefinitions(__DIR__ . '/../../Classes/Configuration/dependencyInjectionConfiguration.php');
 			$this->diContainer = $builder->build();
 //			$this->diContainer = ContainerBuilder::buildDevContainer();
+
+			$this->diContainer->get('Cundd\\PersistentObjectStore\\Event\\SharedEventEmitter');
+
 		}
 		return $this->diContainer;
 	}
 
+	public static function setUpBeforeClass() {
+		parent::setUpBeforeClass();
+//		Coordinator::flushObjectStore();
+	}
 
 
 	protected function setUp() {

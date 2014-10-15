@@ -332,6 +332,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		$database->remove($dataInstance);
 		$this->assertEquals($this->numberOfContacts - 1, $database->count());
 
+
 		// A database just loaded from the filesystem should only contain the original number of entries
 		/** @var DatabaseInterface $newlyLoadedDatabase */
 		$newlyLoadedDatabase = $this->databaseReader->loadDatabase($databaseIdentifier);

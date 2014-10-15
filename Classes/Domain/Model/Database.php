@@ -272,7 +272,7 @@ class Database implements DatabaseInterface, ArrayableInterface {
 		unset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid]);
 		unset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index]);
 
-		if ($index > $this->totalCount) {
+		if ($index > $this->count()) {
 			throw new InvalidIndexException(
 				sprintf('Index %d out of bound', $index),
 				1412277617
