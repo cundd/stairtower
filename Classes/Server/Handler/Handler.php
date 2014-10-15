@@ -15,7 +15,6 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Handler implementation
@@ -115,7 +114,8 @@ class Handler implements HandlerInterface {
 		}
 
 		$filterResult = $this->filterBuilder->buildFilterFromQueryParts($requestInfo->getRequest()->getQuery(), $database);
-		return new HandlerResult(200, $filterResult);
+		$statusCode = $filterResult->count() > 0 ? 200 : 404;
+		return new HandlerResult($statusCode, $filterResult);
 	}
 
 	/**

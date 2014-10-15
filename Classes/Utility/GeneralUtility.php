@@ -91,4 +91,30 @@ abstract class GeneralUtility {
 		$prefix = $underscoreString[0] === '_' ? '_' : '';
 		return $prefix . lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $underscoreString))));
 	}
+
+	/**
+	 * Tries to convert the given value to a string
+	 *
+	 * @param mixed $value
+	 * @return bool|string Returns the string representation or FALSE on error
+	 */
+	static public function toString($value) {
+		switch (TRUE) {
+			case is_null($value):
+				return '';
+
+			case is_scalar($value):
+				return (string) $value;
+
+			case is_resource($value):
+				return (string) $value;
+
+			case is_array($value):
+				return implode(' ', $value);
+
+			case is_object($value) && method_exists($value, '__toString'):
+				return (string) $value;
+		}
+		return FALSE;
+	}
 } 

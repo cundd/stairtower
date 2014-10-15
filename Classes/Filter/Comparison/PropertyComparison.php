@@ -7,11 +7,9 @@
  */
 
 namespace Cundd\PersistentObjectStore\Filter\Comparison;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
 use Cundd\PersistentObjectStore\KeyValueCodingInterface;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
 
@@ -118,7 +116,7 @@ class PropertyComparison implements PropertyComparisonInterface {
 				return $propertyValue >= $this->getValue();
 
 			case PropertyComparisonInterface::TYPE_LIKE:
-				return $propertyValue === $this->getValue();
+				return $this->performLike($propertyValue, $this->getValue());
 
 			case PropertyComparisonInterface::TYPE_CONTAINS:
 				return $this->performContains($propertyValue, $this->getValue());
@@ -181,6 +179,30 @@ class PropertyComparison implements PropertyComparisonInterface {
 		}
 		if (is_string($collection)) {
 			return strpos($collection, (string)$search) !== FALSE;
+		}
+		return FALSE;
+	}
+
+	/**
+	 * Perform a 'like' comparison
+	 *
+	 * @param mixed $value
+	 * @param mixed $search
+	 * @return bool
+	 */
+	protected function performLike($value, $search) {
+		if (is_array($value) && $value instanceof \Traversable) {
+			return $this->performContains($value, $search);
+		}
+		if (is_string($search)) {
+			$stringValue = GeneralUtility::toString($value);
+			$regexDelimiter = '!';
+			if (strpos($stringValue, $regexDelimiter) !== FALSE) {
+				$regexDelimiter = '\\';
+				if (strpos($stringValue, $regexDelimiter) !== FALSE) {}
+			}
+			$regex = $regexDelimiter . $search . $regexDelimiter;
+			return preg_match($regex, $stringValue) > 0;
 		}
 		return FALSE;
 	}
