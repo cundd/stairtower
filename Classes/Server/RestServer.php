@@ -112,7 +112,7 @@ class RestServer extends AbstractServer {
 		if ($result instanceof HandlerResultInterface) {
 			$response->writeHead(
 				$result->getStatusCode(),
-				array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()))
+				array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
 			);
 			$responseData = $result->getData();
 			if ($responseData) {
@@ -124,7 +124,7 @@ class RestServer extends AbstractServer {
 		} else if ($result === NULL) {
 			$response->writeHead(
 				204,
-				array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()))
+				array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
 			);
 			$response->end($formatter->format('No content'));
 		} else {

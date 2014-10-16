@@ -8,6 +8,8 @@
 
 namespace Cundd\PersistentObjectStore\Utility;
 use Cundd\PersistentObjectStore\Domain\Model\Data;
+use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
+use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException;
 
 class DummyObjectThatCanBeConvertedToString {
 	protected $stringData = '';
@@ -30,6 +32,139 @@ class DummyObjectThatCanBeConvertedToString {
  * @package Cundd\PersistentObjectStore\Utility
  */
 class GeneralUtilityTest extends \PHPUnit_Framework_TestCase {
+	/**
+	 * @test
+	 */
+	public function assertDatabaseIdentifierTest() {
+		GeneralUtility::assertDatabaseIdentifier('database');
+		GeneralUtility::assertDatabaseIdentifier('my-database');
+		GeneralUtility::assertDatabaseIdentifier('my_database');
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('my:database');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('my.database');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('this/folder');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('..');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('.');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('info@cundd.net');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('543fb69d448766d1eeb2c62a');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('_543fb69d448766d1eeb2c62a');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('@543fb69d448766d1eeb2c62a');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('.543fb69d448766d1eeb2c62a');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('-543fb69d448766d1eeb2c62a');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('_543fb69d448766d1eeb2c62a');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('ä43fbä69d448766d1eeb2c62a');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDatabaseIdentifier('43fbä69d448766d1eeb2c62a');
+		} catch (InvalidDatabaseIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+	}
+
+	/**
+	 * @test
+	 */
+	public function assertDataIdentifierTest() {
+		GeneralUtility::assertDataIdentifier('daniel');
+		GeneralUtility::assertDataIdentifier('info@cundd.net');
+		GeneralUtility::assertDataIdentifier('543fb69d448766d1eeb2c62a');
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDataIdentifier('');
+		} catch (InvalidDataIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDataIdentifier('_543fb69d448766d1eeb2c62a');
+		} catch (InvalidDataIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDataIdentifier('@543fb69d448766d1eeb2c62a');
+		} catch (InvalidDataIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDataIdentifier('.543fb69d448766d1eeb2c62a');
+		} catch (InvalidDataIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDataIdentifier('-543fb69d448766d1eeb2c62a');
+		} catch (InvalidDataIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDataIdentifier('_543fb69d448766d1eeb2c62a');
+		} catch (InvalidDataIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDataIdentifier('ä43fbä69d448766d1eeb2c62a');
+		} catch (InvalidDataIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+
+		$crashed = FALSE;
+		try { GeneralUtility::assertDataIdentifier('43fbä69d448766d1eeb2c62a');
+		} catch (InvalidDataIdentifierException $exception) {$crashed = TRUE;}
+		$this->assertTrue($crashed);
+	}
+
 	/**
 	 * @test
 	 */
