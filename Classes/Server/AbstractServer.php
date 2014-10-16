@@ -312,13 +312,16 @@ abstract class AbstractServer implements ServerInterface {
 			case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDatabaseIdentifierException': $statusCode = 400; break;
 			case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDataException': $statusCode = 500; break;
 			case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDataIdentifierException': $statusCode = 400; break;
+
 			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidBodyException': $statusCode = 400; break;
 			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidEventLoopException': $statusCode = 500; break;
 			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidRequestException': $statusCode = 400; break;
 			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidRequestMethodException': $statusCode = 405; break;
 			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidRequestParameterException': $statusCode = 400; break;
 			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidServerChangeException': $statusCode = 500; break;
+			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\MissingLengthHeaderException': $statusCode = 411; break;
 			case 'Cundd\\PersistentObjectStore\\Server\\Exception\\ServerException': $statusCode = 500; break;
+
 			case 'Cundd\\PersistentObjectStore\\Filter\\Exception\\InvalidCollectionException': $statusCode = 500; break;
 			case 'Cundd\\PersistentObjectStore\\Filter\\Exception\\InvalidComparisonException': $statusCode = 500; break;
 			case 'Cundd\\PersistentObjectStore\\Filter\\Exception\\InvalidOperatorException': $statusCode = 500; break;
@@ -338,12 +341,12 @@ abstract class AbstractServer implements ServerInterface {
 		switch ($serverAction) {
 			case 'restart':
 				if (!$this->isRunning()) throw new ServerException('Server is currently not running', 1413201286);
-				$this->handleResult(new HandlerResult(200, 'Server is going to restart'), $request, $response);
+				$this->handleResult(new HandlerResult(202, 'Server is going to restart'), $request, $response);
 				$this->restart();
 				break;
 
 			case 'shutdown':
-				$this->handleResult(new HandlerResult(200, 'Server is going to shut down'), $request, $response);
+				$this->handleResult(new HandlerResult(202, 'Server is going to shut down'), $request, $response);
 				$this->eventLoop->addTimer(0.5, array($this, 'shutdown'));
 				break;
 

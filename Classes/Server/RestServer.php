@@ -11,7 +11,9 @@ namespace Cundd\PersistentObjectStore\Server;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
+use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
+use Cundd\PersistentObjectStore\Server\Exception\MissingLengthHeaderException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
@@ -149,7 +151,30 @@ class RestServer extends AbstractServer {
 	 * @return FormatterInterface
 	 */
 	public function getFormatterForRequest(Request $request) {
-		return $this->diContainer->get('Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter');
+		$headers = $request->getHeaders();
+		$accept = '*/*';
+		if (isset($headers['Accept'])) {
+			$accept = $headers['Accept'];
+		}
+
+		$acceptedTypes = explode(',', $accept);
+		$json = array_search('application/json', $acceptedTypes);
+		$html = array_search('text/html', $acceptedTypes);
+		if ($json === FALSE) {
+			$json = 1000;
+		}
+		if ($html === FALSE) {
+			$html = 1000;
+		}
+		if ($json < $html) {
+			$formatter = 'Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter';
+		} else if ($html < $json) {
+			// TODO: implement the XmlFormatter
+			$formatter = 'Cundd\\PersistentObjectStore\\Formatter\\XmlFormatter';
+		} else {
+			$formatter = 'Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter';
+		}
+		return $this->diContainer->get($formatter);
 	}
 
 	/**
@@ -169,7 +194,17 @@ class RestServer extends AbstractServer {
 	 * @return BodyParserInterface
 	 */
 	public function getBodyParserForRequest(Request $request) {
-		return $this->diContainer->get('Cundd\\PersistentObjectStore\\Server\\BodyParser\\BodyParserInterface');
+		$header = $request->getHeaders();
+		$bodyParser = 'Cundd\\PersistentObjectStore\\Server\\BodyParser\\JsonBodyParser';
+		if (isset($header['Content-Type'])) {
+			$contentType = $header['Content-Type'];
+			if (substr($contentType, 0, 19) === 'multipart/form-data') {
+				throw new InvalidBodyException(sprintf('No body parser for Content-Type "%s" found', $contentType));
+			} else if ($contentType === 'application/x-www-form-urlencoded') {
+				$bodyParser = 'Cundd\\PersistentObjectStore\\Server\\BodyParser\\FormDataBodyParser';
+			}
+		}
+		return $this->diContainer->get($bodyParser);
 	}
 
 	/**
@@ -183,8 +218,7 @@ class RestServer extends AbstractServer {
 		$self = $this;
 
 		$requestBody   = '';
-		$headers       = $request->getHeaders();
-		$contentLength = (int)$headers['Content-Length'];
+		$contentLength = $this->getContentLengthFromRequest($request);
 		$receivedData  = 0;
 		$request->on('data', function ($data) use ($self, $request, $response, &$requestBody, &$receivedData, $contentLength, $requestInfo) {
 			try {
@@ -203,6 +237,23 @@ class RestServer extends AbstractServer {
 				$this->handleError($exception, $request, $response);
 			}
 		});
+	}
+
+	/**
+	 * Returns the content length for the given request
+	 *
+	 * @param Request $request
+	 * @return int
+	 */
+	protected function getContentLengthFromRequest($request) {
+		$headers       = $request->getHeaders();
+		$headerNamesToCheck = array('Content-Length', 'Content-length', 'content-length');
+		foreach ($headerNamesToCheck as $headerName) {
+			if (isset($headers[$headerName])) {
+				return $headers[$headerName];
+			}
+		}
+		throw new MissingLengthHeaderException('Could not detect the Content-Length', 1413473195);
 	}
 
 	/**

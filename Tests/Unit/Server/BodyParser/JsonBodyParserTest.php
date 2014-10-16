@@ -12,7 +12,7 @@ namespace Cundd\PersistentObjectStore\Server\BodyParser;
 use Cundd\PersistentObjectStore\AbstractCase;
 use React\Http\Request;
 
-class DummyRequestClass {
+class JsonBodyParserTest_DummyRequestClass {
 	public function getPath() {
 		return '/contacts/';
 	}
@@ -39,7 +39,7 @@ class JsonBodyParserTest extends AbstractCase {
 	public function parseBodyTest() {
 
 		/** @var Request $dummyRequest */
-		$dummyRequest = new DummyRequestClass();
+		$dummyRequest = new JsonBodyParserTest_DummyRequestClass();
 		$this->assertArrayHasKey('email', $this->fixture->parse('{"email":"info@cundd.net"}', $dummyRequest));
 		$this->assertArrayHasKey('email', $this->fixture->parse('{"email":"info@cundd.net","name":"Daniel"}', $dummyRequest));
 		$this->assertArrayHasKey('email', $this->fixture->parse('{"name":"Daniel","email":"info@cundd.net"}', $dummyRequest));
@@ -64,7 +64,7 @@ class JsonBodyParserTest extends AbstractCase {
 	 */
 	public function parseInvalidBodyTest() {
 		/** @var Request $dummyRequest */
-		$dummyRequest = new DummyRequestClass();
+		$dummyRequest = new JsonBodyParserTest_DummyRequestClass();
 		$this->fixture->parse('name":"Daniel","email":"info@cundd.net"}', $dummyRequest);
 	}
 
@@ -74,7 +74,7 @@ class JsonBodyParserTest extends AbstractCase {
 	 */
 	public function parseEmptyBodyTest() {
 		/** @var Request $dummyRequest */
-		$dummyRequest = new DummyRequestClass();
+		$dummyRequest = new JsonBodyParserTest_DummyRequestClass();
 		$this->fixture->parse('', $dummyRequest);
 	}
 }
