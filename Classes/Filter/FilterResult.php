@@ -212,7 +212,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 			} else {
 				$item = $collection->current();
 			}
-//			echo 'check ' . spl_object_hash($item) . PHP_EOL;
 			if ($filter->checkItem($item)) {
 				if ($useRaw) {
 					$foundObject = $collection->current();
@@ -229,10 +228,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 		if (!$collection->valid()) {
 			$this->fullyFiltered = TRUE;
 		}
-
-//		if (!$foundObject) {
-//			throw new \Exception('nothing found');
-//		}
 
 		if ($foundObject) {
 			parent::push($foundObject);
@@ -309,10 +304,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 		$dataCollectionCount = $dataCollectionRaw->getSize();
 
 		$resultArray = new SplFixedArray($dataCollectionCount);
-		DebugUtility::var_dump(__METHOD__);
 
-
-//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
 		$i = 0;
 		$matchesIndex = 0;
 		while ($i < $dataCollectionCount) {
@@ -370,11 +362,8 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 			return $originalCollection;
 		}
 		if ($originalCollection instanceof DatabaseInterface) {
-//			DebugUtility::var_dump($originalCollection, \Cundd\PersistentObjectStore\Domain\Model\Database::steal());
 			return clone $originalCollection;
 		}
-
-		DebugUtility::printMemorySample();
 
 		$start = microtime(TRUE);
 		$collection = new SplFixedArray($originalCollection->count());
@@ -384,10 +373,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 			$i++;
 		}
 		$collection->rewind();
-
-		DebugUtility::printMemorySample();
-		$end = microtime(TRUE);
-		printf("Clone Time: %0.6f\n", $end - $start);
 		return $collection;
 	}
 
