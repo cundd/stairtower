@@ -78,7 +78,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 *
 	 * @var array
 	 */
-	static protected $objectCollectionMap = array();
+	protected $objectCollectionMap = array();
 
 
 	/**
@@ -224,7 +224,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 			throw new RuntimeException("Given value $dataInstance is of type " . gettype($dataInstance));
 		}
 
-		if (isset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectGuid])) {
+		if (isset($this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectGuid])) {
 			return TRUE;
 		}
 		return $this->findByIdentifier($objectId) ? TRUE : FALSE;
@@ -260,7 +260,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
 
 		$identifier = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
-		static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier] = $dataInstance;
+		$this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier] = $dataInstance;
 
 		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_UPDATED, array($dataInstance));
 	}
@@ -282,15 +282,15 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 			);
 		}
 
-		$index = array_search($objectUid, static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID], TRUE);
+		$index = array_search($objectUid, $this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID], TRUE);
 		if ($index === FALSE) {
 			throw new RuntimeException(
 				sprintf('Could not determine the index of object with GUID %s', $objectUid),
 				1412801014
 			);
 		}
-		unset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid]);
-		unset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index]);
+		unset($this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid]);
+		unset($this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index]);
 
 		if ($index > $this->count()) {
 			throw new InvalidIndexException(
@@ -357,11 +357,14 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 
 		while ($this->valid()) {
 			/** @var DataInterface $element */
-			$element = $this->current();
-			// Check if there is an element (could be NULL if it was just deleted) and if the identifier matches it's ID
-			if ($element && $element->getId() === $identifier) {
-				$foundObject = $element;
-				break;
+			try {
+				$element = $this->current();
+				// Check if there is an element (could be NULL if it was just deleted) and if the identifier matches it's ID
+				if ($element && $element->getId() === $identifier) {
+					$foundObject = $element;
+					break;
+				}
+			} catch (\Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException $exception) {
 			}
 			$this->next();
 		}
@@ -510,7 +513,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 				$i++;
 			}
 		}
-		return static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT];
+		return $this->objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT];
 	}
 
 
@@ -603,7 +606,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @return bool
 	 */
 	protected function _hasObjectForIndex($index) {
-		return isset(static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index]);
+		return isset($this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index]);
 	}
 
 	/**
@@ -614,9 +617,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 */
 	protected function _getObjectForIndex($index) {
 		$identifier = $this->identifier;
-		if (isset(static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index])) {
-			$objectHash = static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index];
-			return static::$objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectHash];
+		if (isset($this->objectCollectionMap[$identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index])) {
+			$objectHash = $this->objectCollectionMap[$identifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index];
+			return $this->objectCollectionMap[$identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectHash];
 		}
 		return NULL;
 	}
@@ -643,8 +646,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @return DataInterface|NULL
 	 */
 	protected function _getObjectForIdentifier($identifier) {
-		if (isset(static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier])) {
-			return static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier];
+		if (isset($this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier])) {
+			return $this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier];
 		}
 		return NULL;
 	}
@@ -660,7 +663,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		$databaseIdentifier = $this->identifier;
 
 
-		if (isset(static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid])) {
+		if (isset($this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid])) {
 			throw new RuntimeException(
 				sprintf('Object with GUID %s already exists in the database. Maybe the values of the identifier %s are not unique', $objectUid, $dataInstance->getIdentifierKey()),
 				1411205350
@@ -674,8 +677,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 			);
 		}
 
-		static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid] = $dataInstance;
-		static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index] = $objectUid;
+		$this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid] = $dataInstance;
+		$this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index] = $objectUid;
 
 		if ($index === $this->totalCount) {
 			$this->rawData->setSize($this->totalCount);
@@ -691,8 +694,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 */
 	protected function _prepareObjectCollectionMap() {
 		$databaseIdentifier = $this->identifier;
-		if (!isset(static::$objectCollectionMap[$databaseIdentifier])) {
-			static::$objectCollectionMap[$databaseIdentifier] = array(
+		if (!isset($this->objectCollectionMap[$databaseIdentifier])) {
+			$this->objectCollectionMap[$databaseIdentifier] = array(
 				self::OBJ_COL_KEY_REFERENCE_COUNT         => 0,
 				self::OBJ_COL_KEY_INDEX_TO_GUID => array(),
 				self::OBJ_COL_KEY_GUID_TO_OBJECT           => array()
@@ -728,7 +731,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @return bool
 	 */
 	protected function _allObjectsArePrepared() {
-		return $this->rawData->count() === count(static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT]);
+		return $this->rawData->count() === count($this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT]);
 	}
 
 	/**
@@ -736,7 +739,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 */
 	protected function _increaseObjectCollectionReferenceCount() {
 //		$this->_prepareObjectCollectionMap();
-		static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_REFERENCE_COUNT]++;
+		$this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_REFERENCE_COUNT]++;
 	}
 
 	/**
@@ -744,7 +747,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 */
 	protected function _decreaseObjectCollectionReferenceCount() {
 //		$this->_prepareObjectCollectionMap();
-		static::$objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_REFERENCE_COUNT]--;
+		$this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_REFERENCE_COUNT]--;
 	}
 
 	/**
@@ -752,8 +755,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 */
 	protected function _deleteObjectCollectionIfNecessary() {
 		$databaseIdentifier = $this->identifier;
-		if (static::$objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_REFERENCE_COUNT] < 1) {
-			unset(static::$objectCollectionMap[$databaseIdentifier]);
+		if ($this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_REFERENCE_COUNT] < 1) {
+			unset($this->objectCollectionMap[$databaseIdentifier]);
 		}
 	}
 }

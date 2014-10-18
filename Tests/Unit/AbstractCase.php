@@ -65,7 +65,9 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 
 
 	protected function setUp() {
-		MemoryManager::freeAll();
+		if (class_exists('Cundd\\PersistentObjectStore\\MemoryManager')) {
+			MemoryManager::freeAll();
+		}
 
 		$this->setUpXhprof();
 
@@ -79,8 +81,10 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	protected function tearDown() {
 //		unset($this->fixture);
 //		unset($this->diContainer);
-//		MemoryManager::freeObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
-		MemoryManager::freeAll();
+		if (class_exists('Cundd\\PersistentObjectStore\\MemoryManager')) {
+//			MemoryManager::freeObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
+			MemoryManager::freeAll();
+		}
 		gc_collect_cycles();
 	}
 

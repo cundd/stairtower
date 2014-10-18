@@ -79,7 +79,7 @@ class SorterTest extends AbstractDataBasedCase {
 
 //			printf('%d: Last latitude %0.9f to current %0.9f' . PHP_EOL, $i, $lastLatitude, $item->valueForKey('latitude'));
 
-			$this->assertGreaterThan($lastLatitude, $item->valueForKey('latitude'));
+			$this->assertGreaterThan($lastLatitude, $item->valueForKey('latitude'), 'Current latitude is not bigger than last for loop number ' . $i);
 			$lastLatitude = $item->valueForKey('latitude');
 		}
 
@@ -186,7 +186,7 @@ class SorterTest extends AbstractDataBasedCase {
 			if ($lastLatitude === $item->valueForKey('latitude')) {
 				DebugUtility::var_dump($i, $item, $sortedDatabase[$i - 1]);
 			}
-			$this->assertGreaterThan($lastLatitude, $item->valueForKey('latitude'));
+			$this->assertGreaterThan($lastLatitude, $item->valueForKey('latitude'), 'Current latitude is not bigger than last for loop number ' . $i);
 			$lastLatitude = $item->valueForKey('latitude');
 		}
 
@@ -246,7 +246,7 @@ class SorterTest extends AbstractDataBasedCase {
 
 //			printf('%d: Last latitude %0.9f to current %0.9f' . PHP_EOL, $i, $lastLatitude, $item->valueForKey('latitude'));
 
-			$this->assertGreaterThan($lastLatitude, $item->valueForKey('latitude'));
+			$this->assertGreaterThan($lastLatitude, $item->valueForKey('latitude'), 'Current latitude is not bigger than last for loop number ' . $i);
 			$lastLatitude = $item->valueForKey('latitude');
 		}
 	}
@@ -307,7 +307,7 @@ class SorterTest extends AbstractDataBasedCase {
 				$myLongitude
 			);
 
-			$this->assertGreaterThanOrEqual($lastDistance, $currentDistance);
+			$this->assertGreaterThanOrEqual($lastDistance, $currentDistance, 'Current distance is not bigger than or equal to last for loop number ' . $i);
 			$lastDistance = $currentDistance;
 		}
 
