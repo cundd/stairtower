@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Server;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\MemoryManager;
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
@@ -156,6 +157,7 @@ abstract class AbstractServer implements ServerInterface {
 	 */
 	public function runMaintenance() {
 		$this->coordinator->commitDatabases();
+		MemoryManager::cleanup();
 	}
 
 	/**
@@ -308,6 +310,8 @@ abstract class AbstractServer implements ServerInterface {
 			return 500;
 		}
 		switch (get_class($error)) {
+			case 'Cundd\\PersistentObjectStore\\DataAccess\\Exception\\ReaderException': $error->getCode() === $statusCode = 400; break;
+
 			case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDatabaseException': $statusCode = 400; break;
 			case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDatabaseIdentifierException': $statusCode = 400; break;
 			case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDataException': $statusCode = 500; break;

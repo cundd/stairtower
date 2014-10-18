@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\PersistentObjectStore\MemoryManager;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Doctrine\DBAL\Query\QueryBuilder;
 
@@ -19,6 +20,8 @@ use Doctrine\DBAL\Query\QueryBuilder;
  * @package Cundd\PersistentObjectStore\DataAccess
  */
 class Coordinator implements CoordinatorInterface {
+	const MEMORY_MANAGER_TAG = 'databases';
+
 	/**
 	 * @var \Cundd\PersistentObjectStore\DataAccess\Reader
 	 * @Inject
@@ -48,7 +51,7 @@ class Coordinator implements CoordinatorInterface {
 	 *
 	 * @var array<array<mixed>>
 	 */
-	protected $objectStore = array();
+	#protected $objectStore = array();
 
 	/**
 	 * Returns the database with the given identifier
@@ -71,11 +74,14 @@ class Coordinator implements CoordinatorInterface {
 	public function createDatabase($databaseIdentifier, $options = array()) {
 		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
 		if ($this->databaseExists($databaseIdentifier)) throw new InvalidDatabaseException(sprintf('Database "%s" already exists', $databaseIdentifier), 1412524749);
-		if (isset($this->objectStore[$databaseIdentifier])) throw new InvalidDatabaseException(sprintf('Database "%s" already exists in memory', $databaseIdentifier), 1412524750);
+		if (MemoryManager::hasObject($databaseIdentifier)) throw new InvalidDatabaseException(sprintf('Database "%s" already exists in memory', $databaseIdentifier), 1412524750);
 
 		$this->dataWriter->createDatabase($databaseIdentifier, $options);
 		$this->eventEmitter->emit(Event::DATABASE_CREATED, array($databaseIdentifier));
-		return $this->objectStore[$databaseIdentifier] = new Database($databaseIdentifier);
+
+		$newDatabase = new Database($databaseIdentifier);
+		MemoryManager::registerObject($newDatabase, $databaseIdentifier, array(self::MEMORY_MANAGER_TAG));
+		return $newDatabase;
 	}
 
 	/**
@@ -88,8 +94,8 @@ class Coordinator implements CoordinatorInterface {
 		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
 
 		// If the database is in the object store remove it
-		if (isset($this->objectStore[$databaseIdentifier])) {
-			unset($this->objectStore[$databaseIdentifier]);
+		if (MemoryManager::hasObject($databaseIdentifier)) {
+			MemoryManager::free($databaseIdentifier);
 		}
 		if (!$this->databaseExists($databaseIdentifier)) throw new InvalidDatabaseException(sprintf('Database "%s" does not exist', $databaseIdentifier), 1412525836);
 
@@ -117,7 +123,8 @@ class Coordinator implements CoordinatorInterface {
 		$persistedDatabases = $this->listPersistedDatabases();
 		$persistedDatabases = array_combine($persistedDatabases, $persistedDatabases);
 
-		$inMemoryDatabases = array_keys($this->objectStore);
+
+		$inMemoryDatabases = MemoryManager::getIdentifiersByTag(self::MEMORY_MANAGER_TAG, TRUE);
 		$inMemoryDatabases = array_combine($inMemoryDatabases, $inMemoryDatabases);
 
 		$allDatabases = array_merge($persistedDatabases, $inMemoryDatabases);
@@ -201,7 +208,7 @@ class Coordinator implements CoordinatorInterface {
 	 * Commit all changed databases to the file system
 	 */
 	public function commitDatabases() {
-		foreach ($this->objectStore as $database) {
+		foreach (MemoryManager::getObjectsByTag(self::MEMORY_MANAGER_TAG) as $database) {
 			$this->commitDatabase($database);
 		}
 	}
@@ -242,10 +249,12 @@ class Coordinator implements CoordinatorInterface {
 	 * @return Database
 	 */
 	protected function _getDatabase($databaseIdentifier) {
-		if (!isset($this->objectStore[$databaseIdentifier])) {
-			$this->objectStore[$databaseIdentifier] = $this->dataReader->loadDatabase($databaseIdentifier);
+		if (!MemoryManager::hasObject($databaseIdentifier)) {
+			$database = $this->dataReader->loadDatabase($databaseIdentifier);
+			MemoryManager::registerObject($database, $databaseIdentifier, array(self::MEMORY_MANAGER_TAG));
+			return $database;
 		}
-		return $this->objectStore[$databaseIdentifier];
+		return MemoryManager::getObject($databaseIdentifier);
 	}
 
 	/**
@@ -255,6 +264,7 @@ class Coordinator implements CoordinatorInterface {
 	 * @internal
 	 */
 	public function getObjectStore() {
+		return MemoryManager::getObjectsByTag(self::MEMORY_MANAGER_TAG);
 		return $this->objectStore;
 	}
 }
