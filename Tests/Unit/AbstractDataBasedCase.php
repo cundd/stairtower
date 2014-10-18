@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore;
+use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 
 /**
@@ -22,6 +23,21 @@ class AbstractDataBasedCase extends AbstractCase {
 	 */
 	public function getAllTestData() {
 		return json_decode(file_get_contents(__DIR__ . '/../Resources/contacts.json'), TRUE);
+	}
+
+	/**
+	 * Returns the test data as objects
+	 *
+	 * @return array
+	 */
+	public function getAllTestObjects() {
+		$allTestData = $this->getAllTestData();
+		$allTestObjects = array();
+		foreach ($allTestData as $currentTestData) {
+			$currentObject = new Data($currentTestData, 'contacts');
+			$allTestObjects[$currentObject->getGuid()] = $currentObject;
+		}
+		return $allTestObjects;
 	}
 
 	/**

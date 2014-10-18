@@ -9,12 +9,12 @@
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 
-use Cundd\PersistentObjectStore\AbstractCase;
+use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
-class DatabaseTest extends AbstractCase {
+class DatabaseTest extends AbstractDataBasedCase {
 	/**
 	 * @var \Cundd\PersistentObjectStore\Domain\Model\Database
 	 */
@@ -176,6 +176,15 @@ class DatabaseTest extends AbstractCase {
 
 		$this->assertSame(31, $person->valueForKeyPath('age'));
 		$this->assertSame('green', $person->valueForKeyPath('eyeColor'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function toArrayTest() {
+		$this->fixture = $this->coordinator->getDatabase('contacts');
+		$this->assertEquals($this->getAllTestData(), $this->databaseToDataArray($this->fixture));
+		$this->assertEquals($this->getAllTestObjects(), $this->fixture->toArray());
 	}
 
 	/**
