@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore;
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
+use Cundd\PersistentObjectStore\MemoryManager;
 use DI\ContainerBuilder;
 
 /**
@@ -64,6 +65,8 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 
 
 	protected function setUp() {
+		MemoryManager::freeAll();
+
 		$this->setUpXhprof();
 
 		parent::setUp();
@@ -76,11 +79,15 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	protected function tearDown() {
 //		unset($this->fixture);
 //		unset($this->diContainer);
+//		MemoryManager::freeObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
+		MemoryManager::freeAll();
 		gc_collect_cycles();
 	}
 
 	/**
 	 * Checks if the congress member file exists
+	 *
+	 * @return string
 	 */
 	protected function checkPersonFile() {
 		$personsDataPath = __DIR__ . '/../Resources/people.json';
@@ -88,6 +95,7 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 			printf('Please unzip the file %s.zip to %s to run this tests', $personsDataPath, $personsDataPath);
 			die(1);
 		}
+		return $personsDataPath;
 	}
 
 	/**

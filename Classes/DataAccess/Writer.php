@@ -210,8 +210,8 @@ class Writer {
 			$item = $database->current();
 			if ($item) {
 				$objectsToWrite[] = $item->getData();
-			} else {
-				DebugUtility::pl('Current item is NULL');
+//			} else {
+//				DebugUtility::pl('Current item is NULL');
 			}
 			$database->next();
 		}

@@ -29,7 +29,7 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-class Database implements DatabaseInterface, ArrayableInterface {
+class Database implements DatabaseInterface, DatabaseRawDataInterface, ArrayableInterface {
 	/**
 	 * Object collection key for the mapping of the GUID to the object
 	 */
@@ -157,6 +157,26 @@ class Database implements DatabaseInterface, ArrayableInterface {
 			$this->totalCount = 0;
 		}
 		return $this->rawData;
+	}
+
+	/**
+	 * Returns the current raw data
+	 *
+	 * @link http://php.net/manual/en/iterator.current.php
+	 * @return mixed Can return any type.
+	 */
+	public function currentRaw() {
+		$index = $this->index;
+		if (isset($this->rawData[$index]) && $this->rawData[$index]) {
+			return $this->rawData[$index];
+		}
+
+		/** @var DataInterface $currentObject */
+		$currentObject = $this->current();
+		if ($currentObject instanceof DataInterface) {
+			return $currentObject->getData();
+		}
+		throw new IndexOutOfRangeException('Invalid index ' . $index, 1411316363);
 	}
 
 
@@ -407,27 +427,6 @@ class Database implements DatabaseInterface, ArrayableInterface {
 //			$this->objectCollection[$this->index] = $this->_convertDataAtIndexToObject($this->index);
 //		}
 //		return $this->objectCollection[$this->index];
-	}
-
-	/**
-	 * (PHP 5 &gt;= 5.0.0)<br/>
-	 * Return the current element
-	 *
-	 * @link http://php.net/manual/en/iterator.current.php
-	 * @return mixed Can return any type.
-	 */
-	public function currentRaw() {
-		$index = $this->index;
-		if (isset($this->rawData[$index]) && $this->rawData[$index]) {
-			return $this->rawData[$index];
-		}
-
-		/** @var DataInterface $currentObject */
-		$currentObject = $this->current();
-		if ($currentObject instanceof DataInterface) {
-			return $currentObject->getData();
-		}
-		throw new IndexOutOfRangeException('Invalid index ' . $index, 1411316363);
 	}
 
 	/**

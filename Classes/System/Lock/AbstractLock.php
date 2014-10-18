@@ -38,6 +38,23 @@ abstract class AbstractLock implements LockInterface {
 	}
 
 	/**
+	 * Attempts to acquire a lock, blocking a thread’s execution until the lock can be acquired or the timeout is reached
+	 *
+	 * @param int $timeout Microseconds to wait before throwing a TimeoutException
+	 * @return void
+	 * @throws \Cundd\PersistentObjectStore\System\Lock\TimeoutException if the timeout is reached before the lock can be acquired
+	 */
+	public function lockWithTimeout($timeout) {
+		$timeUntilTimeout = $timeout;
+		while ($this->isLocked()) {
+			if ($timeUntilTimeout <= 0) throw new TimeoutException(sprintf('Could not acquire the lock within %d microseconds', $timeout) , 1413546617);
+			$timeUntilTimeout -= 10;
+			usleep(10);
+		}
+		$this->_lock();
+	}
+
+	/**
 	 * Relinquishes a previously acquired lock
 	 *
 	 * @return void

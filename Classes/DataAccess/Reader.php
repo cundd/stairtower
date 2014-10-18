@@ -68,7 +68,7 @@ class Reader {
 
 //		DebugUtility::printMemorySample();
 		$lock = Factory::createLock($databaseIdentifier);
-		$lock->lock();
+		$lock->lockWithTimeout(20000);
 		$fileData = file_get_contents($path);
 		$lock->unlock();
 //		DebugUtility::printMemorySample();

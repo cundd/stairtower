@@ -178,6 +178,9 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 	protected function _findNext() {
 		// If the filtered collection is fully populated
 		if ($this->fullyFiltered) {
+			if (!parent::valid()) {
+				return NULL;
+			}
 			return parent::current();
 		}
 		$foundObject = NULL;
@@ -231,7 +234,9 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 //			throw new \Exception('nothing found');
 //		}
 
-		parent::push($foundObject);
+		if ($foundObject) {
+			parent::push($foundObject);
+		}
 		return $foundObject;
 	}
 
@@ -304,6 +309,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 		$dataCollectionCount = $dataCollectionRaw->getSize();
 
 		$resultArray = new SplFixedArray($dataCollectionCount);
+		DebugUtility::var_dump(__METHOD__);
 
 
 //		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
@@ -312,6 +318,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 		while ($i < $dataCollectionCount) {
 			$j = 0;
 			$item = $dataCollectionRaw[$i];
+
 
 			$comparisonResult = TRUE;
 			while ($j < $comparisonCollectionCount) {
@@ -363,6 +370,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 			return $originalCollection;
 		}
 		if ($originalCollection instanceof DatabaseInterface) {
+//			DebugUtility::var_dump($originalCollection, \Cundd\PersistentObjectStore\Domain\Model\Database::steal());
 			return clone $originalCollection;
 		}
 

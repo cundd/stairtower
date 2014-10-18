@@ -82,7 +82,7 @@ class Handler implements HandlerInterface {
 		);
 		if ($database->contains($dataInstance)) throw new InvalidBodyException(
 			sprintf(
-				'Database %s already contains the given data. Maybe the values of the identifier \'%s\' are not expressive',
+				'Database \'%s\' already contains the given data. Maybe the values of the identifier \'%s\' are not expressive',
 				$database->getIdentifier(),
 				$dataInstance->getIdentifierKey()
 			),
@@ -146,7 +146,7 @@ class Handler implements HandlerInterface {
 		$dataInstance = $this->getDataForRequest($requestInfo);
 		if (!$dataInstance) {
 			return new HandlerResult(404, sprintf(
-				'Data instance with identifier %s not found in database %s',
+				'Data instance with identifier "%s" not found in database "%s"',
 				$requestInfo->getDataIdentifier(),
 				$requestInfo->getDatabaseIdentifier()
 			));
@@ -224,7 +224,14 @@ class Handler implements HandlerInterface {
 	 * @return DatabaseInterface|NULL
 	 */
 	public function getDatabaseForRequestInfo(RequestInfo $requestInfo) {
-		return $requestInfo->getDatabaseIdentifier() ? $this->coordinator->getDatabase($requestInfo->getDatabaseIdentifier()) : NULL;
+		if (!$requestInfo->getDatabaseIdentifier()) {
+			return NULL;
+		}
+		$databaseIdentifier = $requestInfo->getDatabaseIdentifier();
+		if (!$this->coordinator->databaseExists($databaseIdentifier)) {
+			return NULL;
+		}
+		return $this->coordinator->getDatabase($databaseIdentifier);
 	}
 
 	/**
