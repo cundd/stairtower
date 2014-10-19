@@ -9,15 +9,10 @@
 namespace Cundd\PersistentObjectStore\DataAccess;
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
-use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
-use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
-use Cundd\PersistentObjectStore\Driver\Driver;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Filter;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use DI\ContainerBuilder;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -57,6 +52,7 @@ class FilterResultTest extends AbstractDataBasedCase {
 	protected function tearDown() {
 		unset($this->filter);
 		unset($this->fixture);
+		parent::tearDown();
 	}
 
 	/**

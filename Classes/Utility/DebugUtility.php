@@ -18,7 +18,7 @@ class DebugUtility {
 	 * Offset to use to get the caller from the backtrace
 	 * @var int
 	 */
-	static protected $backtraceOffset = 1;
+	static public $backtraceOffset = 1;
 
 	/**
 	 * Print debug information about the given values (arg0, arg1, ... argN)

@@ -13,10 +13,7 @@ use Cundd\PersistentObjectStore\Core\IndexArray;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Exception\ImmutableException;
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparisonInterface;
 use Cundd\PersistentObjectStore\Immutable;
-use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Iterator;
 use SplFixedArray;
@@ -287,8 +284,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 	 * @return SplFixedArray
 	 */
 	protected function _filterCollectionWithComparisons($dataCollection, $comparisonCollection, $pushMatchesToResult = FALSE) {
-		$start = microtime(TRUE);
-
 		if (is_array($comparisonCollection)) {
 			$comparisonCollection = SplFixedArray::fromArray($comparisonCollection);
 		} else {
@@ -322,7 +317,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 			}
 
 			if ($comparisonResult) {
-				$matchingItem = $dataCollection->getObjectForIndex($i);
+				$matchingItem = $dataCollection->getObjectDataForIndexOrTransformIfNotExists($i);
 				if ($matchingItem === NULL) {
 					DebugUtility::var_dump($item);
 					DebugUtility::pl('Object for index %d is NULL', $i);
@@ -365,7 +360,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 			return clone $originalCollection;
 		}
 
-		$start = microtime(TRUE);
 		$collection = new SplFixedArray($originalCollection->count());
 		$i = 0;
 		foreach ($originalCollection as $item) {

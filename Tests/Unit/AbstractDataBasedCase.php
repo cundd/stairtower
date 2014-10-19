@@ -35,7 +35,8 @@ class AbstractDataBasedCase extends AbstractCase {
 		$allTestObjects = array();
 		foreach ($allTestData as $currentTestData) {
 			$currentObject = new Data($currentTestData, 'contacts');
-			$allTestObjects[$currentObject->getGuid()] = $currentObject;
+			$allTestObjects[] = $currentObject;
+//			$allTestObjects[$currentObject->getGuid()] = $currentObject;
 		}
 		return $allTestObjects;
 	}

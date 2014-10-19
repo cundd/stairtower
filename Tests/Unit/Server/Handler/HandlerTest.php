@@ -14,8 +14,8 @@ use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\MemoryManager;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use React\Http\Request;
 
 /**
@@ -35,13 +35,21 @@ class HandlerTest extends AbstractCase {
 	protected $database;
 
 	protected function setUp() {
+		MemoryManager::freeAll();
+
 		$diContainer = $this->getDiContainer();
 		$server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\DummyServer');
 		$diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $server);
 
 		$coordinator = $diContainer->get('Cundd\\PersistentObjectStore\\DataAccess\\CoordinatorInterface');
-		$this->database = $coordinator->getDatabase('contacts');
+
+
 		parent::setUp();
+		$this->database = $coordinator->getDatabase('contacts');
+	}
+
+	protected function tearDown() {
+		MemoryManager::freeAll();
 	}
 
 

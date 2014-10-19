@@ -58,6 +58,11 @@ WELCOME;
 	const DATA_GUID_KEY = 'guid';
 
 	/**
+	 * Key used to store the identifier in JSON
+	 */
+	const DATA_ID_KEY = '_id';
+
+	/**
 	 * Key used to store the database identifier in JSON
 	 */
 	const DATA_DATABASE_KEY = 'database';

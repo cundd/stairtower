@@ -9,7 +9,6 @@
 namespace Cundd\PersistentObjectStore;
 
 use Cundd\PersistentObjectStore\Exception\MemoryManagerException;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * The Memory Manager tries to help managing the used and available memory
@@ -30,6 +29,15 @@ abstract class MemoryManager implements MemoryManagerInterface {
 	 * @var array
 	 */
 	static protected $managedObjectTags = array();
+
+	/**
+	 * Returns all registered objects
+	 *
+	 * @return array
+	 */
+	static public function getAllObjects() {
+		return self::$managedObjects;
+	}
 
 	/**
 	 * Register the given object for the given identifier
@@ -138,12 +146,9 @@ abstract class MemoryManager implements MemoryManagerInterface {
 	 */
 	static public function freeAll() {
 		$identifiers = array_keys(self::$managedObjects);
-
-		DebugUtility::var_dump($identifiers);
 		foreach ($identifiers as $identifier) {
 			self::free($identifier);
 		}
-		DebugUtility::var_dump(self::$managedObjects);
 		self::$managedObjects = array();
 	}
 

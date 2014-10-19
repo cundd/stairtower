@@ -265,6 +265,5 @@ class Coordinator implements CoordinatorInterface {
 	 */
 	public function getObjectStore() {
 		return MemoryManager::getObjectsByTag(self::MEMORY_MANAGER_TAG);
-		return $this->objectStore;
 	}
 }

@@ -12,7 +12,6 @@ namespace Cundd\PersistentObjectStore\Domain\Model;
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 class DatabaseTest extends AbstractDataBasedCase {
 	/**
@@ -37,6 +36,7 @@ class DatabaseTest extends AbstractDataBasedCase {
 	protected function tearDown() {
 //		unset($this->fixture);
 //		unset($this->coordinator);
+		parent::tearDown();
 	}
 
 	/**
