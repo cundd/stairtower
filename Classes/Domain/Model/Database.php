@@ -484,9 +484,11 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	/**
 	 * Checks if the raw data's identifier is defined
 	 *
-	 * @param array $rawData
+	 * @param int $index
+	 * @return array Returns the prepared data
 	 */
-	protected function _setRawDataIdentifierIfNotSet(&$rawData) {
+	protected function _setRawDataIdentifierIfNotSetForIndex($index) {
+		$rawData = $this->rawData[$index];
 		if (!isset($rawData[Constants::DATA_ID_KEY]) || $rawData[Constants::DATA_ID_KEY]) {
 			$identifier = $this->_tryToReadIdentifierFromRawData($rawData);
 			if (!$identifier) {
@@ -498,7 +500,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 			}
 			$identifier                      = sha1($identifier);
 			$rawData[Constants::DATA_ID_KEY] = $identifier;
+			$this->rawData[$index] = $rawData;
 		}
+		return $rawData;
 	}
 
 	/**
@@ -507,7 +511,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @param array $rawData
 	 * @return mixed Returns the identifier if one is found otherwise FALSE
 	 */
-	protected function _tryToReadIdentifierFromRawData(&$rawData) {
+	protected function _tryToReadIdentifierFromRawData($rawData) {
 		// If no identifier key is defined check the most common
 		$commonIdentifiers = array('id', 'uid', 'email');
 		foreach ($commonIdentifiers as $identifier) {
@@ -583,7 +587,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @param int $index
 	 * @return bool|mixed
 	 */
-	protected function &_getRawDataForIndex($index) {
+	protected function _getRawDataForIndex($index) {
 		if (isset($this->rawData[$index])) {
 			return $this->rawData[$index];
 		}
@@ -671,8 +675,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 				$matchingIndex = $i;
 				break;
 			}
-			$rawData = &$this->_getRawDataForIndex($i);
-			$this->_setRawDataIdentifierIfNotSet($rawData);
+			$rawData = $this->_setRawDataIdentifierIfNotSetForIndex($i);
 			if ($rawData[Constants::DATA_ID_KEY] === $identifier) {
 				$matchingIndex = $i;
 				break;
