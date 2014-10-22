@@ -4,11 +4,41 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 ini_set('display_errors', TRUE);
-if (in_array('-h', $argv)) {
+
+// Parse the arguments
+$longOptions  = array(
+	"port::",
+	"ip::",
+	"data-path::",
+);
+$options = getopt('h::', $longOptions);
+
+// Print the help
+if (isset($options['h'])) {
 	print(\Cundd\PersistentObjectStore\Constants::MESSAGE_CLI_WELCOME . PHP_EOL);
-	printf('Usage: %s [port] [ip]' . PHP_EOL, $argv[0]);
+	printf('Usage: %s [--port=port] [--ip=ip] [--data-path=path/to/data/folder/]' . PHP_EOL, $argv[0]);
 	exit;
 }
+
+/**
+ * Checks and returns an argument value
+ *
+ * @param $key
+ * @return null
+ */
+function checkArgument($key, $options) {
+	if (isset($options[$key])) {
+		if ($options[$key] === FALSE) {
+			printf('The option --%s requires a valid path' . PHP_EOL, $key);
+			exit(1);
+		}
+		return $options[$key];
+	}
+	return NULL;
+}
+$dataPath = checkArgument('data-path', $options);
+$port = checkArgument('port', $options);
+$ip = checkArgument('ip', $options);
 
 $bootstrap = new \Cundd\PersistentObjectStore\Bootstrap();
 
@@ -24,12 +54,17 @@ $diContainer->get('Cundd\\PersistentObjectStore\\CrashHandler')->register();
 $server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\RestServer');
 $diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $server);
 
-if ($argc > 2) {
-	$ip = $argv[2];
+
+if ($dataPath) {
+	$configurationManager = \Cundd\PersistentObjectStore\Configuration\ConfigurationManager::getSharedInstance();
+	$configurationManager->setConfigurationForKeyPath('dataPath', $dataPath);
+	$configurationManager->setConfigurationForKeyPath('writeDataPath', $dataPath);
+}
+
+if ($ip) {
 	$server->setIp($ip);
 }
-if ($argc > 1) {
-	$port = $argv[1];
+if ($port) {
 	$server->setPort($port);
 }
 $server->start();
