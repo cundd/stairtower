@@ -6,16 +6,16 @@
  * Time: 12:52
  */
 
-namespace Cundd\PersistentObjectStore;
+namespace Cundd\PersistentObjectStore\Memory;
 
-use Cundd\PersistentObjectStore\Exception\MemoryManagerException;
+use Cundd\PersistentObjectStore\Memory\Exception\ManagerException;
 
 /**
  * The Memory Manager tries to help managing the used and available memory
  *
  * @package Cundd\PersistentObjectStore
  */
-abstract class MemoryManager implements MemoryManagerInterface {
+abstract class Manager implements ManagerInterface {
 	/**
 	 * A collection of objects that are managed by the Memory Manager
 	 *
@@ -47,7 +47,7 @@ abstract class MemoryManager implements MemoryManagerInterface {
 	 * @param array  $tags
 	 */
 	static public function registerObject($object, $identifier, $tags = array()) {
-		if (!is_string($identifier)) throw new MemoryManagerException('Given identifier is not of type string. Maybe the arguments are swapped', 1413544400);
+		if (!is_string($identifier)) throw new ManagerException('Given identifier is not of type string. Maybe the arguments are swapped', 1413544400);
 		$identifier = self::prepareIdentifier($identifier);
 		self::$managedObjects[$identifier] = $object;
 
@@ -86,7 +86,7 @@ abstract class MemoryManager implements MemoryManagerInterface {
 	 */
 	static public function free($identifier) {
 		$identifier = self::prepareIdentifier($identifier);
-		if (!isset(self::$managedObjects[$identifier])) throw new MemoryManagerException(sprintf('No object registered for identifier "%s"', $identifier), 1413543979);
+		if (!isset(self::$managedObjects[$identifier])) throw new ManagerException(sprintf('No object registered for identifier "%s"', $identifier), 1413543979);
 
 		self::$managedObjects[$identifier] = NULL;
 		unset(self::$managedObjects[$identifier]);
@@ -105,7 +105,7 @@ abstract class MemoryManager implements MemoryManagerInterface {
 	 */
 	static public function getIdentifiersByTag($tag, $graceful = FALSE) {
 		if (!isset(self::$managedObjectTags[$tag])) {
-			if (!$graceful) throw new MemoryManagerException(sprintf('Tag %s is not found', $tag), 1413544961);
+			if (!$graceful) throw new ManagerException(sprintf('Tag %s is not found', $tag), 1413544961);
 			return array();
 		}
 		return array_keys(self::$managedObjectTags[$tag]);
@@ -121,7 +121,7 @@ abstract class MemoryManager implements MemoryManagerInterface {
 		$foundObjects     = array();
 		$foundIdentifiers = self::getIdentifiersByTag($tag, TRUE);
 		foreach ($foundIdentifiers as $identifier) {
-			$foundObjects[] = self::getObject($identifier);
+			$foundObjects[$identifier] = self::getObject($identifier);
 		}
 		return $foundObjects;
 	}
@@ -168,7 +168,7 @@ abstract class MemoryManager implements MemoryManagerInterface {
 	 */
 	static public function prepareIdentifier($identifier) {
 		if (!is_scalar($identifier)) {
-			throw new MemoryManagerException(sprintf(
+			throw new ManagerException(sprintf(
 					'Invalid identifier type %s',
 					$identifier === NULL ? 'null' : gettype($identifier)
 				),

@@ -8,13 +8,11 @@
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Memory\Helper;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
  * Class to read data from it's source
@@ -31,14 +29,16 @@ class Reader {
 	 * Loads the database with the given identifier
 	 *
 	 * @param string $databaseIdentifier
+	 * @param int   $memoryUsage Amount of memory used to load the data
 	 * @return Database
-	 * @throws ReaderException if the database could not be found
 	 */
-	public function loadDatabase($databaseIdentifier) {
+	public function loadDatabase($databaseIdentifier, &$memoryUsage = NULL) {
+		$memoryUsage = memory_get_usage(TRUE);
 		$database = new Database($databaseIdentifier);
 		$dataCollection = $this->_loadDataCollection($databaseIdentifier);
 		$metaDataCollection = $this->_loadMetaDataCollection($databaseIdentifier);
 		$this->_fillDatabaseWithData($database, $dataCollection, $metaDataCollection);
+		$memoryUsage = memory_get_usage(TRUE) - $memoryUsage;
 		return $database;
 	}
 
@@ -65,6 +65,9 @@ class Reader {
 		$error = NULL;
 		$this->databaseExists($databaseIdentifier, $error);
 		if ($error instanceof ReaderException) throw $error;
+
+		$memoryHelper = new Helper();
+		$memoryHelper->checkMemoryForJsonFile($path);
 
 //		DebugUtility::printMemorySample();
 		$lock = Factory::createLock($databaseIdentifier);

@@ -14,7 +14,7 @@ use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
-use Cundd\PersistentObjectStore\MemoryManager;
+use Cundd\PersistentObjectStore\Memory\Manager;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use React\Http\Request;
 
@@ -35,7 +35,7 @@ class HandlerTest extends AbstractCase {
 	protected $database;
 
 	protected function setUp() {
-		MemoryManager::freeAll();
+		Manager::freeAll();
 
 		$diContainer = $this->getDiContainer();
 		$server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\DummyServer');
@@ -49,7 +49,7 @@ class HandlerTest extends AbstractCase {
 	}
 
 	protected function tearDown() {
-		MemoryManager::freeAll();
+		Manager::freeAll();
 	}
 
 

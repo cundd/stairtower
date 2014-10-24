@@ -6,10 +6,12 @@
  * Time: 13:40
  */
 
-namespace Cundd\PersistentObjectStore;
+namespace Cundd\PersistentObjectStore\Memory;
 
 
-interface MemoryManagerInterface {
+use Cundd\PersistentObjectStore\Memory\Exception\ManagerException;
+
+interface ManagerInterface {
 	/**
 	 * Register the given object for the given identifier
 	 *
@@ -39,7 +41,7 @@ interface MemoryManagerInterface {
 	 * Frees the object with the given identifier from the Memory Manager
 	 *
 	 * @param string $identifier
-	 * @throws MemoryManagerException if no object for the given identifier is registered
+	 * @throws ManagerException if no object for the given identifier is registered
 	 */
 	static public function free($identifier);
 
@@ -50,7 +52,7 @@ interface MemoryManagerInterface {
 	 * @param string $tag
 	 * @param bool   $graceful
 	 * @return array
-	 * @throws MemoryManagerException if the given tag is not found an graceful is FALSE
+	 * @throws ManagerException if the given tag is not found an graceful is FALSE
 	 */
 	static public function getIdentifiersByTag($tag, $graceful = FALSE);
 

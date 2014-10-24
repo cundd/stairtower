@@ -153,6 +153,28 @@ class CoordinatorTest extends AbstractDataBasedCase {
 	/**
 	 * @test
 	 */
+	public function readMoreDatabasesTests() {
+		/** @var Database $database */
+		$database = $this->fixture->getDatabase('contacts');
+
+		$loadCars = function () {
+			$this->fixture->getDatabase('cars');
+		};
+		$loadPeople = function() {
+			$this->fixture->getDatabase('people');
+		};
+
+		if ($this->fixture->databaseExists('cars')) {
+			$loadCars();
+		}
+		$loadPeople();
+
+		$this->assertEquals(5, $database->count());
+	}
+
+	/**
+	 * @test
+	 */
 	public function commitDatabaseTest() {
 		/** @var Database $database */
 		$database = $this->fixture->getDatabase('contacts');

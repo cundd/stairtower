@@ -8,7 +8,7 @@
 
 namespace Cundd\PersistentObjectStore;
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
-use Cundd\PersistentObjectStore\MemoryManager;
+use Cundd\PersistentObjectStore\Memory\Manager;
 use DI\ContainerBuilder;
 
 /**
@@ -65,8 +65,8 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 
 
 	protected function setUp() {
-		if (class_exists('Cundd\\PersistentObjectStore\\MemoryManager')) {
-			MemoryManager::freeAll();
+		if (class_exists('Cundd\PersistentObjectStore\Memory\Manager')) {
+			Manager::freeAll();
 		}
 
 		$this->setUpXhprof();
@@ -81,9 +81,9 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	protected function tearDown() {
 //		unset($this->fixture);
 //		unset($this->diContainer);
-		if (class_exists('Cundd\\PersistentObjectStore\\MemoryManager')) {
+		if (class_exists('Cundd\PersistentObjectStore\Memory\Manager')) {
 //			MemoryManager::freeObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
-			MemoryManager::freeAll();
+			Manager::freeAll();
 		}
 		gc_collect_cycles();
 	}

@@ -10,7 +10,7 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\MemoryManager;
+use Cundd\PersistentObjectStore\Memory\Manager;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Doctrine\DBAL\Query\QueryBuilder;
 
@@ -74,13 +74,13 @@ class Coordinator implements CoordinatorInterface {
 	public function createDatabase($databaseIdentifier, $options = array()) {
 		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
 		if ($this->databaseExists($databaseIdentifier)) throw new InvalidDatabaseException(sprintf('Database "%s" already exists', $databaseIdentifier), 1412524749);
-		if (MemoryManager::hasObject($databaseIdentifier)) throw new InvalidDatabaseException(sprintf('Database "%s" already exists in memory', $databaseIdentifier), 1412524750);
+		if (Manager::hasObject($databaseIdentifier)) throw new InvalidDatabaseException(sprintf('Database "%s" already exists in memory', $databaseIdentifier), 1412524750);
 
 		$this->dataWriter->createDatabase($databaseIdentifier, $options);
 		$this->eventEmitter->emit(Event::DATABASE_CREATED, array($databaseIdentifier));
 
 		$newDatabase = new Database($databaseIdentifier);
-		MemoryManager::registerObject($newDatabase, $databaseIdentifier, array(self::MEMORY_MANAGER_TAG));
+		Manager::registerObject($newDatabase, $databaseIdentifier, array(self::MEMORY_MANAGER_TAG));
 		return $newDatabase;
 	}
 
@@ -94,8 +94,8 @@ class Coordinator implements CoordinatorInterface {
 		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
 
 		// If the database is in the object store remove it
-		if (MemoryManager::hasObject($databaseIdentifier)) {
-			MemoryManager::free($databaseIdentifier);
+		if (Manager::hasObject($databaseIdentifier)) {
+			Manager::free($databaseIdentifier);
 		}
 		if (!$this->databaseExists($databaseIdentifier)) throw new InvalidDatabaseException(sprintf('Database "%s" does not exist', $databaseIdentifier), 1412525836);
 
@@ -124,7 +124,7 @@ class Coordinator implements CoordinatorInterface {
 		$persistedDatabases = array_combine($persistedDatabases, $persistedDatabases);
 
 
-		$inMemoryDatabases = MemoryManager::getIdentifiersByTag(self::MEMORY_MANAGER_TAG, TRUE);
+		$inMemoryDatabases = Manager::getIdentifiersByTag(self::MEMORY_MANAGER_TAG, TRUE);
 		$inMemoryDatabases = array_combine($inMemoryDatabases, $inMemoryDatabases);
 
 		$allDatabases = array_merge($persistedDatabases, $inMemoryDatabases);
@@ -208,7 +208,7 @@ class Coordinator implements CoordinatorInterface {
 	 * Commit all changed databases to the file system
 	 */
 	public function commitDatabases() {
-		foreach (MemoryManager::getObjectsByTag(self::MEMORY_MANAGER_TAG) as $database) {
+		foreach (Manager::getObjectsByTag(self::MEMORY_MANAGER_TAG) as $database) {
 			$this->commitDatabase($database);
 		}
 	}
@@ -249,12 +249,13 @@ class Coordinator implements CoordinatorInterface {
 	 * @return Database
 	 */
 	protected function _getDatabase($databaseIdentifier) {
-		if (!MemoryManager::hasObject($databaseIdentifier)) {
-			$database = $this->dataReader->loadDatabase($databaseIdentifier);
-			MemoryManager::registerObject($database, $databaseIdentifier, array(self::MEMORY_MANAGER_TAG));
+		if (!Manager::hasObject($databaseIdentifier)) {
+			$memoryUsage = NULL;
+			$database = $this->dataReader->loadDatabase($databaseIdentifier, $memoryUsage);
+			Manager::registerObject($database, $databaseIdentifier, array(self::MEMORY_MANAGER_TAG));
 			return $database;
 		}
-		return MemoryManager::getObject($databaseIdentifier);
+		return Manager::getObject($databaseIdentifier);
 	}
 
 	/**
@@ -264,6 +265,6 @@ class Coordinator implements CoordinatorInterface {
 	 * @internal
 	 */
 	public function getObjectStore() {
-		return MemoryManager::getObjectsByTag(self::MEMORY_MANAGER_TAG);
+		return Manager::getObjectsByTag(self::MEMORY_MANAGER_TAG);
 	}
 }
