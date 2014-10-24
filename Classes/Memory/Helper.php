@@ -62,7 +62,11 @@ class Helper {
 	public function getAvailableMemory() {
 		$iniMemoryLimit = ini_get('memory_limit');
 		switch (strtoupper(substr($iniMemoryLimit, -1))) {
-			case 'M':
+			case 'G':
+				$memoryLimit = intval(substr($iniMemoryLimit, 0, -1)) * 1024 * 1024 * 1024;
+				break;
+
+case 'M':
 				$memoryLimit = intval(substr($iniMemoryLimit, 0, -1)) * 1024 * 1024;
 				break;
 
