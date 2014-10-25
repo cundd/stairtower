@@ -116,13 +116,26 @@ class Handler implements HandlerInterface {
 					$dataInstance
 				);
 			} else {
-				return new HandlerResult(404);
+				return new HandlerResult(
+					404,
+					sprintf(
+						'Data instance with identifier "%s" not found in database "%s"',
+						$requestInfo->getDataIdentifier(),
+						$requestInfo->getDatabaseIdentifier()
+					)
+				);
 			}
 		}
 
 		$database = $this->getDatabaseForRequestInfo($requestInfo);
 		if (!$database) {
-			return new HandlerResult(404);
+			return new HandlerResult(
+				404,
+				sprintf(
+					'Database with identifier "%s" not found',
+					$requestInfo->getDatabaseIdentifier()
+				)
+			);
 		}
 
 		if (!$requestInfo->getRequest()->getQuery()) {
