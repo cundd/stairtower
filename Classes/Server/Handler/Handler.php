@@ -66,14 +66,33 @@ class Handler implements HandlerInterface {
 
 
 	/**
-	 * Creates a new Data instance with the given data for the given RequestInfo
+	 * Creates a new Data instance or Database with the given data for the given RequestInfo
 	 *
 	 * @param RequestInfo $requestInfo
 	 * @param mixed       $data
 	 * @return HandlerResultInterface
 	 */
 	public function create(RequestInfo $requestInfo, $data) {
-		$database     = $this->getDatabaseForRequestInfo($requestInfo);
+		if ($requestInfo->getMethod() === 'POST') { // Create a Data instance
+			return $this->_createDataInstance($requestInfo, $data);
+		}
+
+		if ($requestInfo->getMethod() === 'PUT') { // Create a Database
+			return $this->_createDatabase($requestInfo, $data);
+		}
+
+
+	}
+
+	/**
+	 * Creates and returns a new Data instance
+	 *
+	 * @param RequestInfo $requestInfo
+	 * @param mixed       $data
+	 * @return HandlerResult
+	 */
+	protected function _createDataInstance(RequestInfo $requestInfo, $data) {
+		$database = $this->getDatabaseForRequestInfo($requestInfo);
 		$dataInstance = new Data($data);
 
 		if ($requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException(
@@ -96,6 +115,29 @@ class Handler implements HandlerInterface {
 				201,
 				$dataInstance
 			);
+		} else {
+			return new HandlerResult(400);
+		}
+	}
+
+	/**
+	 * Creates and returns a new Database
+	 *
+	 * @param RequestInfo $requestInfo
+	 * @param mixed       $data
+	 * @return HandlerResult
+	 */
+	protected function _createDatabase(RequestInfo $requestInfo, $data) {
+		if ($requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException(
+			'Data identifier in request path is not allowed when creating a Database',
+			1413278767
+		);
+
+		$databaseIdentifier = $requestInfo->getDatabaseIdentifier();
+		$database = $this->coordinator->createDatabase($databaseIdentifier);
+		if ($database) {
+			$this->eventEmitter->emit(Event::DATABASE_CREATED, array($database));
+			return new HandlerResult(201, sprintf('Database "%s" created', $databaseIdentifier));
 		} else {
 			return new HandlerResult(400);
 		}
@@ -143,7 +185,7 @@ class Handler implements HandlerInterface {
 		}
 
 		$filterResult = $this->filterBuilder->buildFilterFromQueryParts($requestInfo->getRequest()->getQuery(), $database);
-		$statusCode   = $filterResult->count() > 0 ? 200 : 404;
+		$statusCode = $filterResult->count() > 0 ? 200 : 404;
 		return new HandlerResult($statusCode, $filterResult);
 	}
 
@@ -262,4 +304,4 @@ class Handler implements HandlerInterface {
 	}
 
 
-} 
+}

@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Server\Handler;
 
 
 use Cundd\PersistentObjectStore\AbstractCase;
+use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Domain\Model\Data;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
@@ -82,6 +83,32 @@ class HandlerTest extends AbstractCase {
 		$this->assertEquals('info-for-me@cundd.net', $dataInstance->valueForKey('email'));
 
 		$this->assertTrue($this->database->contains($dataInstance));
+	}
+
+	/**
+	 * @test
+	 */
+	public function createDatabaseTest() {
+		$databaseIdentifier = 'test-db-' . time();
+		$expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
+
+		$requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('PUT', sprintf('/%s/', $databaseIdentifier)));
+		$databaseOptions = array('type' => 'memory');
+		$handlerResult = $this->fixture->create($requestInfo, $databaseOptions);
+
+		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
+		$this->assertEquals(201, $handlerResult->getStatusCode());
+		$this->assertNotNull($handlerResult->getData());
+		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DatabaseInterface', $handlerResult->getData());
+
+//		/** @var DataInterface $dataInstance */
+//		$dataInstance = $handlerResult->getData();
+//		$this->assertEquals('info-for-me@cundd.net', $dataInstance->valueForKey('email'));
+//
+//		$this->assertTrue($this->database->contains($dataInstance));
+
+		$this->assertFileExists($expectedPath);
+		unlink($expectedPath);
 	}
 
 
@@ -213,4 +240,3 @@ class HandlerTest extends AbstractCase {
 
 	}
 }
- 

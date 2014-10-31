@@ -24,7 +24,7 @@ interface HandlerInterface {
 	public function noRoute(RequestInfo $requestInfo);
 
 	/**
-	 * Creates a new Data instance with the given data for the given RequestInfo
+	 * Creates a new Data instance or Database with the given data for the given RequestInfo
 	 *
 	 * @param RequestInfo $requestInfo
 	 * @param mixed $data

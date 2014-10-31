@@ -225,11 +225,14 @@ class RestServer extends AbstractServer {
 				$requestBody .= $data;
 				$receivedData += strlen($data);
 				if ($receivedData >= $contentLength) {
-					$requestBodyParsed = $self->getBodyParserForRequest($request)->parse($requestBody, $request);
-					if ($request->getMethod() === 'POST') {
-						$requestResult = $self->getHandlerForRequest($request)->create($requestInfo, $requestBodyParsed);
-					} else {
+					$requestBodyParsed = NULL;
+					if ($requestBody) {
+						$requestBodyParsed = $self->getBodyParserForRequest($request)->parse($requestBody, $request);
+					}
+					if ($request->getMethod() === 'PUT' && $requestInfo->getDataIdentifier()) {
 						$requestResult = $self->getHandlerForRequest($request)->update($requestInfo, $requestBodyParsed);
+					} else {
+						$requestResult = $self->getHandlerForRequest($request)->create($requestInfo, $requestBodyParsed);
 					}
 					$self->handleResult($requestResult, $request, $response);
 				}
