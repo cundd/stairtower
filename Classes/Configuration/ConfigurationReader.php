@@ -23,8 +23,8 @@ class ConfigurationReader {
 		$configuration = array_merge_recursive(
 			$this->readConfigurationFile('/etc/pos')
 		);
-		if (isset($_SERVER['HOME']) && $_SERVER['HOME']) {
-			$configuration = array_merge_recursive($configuration, $this->readConfigurationFile($_SERVER['HOME'] . '/.pos/config.json'));
+		if (isset($_ENV['HOME']) && $_ENV['HOME']) {
+			$configuration = array_merge_recursive($configuration, $this->readConfigurationFile($_ENV['HOME'] . '/.pos/config.json'));
 		}
 		$configuration = array_merge_recursive($configuration, $this->readConfigurationFile('.pos-config.json'));
 		return $configuration;
@@ -43,4 +43,4 @@ class ConfigurationReader {
 		}
 		return $configuration ? $configuration : array();
 	}
-} 
+}
