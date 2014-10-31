@@ -86,6 +86,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		if ($rawData) {
 			$this->setRawData($rawData);
 		} else {
+			$this->rawData = new SplFixedArray(0);
 			$this->objectData = new SplFixedArray(0);
 		}
 
@@ -191,6 +192,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		$count = $this->count();
 		$i     = 0;
 
+		if ($count === 0) {
+			return NULL;
+		}
 		do {
 //			DebugUtility::pl($i);
 			if (isset($this->objectData[$i])) {
