@@ -186,6 +186,24 @@ class DummyServer implements ServerInterface {
 	}
 
 	/**
+	 * Returns the mode of the server
+	 *
+	 * @return int
+	 */
+	public function getMode() {
+	}
+
+	/**
+	 * Sets the mode of the server
+	 *
+	 * @param int $mode
+	 * @return $this
+	 */
+	public function setMode($mode) {
+	}
+
+
+	/**
 	 * Returns the servers global unique identifier
 	 * @return string
 	 */

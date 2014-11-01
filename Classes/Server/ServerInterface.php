@@ -19,7 +19,22 @@ use DateTime;
 use React\Http\Request;
 use React\Http\Response;
 
+/**
+ * Interface for server implementations
+ *
+ * @package Cundd\PersistentObjectStore\Server
+ */
 interface ServerInterface {
+	/**
+	 * Server is in normal operation mode
+	 */
+	const SERVER_MODE_NORMAL = 0;
+
+	/**
+	 * Server is in test mode
+	 */
+	const SERVER_MODE_TEST = 1;
+
 	/**
 	 * Handle the given request
 	 *
@@ -167,4 +182,19 @@ interface ServerInterface {
 	 * @return $this
 	 */
 	public function setEventLoop($eventLoop);
+
+	/**
+	 * Returns the mode of the server
+	 *
+	 * @return int
+	 */
+	public function getMode();
+
+	/**
+	 * Sets the mode of the server
+	 *
+	 * @param int $mode
+	 * @return $this
+	 */
+	public function setMode($mode);
 }
