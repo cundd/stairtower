@@ -198,11 +198,69 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 
 //		$this->assertFileExists($expectedPath);
-//
-//		$this->fixture->createDatabase($databaseIdentifier);
-//
-//		$this->assertFileExists($expectedPath);
 //		unlink($expectedPath);
+	}
+
+	/**
+	 * @test
+	 */
+	public function letItRockTest() {
+		$databaseIdentifier = 'test-db-' . time();
+
+
+
+		$this->_startServer(20);
+
+		// Create a database
+		$response = $this->_performRestRequest($databaseIdentifier, 'PUT');
+		$this->assertArrayHasKey('message', $response);
+		$this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
+//		$this->assertFileExists($expectedPath);
+
+
+		// Create Documents
+		$i = 0;
+
+		// TODO: 1000 is very low speed up the Database::add() method
+		while (++$i < 1000) {
+			$documentHostName   = 'database' . $i . '.my-servers.local';
+			$documentIdentifier = md5($documentHostName);
+
+			$testDocument = array(
+				'id'   => $documentIdentifier,
+				'host' => $documentHostName,
+				'name' => 'Database 0' . $i,
+				'ip'   => '192.168.45.107',
+				'os'   => 'CunddOS',
+			);
+
+			$response = $this->_performRestRequest($databaseIdentifier, 'POST', $testDocument);
+			$this->assertEquals($testDocument['name'], $response['name']);
+			$this->assertEquals($testDocument['id'], $response['id']);
+			$this->assertEquals($testDocument['ip'], $response['ip']);
+			$this->assertEquals($testDocument['os'], $response['os']);
+		}
+
+		// List Documents in that database
+		$response = $this->_performRestRequest($databaseIdentifier);
+		$this->assertNotEmpty($response);
+//		$responseFirstDocument = $response[0];
+//		$this->assertEquals($testDocument['id'], $responseFirstDocument['id']);
+//		$this->assertEquals($testDocument['name'], $responseFirstDocument['name']);
+//		$this->assertEquals($testDocument['ip'], $responseFirstDocument['ip']);
+//		$this->assertEquals($testDocument['os'], $responseFirstDocument['os']);
+
+
+
+//		// Delete the database
+//		$response = $this->_performRestRequest($databaseIdentifier, 'DELETE');
+//		$this->assertArrayHasKey('message', $response);
+//		$this->assertEquals(sprintf('Database "%s" deleted', $databaseIdentifier), $response['message']);
+
+		// Shutdown the server
+		$response = $this->_performRestRequest('_shutdown', 'POST');
+		$this->assertArrayHasKey('message', $response);
+		$this->assertEquals('Server is going to shut down', $response['message']);
 	}
 
 	/**
@@ -248,16 +306,16 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * Start the server
 	 *
-	 * @param bool $testMode
+	 * @param int $autoShutdownTime
 	 */
-	protected function _startServer($testMode = TRUE) {
+	protected function _startServer($autoShutdownTime = 7) {
 		// Start the server
 		$serverBinPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('basePath') . 'bin/server';
 		$commandParts  = array(
 			escapeshellcmd(sprintf('"%s"', $serverBinPath)), //
 		);
-		if ($testMode) {
-			$commandParts[] = '--test'; // Run the server in test mode
+		if ($autoShutdownTime > -1) {
+			$commandParts[] = '--test=' . $autoShutdownTime; // Run the server in test mode
 		}
 		$commandParts[] = '> /dev/null &'; // Run the server in the background
 
