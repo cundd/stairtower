@@ -1,7 +1,7 @@
 {
     "name": "cundd/persistent-object-store",
     "description": "A document storage entirely written in PHP",
-	"version": "0.1.0-dev",
+	"version": "0.0.1-dev",
     "require": {
         "react/react": "0.4.*",
 		"mnapoli/php-di": "~4.0",
