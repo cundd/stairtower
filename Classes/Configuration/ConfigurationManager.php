@@ -33,7 +33,7 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 
 	function __construct() {
 		$basePath            = $this->getBasePath();
-		$varPath             = $basePath . '/var/';
+		$varPath             = $basePath . 'var/';
 		$configurationReader = new ConfigurationReader();
 		$this->configuration = array_merge_recursive(array(
 			'basePath'      => $basePath,
@@ -56,7 +56,7 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 	public function getBasePath() {
 		static $basePath;
 		if (!$basePath) {
-			$basePath = realpath(__DIR__ . '/../../') ?: __DIR__ . '/../../';
+			$basePath = (realpath(__DIR__ . '/../../') ?: __DIR__ . '/../..') . '/';
 		}
 		return $basePath;
 	}
