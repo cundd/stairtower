@@ -25,7 +25,7 @@ interface FormatterInterface {
 	/**
 	 * Formats the given input model(s)
 	 *
-	 * @param DataInterface|array<DataInterface> $inputModel
+	 * @param DocumentInterface|array<DocumentInterface> $inputModel
 	 * @return string
 	 */
 	public function format($inputModel);

@@ -7,9 +7,10 @@
  */
 
 namespace Cundd\PersistentObjectStore;
-use Cundd\PersistentObjectStore\DataAccess\Coordinator;
+
 use Cundd\PersistentObjectStore\Memory\Manager;
 use DI\ContainerBuilder;
+use Doctrine\Common\Cache\FilesystemCache;
 
 /**
  * Abstract base class for tests
@@ -47,7 +48,7 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 		if (!$this->diContainer) {
 			$builder = new ContainerBuilder();
 //			$builder->setDefinitionCache(new \Doctrine\Common\Cache\ArrayCache());
-			$builder->setDefinitionCache(new \Doctrine\Common\Cache\FilesystemCache(__DIR__ . '/../../var/Cache/'));
+			$builder->setDefinitionCache(new FilesystemCache(__DIR__ . '/../../var/Cache/'));
 			$builder->addDefinitions(__DIR__ . '/../../Classes/Configuration/dependencyInjectionConfiguration.php');
 			$this->diContainer = $builder->build();
 //			$this->diContainer = ContainerBuilder::buildDevContainer();

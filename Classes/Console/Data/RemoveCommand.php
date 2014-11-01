@@ -8,10 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Console\Data;
 
-use Cundd\PersistentObjectStore\Console\AbstractCommand;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

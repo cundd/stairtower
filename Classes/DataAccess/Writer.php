@@ -8,14 +8,14 @@
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 
+
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Exception\WriterException;
-use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+
 
 /**
  * Class to write data to it's source
@@ -206,7 +206,7 @@ class Writer {
 		$objectsToWrite = array();
 		$database->rewind();
 		while ($database->valid()) {
-			/** @var DataInterface $item */
+			/** @var DocumentInterface $item */
 			$item = $database->current();
 			if ($item) {
 				$objectsToWrite[] = $item->getData();

@@ -10,7 +10,7 @@ namespace Cundd\PersistentObjectStore\Server\Handler;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
@@ -80,8 +80,7 @@ class Handler implements HandlerInterface {
 		if ($requestInfo->getMethod() === 'PUT') { // Create a Database
 			return $this->_createDatabase($requestInfo, $data);
 		}
-
-
+		return new HandlerResult(400);
 	}
 
 	/**
@@ -293,7 +292,7 @@ class Handler implements HandlerInterface {
 	 * Returns the data instance for the given request or NULL if it is not specified
 	 *
 	 * @param RequestInfo $requestInfo
-	 * @return DataInterface|NULL
+	 * @return DocumentInterface|NULL
 	 */
 	public function getDataForRequest(RequestInfo $requestInfo) {
 		if (!$requestInfo->getDataIdentifier()) {

@@ -48,7 +48,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 
 	/**
 	 * @param Database|Iterator $originalCollection
-	 * @param FilterInterface    $filter
+	 * @param FilterInterface   $filter
 	 */
 	function __construct($originalCollection, $filter) {
 		$this->collection = $this->_cloneCollection($originalCollection);
@@ -184,7 +184,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 
 		$collection = $this->collection;
 //		$collection = $this->_preFilterCollection($this->collection);
-		$filter     = $this->filter;
+		$filter = $this->filter;
 
 		$useRaw = method_exists($collection, 'currentRaw');
 //		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
@@ -250,7 +250,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 	 */
 	protected function _findAllFromCollection() {
 		$dataCollection = $this->collection;
-		$filter     = $this->filter;
+		$filter         = $this->filter;
 
 		while ($dataCollection->valid()) {
 			$item = $dataCollection->current();
@@ -278,9 +278,9 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 	/**
 	 * Filter the given Database by the given comparisons
 	 *
-	 * @param Database            $dataCollection Database instance to filter
-	 * @param array|SplFixedArray $comparisonCollection Filter conditions
-	 * @param bool                $pushMatchesToResult If set to TRUE the matching objects will be added to the result through calling parent::push()
+	 * @param Database                              $dataCollection       Database instance to filter
+	 * @param array|SplFixedArray|\SplObjectStorage $comparisonCollection Filter conditions
+	 * @param bool                                  $pushMatchesToResult  If set to TRUE the matching objects will be added to the result through calling parent::push()
 	 * @return SplFixedArray
 	 */
 	protected function _filterCollectionWithComparisons($dataCollection, $comparisonCollection, $pushMatchesToResult = FALSE) {
@@ -295,15 +295,15 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 			return $dataCollection;
 		}
 
-		$dataCollectionRaw = $dataCollection->getRawData();
+		$dataCollectionRaw   = $dataCollection->getRawData();
 		$dataCollectionCount = $dataCollectionRaw->getSize();
 
 		$resultArray = new SplFixedArray($dataCollectionCount);
 
-		$i = 0;
+		$i            = 0;
 		$matchesIndex = 0;
 		while ($i < $dataCollectionCount) {
-			$j = 0;
+			$j    = 0;
 			$item = $dataCollectionRaw[$i];
 
 
@@ -361,7 +361,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 		}
 
 		$collection = new SplFixedArray($originalCollection->count());
-		$i = 0;
+		$i          = 0;
 		foreach ($originalCollection as $item) {
 			$collection[$i] = clone $item;
 			$i++;

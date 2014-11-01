@@ -8,13 +8,12 @@
 
 namespace Cundd\PersistentObjectStore\Filter;
 use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
+
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
-use Cundd\PersistentObjectStore\KeyValueCodingInterface;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+
+
 use stdClass;
 
 

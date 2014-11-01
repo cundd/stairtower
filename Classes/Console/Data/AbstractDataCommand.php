@@ -11,7 +11,7 @@ namespace Cundd\PersistentObjectStore\Console\Data;
 
 use Cundd\PersistentObjectStore\Console\AbstractCommand;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,7 +39,7 @@ class AbstractDataCommand extends AbstractCommand {
 	 *
 	 * @param InputInterface $input
 	 * @param bool           $graceful
-	 * @return DataInterface
+	 * @return DocumentInterface
 	 */
 	protected function findDataInstanceFromInput(InputInterface $input, $graceful = FALSE) {
 		$objectIdentifier = $input->getArgument('identifier');

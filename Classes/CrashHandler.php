@@ -72,7 +72,7 @@ class CrashHandler {
 			$errorReport[] = $this->rescueData();
 
 			// Output and save the information
-			$errorReport = implode(PHP_EOL, $errorReport);
+			$errorReport     = implode(PHP_EOL, $errorReport);
 			$errorReportPath = static::getRescueDirectory() . 'CRASH_REPORT.txt';
 			file_put_contents($errorReportPath, $errorReport);
 			print $errorReport;
@@ -86,7 +86,7 @@ class CrashHandler {
 	 */
 	public function rescueData() {
 		$resultMessageParts = array();
-		$data               = $this->coordinator->getObjectStore();
+		$data               = ($this->coordinator instanceof Coordinator) ? $this->coordinator->getObjectStore() : array();
 		$backupDirectory    = $this->getRescueDirectory();
 		if ($data) {
 			foreach ($data as $databaseIdentifier => $database) {

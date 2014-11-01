@@ -14,7 +14,7 @@ use Cundd\PersistentObjectStore\KeyValueCodingInterface;
  *
  * @package Cundd\PersistentObjectStore
  */
-interface DataInterface extends KeyValueCodingInterface {
+interface DocumentInterface extends KeyValueCodingInterface {
 	/**
 	 * Returns the timestamp of the creation
 	 *

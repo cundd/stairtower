@@ -9,12 +9,11 @@
 namespace Cundd\PersistentObjectStore\Filter;
 
 use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+
 
 /**
  * Filter implementation

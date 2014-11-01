@@ -33,13 +33,14 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 
 	function __construct() {
 		$basePath            = $this->getBasePath();
-		$varPath            = $basePath . '/var/';
+		$varPath             = $basePath . '/var/';
 		$configurationReader = new ConfigurationReader();
 		$this->configuration = array_merge_recursive(array(
 			'basePath'      => $basePath,
 			'dataPath'      => $varPath . 'Data/',
 			'writeDataPath' => $varPath . 'Data/',
 			'lockPath'      => $varPath . 'Lock/',
+			'cachePath'     => $varPath . 'Cache/',
 			'logPath'       => $varPath . 'Log/',
 			'rescuePath'    => $varPath . 'Rescue/',
 		), $configurationReader->readConfigurationFiles());

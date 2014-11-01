@@ -195,10 +195,10 @@ class DatabaseTest extends AbstractDataBasedCase {
 	public function objectLiveCycleTest() {
 		$database2 = $this->coordinator->getDatabase('people');
 
-		/** @var DataInterface $personFromDatabase2 */
+		/** @var DocumentInterface $personFromDatabase2 */
 		$personFromDatabase2 = $database2->current();
 
-		/** @var DataInterface $personFromFixture */
+		/** @var DocumentInterface $personFromFixture */
 		$personFromFixture = $this->fixture->current();
 
 		$this->assertEquals($personFromDatabase2, $personFromFixture);

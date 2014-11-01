@@ -137,7 +137,7 @@ abstract class AbstractServer implements ServerInterface {
 	/**
 	 * Total shutdown of the server
 	 *
-	 * Stops to listen for incoming connections, runs the maintenance task and terminates the programm
+	 * Stops to listen for incoming connections, runs the maintenance task and terminates the program
 	 */
 	public function shutdown() {
 		$this->stop();

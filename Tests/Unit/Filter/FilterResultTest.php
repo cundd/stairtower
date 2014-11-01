@@ -9,7 +9,7 @@
 namespace Cundd\PersistentObjectStore\DataAccess;
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Filter;
@@ -158,10 +158,10 @@ class FilterResultTest extends AbstractDataBasedCase {
 		$newFilter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
 		$newFilterResult = $newFilter->filterCollection($database);
 
-		/** @var DataInterface $memberFromNewFilter */
+		/** @var DocumentInterface $memberFromNewFilter */
 		$memberFromNewFilter = $newFilterResult->current();
 
-		/** @var DataInterface $memberFromFixture */
+		/** @var DocumentInterface $memberFromFixture */
 		$memberFromFixture = $this->fixture->current();
 
 		$this->assertEquals($memberFromNewFilter, $memberFromFixture);

@@ -9,11 +9,8 @@
 namespace Cundd\PersistentObjectStore\Filter\Comparison;
 
 
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+
 
 /**
  * Nested logical comparison

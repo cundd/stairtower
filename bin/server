@@ -24,6 +24,7 @@ if (isset($options['h'])) {
  * Checks and returns an argument value
  *
  * @param $key
+ * @param $options
  * @return null
  */
 function checkArgument($key, $options) {

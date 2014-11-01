@@ -9,9 +9,8 @@
 namespace Cundd\PersistentObjectStore;
 
 use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 
 /**
@@ -39,7 +38,7 @@ class ExampleTest extends AbstractDataBasedCase {
 	public function exampleTest() {
 		$startTime = microtime(TRUE);
 
-		/** @var DataInterface $currentObject */
+		/** @var DocumentInterface $currentObject */
 
 		// Load a database called 'people'
 		/** @var Database $database */

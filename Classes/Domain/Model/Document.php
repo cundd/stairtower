@@ -18,7 +18,7 @@ use Cundd\PersistentObjectStore\Utility\ObjectUtility;
  *
  * @package Cundd\PersistentObjectStore
  */
-class Document implements DataInterface {
+class Document implements DocumentInterface {
 	protected $creationTime;
 	protected $modificationTime;
 	protected $databaseIdentifier;
