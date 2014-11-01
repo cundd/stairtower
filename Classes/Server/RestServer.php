@@ -10,6 +10,8 @@ namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
+use Cundd\PersistentObjectStore\LogicException;
+use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
@@ -97,8 +99,13 @@ class RestServer extends AbstractServer {
 			if (!$delayedRequest) {
 				$this->handleResult($requestResult, $request, $response);
 			}
-		} catch (\Exception $exception) {
+		} catch (LogicException $exception) {
 			$this->handleError($exception, $request, $response);
+		} catch (RuntimeException $exception) {
+			$this->handleError($exception, $request, $response);
+		} catch (\Exception $exception) {
+			$this->writeln('Caught exception #%d: %s', $exception->getCode(), $exception->getMessage());
+			$this->writeln($exception->getTraceAsString());
 		}
 	}
 

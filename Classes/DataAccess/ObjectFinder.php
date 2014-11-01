@@ -7,8 +7,8 @@
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
-use Cundd\PersistentObjectStore\DataInterface;
 
 /**
  * Object Finder implementation
@@ -87,7 +87,7 @@ class ObjectFinder implements ObjectFinderInterface {
 	/**
 	 * Returns if the given data instance matches the constraints
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $dataInstance
 	 * @return boolean
 	 */
 	public function compareDataInstanceWithConstraints($dataInstance) {

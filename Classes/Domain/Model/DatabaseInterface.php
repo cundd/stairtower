@@ -29,7 +29,7 @@ interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	 * Returns the object with the given identifier
 	 *
 	 * @param string $identifier
-	 * @return DataInterface|NULL
+	 * @return DocumentInterface|NULL
 	 */
 	public function findByIdentifier($identifier);
 
@@ -48,28 +48,28 @@ interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	/**
 	 * Adds the given data instance to the database
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $dataInstance
 	 */
 	public function add($dataInstance);
 
 	/**
 	 * Updates the given data instance in the database
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $dataInstance
 	 */
 	public function update($dataInstance);
 
 	/**
 	 * Removes the given data instance from the database
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $dataInstance
 	 */
 	public function remove($dataInstance);
 
 	/**
 	 * Returns if the database contains the given data instance
 	 *
-	 * @param DataInterface|string $dataInstance Actual Data instance or it's GUID
+	 * @param DocumentInterface|string $dataInstance Actual Document instance or it's GUID
 	 * @return boolean
 	 */
 	public function contains($dataInstance);

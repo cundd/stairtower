@@ -74,15 +74,15 @@ class DatabaseTest extends AbstractDataBasedCase {
 	public function containsTest() {
 		$this->fixture = $this->coordinator->getDatabase('contacts');
 
-		$dataInstance = new Data(array('email' => 'info@cundd.net'), $this->fixture->getIdentifier());
+		$dataInstance = new Document(array('email' => 'info@cundd.net'), $this->fixture->getIdentifier());
 		$this->assertTrue($this->fixture->contains($dataInstance));
 		$this->assertTrue($this->fixture->contains('info@cundd.net'));
 
-		$dataInstance = new Data(array('email' => 'paul@mckenzy.net'), $this->fixture->getIdentifier());
+		$dataInstance = new Document(array('email' => 'paul@mckenzy.net'), $this->fixture->getIdentifier());
 		$this->assertTrue($this->fixture->contains($dataInstance));
 		$this->assertTrue($this->fixture->contains('paul@mckenzy.net'));
 
-		$dataInstance = new Data(array('email' => 'info-not-found@cundd.net'), $this->fixture->getIdentifier());
+		$dataInstance = new Document(array('email' => 'info-not-found@cundd.net'), $this->fixture->getIdentifier());
 		$this->assertFalse($this->fixture->contains($dataInstance));
 		$this->assertFalse($this->fixture->contains('info-not-found@cundd.net'));
 	}
@@ -94,7 +94,7 @@ class DatabaseTest extends AbstractDataBasedCase {
 		$this->fixture = $this->coordinator->getDatabase('contacts');
 
 		$testEmail    = 'mail' . time() . '@test.com';
-		$dataInstance = new Data(
+		$dataInstance = new Document(
 			array(
 				'email'    => $testEmail,
 				'age'      => 31,
@@ -116,7 +116,7 @@ class DatabaseTest extends AbstractDataBasedCase {
 		$this->fixture = $this->coordinator->getDatabase('contacts');
 
 		$testEmail    = 'alice@mckenzy.net';
-		$dataInstance = new Data(array('email' => $testEmail), $this->fixture->getIdentifier());
+		$dataInstance = new Document(array('email' => $testEmail), $this->fixture->getIdentifier());
 
 		$this->fixture->remove($dataInstance);
 
@@ -129,7 +129,7 @@ class DatabaseTest extends AbstractDataBasedCase {
 	 */
 	public function addAndFindByIdentifierTest() {
 		$testEmail    = 'mail' . time() . '@test.com';
-		$dataInstance = new Data(
+		$dataInstance = new Document(
 			array(
 				'email'    => $testEmail,
 				'age'      => 31,
@@ -151,7 +151,7 @@ class DatabaseTest extends AbstractDataBasedCase {
 	 */
 	public function addAndFilterTest() {
 		$testEmail    = 'my-mail-' . time() . '@test.com';
-		$dataInstance = new Data(
+		$dataInstance = new Document(
 			array(
 				'email'    => $testEmail,
 				'age'      => 31,
@@ -162,7 +162,7 @@ class DatabaseTest extends AbstractDataBasedCase {
 
 		$this->fixture->add($dataInstance);
 
-		// First check if the Data instance was added
+		// First check if the Document instance was added
 		$person = $this->fixture->findByIdentifier($testEmail);
 		$this->assertNotNull($person);
 
@@ -195,10 +195,10 @@ class DatabaseTest extends AbstractDataBasedCase {
 	public function objectLiveCycleTest() {
 		$database2 = $this->coordinator->getDatabase('people');
 
-		/** @var DataInterface $personFromDatabase2 */
+		/** @var DocumentInterface $personFromDatabase2 */
 		$personFromDatabase2 = $database2->current();
 
-		/** @var DataInterface $personFromFixture */
+		/** @var DocumentInterface $personFromFixture */
 		$personFromFixture = $this->fixture->current();
 
 		$this->assertEquals($personFromDatabase2, $personFromFixture);

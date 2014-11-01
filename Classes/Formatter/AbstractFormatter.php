@@ -8,7 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Formatter;
 use Cundd\PersistentObjectStore\ArrayableInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
 /**
  * Abstract formatter
@@ -44,7 +44,7 @@ abstract class AbstractFormatter implements FormatterInterface {
 		if (is_array($data) || $data instanceof \Iterator) {
 			$foundData = array();
 			foreach ($data as $dataObject) {
-				if ($dataObject instanceof DataInterface) {
+				if ($dataObject instanceof DocumentInterface) {
 					$foundData[] = $dataObject->getData();
 				} else {
 					$foundData[] = $dataObject;

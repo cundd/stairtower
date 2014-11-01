@@ -25,7 +25,7 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use SplFixedArray;
 
 /**
- * Database class which holds the Data instances
+ * Database class which holds the Document instances
  *
  * Implementation with object creation on demand.
  *
@@ -167,13 +167,13 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	/**
 	 * Returns if the database contains the given data instance
 	 *
-	 * @param DataInterface|string $dataInstance Actual Data instance or it's GUID
+	 * @param DocumentInterface|string $dataInstance Actual Document instance or it's GUID
 	 * @return boolean
 	 */
 	public function contains($dataInstance) {
 		if (is_string($dataInstance)) {
 			$identifier = $dataInstance;
-		} elseif ($dataInstance instanceof DataInterface) {
+		} elseif ($dataInstance instanceof DocumentInterface) {
 			$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
 			$identifier = $dataInstance->getId();
 		} else {
@@ -186,7 +186,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * Returns the object with the given identifier
 	 *
 	 * @param string $identifier
-	 * @return DataInterface|NULL
+	 * @return DocumentInterface|NULL
 	 */
 	public function findByIdentifier($identifier) {
 		$count = $this->count();
@@ -203,7 +203,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 				$foundObject = $this->_setObjectDataForIndex($this->_convertDataAtIndexToObject($i), $i);
 			}
 
-			if ($foundObject instanceof DataInterface && $foundObject->getId() === $identifier) {
+			if ($foundObject instanceof DocumentInterface && $foundObject->getId() === $identifier) {
 				return $foundObject;
 			}
 		} while (++$i < $count);
@@ -213,7 +213,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	/**
 	 * Adds the given data instance to the database
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $dataInstance
 	 */
 	public function add($dataInstance) {
 		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
@@ -238,7 +238,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	/**
 	 * Updates the given data instance in the database
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $dataInstance
 	 */
 	public function update($dataInstance) {
 		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
@@ -268,7 +268,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		$this->_setRawDataForIndex($dataInstance->getData(), $index);
 
 
-//		$identifier = ($dataInstance instanceof DataInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
+//		$identifier = ($dataInstance instanceof DocumentInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
 //		$this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier] = $dataInstance;
 
 		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_UPDATED, array($dataInstance));
@@ -277,7 +277,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	/**
 	 * Removes the given data instance from the database
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $dataInstance
 	 */
 	public function remove($dataInstance) {
 		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
@@ -373,7 +373,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Returns all Data instances of this database
+	 * Returns all Document instances of this database
 	 *
 	 * @return \SplFixedArray<DatabaseInterface>
 	 */
@@ -381,6 +381,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		$count = $this->count();
 		$i     = 0;
 
+		if ($count === 0) {
+			return new SplFixedArray(0);
+		}
 		do {
 			$this->_getObjectDataForIndexOrTransformIfNotExists($i);
 		} while (++$i < $count);
@@ -389,7 +392,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Returns all Data instances of this database
+	 * Returns all Document instances of this database
 	 *
 	 * @return array<DatabaseInterface>
 	 */
@@ -463,20 +466,20 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	// HELPER METHODS
 	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 	/**
-	 * Checks if the Data instance's database identifier is correct
+	 * Checks if the Document instance's database identifier is correct
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $dataInstance
 	 */
 	protected function _assertDataInstancesDatabaseIdentifier($dataInstance) {
 		if (!is_object($dataInstance)) throw new InvalidDataException(sprintf('Given data instance is not of type object but %s', gettype($dataInstance)), 1412859398);
 		if (!$dataInstance->getDatabaseIdentifier()) {
-			if ($dataInstance instanceof Data) {
+			if ($dataInstance instanceof Document) {
 				$dataInstance->setDatabaseIdentifier($this->identifier);
 			}
 		} else if ($dataInstance->getDatabaseIdentifier() !== $this->identifier) {
 			throw new DatabaseMismatchException(
 				sprintf(
-					'The given Data instance does not belong to this database (Data instance database identifier: %s, Database identifier: %s',
+					'The given Document instance does not belong to this database (Document instance database identifier: %s, Database identifier: %s',
 					$dataInstance->getDatabaseIdentifier(),
 					$this->identifier
 				),
@@ -527,10 +530,10 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Returns the Data instance at the given index or sets it if it is not already set
+	 * Returns the Document instance at the given index or sets it if it is not already set
 	 *
 	 * @param int $index
-	 * @return bool|DataInterface
+	 * @return bool|DocumentInterface
 	 */
 	protected function _getObjectDataForIndexOrTransformIfNotExists($index) {
 		$dataInstance = $this->_getObjectDataForIndex($index);
@@ -548,10 +551,10 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Returns the Data instance at the given index or FALSE if it is not already set
+	 * Returns the Document instance at the given index or FALSE if it is not already set
 	 *
 	 * @param int $index
-	 * @return bool|DataInterface
+	 * @return bool|DocumentInterface
 	 */
 	protected function _getObjectDataForIndex($index) {
 		if (isset($this->objectData[$index])) {
@@ -561,11 +564,11 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Sets the Data instance at the given index
+	 * Sets the Document instance at the given index
 	 *
-	 * @param DataInterface $object
+	 * @param DocumentInterface $object
 	 * @param int           $index
-	 * @return \Cundd\PersistentObjectStore\Domain\Model\DataInterface Returns the given object
+	 * @return \Cundd\PersistentObjectStore\Domain\Model\DocumentInterface Returns the given object
 	 */
 	protected function _setObjectDataForIndex($object, $index) {
 		if ($index >= $this->objectData->getSize()) throw new InvalidIndexException("Index $index out of range", 1413712508);
@@ -574,7 +577,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Removes the Data instance at the given index
+	 * Removes the Document instance at the given index
 	 *
 	 * @param int $index
 	 * @return void
@@ -623,10 +626,10 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Converts the raw data at the given index to a Data instance
+	 * Converts the raw data at the given index to a Document instance
 	 *
 	 * @param integer $index
-	 * @return DataInterface
+	 * @return DocumentInterface
 	 */
 	protected function _convertDataAtIndexToObject($index) {
 		if (isset($this->rawData[$index]) && $this->rawData[$index] === NULL) {
@@ -650,7 +653,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		}
 //		if (!isset($this->rawData[$index])) throw new IndexOutOfRangeException('Invalid index ' . $index);
 		$rawData    = $this->rawData[$index];
-		$dataObject = new Data($rawData, $this->identifier);
+		$dataObject = new Document($rawData, $this->identifier);
 
 //		if (isset($rawMetaData['creation_time'])) {
 //			$dataObject->setCreationTime($rawMetaData['creation_time']);
@@ -675,7 +678,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 
 		do {
 			$foundObject = $this->_getObjectDataForIndex($i);
-			if ($foundObject instanceof DataInterface && $foundObject->getId() === $identifier) {
+			if ($foundObject instanceof DocumentInterface && $foundObject->getId() === $identifier) {
 				$matchingIndex = $i;
 				break;
 			}

@@ -14,7 +14,7 @@ use Cundd\PersistentObjectStore\KeyValueCodingInterface;
  *
  * @package Cundd\PersistentObjectStore
  */
-interface DataInterface extends KeyValueCodingInterface {
+interface DocumentInterface extends KeyValueCodingInterface {
 	/**
 	 * Returns the timestamp of the creation
 	 *
@@ -37,7 +37,7 @@ interface DataInterface extends KeyValueCodingInterface {
 	public function getDatabaseIdentifier();
 
 	/**
-	 * Returns the key for the identifier of the Data object
+	 * Returns the key for the identifier of the Document object
 	 *
 	 * @return string
 	 */

@@ -18,7 +18,7 @@ use Cundd\PersistentObjectStore\Utility\ObjectUtility;
  *
  * @package Cundd\PersistentObjectStore
  */
-class Data implements DataInterface {
+class Document implements DocumentInterface {
 	protected $creationTime;
 	protected $modificationTime;
 	protected $databaseIdentifier;
@@ -107,7 +107,7 @@ class Data implements DataInterface {
 	}
 
 	/**
-	 * Returns the key for the identifier of the Data object
+	 * Returns the key for the identifier of the Document object
 	 *
 	 * @return string
 	 */
@@ -126,7 +126,7 @@ class Data implements DataInterface {
 	}
 
 	/**
-	 * Sets the key for the identifier of the Data object
+	 * Sets the key for the identifier of the Document object
 	 *
 	 * @param string $identifierKey
 	 * @return $this

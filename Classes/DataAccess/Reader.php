@@ -46,8 +46,8 @@ class Reader {
 	 * Fills the database with the given data
 	 *
 	 * @param Database $database
-	 * @param array<Data> $data
-	 * @param array<Data> $metaData
+	 * @param array<Document> $data
+	 * @param array<Document> $metaData
 	 */
 	protected function _fillDatabaseWithData($database, $dataCollection, $metaDataCollection) {
 		$database->setRawData($dataCollection);
@@ -57,7 +57,7 @@ class Reader {
 	 * Loads the given raw database
 	 *
 	 * @param string $databaseIdentifier
-	 * @return array<Data>
+	 * @return array<Document>
 	 * @throws ReaderException if the database could not be found
 	 */
 	protected function _loadDataCollection($databaseIdentifier) {
@@ -123,7 +123,7 @@ class Reader {
 	 * Loads the given meta database
 	 *
 	 * @param string $databaseIdentifier
-	 * @return array<Data>
+	 * @return array<Document>
 	 */
 	protected function _loadMetaDataCollection($databaseIdentifier) {
 		$path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.meta.json';

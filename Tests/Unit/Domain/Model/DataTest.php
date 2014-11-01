@@ -13,7 +13,7 @@ use Cundd\PersistentObjectStore\AbstractCase;
 
 class DataTest extends AbstractCase {
 	/**
-	 * @var \Cundd\PersistentObjectStore\Domain\Model\Data
+	 * @var \Cundd\PersistentObjectStore\Domain\Model\Document
 	 */
 	protected $fixture;
 
@@ -69,7 +69,7 @@ class DataTest extends AbstractCase {
 FIXTURE;
 
 
-		$dataObject = new Data();
+		$dataObject = new Document();
 		$dataObject->setData(json_decode($fixtureJSON, TRUE));
 
 		$dataObject->setDatabaseIdentifier('congress_members');

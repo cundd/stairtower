@@ -8,8 +8,8 @@
 
 namespace Cundd\PersistentObjectStore\Console\Data;
 
-use Cundd\PersistentObjectStore\Console\AbstractCommand;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -50,7 +50,7 @@ class AddCommand extends AbstractDataCommand {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$database = $this->findDatabaseInstanceFromInput($input);
 
-		/** @var DataInterface $dataInstance */
+		/** @var DocumentInterface $dataInstance */
 		$dataInstance = $this->serializer->unserialize($input->getArgument('content'));
 		if (!$dataInstance) {
 			$output->writeln('<error>Could not create object</error>');

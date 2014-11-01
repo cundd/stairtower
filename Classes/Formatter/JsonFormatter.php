@@ -7,7 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Formatter;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+
 
 /**
  * Class JsonFormatter
@@ -24,7 +24,7 @@ class JsonFormatter extends AbstractFormatter {
 	/**
 	 * Formats the given input model(s)
 	 *
-	 * @param DataInterface|array<DataInterface> $inputModel
+	 * @param DocumentInterface|array<DocumentInterface> $inputModel
 	 * @return string
 	 */
 	public function format($inputModel) {

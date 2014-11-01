@@ -8,14 +8,14 @@
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 
+
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Exception\WriterException;
-use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+
 
 /**
  * Class to write data to it's source
@@ -192,12 +192,12 @@ class Writer {
 		if (!file_exists($writeFolder)) {
 			mkdir($writeFolder, 0774, TRUE);
 		} else if (file_exists($writeFolder) && !is_writable($writeFolder)) {
-			throw new WriterException('Data folder exists but is not writable', 1410188161);
+			throw new WriterException('Document folder exists but is not writable', 1410188161);
 		}
 	}
 
 	/**
-	 * Returns the Data objects that will be written to the file system
+	 * Returns the Document objects that will be written to the file system
 	 *
 	 * @param DatabaseInterface $database
 	 * @return array
@@ -206,7 +206,7 @@ class Writer {
 		$objectsToWrite = array();
 		$database->rewind();
 		while ($database->valid()) {
-			/** @var DataInterface $item */
+			/** @var DocumentInterface $item */
 			$item = $database->current();
 			if ($item) {
 				$objectsToWrite[] = $item->getData();
@@ -234,7 +234,7 @@ class Writer {
 //	 * Loads the given meta database
 //	 *
 //	 * @param string $database
-//	 * @return array<Data>
+//	 * @return array<Document>
 //	 * @throws ReaderException if the database could not be found
 //	 */
 //	protected function _loadMetaDataCollection($database) {

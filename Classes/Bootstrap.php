@@ -10,6 +10,8 @@ namespace Cundd\PersistentObjectStore;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
 use DI\ContainerBuilder;
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\FilesystemCache;
 
 /**
  * Class Bootstrap
@@ -51,7 +53,13 @@ class Bootstrap {
 	public function getDiContainer() {
 		if (!$this->diContainer) {
 			$builder = new ContainerBuilder();
-			$builder->setDefinitionCache(new \Doctrine\Common\Cache\ArrayCache());
+			$builder->setDefinitionCache(new ArrayCache());
+
+//			$builder->setDefinitionCache(
+//				new FilesystemCache(
+//					ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath')
+//				)
+//			);
 			$this->diContainer = $builder->build();
 			$builder->addDefinitions(__DIR__ . '/Configuration/dependencyInjectionConfiguration.php');
 			$this->diContainer = $builder->build();

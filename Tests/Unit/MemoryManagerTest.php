@@ -8,7 +8,7 @@
 
 namespace Cundd\PersistentObjectStore;
 
-use Cundd\PersistentObjectStore\Domain\Model\Data;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Memory\Manager;
 use stdClass;
 
@@ -26,7 +26,7 @@ class MemoryManagerTest extends AbstractCase {
 	 * @test
 	 */
 	public function registerObjectTest() {
-		$object = new Data(array('email' => 'info@cundd.net'));
+		$object = new Document(array('email' => 'info@cundd.net'));
 		$identifier = 'my-identifier';
 		Manager::registerObject($object, $identifier);
 		$this->assertTrue(Manager::hasObject($identifier));
@@ -47,7 +47,7 @@ class MemoryManagerTest extends AbstractCase {
 		$this->assertFalse(Manager::hasObject($identifier));
 		$this->assertFalse(Manager::getObject($identifier));
 
-		$object = new Data(array('email' => 'info@cundd.net'));
+		$object = new Document(array('email' => 'info@cundd.net'));
 		$identifier = 'my-identifier';
 		Manager::registerObject($object, $identifier);
 		$this->assertTrue(Manager::hasObject($identifier));
@@ -189,7 +189,7 @@ class MemoryManagerTest extends AbstractCase {
 	 * @param $identifier3
 	 */
 	protected function createBigData($identifier1, $identifier2, $identifier3) {
-		$object = new Data(array('email' => 'info@cundd.net'));
+		$object = new Document(array('email' => 'info@cundd.net'));
 		Manager::registerObject($object, $identifier1, array('tag1', 'tag2'));
 		$this->assertTrue(Manager::hasObject($identifier1));
 		$this->assertSame($object, Manager::getObject($identifier1));

@@ -8,14 +8,9 @@
 
 namespace Cundd\PersistentObjectStore\Event;
 
-use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
-use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
+
 use Cundd\PersistentObjectStore\RuntimeException;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+
 
 /**
  * Shared Event Emitter to dispatch events
