@@ -53,13 +53,13 @@ class Bootstrap {
 	public function getDiContainer() {
 		if (!$this->diContainer) {
 			$builder = new ContainerBuilder();
-			$builder->setDefinitionCache(new ArrayCache());
+//			$builder->setDefinitionCache(new ArrayCache());
 
-//			$builder->setDefinitionCache(
-//				new FilesystemCache(
-//					ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath')
-//				)
-//			);
+			$builder->setDefinitionCache(
+				new FilesystemCache(
+					ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath')
+				)
+			);
 			$this->diContainer = $builder->build();
 			$builder->addDefinitions(__DIR__ . '/Configuration/dependencyInjectionConfiguration.php');
 			$this->diContainer = $builder->build();
