@@ -123,15 +123,19 @@ if ($argc > 1) {
 }
 $file = __DIR__ . '/var/Data/' . $file . '.json';
 $fileContents = '';
+
+$csvPath = __DIR__ . '/memory_samples.csv';
+$fileHandle = fopen($csvPath, 'a');
+
 $standardMemoryUsage = memory_get_usage(TRUE);
 
 printf('Memory: %s Peak: %s' . PHP_EOL, GeneralUtility::formatBytes(memory_get_usage(TRUE) - $standardMemoryUsage), GeneralUtility::formatBytes(memory_get_peak_usage(TRUE) - $standardMemoryUsage));
 printf('File size: %s' . PHP_EOL, GeneralUtility::formatBytes(filesize($file)));
 printf('Memory: %s Peak: %s' . PHP_EOL, GeneralUtility::formatBytes(memory_get_usage(TRUE) - $standardMemoryUsage), GeneralUtility::formatBytes(memory_get_peak_usage(TRUE) - $standardMemoryUsage));
-//file_get_contents($file);
+file_get_contents($file);
 printf('Memory: %s Peak: %s' . PHP_EOL, GeneralUtility::formatBytes(memory_get_usage(TRUE) - $standardMemoryUsage), GeneralUtility::formatBytes(memory_get_peak_usage(TRUE) - $standardMemoryUsage));
 
-//$fileContents = file_get_contents($file);
+$fileContents = file_get_contents($file);
 printf('Memory: %s Peak: %s' . PHP_EOL, GeneralUtility::formatBytes(memory_get_usage(TRUE) - $standardMemoryUsage), GeneralUtility::formatBytes(memory_get_peak_usage(TRUE) - $standardMemoryUsage));
 printf('Memory ratio: memory/filesize = %s' . PHP_EOL, (memory_get_usage(TRUE) - $standardMemoryUsage) / filesize($file));
 
@@ -139,3 +143,10 @@ $json = json_decode(file_get_contents($file), TRUE);
 printf('Memory: %s Peak: %s' . PHP_EOL, GeneralUtility::formatBytes(memory_get_usage(TRUE) - $standardMemoryUsage), GeneralUtility::formatBytes(memory_get_peak_usage(TRUE) - $standardMemoryUsage));
 printf('Memory ratio: memory/filesize = %s' . PHP_EOL, (memory_get_usage(TRUE) - $standardMemoryUsage) / filesize($file));
 printf('Memory ratio: memory/strlen = %s' . PHP_EOL, (memory_get_usage(TRUE) - $standardMemoryUsage) / strlen($fileContents));
+printf('Memory ratio: memory/braces = %s' . PHP_EOL, (memory_get_usage(TRUE) - $standardMemoryUsage) / substr_count($fileContents, '{'));
+printf('Memory ratio: memory/comma = %s' . PHP_EOL, (memory_get_usage(TRUE) - $standardMemoryUsage) / substr_count($fileContents, ','));
+printf('Memory ratio: log(memory)/log(comma) = %s' . PHP_EOL, log(memory_get_usage(TRUE) - $standardMemoryUsage) / log(filesize($file)));
+
+$toMb = 1024 * 1024;
+//fputcsv($fileHandle, array(filesize($file) / $toMb, (float)(memory_get_usage(TRUE) - $standardMemoryUsage) / $toMb, (float)(memory_get_peak_usage(TRUE) - $standardMemoryUsage) / $toMb));
+fputcsv($fileHandle, array(filesize($file), (float)(memory_get_usage(TRUE) - $standardMemoryUsage), (float)(memory_get_peak_usage(TRUE) - $standardMemoryUsage)));
