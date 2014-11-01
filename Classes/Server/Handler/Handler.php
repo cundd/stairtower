@@ -232,22 +232,30 @@ class Handler implements HandlerInterface {
 			);
 		}
 
-		if (!$requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException('Document identifier is missing', 1413035855);
-		$dataInstance = $this->getDataForRequest($requestInfo);
-		if (!$dataInstance) {
-			throw new InvalidRequestParameterException(
-				sprintf(
-					'Document with identifier "%s" not found in database "%s"',
-					$requestInfo->getDataIdentifier(),
-					$requestInfo->getDatabaseIdentifier()
-				),
-				1413035855
-			);
+
+//		if (!$requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException('Document identifier is missing', 1413035855);
+		if ($requestInfo->getDataIdentifier()) {
+			$dataInstance = $this->getDataForRequest($requestInfo);
+			if (!$dataInstance) {
+				throw new InvalidRequestParameterException(
+					sprintf(
+						'Document with identifier "%s" not found in database "%s"',
+						$requestInfo->getDataIdentifier(),
+						$requestInfo->getDatabaseIdentifier()
+					),
+					1413035855
+				);
+			}
+
+			$database->remove($dataInstance);
+			$this->eventEmitter->emit(Event::DOCUMENT_DELETED, array($dataInstance));
+			return new HandlerResult(204, sprintf('Document "%s" deleted', $requestInfo->getDataIdentifier()));
 		}
 
-		$database->remove($dataInstance);
-		$this->eventEmitter->emit(Event::DOCUMENT_DELETED, array($dataInstance));
-		return new HandlerResult(204);
+		$databaseIdentifier = $database->getIdentifier();
+		$this->coordinator->dropDatabase($databaseIdentifier);
+		$this->eventEmitter->emit(Event::DATABASE_DELETED, array($database));
+		return new HandlerResult(204, sprintf('Database "%s" deleted', $databaseIdentifier));
 	}
 
 	/**

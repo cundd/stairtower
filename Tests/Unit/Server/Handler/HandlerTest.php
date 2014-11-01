@@ -215,12 +215,26 @@ class HandlerTest extends AbstractCase {
 
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
 		$this->assertEquals(204, $handlerResult->getStatusCode());
-		$this->assertNull($handlerResult->getData());
+		$this->assertEquals('Document "info@cundd.net" deleted', $handlerResult->getData());
 
 		/** @var DocumentInterface $dataInstance */
 		$dataInstance = new Document(['email' => 'info@cundd.net']);
 
 		$this->assertFalse($this->database->contains($dataInstance));
+	}
+
+	/**
+	 * @test
+	 */
+	public function deleteDatabaseTest() {
+		// Running this test would remove our test data :(
+		return;
+		$requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('DELETE', '/contacts/'));
+		$handlerResult = $this->fixture->delete($requestInfo);
+
+		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
+		$this->assertEquals(204, $handlerResult->getStatusCode());
+		$this->assertEquals('Database "contacts" deleted', $handlerResult->getData());
 	}
 
 	/**
