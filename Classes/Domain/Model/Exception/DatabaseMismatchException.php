@@ -9,7 +9,7 @@ namespace Cundd\PersistentObjectStore\Domain\Model\Exception;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
 
 /**
- * Exception thrown if a Data instance is added to the database and the database identifier don't match
+ * Exception thrown if a Document instance is added to the database and the database identifier don't match
  */
 class DatabaseMismatchException extends InvalidDatabaseIdentifierException {
 }

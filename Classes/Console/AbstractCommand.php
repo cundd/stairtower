@@ -22,7 +22,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 abstract class AbstractCommand extends Command {
 	/**
-	 * Data Access Coordinator
+	 * Document Access Coordinator
 	 *
 	 * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
 	 * @Inject

@@ -26,7 +26,7 @@ class RequestInfo implements Immutable {
 	protected $databaseIdentifier = '';
 
 	/**
-	 * Identifier for the Data instance
+	 * Identifier for the Document instance
 	 *
 	 * @var string
 	 */
@@ -83,7 +83,7 @@ class RequestInfo implements Immutable {
 	}
 
 	/**
-	 * Returns the identifier for the Data instance
+	 * Returns the identifier for the Document instance
 	 *
 	 * @return string
 	 */

@@ -10,7 +10,7 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 
@@ -179,7 +179,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		/** @var Database $database */
 		$database = $this->fixture->getDatabase('contacts');
 
-		$dataInstance = new Data();
+		$dataInstance = new Document();
 		$dataInstance->setData(array(
 			'firstName' => 'Oliver',
 			'lastName'  => 'Kane',
@@ -202,7 +202,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		/** @var Database $database */
 		$database = $this->fixture->getDatabase('people');
 
-		$dataInstance = new Data();
+		$dataInstance = new Document();
 		$dataInstance->setData(array(
 			'_id'           => '541f004ef8f4d2df32ca60c2',
 			'index'         => 5000,
@@ -267,7 +267,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		/** @var Database $database */
 		$database = $this->fixture->getDatabase('people');
 
-		$dataInstance = new Data();
+		$dataInstance = new Document();
 		$dataInstance->setData(array(
 			'_id'           => '541f004ef8f4d2df32ca60c2',
 			'index'         => 5000,
@@ -341,7 +341,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		/** @var Database $database */
 		$database = $this->fixture->getDatabase($databaseIdentifier);
 
-		$dataInstance = new Data();
+		$dataInstance = new Document();
 		$dataInstance->setData(array(
 			'firstName' => 'Paul',
 			'lastName' => 'McKenzy',

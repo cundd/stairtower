@@ -42,7 +42,7 @@ class ConsoleCommand extends Command {
 WELCOME;
 
 	/**
-	 * Data Access Coordinator
+	 * Document Access Coordinator
 	 *
 	 * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
 	 * @Inject

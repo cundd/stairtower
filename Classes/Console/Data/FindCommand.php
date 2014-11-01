@@ -36,7 +36,7 @@ class FindCommand extends AbstractDataCommand {
 			->addArgument(
 				'identifier',
 				InputArgument::REQUIRED,
-				'Data identifier to search for'
+				'Document identifier to search for'
 			)
 		;
 	}

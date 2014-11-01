@@ -69,7 +69,7 @@ interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	/**
 	 * Returns if the database contains the given data instance
 	 *
-	 * @param DataInterface|string $dataInstance Actual Data instance or it's GUID
+	 * @param DataInterface|string $dataInstance Actual Document instance or it's GUID
 	 * @return boolean
 	 */
 	public function contains($dataInstance);

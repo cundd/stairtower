@@ -8,7 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Filter;
 use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;

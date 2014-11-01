@@ -41,7 +41,7 @@ abstract class AbstractServer implements ServerInterface {
 	protected $ip = '127.0.0.1';
 
 	/**
-	 * Data Access Coordinator
+	 * Document Access Coordinator
 	 *
 	 * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
 	 * @Inject

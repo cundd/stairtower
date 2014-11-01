@@ -9,7 +9,7 @@
 namespace Cundd\PersistentObjectStore\Formatter;
 
 /**
- * Interface for data formatter responsible to transform Data objects into matching string representations
+ * Interface for data formatter responsible to transform Document objects into matching string representations
  *
  * @package Cundd\PersistentObjectStore\Formatter
  */

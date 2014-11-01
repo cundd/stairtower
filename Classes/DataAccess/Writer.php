@@ -192,12 +192,12 @@ class Writer {
 		if (!file_exists($writeFolder)) {
 			mkdir($writeFolder, 0774, TRUE);
 		} else if (file_exists($writeFolder) && !is_writable($writeFolder)) {
-			throw new WriterException('Data folder exists but is not writable', 1410188161);
+			throw new WriterException('Document folder exists but is not writable', 1410188161);
 		}
 	}
 
 	/**
-	 * Returns the Data objects that will be written to the file system
+	 * Returns the Document objects that will be written to the file system
 	 *
 	 * @param DatabaseInterface $database
 	 * @return array
@@ -234,7 +234,7 @@ class Writer {
 //	 * Loads the given meta database
 //	 *
 //	 * @param string $database
-//	 * @return array<Data>
+//	 * @return array<Document>
 //	 * @throws ReaderException if the database could not be found
 //	 */
 //	protected function _loadMetaDataCollection($database) {

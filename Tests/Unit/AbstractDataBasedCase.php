@@ -7,7 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 
 /**
@@ -34,7 +34,7 @@ class AbstractDataBasedCase extends AbstractCase {
 		$allTestData = $this->getAllTestData();
 		$allTestObjects = array();
 		foreach ($allTestData as $currentTestData) {
-			$currentObject = new Data($currentTestData, 'contacts');
+			$currentObject = new Document($currentTestData, 'contacts');
 			$allTestObjects[] = $currentObject;
 //			$allTestObjects[$currentObject->getGuid()] = $currentObject;
 		}

@@ -12,7 +12,7 @@ namespace Cundd\PersistentObjectStore\Server\Handler;
 use Cundd\PersistentObjectStore\AbstractCase;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\Memory\Manager;
@@ -218,7 +218,7 @@ class HandlerTest extends AbstractCase {
 		$this->assertNull($handlerResult->getData());
 
 		/** @var DataInterface $dataInstance */
-		$dataInstance = new Data(['email' => 'info@cundd.net']);
+		$dataInstance = new Document(['email' => 'info@cundd.net']);
 
 		$this->assertFalse($this->database->contains($dataInstance));
 	}

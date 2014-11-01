@@ -11,7 +11,7 @@ namespace Cundd\PersistentObjectStore\Sorting;
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\DataAccess\Reader;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
 use Cundd\PersistentObjectStore\KeyValueCodingInterface;
@@ -108,7 +108,7 @@ class SorterTest extends AbstractDataBasedCase {
 		/** @var Reader $databaseReader */
 		$databaseReader = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Reader');
 		$newlyLoadedDatabase = $databaseReader->loadDatabase('people');
-		$dataInstance = new Data();
+		$dataInstance = new Document();
 		$dataInstance->setData(array(
 			'_id'           => '541f004ef8f4d2df32ca60c2',
 			'index'         => 5000,
