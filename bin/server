@@ -73,9 +73,9 @@ if ($port) {
 // If the test option is set start the server in test mode
 if (isset($options['test'])) {
 	$server->setMode(\Cundd\PersistentObjectStore\Server\ServerInterface::SERVER_MODE_TEST);
-//	if (is_numeric($options['test'])) {
-//
-//	}
+	if (is_numeric($options['test'])) {
+		$server->setAutoShutdownTime(intval($options['test']));
+	}
 }
 $server->start();
 

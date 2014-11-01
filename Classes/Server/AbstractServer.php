@@ -101,6 +101,13 @@ abstract class AbstractServer implements ServerInterface {
 	protected $maintenanceInterval = 5.0;
 
 	/**
+	 * If run in test mode the server will stop after this number of seconds
+	 *
+	 * @var int
+	 */
+	protected $autoShutdownTime = 60;
+
+	/**
 	 * Mode in which the server is started
 	 *
 	 * @var int
@@ -160,11 +167,9 @@ abstract class AbstractServer implements ServerInterface {
 
 
 		// If the server is run in test-mode shut it down after 1 minute
-		$autoShutdownTime = 6;
-		$this->writeln('Server is started in test mode and will shut down after %d seconds', $autoShutdownTime);
-
 		if ($this->getMode() === ServerInterface::SERVER_MODE_TEST) {
-			$this->eventLoop->addTimer($autoShutdownTime, function($timer) {
+			$this->writeln('Server is started in test mode and will shut down after %d seconds', $this->getAutoShutdownTime());
+			$this->eventLoop->addTimer($this->getAutoShutdownTime(), function($timer) {
 				$this->writeln('Auto shutdown time reached');
 				$this->shutdown();
 			});
@@ -276,7 +281,25 @@ abstract class AbstractServer implements ServerInterface {
 		return $this;
 	}
 
+	/**
+	 * Returns the number of seconds after which to stop the server if run in test mode
+	 *
+	 * @return int
+	 */
+	public function getAutoShutdownTime() {
+		return $this->autoShutdownTime;
+	}
 
+	/**
+	 * Sets the number of seconds after which to stop the server if run in test mode
+	 *
+	 * @param int $autoShutdownTime
+	 * @return $this
+	 */
+	public function setAutoShutdownTime($autoShutdownTime) {
+		$this->autoShutdownTime = $autoShutdownTime;
+		return $this;
+	}
 
 	/**
 	 * Returns the servers global unique identifier
