@@ -381,6 +381,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		$count = $this->count();
 		$i     = 0;
 
+		if ($count === 0) {
+			return new SplFixedArray(0);
+		}
 		do {
 			$this->_getObjectDataForIndexOrTransformIfNotExists($i);
 		} while (++$i < $count);
