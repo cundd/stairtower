@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
@@ -21,7 +22,6 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	public function fullServerTest() {
-		$configurationManager = ConfigurationManager::getSharedInstance();
 		$databaseIdentifier   = 'test-db-' . time();
 
 		$document1HostName = 'database01.my-servers.local';
@@ -30,7 +30,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$document2HostName = 'web01.my-servers.local';
 		$documentIdentifier2 = md5($document2HostName);
 
-		$expectedPath         = $configurationManager->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
+//		$expectedPath         = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
 
 		$testDocument1         = array(
 			'id'   => $documentIdentifier1,
@@ -47,7 +47,13 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 			'os'   => 'CunddOS',
 		);
 
-		$this->_startServer($configurationManager);
+		$this->_startServer();
+
+
+		// Get the welcome message
+		$response = $this->_performRestRequest('');
+		$this->assertArrayHasKey('message', $response);
+		$this->assertEquals(Constants::MESSAGE_JSON_WELCOME, $response['message']);
 
 
 		// Get the stats
@@ -179,6 +185,18 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$this->assertSame(FALSE, $response);
 
 
+		// Shutdown the server
+		$response = $this->_performRestRequest('_shutdown', 'POST');
+		$this->assertArrayHasKey('message', $response);
+		$this->assertEquals('Server is going to shut down', $response['message']);
+		sleep(1);
+
+
+		// The server should not send the welcome message
+		$response = $this->_performRestRequest('');
+		$this->assertSame(FALSE, $response);
+
+
 //		$this->assertFileExists($expectedPath);
 //
 //		$this->fixture->createDatabase($databaseIdentifier);
@@ -229,15 +247,20 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * Start the server
+	 *
+	 * @param bool $testMode
 	 */
-	protected function _startServer() {
+	protected function _startServer($testMode = TRUE) {
 		// Start the server
 		$serverBinPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('basePath') . 'bin/server';
 		$commandParts  = array(
 			escapeshellcmd(sprintf('"%s"', $serverBinPath)), //
-			'--test', // Run the server in test mode
-			'> /dev/null &', // Run the server in the background
 		);
+		if ($testMode) {
+			$commandParts[] = '--test'; // Run the server in test mode
+		}
+		$commandParts[] = '> /dev/null &'; // Run the server in the background
+
 
 //		printf('Run %s' . PHP_EOL, implode(' ', $commandParts));
 		exec(implode(' ', $commandParts), $output, $returnValue);
