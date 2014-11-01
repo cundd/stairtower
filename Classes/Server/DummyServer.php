@@ -202,6 +202,23 @@ class DummyServer implements ServerInterface {
 	public function setMode($mode) {
 	}
 
+	/**
+	 * Returns the number of seconds after which to stop the server if run in test mode
+	 *
+	 * @return int
+	 */
+	public function getAutoShutdownTime() {
+	}
+
+	/**
+	 * Sets the number of seconds after which to stop the server if run in test mode
+	 *
+	 * @param int $autoShutdownTime
+	 * @return $this
+	 */
+	public function setAutoShutdownTime($autoShutdownTime) {
+	}
+
 
 	/**
 	 * Returns the servers global unique identifier
