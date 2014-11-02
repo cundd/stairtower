@@ -74,24 +74,15 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @param array  $rawData
 	 */
 	function __construct($identifier, $rawData = array()) {
-//		static $createdDatabases = array();
-//		if (isset($createdDatabases[$identifier])) {
-//			throw new InvalidDatabaseException(sprintf('Database with identifier %s already created', $identifier), 1413721539);
-//		}
-//		$createdDatabases[$identifier] = TRUE;
-
 		GeneralUtility::assertDatabaseIdentifier($identifier);
 		$this->identifier = $identifier;
 
 		if ($rawData) {
 			$this->setRawData($rawData);
 		} else {
-			$this->rawData = new SplFixedArray(0);
+			$this->rawData    = new SplFixedArray(0);
 			$this->objectData = new SplFixedArray(0);
 		}
-
-//		$this->_prepareObjectCollectionMap();
-//		$this->_increaseObjectCollectionReferenceCount();
 	}
 
 	/**
@@ -141,9 +132,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @return mixed Can return any type.
 	 */
 	public function currentRaw() {
-		$dataInstance = $this->_getRawDataForIndex($this->index);
-		if ($dataInstance === FALSE) throw new IndexOutOfRangeException('Invalid index ' . $this->index, 1411316363);
-		return $dataInstance;
+		$document = $this->_getRawDataForIndex($this->index);
+		if ($document === FALSE) throw new IndexOutOfRangeException('Invalid index ' . $this->index, 1411316363);
+		return $document;
 	}
 
 
@@ -167,17 +158,17 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	/**
 	 * Returns if the database contains the given data instance
 	 *
-	 * @param DocumentInterface|string $dataInstance Actual Document instance or it's GUID
+	 * @param DocumentInterface|string $document Actual Document instance or it's GUID
 	 * @return boolean
 	 */
-	public function contains($dataInstance) {
-		if (is_string($dataInstance)) {
-			$identifier = $dataInstance;
-		} elseif ($dataInstance instanceof DocumentInterface) {
-			$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
-			$identifier = $dataInstance->getId();
+	public function contains($document) {
+		if (is_string($document)) {
+			$identifier = $document;
+		} elseif ($document instanceof DocumentInterface) {
+			$this->_assertDataInstancesDatabaseIdentifier($document);
+			$identifier = $document->getId();
 		} else {
-			throw new RuntimeException("Given value $dataInstance is of type " . gettype($dataInstance));
+			throw new RuntimeException("Given value $document is of type " . gettype($document));
 		}
 		return $this->findByIdentifier($identifier) ? TRUE : FALSE;
 	}
@@ -213,86 +204,89 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	/**
 	 * Adds the given data instance to the database
 	 *
-	 * @param DocumentInterface $dataInstance
+	 * @param DocumentInterface $document
 	 */
-	public function add($dataInstance) {
-		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
+	public function add($document) {
+		$this->_assertDataInstancesDatabaseIdentifier($document);
+		$this->_assertDocumentIdentifier($document);
 		$currentCount = $this->count();
 
-		if ($this->contains($dataInstance)) {
+		if ($this->contains($document)) {
 			throw new InvalidDataException(
-				sprintf('Object with GUID %s already exists in the database. Maybe the values of the identifier \'%s\' are not expressive', $dataInstance->getGuid(), $dataInstance->getIdentifierKey()),
+				sprintf('Object with GUID %s already exists in the database. Maybe the values of the identifier \'%s\' are not expressive', $document->getGuid(), $document->getIdentifierKey()),
 				1411205350
 			);
 		}
 
 		$this->objectData->setSize($currentCount + 1);
-		$this->_setObjectDataForIndex($dataInstance, $currentCount);
+		$this->_setObjectDataForIndex($document, $currentCount);
 
 		$this->rawData->setSize($currentCount + 1);
-		$this->_setRawDataForIndex($dataInstance->getData(), $currentCount);
+		$this->_setRawDataForIndex($document->getData(), $currentCount);
 
-		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_ADDED, array($dataInstance));
+		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_ADDED, array($document));
 	}
 
 	/**
 	 * Updates the given data instance in the database
 	 *
-	 * @param DocumentInterface $dataInstance
+	 * @param DocumentInterface $document
 	 */
-	public function update($dataInstance) {
-		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
+	public function update($document) {
+		$this->_assertDataInstancesDatabaseIdentifier($document);
+		$this->_assertDocumentIdentifier($document);
 
-		if (!$this->contains($dataInstance)) {
+		if (!$this->contains($document)) {
 			throw new InvalidDataException(
-				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier \'%s\' are not expressive', $dataInstance->getGuid(), $dataInstance->getIdentifierKey()),
+				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier \'%s\' are not expressive', $document->getGuid(), $document->getIdentifierKey()),
 				1412800596
 			);
 		}
 
-		$index           = $this->_getIndexForIdentifier($dataInstance->getId());
+		$index           = $this->_getIndexForIdentifier($document->getId());
 		$oldDataInstance = $this->_getObjectDataForIndex($index);
 		if (!$oldDataInstance) throw new InvalidDataException('No data instance found to replace', 1413711010);
-		if ($dataInstance->getId() !== $oldDataInstance->getId()) {
+		if ($document->getId() !== $oldDataInstance->getId()) {
 			throw new InvalidDataException(
 				sprintf(
 					'Given identifier "%s" does not match the found instance\'s identifier "%s"',
-					$dataInstance->getId(),
+					$document->getId(),
 					$oldDataInstance->getId()
 				),
 				1413711010
 			);
 		}
 
-		$this->_setObjectDataForIndex($dataInstance, $index);
-		$this->_setRawDataForIndex($dataInstance->getData(), $index);
+		$this->_setObjectDataForIndex($document, $index);
+		$this->_setRawDataForIndex($document->getData(), $index);
 
 
-//		$identifier = ($dataInstance instanceof DocumentInterface) ? $dataInstance->getGuid() : spl_object_hash($dataInstance);
-//		$this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier] = $dataInstance;
+//		$identifier = ($document instanceof DocumentInterface) ? $document->getGuid() : spl_object_hash($document);
+//		$this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier] = $document;
 
-		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_UPDATED, array($dataInstance));
+		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_UPDATED, array($document));
 	}
 
 	/**
 	 * Removes the given data instance from the database
 	 *
-	 * @param DocumentInterface $dataInstance
+	 * @param DocumentInterface $document
 	 */
-	public function remove($dataInstance) {
-		$this->_assertDataInstancesDatabaseIdentifier($dataInstance);
+	public function remove($document) {
+		$this->_assertDataInstancesDatabaseIdentifier($document);
+		$this->_assertDocumentIdentifier($document);
 
-		if (!$this->contains($dataInstance)) {
+		if (!$this->contains($document)) {
 			throw new InvalidDataException(
-				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier \'%s\' are not expressive', $dataInstance->getGuid(), $dataInstance->getIdentifierKey()),
+				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier \'%s\' are not expressive', $document->getGuid(), $document->getIdentifierKey()),
 				1412800595
 			);
 		}
 
-		$index = $this->_getIndexForIdentifier($dataInstance->getId());
+		$index = $this->_getIndexForIdentifier($document->getId());
 		if ($index === -1) {
 			throw new RuntimeException(
-				sprintf('Could not determine the index of object with GUID %s', $dataInstance->getId()),
+				sprintf('Could not determine the index of object with GUID %s', $document->getId()),
 				1412801014
 			);
 		}
@@ -301,9 +295,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		$this->_removeRawDataForIndex($index);
 
 //		$databaseIdentifier = $this->identifier;
-//		if (!$this->contains($dataInstance)) {
+//		if (!$this->contains($document)) {
 //			throw new InvalidDataException(
-//				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier \'%s\' are not expressive', $objectUid, $dataInstance->getIdentifierKey()),
+//				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier \'%s\' are not expressive', $objectUid, $document->getIdentifierKey()),
 //				1412800595
 //			);
 //		}
@@ -333,10 +327,10 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 //			$this->rawData[$index] = NULL;
 //		}
 //
-		if ($this->contains($dataInstance)) {
-			throw new RuntimeException(sprintf('Database still contains object %s', $dataInstance->getGuid()), 1413290094);
+		if ($this->contains($document)) {
+			throw new RuntimeException(sprintf('Database still contains object %s', $document->getGuid()), 1413290094);
 		}
-		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_REMOVED, array($dataInstance));
+		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_REMOVED, array($document));
 	}
 
 
@@ -468,23 +462,71 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	/**
 	 * Checks if the Document instance's database identifier is correct
 	 *
-	 * @param DocumentInterface $dataInstance
+	 * @param DocumentInterface $document
 	 */
-	protected function _assertDataInstancesDatabaseIdentifier($dataInstance) {
-		if (!is_object($dataInstance)) throw new InvalidDataException(sprintf('Given data instance is not of type object but %s', gettype($dataInstance)), 1412859398);
-		if (!$dataInstance->getDatabaseIdentifier()) {
-			if ($dataInstance instanceof Document) {
-				$dataInstance->setDatabaseIdentifier($this->identifier);
+	protected function _assertDataInstancesDatabaseIdentifier($document) {
+		if (!is_object($document)) throw new InvalidDataException(sprintf('Given data instance is not of type object but %s', gettype($document)), 1412859398);
+		if (!$document->getDatabaseIdentifier()) {
+			if ($document instanceof Document) {
+				$document->setDatabaseIdentifier($this->identifier);
 			}
-		} else if ($dataInstance->getDatabaseIdentifier() !== $this->identifier) {
+		} else if ($document->getDatabaseIdentifier() !== $this->identifier) {
 			throw new DatabaseMismatchException(
 				sprintf(
 					'The given Document instance does not belong to this database (Document instance database identifier: %s, Database identifier: %s',
-					$dataInstance->getDatabaseIdentifier(),
+					$document->getDatabaseIdentifier(),
 					$this->identifier
 				),
 				1411315947
 			);
+		}
+	}
+
+	/**
+	 * Returns a unique ID for the given Document
+	 *
+	 * @param DocumentInterface|array $document
+	 * @return string
+	 */
+	protected function _getBestDocumentIdentifierForDocument($document) {
+		$argumentIsArray = is_array($document);
+
+		// If no identifier key is defined check the most common
+		$commonIdentifiers = array('id', 'uid', 'email');
+		foreach ($commonIdentifiers as $identifier) {
+
+			if ($argumentIsArray) {
+				if (isset($rawData[$identifier])) {
+					return GeneralUtility::toString($rawData[$identifier]);
+				}
+			} else {
+				$value = $document->valueForKey($identifier);
+				if ($value) {
+					return GeneralUtility::toString($value);
+				}
+			}
+		}
+		return uniqid($this->getIdentifier());
+	}
+
+	/**
+	 * Checks if the Document instance's identifier is set
+	 *
+	 * @param DocumentInterface|array $document
+	 */
+	protected function _assertDocumentIdentifier($document) {
+		$identifierValue = $this->_getBestDocumentIdentifierForDocument($document);
+
+		if (is_array($document)) {
+			if (!isset($document[Constants::DATA_ID_KEY])) {
+				$document[Constants::DATA_ID_KEY] = $identifierValue;
+			}
+		} else if ($document instanceof DocumentInterface) {
+			if(!$document->getId()) {
+				$document->setValueForKey($identifierValue, Constants::DATA_ID_KEY);
+			}
+		} else {
+			throw new InvalidDataException(sprintf('Given data instance is not of type object but %s', gettype($document)), 1412859398);
 		}
 	}
 
@@ -507,7 +549,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 			}
 			$identifier                      = sha1($identifier);
 			$rawData[Constants::DATA_ID_KEY] = $identifier;
-			$this->rawData[$index] = $rawData;
+			$this->rawData[$index]           = $rawData;
 		}
 		return $rawData;
 	}
@@ -536,11 +578,11 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @return bool|DocumentInterface
 	 */
 	protected function _getObjectDataForIndexOrTransformIfNotExists($index) {
-		$dataInstance = $this->_getObjectDataForIndex($index);
-		if (!$dataInstance) {
-			$dataInstance = $this->_setObjectDataForIndex($this->_convertDataAtIndexToObject($index), $index);
+		$document = $this->_getObjectDataForIndex($index);
+		if (!$document) {
+			$document = $this->_setObjectDataForIndex($this->_convertDataAtIndexToObject($index), $index);
 		}
-		return $dataInstance;
+		return $document;
 	}
 
 	/**
@@ -567,7 +609,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * Sets the Document instance at the given index
 	 *
 	 * @param DocumentInterface $object
-	 * @param int           $index
+	 * @param int               $index
 	 * @return \Cundd\PersistentObjectStore\Domain\Model\DocumentInterface Returns the given object
 	 */
 	protected function _setObjectDataForIndex($object, $index) {
@@ -596,7 +638,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 */
 	protected function _getRawDataForIndex($index) {
 		if (isset($this->rawData[$index])) {
-			return $this->rawData[$index];
+			$data = $this->rawData[$index];
+			$this->_assertDocumentIdentifier($data);
+			return $data;
 		}
 		return FALSE;
 	}
@@ -610,6 +654,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @return mixed Returns the given data
 	 */
 	protected function _setRawDataForIndex($data, $index) {
+		$this->_assertDocumentIdentifier($data);
 		$this->rawData[$index] = $data;
 		return $data;
 	}
@@ -653,6 +698,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		}
 //		if (!isset($this->rawData[$index])) throw new IndexOutOfRangeException('Invalid index ' . $index);
 		$rawData    = $this->rawData[$index];
+		$this->_assertDocumentIdentifier($rawData);
 		$dataObject = new Document($rawData, $this->identifier);
 
 //		if (isset($rawMetaData['creation_time'])) {

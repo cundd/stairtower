@@ -76,9 +76,9 @@ class ObjectFinder implements ObjectFinderInterface {
 	 */
 	public function findInDatabase($database) {
 		$matchingInstances = array();
-		foreach ($database as $dataInstance) {
-			if ($this->compareDataInstanceWithConstraints($dataInstance)) {
-				$matchingInstances[] = $dataInstance;
+		foreach ($database as $document) {
+			if ($this->compareDataInstanceWithConstraints($document)) {
+				$matchingInstances[] = $document;
 			}
 		}
 		return $matchingInstances;
@@ -87,10 +87,10 @@ class ObjectFinder implements ObjectFinderInterface {
 	/**
 	 * Returns if the given data instance matches the constraints
 	 *
-	 * @param DocumentInterface $dataInstance
+	 * @param DocumentInterface $document
 	 * @return boolean
 	 */
-	public function compareDataInstanceWithConstraints($dataInstance) {
+	public function compareDataInstanceWithConstraints($document) {
 		$constraints = $this->getConstraints();
 		var_dump($constraints, (string)$constraints);
 

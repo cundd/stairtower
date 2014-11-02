@@ -58,8 +58,8 @@ interface ObjectFinderInterface {
 	/**
 	 * Returns if the given data instance matches the constraints
 	 *
-	 * @param DocumentInterface $dataInstance
+	 * @param DocumentInterface $document
 	 * @return boolean
 	 */
-	public function compareDataInstanceWithConstraints($dataInstance);
+	public function compareDataInstanceWithConstraints($document);
 }

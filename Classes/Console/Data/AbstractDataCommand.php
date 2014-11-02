@@ -45,8 +45,8 @@ class AbstractDataCommand extends AbstractCommand {
 		$objectIdentifier = $input->getArgument('identifier');
 		GeneralUtility::assertDataIdentifier($objectIdentifier);
 		$database = $this->findDatabaseInstanceFromInput($input);
-		$dataInstance = $database->findByIdentifier($objectIdentifier);
-		if (!$dataInstance && !$graceful) throw new InvalidDataException(sprintf('Object with ID "%s" not found in database %s', $objectIdentifier, $database->getIdentifier()));
-		return $dataInstance;
+		$document = $database->findByIdentifier($objectIdentifier);
+		if (!$document && !$graceful) throw new InvalidDataException(sprintf('Object with ID "%s" not found in database %s', $objectIdentifier, $database->getIdentifier()));
+		return $document;
 	}
 } 

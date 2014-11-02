@@ -47,9 +47,9 @@ class ListCommand extends AbstractCommand {
 		if (!$databaseIdentifier) throw new \InvalidArgumentException('Missing database identifier argument', 1412524227);
 		$database = $this->coordinator->getDatabase($databaseIdentifier);
 
-		/** @var DocumentInterface $dataInstance */
-		foreach ($database as $dataInstance) {
-			$description = sprintf('%s', $dataInstance->getGuid());
+		/** @var DocumentInterface $document */
+		foreach ($database as $document) {
+			$description = sprintf('%s', $document->getGuid());
 			$output->writeln($description);
 		}
 	}

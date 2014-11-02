@@ -50,17 +50,17 @@ class AddCommand extends AbstractDataCommand {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$database = $this->findDatabaseInstanceFromInput($input);
 
-		/** @var DocumentInterface $dataInstance */
-		$dataInstance = $this->serializer->unserialize($input->getArgument('content'));
-		if (!$dataInstance) {
+		/** @var DocumentInterface $document */
+		$document = $this->serializer->unserialize($input->getArgument('content'));
+		if (!$document) {
 			$output->writeln('<error>Could not create object</error>');
 		}
-		$database->add($dataInstance);
-		$objectIdentifier = $dataInstance->getId();
+		$database->add($document);
+		$objectIdentifier = $document->getId();
 
 		$this->coordinator->commitDatabase($database);
 
-		if ($database->contains($dataInstance)) {
+		if ($database->contains($document)) {
 			$output->writeln(sprintf('<info>Object with ID %s was add to database %s</info>', $objectIdentifier, $database->getIdentifier()));
 		} else {
 			$output->writeln(sprintf('<info>Object with ID %s could not be add to database %s</info>', $objectIdentifier, $database->getIdentifier()));
