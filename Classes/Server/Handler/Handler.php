@@ -100,9 +100,8 @@ class Handler implements HandlerInterface {
 		);
 		if ($database->contains($document)) throw new InvalidBodyException(
 			sprintf(
-				'Database \'%s\' already contains the given data. Maybe the values of the identifier \'%s\' are not expressive',
-				$database->getIdentifier(),
-				$document->getIdentifierKey()
+				'Database \'%s\' already contains the given data. Maybe the values of the identifier are not expressive',
+				$database->getIdentifier()
 			),
 			1413215990
 		);
@@ -208,10 +207,10 @@ class Handler implements HandlerInterface {
 
 		$database = $this->getDatabaseForRequestInfo($requestInfo);
 
-		$newDataInstance = new Document($data, $database->getIdentifier(), $document->getIdentifierKey());
-		$database->update($newDataInstance);
+		$newDocument = new Document($data, $database->getIdentifier());
+		$database->update($newDocument);
 		$this->eventEmitter->emit(Event::DOCUMENT_UPDATED, array($document));
-		return new HandlerResult(200, $newDataInstance);
+		return new HandlerResult(200, $newDocument);
 	}
 
 	/**

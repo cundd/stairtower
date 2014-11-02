@@ -22,29 +22,29 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	public function fullServerTest() {
-		$databaseIdentifier   = 'test-db-' . time();
+		$databaseIdentifier = 'test-db-' . time();
 
-		$document1HostName = 'database01.my-servers.local';
+		$document1HostName   = 'database01.my-servers.local';
 		$documentIdentifier1 = md5($document1HostName);
 
-		$document2HostName = 'web01.my-servers.local';
+		$document2HostName   = 'web01.my-servers.local';
 		$documentIdentifier2 = md5($document2HostName);
 
 //		$expectedPath         = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
 
-		$testDocument1         = array(
-			'id'   => $documentIdentifier1,
-			'host' => $document1HostName,
-			'name' => 'Database 01',
-			'ip'   => '192.168.45.107',
-			'os'   => 'CunddOS',
+		$testDocument1 = array(
+			Constants::DATA_ID_KEY => $documentIdentifier1,
+			'host'                 => $document1HostName,
+			'name'                 => 'Database 01',
+			'ip'                   => '192.168.45.107',
+			'os'                   => 'CunddOS',
 		);
-		$testDocument2         = array(
-			'id'   => $documentIdentifier2,
-			'host' => $document2HostName,
-			'name' => 'Database 02',
-			'ip'   => '192.168.40.127',
-			'os'   => 'CunddOS',
+		$testDocument2 = array(
+			Constants::DATA_ID_KEY => $documentIdentifier2,
+			'host'                 => $document2HostName,
+			'name'                 => 'Database 02',
+			'ip'                   => '192.168.40.127',
+			'os'                   => 'CunddOS',
 		);
 
 		$this->_startServer();
@@ -76,7 +76,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 		// Add a Document
 		$response = $this->_performRestRequest($databaseIdentifier, 'POST', $testDocument1);
-		$this->assertEquals($testDocument1['id'], $response['id']);
+		$this->assertEquals($testDocument1[Constants::DATA_ID_KEY], $response[Constants::DATA_ID_KEY]);
 		$this->assertEquals($testDocument1['name'], $response['name']);
 		$this->assertEquals($testDocument1['ip'], $response['ip']);
 		$this->assertEquals($testDocument1['os'], $response['os']);
@@ -86,7 +86,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$response = $this->_performRestRequest($databaseIdentifier);
 		$this->assertNotEmpty($response);
 		$responseFirstDocument = $response[0];
-		$this->assertEquals($testDocument1['id'], $responseFirstDocument['id']);
+		$this->assertEquals($testDocument1[Constants::DATA_ID_KEY], $responseFirstDocument[Constants::DATA_ID_KEY]);
 		$this->assertEquals($testDocument1['name'], $responseFirstDocument['name']);
 		$this->assertEquals($testDocument1['ip'], $responseFirstDocument['ip']);
 		$this->assertEquals($testDocument1['os'], $responseFirstDocument['os']);
@@ -94,7 +94,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 		// Add another Document
 		$response = $this->_performRestRequest($databaseIdentifier, 'POST', $testDocument2);
-		$this->assertEquals($testDocument2['id'], $response['id']);
+		$this->assertEquals($testDocument2[Constants::DATA_ID_KEY], $response[Constants::DATA_ID_KEY]);
 		$this->assertEquals($testDocument2['name'], $response['name']);
 		$this->assertEquals($testDocument2['ip'], $response['ip']);
 		$this->assertEquals($testDocument2['os'], $response['os']);
@@ -103,12 +103,12 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		// List Documents in that database
 		$response = $this->_performRestRequest($databaseIdentifier);
 		$this->assertNotEmpty($response);
-		$this->assertEquals($testDocument1['id'], $response[0]['id']);
+		$this->assertEquals($testDocument1[Constants::DATA_ID_KEY], $response[0][Constants::DATA_ID_KEY]);
 		$this->assertEquals($testDocument1['name'], $response[0]['name']);
 		$this->assertEquals($testDocument1['ip'], $response[0]['ip']);
 		$this->assertEquals($testDocument1['os'], $response[0]['os']);
 
-		$this->assertEquals($testDocument2['id'], $response[1]['id']);
+		$this->assertEquals($testDocument2[Constants::DATA_ID_KEY], $response[1][Constants::DATA_ID_KEY]);
 		$this->assertEquals($testDocument2['name'], $response[1]['name']);
 		$this->assertEquals($testDocument2['ip'], $response[1]['ip']);
 		$this->assertEquals($testDocument2['os'], $response[1]['os']);
@@ -116,8 +116,8 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 		// Update a Document
 		$testDocument1['os'] = 'Cundbuntu';
-		$response = $this->_performRestRequest($databaseIdentifier . '/' . $documentIdentifier1, 'PUT', $testDocument1);
-		$this->assertEquals($testDocument1['id'], $response['id']);
+		$response            = $this->_performRestRequest($databaseIdentifier . '/' . $documentIdentifier1, 'PUT', $testDocument1);
+		$this->assertEquals($testDocument1[Constants::DATA_ID_KEY], $response[Constants::DATA_ID_KEY]);
 		$this->assertEquals($testDocument1['name'], $response['name']);
 		$this->assertEquals($testDocument1['ip'], $response['ip']);
 		$this->assertEquals($testDocument1['os'], $response['os']);
@@ -127,7 +127,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$response = $this->_performRestRequest($databaseIdentifier);
 		$this->assertNotEmpty($response);
 		$responseFirstDocument = $response[0];
-		$this->assertEquals($testDocument1['id'], $responseFirstDocument['id']);
+		$this->assertEquals($testDocument1[Constants::DATA_ID_KEY], $responseFirstDocument[Constants::DATA_ID_KEY]);
 		$this->assertEquals($testDocument1['name'], $responseFirstDocument['name']);
 		$this->assertEquals($testDocument1['ip'], $responseFirstDocument['ip']);
 		$this->assertEquals($testDocument1['os'], $responseFirstDocument['os']);
@@ -137,7 +137,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$response = $this->_performRestRequest($databaseIdentifier . '/?os=' . $testDocument1['os']);
 		$this->assertNotEmpty($response);
 		$responseFirstDocument = $response[0];
-		$this->assertEquals($testDocument1['id'], $responseFirstDocument['id']);
+		$this->assertEquals($testDocument1[Constants::DATA_ID_KEY], $responseFirstDocument[Constants::DATA_ID_KEY]);
 		$this->assertEquals($testDocument1['name'], $responseFirstDocument['name']);
 		$this->assertEquals($testDocument1['ip'], $responseFirstDocument['ip']);
 		$this->assertEquals($testDocument1['os'], $responseFirstDocument['os']);
@@ -152,7 +152,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		// List Documents in that database
 		$response = $this->_performRestRequest($databaseIdentifier);
 		$this->assertNotEmpty($response);
-		$this->assertEquals($testDocument2['id'], $response[0]['id']);
+		$this->assertEquals($testDocument2[Constants::DATA_ID_KEY], $response[0][Constants::DATA_ID_KEY]);
 		$this->assertEquals($testDocument2['name'], $response[0]['name']);
 		$this->assertEquals($testDocument2['ip'], $response[0]['ip']);
 		$this->assertEquals($testDocument2['os'], $response[0]['os']);
@@ -208,7 +208,6 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$databaseIdentifier = 'test-db-' . time();
 
 
-
 		$this->_startServer(20);
 
 		// Create a database
@@ -249,7 +248,6 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 //		$this->assertEquals($testDocument['name'], $responseFirstDocument['name']);
 //		$this->assertEquals($testDocument['ip'], $responseFirstDocument['ip']);
 //		$this->assertEquals($testDocument['os'], $responseFirstDocument['os']);
-
 
 
 //		// Delete the database

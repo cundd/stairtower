@@ -373,6 +373,7 @@ class CoordinatorTest extends AbstractDataBasedCase {
 		$this->assertTrue($writtenData !== FALSE);
 
 		foreach ($writtenData as $data) {
+			var_dump($data);
 			$this->assertNotNull($data['email']);
 			$this->assertNotEquals($testEmail, $data['email']);
 		}
