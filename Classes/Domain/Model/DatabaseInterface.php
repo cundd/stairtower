@@ -46,28 +46,28 @@ interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	// MANAGING OBJECTS
 	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 	/**
-	 * Adds the given data instance to the database
+	 * Adds the given Document to the database
 	 *
 	 * @param DocumentInterface $dataInstance
 	 */
 	public function add($dataInstance);
 
 	/**
-	 * Updates the given data instance in the database
+	 * Updates the given Document in the database
 	 *
 	 * @param DocumentInterface $dataInstance
 	 */
 	public function update($dataInstance);
 
 	/**
-	 * Removes the given data instance from the database
+	 * Removes the given Document from the database
 	 *
 	 * @param DocumentInterface $dataInstance
 	 */
 	public function remove($dataInstance);
 
 	/**
-	 * Returns if the database contains the given data instance
+	 * Returns if the database contains the given Document
 	 *
 	 * @param DocumentInterface|string $dataInstance Actual Document instance or it's GUID
 	 * @return boolean

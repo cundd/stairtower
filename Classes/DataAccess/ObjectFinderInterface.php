@@ -56,7 +56,7 @@ interface ObjectFinderInterface {
 	public function findInDatabase($database);
 
 	/**
-	 * Returns if the given data instance matches the constraints
+	 * Returns if the given Document matches the constraints
 	 *
 	 * @param DocumentInterface $dataInstance
 	 * @return boolean

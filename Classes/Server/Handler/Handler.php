@@ -297,7 +297,7 @@ class Handler implements HandlerInterface {
 	}
 
 	/**
-	 * Returns the data instance for the given request or NULL if it is not specified
+	 * Returns the Document for the given request or NULL if it is not specified
 	 *
 	 * @param RequestInfo $requestInfo
 	 * @return DocumentInterface|NULL

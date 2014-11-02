@@ -165,7 +165,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	// MANAGING OBJECTS
 	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 	/**
-	 * Returns if the database contains the given data instance
+	 * Returns if the database contains the given Document
 	 *
 	 * @param DocumentInterface|string $dataInstance Actual Document instance or it's GUID
 	 * @return boolean
@@ -211,7 +211,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Adds the given data instance to the database
+	 * Adds the given Document to the database
 	 *
 	 * @param DocumentInterface $dataInstance
 	 */
@@ -236,7 +236,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Updates the given data instance in the database
+	 * Updates the given Document in the database
 	 *
 	 * @param DocumentInterface $dataInstance
 	 */
@@ -252,7 +252,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 
 		$index           = $this->_getIndexForIdentifier($dataInstance->getId());
 		$oldDataInstance = $this->_getObjectDataForIndex($index);
-		if (!$oldDataInstance) throw new InvalidDataException('No data instance found to replace', 1413711010);
+		if (!$oldDataInstance) throw new InvalidDataException('No Document found to replace', 1413711010);
 		if ($dataInstance->getId() !== $oldDataInstance->getId()) {
 			throw new InvalidDataException(
 				sprintf(
@@ -275,7 +275,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Removes the given data instance from the database
+	 * Removes the given Document from the database
 	 *
 	 * @param DocumentInterface $dataInstance
 	 */
@@ -471,7 +471,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @param DocumentInterface $dataInstance
 	 */
 	protected function _assertDataInstancesDatabaseIdentifier($dataInstance) {
-		if (!is_object($dataInstance)) throw new InvalidDataException(sprintf('Given data instance is not of type object but %s', gettype($dataInstance)), 1412859398);
+		if (!is_object($dataInstance)) throw new InvalidDataException(sprintf('Given Document is not of type object but %s', gettype($dataInstance)), 1412859398);
 		if (!$dataInstance->getDatabaseIdentifier()) {
 			if ($dataInstance instanceof Document) {
 				$dataInstance->setDatabaseIdentifier($this->identifier);

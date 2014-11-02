@@ -85,7 +85,7 @@ class ObjectFinder implements ObjectFinderInterface {
 	}
 
 	/**
-	 * Returns if the given data instance matches the constraints
+	 * Returns if the given Document matches the constraints
 	 *
 	 * @param DocumentInterface $dataInstance
 	 * @return boolean
