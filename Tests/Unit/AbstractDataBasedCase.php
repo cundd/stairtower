@@ -23,7 +23,9 @@ class AbstractDataBasedCase extends AbstractCase {
 	 */
 	public function getAllTestData() {
 		return array_map(function($item) {
-			$item[Constants::DATA_ID_KEY] = $item['email'];
+			if (isset($item['email'])) {
+				$item[Constants::DATA_ID_KEY] = $item['email'];
+			}
 			return $item;
 		}, json_decode(file_get_contents(__DIR__ . '/../Resources/contacts.json'), TRUE));
 	}
