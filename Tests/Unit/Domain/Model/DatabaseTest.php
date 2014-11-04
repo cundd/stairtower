@@ -101,6 +101,21 @@ class DatabaseTest extends AbstractDataBasedCase {
 	/**
 	 * @test
 	 */
+	public function containsHeavyTest() {
+		$i = 0;
+		do {
+			$this->assertTrue($this->fixture->contains('lambhorn@virxo.com'));
+		} while (++$i < 1000);
+
+		$i = 0;
+		do {
+			$this->assertFalse($this->fixture->contains("something-thats-not@there-$i.com"));
+		} while (++$i < 1000);
+	}
+
+	/**
+	 * @test
+	 */
 	public function addTest() {
 		$this->fixture = $this->coordinator->getDatabase('contacts');
 

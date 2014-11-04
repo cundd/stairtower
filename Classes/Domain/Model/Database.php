@@ -19,8 +19,11 @@ use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Filter;
+use Cundd\PersistentObjectStore\Index\IdentifierIndex;
+use Cundd\PersistentObjectStore\Index\IndexInterface;
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Cundd\PersistentObjectStore\Utility\DocumentUtility;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use SplFixedArray;
 
@@ -68,6 +71,13 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	protected $index = 0;
 
 	/**
+	 * Collection of Indexes
+	 *
+	 * @var IndexInterface[]
+	 */
+	protected $indexes = array();
+
+	/**
 	 * Creates a new database
 	 *
 	 * @param string $identifier
@@ -83,6 +93,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 			$this->rawData    = new SplFixedArray(0);
 			$this->objectData = new SplFixedArray(0);
 		}
+
+		$this->indexes[] = new IdentifierIndex();
 	}
 
 	/**
@@ -116,13 +128,15 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		if ($count > 0) {
 			$tempRawData = new SplFixedArray($count);
 			do {
-				$tempRawData[$i] = $this->_assertDocumentIdentifier($rawData[$i]);
+				$tempRawData[$i] = DocumentUtility::assertDocumentIdentifier($rawData[$i]);
 			} while (++$i < $count);
 			$this->rawData = $tempRawData;
 		} else {
 			$this->rawData = new SplFixedArray(0);
 		}
 		$this->objectData = new SplFixedArray($this->rawData->getSize());
+
+		$this->_rebuildIndexes();
 	}
 
 	/**
@@ -179,13 +193,15 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 			$identifier = $document;
 		} elseif ($document instanceof DocumentInterface) {
 			$this->_assertDataInstancesDatabaseIdentifier($document);
-			$this->_assertDocumentIdentifier($document);
+			DocumentUtility::assertDocumentIdentifier($document);
 			$identifier = $document->getId();
 		} else {
 			throw new RuntimeException("Given value $document is of type " . gettype($document));
 		}
 		return $this->findByIdentifier($identifier) ? TRUE : FALSE;
 	}
+
+
 
 	/**
 	 * Returns the object with the given identifier
@@ -200,6 +216,21 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		if ($count === 0) {
 			return NULL;
 		}
+
+		// Query the Indexes and return the result if it is not an error
+		$indexLookupResult = $this->_queryIndexesForValueOfProperty($identifier, Constants::DATA_ID_KEY);
+		if ($indexLookupResult !== IndexInterface::ERROR) {
+			if ($indexLookupResult === IndexInterface::NOT_FOUND) {
+				return NULL;
+			}
+			return $indexLookupResult;
+		}
+
+		if ($count !== $this->count()) {
+			DebugUtility::pl('Count did change');
+			throw new \Exception('Count did change');
+		}
+
 		do {
 //			DebugUtility::pl($i);
 			if (isset($this->rawData[$i]) && $this->rawData[$i] && $this->rawData[$i][Constants::DATA_ID_KEY]) {
@@ -238,7 +269,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 */
 	public function add($document) {
 		$this->_assertDataInstancesDatabaseIdentifier($document);
-		$this->_assertDocumentIdentifier($document);
+		DocumentUtility::assertDocumentIdentifier($document);
 		$currentCount = $this->count();
 
 		if ($this->contains($document)) {
@@ -254,6 +285,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		$this->rawData->setSize($currentCount + 1);
 		$this->_setRawDataForIndex($document->getData(), $currentCount);
 
+		$this->_addToIndexAtPosition($document, $currentCount);
+
 		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_ADDED, array($document));
 	}
 
@@ -264,7 +297,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 */
 	public function update($document) {
 		$this->_assertDataInstancesDatabaseIdentifier($document);
-		$this->_assertDocumentIdentifier($document);
+		DocumentUtility::assertDocumentIdentifier($document);
 
 		if (!$this->contains($document)) {
 			throw new InvalidDataException(
@@ -290,9 +323,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		$this->_setObjectDataForIndex($document, $index);
 		$this->_setRawDataForIndex($document->getData(), $index);
 
-
-//		$identifier = ($document instanceof DocumentInterface) ? $document->getGuid() : spl_object_hash($document);
-//		$this->objectCollectionMap[$this->identifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$identifier] = $document;
+		$this->_updateIndexForPosition($document, $index);
 
 		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_UPDATED, array($document));
 	}
@@ -304,7 +335,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 */
 	public function remove($document) {
 		$this->_assertDataInstancesDatabaseIdentifier($document);
-		$this->_assertDocumentIdentifier($document);
+		DocumentUtility::assertDocumentIdentifier($document);
 
 		if (!$this->contains($document)) {
 			throw new InvalidDataException(
@@ -321,46 +352,100 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 			);
 		}
 
+
 		$this->_removeObjectDataForIndex($index);
 		$this->_removeRawDataForIndex($index);
 
-//		$databaseIdentifier = $this->identifier;
-//		if (!$this->contains($document)) {
-//			throw new InvalidDataException(
-//				sprintf('Object with GUID %s does not exist in the database. Maybe the values of the identifier \'%s\' are not expressive', $objectUid, $document->getIdentifierKey()),
-//				1412800595
-//			);
-//		}
-//
-//		$index = array_search($objectUid, $this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID], TRUE);
-//		if ($index === FALSE) {
-//			throw new RuntimeException(
-//				sprintf('Could not determine the index of object with GUID %s', $objectUid),
-//				1412801014
-//			);
-//		}
-//		unset($this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_GUID_TO_OBJECT][$objectUid]);
-//		unset($this->objectCollectionMap[$databaseIdentifier][self::OBJ_COL_KEY_INDEX_TO_GUID][$index]);
-//
-//		if ($index > $this->count()) {
-//			throw new InvalidIndexException(
-//				sprintf('Index %d out of bound', $index),
-//				1412277617
-//			);
-//		}
-//
-//		$this->totalCount--;
-//		if ($index < $this->totalCount) {
-//			$this->rawData->setSize($this->totalCount);
-//		}
-//		if ($this->rawData->offsetExists($index)) {
-//			$this->rawData[$index] = NULL;
-//		}
-//
+		$this->_removeFromIndex($document);
+
 		if ($this->contains($document)) {
 			throw new RuntimeException(sprintf('Database still contains object %s', $document->getGuid()), 1413290094);
 		}
 		SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_REMOVED, array($document));
+	}
+
+
+
+	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+	// MANAGING INDEXES
+	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+	/**
+	 * Adds the given data instance to the Indexes
+	 *
+	 * @param DocumentInterface $document
+	 * @param int               $position
+	 */
+	protected function _addToIndexAtPosition($document, $position) {
+		foreach ($this->indexes as $indexInstance) {
+			$indexInstance->addEntryWithPosition($document, $position);
+		}
+	}
+
+	/**
+	 * Updates the given data instance in the Indexes
+	 *
+	 * @param DocumentInterface $document
+	 * @param int               $position
+	 */
+	protected function _updateIndexForPosition($document, $position) {
+		foreach ($this->indexes as $indexInstance) {
+			$indexInstance->updateEntryForPosition($document, $position);
+		}
+	}
+
+	/**
+	 * Removes the given data instance from the Indexes
+	 *
+	 * @param DocumentInterface $document
+	 */
+	protected function _removeFromIndex($document) {
+		$this->_rebuildIndexes();
+//		foreach ($this->indexes as $indexInstance) {
+//			$indexInstance->deleteEntry($document);
+//		}
+	}
+
+	/**
+	 * Rebuild the indexes
+	 */
+	protected function _rebuildIndexes() {
+		foreach ($this->indexes as $indexInstance) {
+			$indexInstance->indexDatabase($this);
+		}
+	}
+
+	/**
+	 * Queries the registered Indexes for the given value and property
+	 *
+	 * @param mixed $value
+	 * @param string $property
+	 * @return bool|DocumentInterface Returns the Document if found in one of the Indexes or IndexInterface::NOT_FOUND or IndexInterface::ERROR if an error occurred
+	 */
+	protected function _queryIndexesForValueOfProperty($value, $property) {
+		if (!$this->indexes) {
+			return IndexInterface::ERROR;
+		}
+
+		// Loop through each of the Indexes
+		$i = 0;
+		$indexesCount = count($this->indexes);
+		do {
+			$indexInstance = $this->indexes[$i];
+			// If the Index can look up the given value and the Index manages the ID property take the resulte from it
+			if ($indexInstance->getProperty() === $property && $indexInstance->canLookup($value)) {
+				$indexLookupResult = $indexInstance->lookup($value);
+				if ($indexLookupResult === IndexInterface::ERROR) {
+					continue;
+				}
+				if ($indexLookupResult === IndexInterface::NOT_FOUND) {
+					return IndexInterface::NOT_FOUND;
+				}
+//				DebugUtility::pl('Hit index %s', get_class($indexInstance));
+//				DebugUtility::var_dump($indexLookupResult);
+				return $this->getObjectDataForIndexOrTransformIfNotExists($indexLookupResult);
+			}
+		} while (++$i < $indexesCount);
+		return IndexInterface::ERROR;
 	}
 
 
@@ -513,55 +598,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	}
 
 	/**
-	 * Returns a unique ID for the given Document
-	 *
-	 * @param DocumentInterface|array $document
-	 * @return string
-	 */
-	protected function _getBestDocumentIdentifierForDocument($document) {
-		$argumentIsArray = is_array($document);
-
-		// If no identifier key is defined check the most common
-		$commonIdentifiers = array('id', 'uid', 'email');
-		foreach ($commonIdentifiers as $identifier) {
-			if ($argumentIsArray) {
-				if (isset($document[$identifier])) {
-					return GeneralUtility::toString($document[$identifier]);
-				}
-			} else {
-				$value = $document->valueForKey($identifier);
-				if ($value) {
-					return GeneralUtility::toString($value);
-				}
-			}
-		}
-		return uniqid($this->getIdentifier());
-	}
-
-	/**
-	 * Checks if the Document instance's identifier is set
-	 *
-	 * @param DocumentInterface|array $document
-	 * @return DocumentInterface|array Returns the modified object or array
-	 */
-	protected function _assertDocumentIdentifier($document) {
-		$identifierValue = $this->_getBestDocumentIdentifierForDocument($document);
-
-		if (is_array($document)) {
-			if (!isset($document[Constants::DATA_ID_KEY])) {
-				$document[Constants::DATA_ID_KEY] = $identifierValue;
-			}
-		} else if ($document instanceof DocumentInterface) {
-			if (!$document->getId()) {
-				$document->setValueForKey($identifierValue, Constants::DATA_ID_KEY);
-			}
-		} else {
-			throw new InvalidDataException(sprintf('Given data instance is not of type object but %s', gettype($document)), 1412859398);
-		}
-		return $document;
-	}
-
-	/**
 	 * Checks if the raw data's identifier is defined
 	 *
 	 * @param int $index
@@ -570,36 +606,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	protected function _setRawDataIdentifierIfNotSetForIndex($index) {
 		$rawData = $this->rawData[$index];
 		if (!isset($rawData[Constants::DATA_ID_KEY]) || $rawData[Constants::DATA_ID_KEY]) {
-			$identifier = $this->_tryToReadIdentifierFromRawData($rawData);
-			if (!$identifier) {
-				$identifier = sprintf('stairtower_%s_%s_document_%d',
-					Constants::VERSION,
-					getmypid(),
-					time()
-				);
-			}
-			$identifier                      = sha1($identifier);
-			$rawData[Constants::DATA_ID_KEY] = $identifier;
-			$this->rawData[$index]           = $rawData;
+			$this->rawData[$index] = DocumentUtility::assertDocumentIdentifier($rawData);
 		}
 		return $rawData;
-	}
-
-	/**
-	 * Tries to read the best identifier from the raw data
-	 *
-	 * @param array $rawData
-	 * @return mixed Returns the identifier if one is found otherwise FALSE
-	 */
-	protected function _tryToReadIdentifierFromRawData($rawData) {
-		// If no identifier key is defined check the most common
-		$commonIdentifiers = array('id', 'uid', 'email');
-		foreach ($commonIdentifiers as $identifier) {
-			if (isset($rawData[$identifier]) && $rawData[$identifier]) {
-				return $identifier;
-			}
-		}
-		return FALSE;
 	}
 
 	/**
@@ -670,7 +679,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	protected function _getRawDataForIndex($index) {
 		if (isset($this->rawData[$index])) {
 			$data = $this->rawData[$index];
-			return $this->_assertDocumentIdentifier($data);
+			return DocumentUtility::assertDocumentIdentifier($data);
 		}
 		return FALSE;
 	}
@@ -684,7 +693,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @return mixed Returns the given data
 	 */
 	protected function _setRawDataForIndex($data, $index) {
-		$this->rawData[$index] = $this->_assertDocumentIdentifier($data);
+		$this->rawData[$index] = DocumentUtility::assertDocumentIdentifier($data);
 		return $data;
 	}
 
@@ -722,12 +731,13 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 				$index < $this->count(),
 				isset($this->rawData[$index])
 			);
+			DebugUtility::var_dump($this->rawData);
 			throw new IndexOutOfRangeException('Invalid index ' . $index, 1411316363);
 
 		}
 //		if (!isset($this->rawData[$index])) throw new IndexOutOfRangeException('Invalid index ' . $index);
 		$rawData    = $this->rawData[$index];
-		$rawData    = $this->_assertDocumentIdentifier($rawData);
+		$rawData    = DocumentUtility::assertDocumentIdentifier($rawData);
 		$dataObject = new Document($rawData, $this->identifier);
 
 //		if (isset($rawMetaData['creation_time'])) {

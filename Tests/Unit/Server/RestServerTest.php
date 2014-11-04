@@ -18,11 +18,35 @@ use Cundd\PersistentObjectStore\Utility\DebugUtility;
  * @package Cundd\PersistentObjectStore\Server
  */
 class RestServerTest extends \PHPUnit_Framework_TestCase {
+	protected $databaseIdentifier;
+	protected $expectedPath;
+
+	protected function setUp() {
+		parent::setUp();
+
+		$this->databaseIdentifier = $databaseIdentifier = 'test-db-' . time();
+		$this->expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
+		$this->expectedPath = __DIR__ . '/../../var/Data/' . $databaseIdentifier . '.json';
+	}
+
+	protected function tearDown() {
+		if (file_exists($this->expectedPath)) {
+			unlink($this->expectedPath);
+		}
+
+		$writeDataPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $this->databaseIdentifier . '.json';
+		if (file_exists($writeDataPath)) {
+			unlink($writeDataPath);
+		}
+		parent::tearDown();
+	}
+
+
 	/**
 	 * @test
 	 */
 	public function fullServerTest() {
-		$databaseIdentifier = 'test-db-' . time();
+		$databaseIdentifier = $this->databaseIdentifier;
 
 		$document1HostName   = 'database01.my-servers.local';
 		$documentIdentifier1 = md5($document1HostName);
@@ -31,6 +55,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$documentIdentifier2 = md5($document2HostName);
 
 //		$expectedPath         = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
+		$expectedPath         = __DIR__ . '/../../var/Data/' . $databaseIdentifier . '.json';
 
 		$testDocument1 = array(
 			Constants::DATA_ID_KEY => $documentIdentifier1,
@@ -66,7 +91,6 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$response = $this->_performRestRequest($databaseIdentifier, 'PUT');
 		$this->assertArrayHasKey('message', $response);
 		$this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
-//		$this->assertFileExists($expectedPath);
 
 
 		// List Documents in that database
@@ -145,6 +169,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 		// Delete a Document
 		$response = $this->_performRestRequest($databaseIdentifier . '/' . $documentIdentifier1, 'DELETE', $testDocument1);
+		$this->assertNotEquals(FALSE, $response);
 		$this->assertArrayHasKey('message', $response);
 		$this->assertEquals(sprintf('Document "%s" deleted', $documentIdentifier1), $response['message']);
 
@@ -160,6 +185,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 		// Delete a Document
 		$response = $this->_performRestRequest($databaseIdentifier . '/' . $documentIdentifier2, 'DELETE', $testDocument1);
+		$this->assertNotEquals(FALSE, $response);
 		$this->assertArrayHasKey('message', $response);
 		$this->assertEquals(sprintf('Document "%s" deleted', $documentIdentifier2), $response['message']);
 
@@ -173,6 +199,8 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$response = $this->_performRestRequest($databaseIdentifier);
 		$this->assertEmpty($response);
 
+
+//		$this->assertFileExists($expectedPath);
 
 		// Delete the database
 		$response = $this->_performRestRequest($databaseIdentifier, 'DELETE');
@@ -196,19 +224,20 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$response = $this->_performRestRequest('');
 		$this->assertSame(FALSE, $response);
 
-
-//		$this->assertFileExists($expectedPath);
-//		unlink($expectedPath);
+		$this->assertFileNotExists($expectedPath);
+		if (file_exists($expectedPath)) {
+			unlink($expectedPath);
+		}
 	}
 
 	/**
 	 * @test
 	 */
 	public function letItRockTest() {
-		$databaseIdentifier = 'test-db-' . time();
+		$databaseIdentifier = $this->databaseIdentifier;
 
 
-		$this->_startServer(20);
+		$this->_startServer(40);
 
 		// Create a database
 		$response = $this->_performRestRequest($databaseIdentifier, 'PUT');
@@ -221,7 +250,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$i = 0;
 
 		// TODO: 1000 is very low speed up the Database::add() method
-		while (++$i < 1000) {
+		while (++$i < 10000) {
 			$documentHostName   = 'database' . $i . '.my-servers.local';
 			$documentIdentifier = md5($documentHostName);
 
@@ -250,10 +279,10 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 //		$this->assertEquals($testDocument['os'], $responseFirstDocument['os']);
 
 
-//		// Delete the database
-//		$response = $this->_performRestRequest($databaseIdentifier, 'DELETE');
-//		$this->assertArrayHasKey('message', $response);
-//		$this->assertEquals(sprintf('Database "%s" deleted', $databaseIdentifier), $response['message']);
+		// Delete the database
+		$response = $this->_performRestRequest($databaseIdentifier, 'DELETE');
+		$this->assertArrayHasKey('message', $response);
+		$this->assertEquals(sprintf('Database "%s" deleted', $databaseIdentifier), $response['message']);
 
 		// Shutdown the server
 		$response = $this->_performRestRequest('_shutdown', 'POST');

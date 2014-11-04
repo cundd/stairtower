@@ -478,7 +478,7 @@ abstract class AbstractServer implements ServerInterface {
 
 		$logFileDirectory = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logPath');
 		$logFilePath = $logFileDirectory . 'log-' . getmypid() . '.log';
-		$logFilePath = $logFileDirectory . 'log-' . gmdate('Ymd') . '.log';
+		$logFilePath = $logFileDirectory . 'log-' . gmdate('Y-m-d') . '.log';
 
 		if (!file_exists($logFileDirectory)) {
 			mkdir($logFileDirectory);
