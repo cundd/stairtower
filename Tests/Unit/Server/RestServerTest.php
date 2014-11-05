@@ -93,6 +93,12 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
 
 
+		// List all Databases
+		$response = $this->_performRestRequest('_all_dbs');
+		$this->assertNotEquals(FALSE, $response);
+		$this->assertTrue(in_array($this->databaseIdentifier, $response));
+
+
 		// List Documents in that database
 		$response = $this->_performRestRequest($databaseIdentifier);
 		$this->assertEmpty($response);
@@ -248,8 +254,6 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 		// Create Documents
 		$i = 0;
-
-		// TODO: 1000 is very low speed up the Database::add() method
 		while (++$i < 10000) {
 			$documentHostName   = 'database' . $i . '.my-servers.local';
 			$documentIdentifier = md5($documentHostName);

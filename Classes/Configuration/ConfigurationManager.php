@@ -42,6 +42,7 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 			'lockPath'      => $varPath . 'Lock/',
 			'cachePath'     => $varPath . 'Cache/',
 			'logPath'       => $varPath . 'Log/',
+			'tempPath'      => $varPath . 'Temp/',
 			'rescuePath'    => $varPath . 'Rescue/',
 		), $configurationReader->readConfigurationFiles());
 

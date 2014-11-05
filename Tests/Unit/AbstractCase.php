@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore;
 
+use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Memory\Manager;
 use DI\ContainerBuilder;
 use Doctrine\Common\Cache\FilesystemCache;
@@ -32,7 +33,7 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 	 *
 	 * @var bool
 	 */
-	static protected $useXhprof = FALSE;
+	static protected $useXhprof = true;
 
 	/**
 	 * @var bool
@@ -111,13 +112,17 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 			return;
 		}
 		if (!self::$didSetupXhprof && extension_loaded('xhprof') && class_exists('XHProfRuns_Default')) {
-			ini_set('xhprof.output_dir', '/Users/daniel/Sites/xhprof/runs');
+			ini_set('xhprof.output_dir', ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('tempPath'));
 
 
 			xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 
 			self::$didSetupXhprof = TRUE;
 			register_shutdown_function(array(__CLASS__, 'tearDownXhprof'));
+
+			echo PHP_EOL . 'Manually start xhprof server if needed:' . PHP_EOL;
+			printf('php -S 127.0.0.1:8080 -d xhprof.output_dir="%s" -t path/to/xhprof_html' . PHP_EOL, ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('tempPath'));
+
 		}
 	}
 
