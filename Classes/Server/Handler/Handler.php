@@ -107,9 +107,7 @@ class Handler implements HandlerInterface {
 			1413215990
 		);
 
-		DebugUtility::var_dump($document->getId());
 		$database->add($document);
-		DebugUtility::var_dump($document->getId());
 		if ($database->contains($document)) {
 			$this->eventEmitter->emit(Event::DOCUMENT_CREATED, array($document));
 			return new HandlerResult(
@@ -248,9 +246,7 @@ class Handler implements HandlerInterface {
 					1413035855
 				);
 			}
-			DebugUtility::var_dump($document->getId());
 			$database->remove($document);
-			DebugUtility::var_dump($document->getId());
 
 			$this->eventEmitter->emit(Event::DOCUMENT_DELETED, array($document));
 			return new HandlerResult(204, sprintf('Document "%s" deleted', $requestInfo->getDataIdentifier()));

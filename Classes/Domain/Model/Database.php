@@ -581,15 +581,16 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 */
 	protected function _assertDataInstancesDatabaseIdentifier($document) {
 		if (!is_object($document)) throw new InvalidDataException(sprintf('Given data instance is not of type object but %s', gettype($document)), 1412859398);
-		if (!$document->getDatabaseIdentifier()) {
+		$databaseIdentifier = $document->getDatabaseIdentifier();
+		if (!$databaseIdentifier) {
 			if ($document instanceof Document) {
 				$document->setDatabaseIdentifier($this->identifier);
 			}
-		} else if ($document->getDatabaseIdentifier() !== $this->identifier) {
+		} else if ($databaseIdentifier !== $this->identifier) {
 			throw new DatabaseMismatchException(
 				sprintf(
 					'The given Document instance does not belong to this database (Document instance database identifier: %s, Database identifier: %s',
-					$document->getDatabaseIdentifier(),
+					$databaseIdentifier,
 					$this->identifier
 				),
 				1411315947

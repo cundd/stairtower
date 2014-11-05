@@ -66,20 +66,31 @@ class DocumentUtility {
 	 * @return DocumentInterface|array Returns the modified object or array
 	 */
 	static public function assertDocumentIdentifier($document) {
-		$identifierValue = static::getIdentifierForDocument($document);
-
 		if (is_array($document)) {
 			if (!isset($document[Constants::DATA_ID_KEY])) {
-				$document[Constants::DATA_ID_KEY] = $identifierValue;
+				$document[Constants::DATA_ID_KEY] = static::getIdentifierForDocument($document);
 			}
 		} else if ($document instanceof DocumentInterface) {
 			if (!$document->getId()) {
-				$document->setValueForKey($identifierValue, Constants::DATA_ID_KEY);
+				$document->setValueForKey(static::getIdentifierForDocument($document), Constants::DATA_ID_KEY);
 			}
 		} else {
 			throw new InvalidDataException(sprintf('Given data instance is not of type object but %s', gettype($document)), 1412859398);
 		}
 		return $document;
+	}
+
+	/**
+	 * Checks if the Document data's identifier is set
+	 *
+	 * @param array $data
+	 * @return array Returns the modified array
+	 */
+	static public function assertDocumentIdentifierOfData($data) {
+		if (!isset($data[Constants::DATA_ID_KEY])) {
+			$data[Constants::DATA_ID_KEY] = static::getIdentifierForDocument($data);
+		}
+		return $data;
 	}
 
 }
