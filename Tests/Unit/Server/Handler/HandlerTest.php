@@ -93,7 +93,7 @@ class HandlerTest extends AbstractCase {
 			$this->assertEquals(201, $handlerResult->getStatusCode());
 			$this->assertTrue($this->database->contains($dataInstance));
 
-		} while(++$i < 100);
+		} while(++$i < 1000);
 	}
 
 	/**

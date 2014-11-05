@@ -254,7 +254,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 		// Create Documents
 		$i = 0;
-		while (++$i < 10000) {
+		while (++$i < 1000) {
 			$documentHostName   = 'database' . $i . '.my-servers.local';
 			$documentIdentifier = md5($documentHostName);
 

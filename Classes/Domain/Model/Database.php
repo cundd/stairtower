@@ -128,7 +128,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		if ($count > 0) {
 			$tempRawData = new SplFixedArray($count);
 			do {
-				$tempRawData[$i] = DocumentUtility::assertDocumentIdentifier($rawData[$i]);
+				$tempRawData[$i] = DocumentUtility::assertDocumentIdentifierOfData($rawData[$i]);
 			} while (++$i < $count);
 			$this->rawData = $tempRawData;
 		} else {
@@ -607,7 +607,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	protected function _setRawDataIdentifierIfNotSetForIndex($index) {
 		$rawData = $this->rawData[$index];
 		if (!isset($rawData[Constants::DATA_ID_KEY]) || $rawData[Constants::DATA_ID_KEY]) {
-			$this->rawData[$index] = DocumentUtility::assertDocumentIdentifier($rawData);
+			$this->rawData[$index] = DocumentUtility::assertDocumentIdentifierOfData($rawData);
 		}
 		return $rawData;
 	}
@@ -680,7 +680,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	protected function _getRawDataForIndex($index) {
 		if (isset($this->rawData[$index])) {
 			$data = $this->rawData[$index];
-			return DocumentUtility::assertDocumentIdentifier($data);
+			return DocumentUtility::assertDocumentIdentifierOfData($data);
 		}
 		return FALSE;
 	}
@@ -694,7 +694,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @return mixed Returns the given data
 	 */
 	protected function _setRawDataForIndex($data, $index) {
-		$this->rawData[$index] = DocumentUtility::assertDocumentIdentifier($data);
+		$this->rawData[$index] = DocumentUtility::assertDocumentIdentifierOfData($data);
 		return $data;
 	}
 
@@ -738,7 +738,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 		}
 //		if (!isset($this->rawData[$index])) throw new IndexOutOfRangeException('Invalid index ' . $index);
 		$rawData    = $this->rawData[$index];
-		$rawData    = DocumentUtility::assertDocumentIdentifier($rawData);
+		$rawData    = DocumentUtility::assertDocumentIdentifierOfData($rawData);
 		$dataObject = new Document($rawData, $this->identifier);
 
 //		if (isset($rawMetaData['creation_time'])) {
