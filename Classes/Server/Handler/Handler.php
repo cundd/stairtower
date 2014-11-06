@@ -8,6 +8,7 @@
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
 use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
@@ -108,15 +109,11 @@ class Handler implements HandlerInterface {
 		);
 
 		$database->add($document);
-		if ($database->contains($document)) {
 			$this->eventEmitter->emit(Event::DOCUMENT_CREATED, array($document));
 			return new HandlerResult(
 				201,
 				$document
 			);
-		} else {
-			return new HandlerResult(400);
-		}
 	}
 
 	/**
@@ -290,10 +287,14 @@ class Handler implements HandlerInterface {
 			return NULL;
 		}
 		$databaseIdentifier = $requestInfo->getDatabaseIdentifier();
-		if (!$this->coordinator->databaseExists($databaseIdentifier)) {
+//		if (!$this->coordinator->databaseExists($databaseIdentifier)) {
+//			return NULL;
+//		}
+		try {
+			return $this->coordinator->getDatabase($databaseIdentifier);
+		} catch (ReaderException $exception) {
 			return NULL;
 		}
-		return $this->coordinator->getDatabase($databaseIdentifier);
 	}
 
 	/**

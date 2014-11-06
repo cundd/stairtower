@@ -210,13 +210,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 * @return DocumentInterface|NULL
 	 */
 	public function findByIdentifier($identifier) {
-		$count = $this->count();
-		$i     = 0;
-
-		if ($count === 0) {
-			return NULL;
-		}
-
 		// Query the Indexes and return the result if it is not an error
 		$indexLookupResult = $this->_queryIndexesForValueOfProperty($identifier, Constants::DATA_ID_KEY);
 		if ($indexLookupResult !== IndexInterface::ERROR) {
@@ -226,9 +219,10 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 			return $indexLookupResult;
 		}
 
-		if ($count !== $this->count()) {
-			DebugUtility::pl('Count did change');
-			throw new \Exception('Count did change');
+		$i     = 0;
+		$count = $this->count();
+		if ($count === 0) {
+			return NULL;
 		}
 
 		do {

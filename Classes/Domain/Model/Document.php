@@ -109,7 +109,7 @@ class Document implements DocumentInterface {
 	 * @return string
 	 */
 	public function getId() {
-		return $this->_valueForKey(Constants::DATA_ID_KEY);
+		return $this->valueForKey(Constants::DATA_ID_KEY);
 	}
 
 	/**
@@ -140,16 +140,6 @@ class Document implements DocumentInterface {
 		if ($key === 'guid') {
 			return $this->getGuid();
 		}
-		return $this->_valueForKey($key);
-	}
-
-	/**
-	 * Returns the value for the given key from the data
-	 *
-	 * @param string $key
-	 * @return mixed
-	 */
-	protected function _valueForKey($key) {
 		if (isset($this->data[$key])) {
 			return $this->data[$key];
 		}
