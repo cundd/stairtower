@@ -77,6 +77,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 		// Get the welcome message
 		$response = $this->_performRestRequest('');
+		$this->assertNotEquals(FALSE, $response);
 		$this->assertArrayHasKey('message', $response);
 		$this->assertEquals(Constants::MESSAGE_JSON_WELCOME, $response['message']);
 
@@ -89,6 +90,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 		// Create a database
 		$response = $this->_performRestRequest($databaseIdentifier, 'PUT');
+		$this->assertNotEquals(FALSE, $response);
 		$this->assertArrayHasKey('message', $response);
 		$this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
 
@@ -247,6 +249,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 
 		// Create a database
 		$response = $this->_performRestRequest($databaseIdentifier, 'PUT');
+		$this->assertNotEquals(FALSE, $response);
 		$this->assertArrayHasKey('message', $response);
 		$this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
 //		$this->assertFileExists($expectedPath);
@@ -342,7 +345,11 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 	protected function _startServer($autoShutdownTime = 7) {
 		// Start the server
 		$serverBinPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('basePath') . 'bin/server';
+		$phpBinPath = defined('PHP_BINARY') ? PHP_BINARY : PHP_BINDIR . '/php';
+		$phpIniFile = php_ini_loaded_file();
 		$commandParts  = array(
+			$phpBinPath,
+			$phpIniFile ? '-c' . $phpIniFile : '',
 			escapeshellcmd(sprintf('"%s"', $serverBinPath)), //
 		);
 		if ($autoShutdownTime > -1) {
@@ -351,7 +358,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		$commandParts[] = '> /dev/null &'; // Run the server in the background
 
 
-//		printf('Run %s' . PHP_EOL, implode(' ', $commandParts));
+		printf('Run %s' . PHP_EOL, implode(' ', $commandParts));
 		exec(implode(' ', $commandParts), $output, $returnValue);
 
 
@@ -359,4 +366,3 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 		sleep(1);
 	}
 }
- 
