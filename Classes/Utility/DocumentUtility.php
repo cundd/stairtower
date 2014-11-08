@@ -52,10 +52,10 @@ class DocumentUtility {
 				}
 			}
 		}
-		return sprintf('stairtower_%s_%s_document_%d',
+		return sprintf('stairtower_%s_%s_document_%s',
 			Constants::VERSION,
 			getmypid(),
-			time()
+			microtime()
 		);
 	}
 
