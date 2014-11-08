@@ -24,7 +24,7 @@ The aim was to create a database system that is
 - fits into the PHP environment
 - and is written in the language that we now and love
 
-In addition it should simply show that this is possible in the language that sometimes seems to be derided by followers of 'modern' programming languages.
+Additionally it should simply show that this is possible in the language that sometimes seems to be derided by followers of 'modern' programming languages.
 
 
 Cons
