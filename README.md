@@ -1,14 +1,14 @@
 Stairtower
 ==========
 
-[![Build Status](https://travis-ci.org/cundd/pos.svg?branch=master)](https://travis-ci.org/cundd/pos)
+Stairtower is a database server for schema-free, JSON documents, that provides a restful API and is entirely written in PHP.
+
+[![Build Status](https://travis-ci.org/cundd/pos.svg?branch=develop)](https://travis-ci.org/cundd/pos)
 
 What?
 -----
 
-Stairtower is a database server for schema-free, JSON documents, that provides a restful API and is entirely written in PHP.
-
-The server runtime is built on [React](http://reactphp.org/) and utilizes PHP's native JSON de- and encoding facilities to transform data. Where applicable the [Standard PHP Library (SPL)](http://php.net/manual/de/book.spl.php) is used to increase performance and build on a solid foundation.
+The server runtime is built on [React](http://reactphp.org/) and utilizes PHP's native JSON de- and encoding facilities to transform data. Where applicable the [Standard PHP Library (SPL)](http://php.net/manual/de/book.spl.php) is used to build on a solid foundation and increase performance.
 
 
 Why?
@@ -108,8 +108,9 @@ This section lists some planed features.
 
 - Intelligent database writes (currently all loaded databases will be written to the filesystem, even without modifications)
 - Improved memory usage assumptions (before loading databases)
-- Queue to schedule tasks (like database updates or reindexing)
+- Implement a queue to schedule tasks (like database updates or reindexing)
 - Additional indexes and index types
+- Authentication (via Basic Auth and header)
 - Request caching
 - MapReduce/Views to customize data aggregation
 
