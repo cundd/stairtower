@@ -96,7 +96,7 @@ class ExampleTest extends AbstractDataBasedCase {
 		$this->assertContains('blue', $currentObject->valueForKey('eyeColor'));
 
 		$endTime = microtime(TRUE);
-		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
+//		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
 
 		// Let's see how many people in the database have blue eyes
 		$filterResult = $database->filter(new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'));
@@ -104,7 +104,7 @@ class ExampleTest extends AbstractDataBasedCase {
 		$this->assertSame(1684, $blueEyes);
 
 		$endTime = microtime(TRUE);
-		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
+//		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
 
 
 		// Let's see how many people in the database have brown eyes
@@ -113,7 +113,7 @@ class ExampleTest extends AbstractDataBasedCase {
 		$this->assertSame(1601, $brownEyes);
 
 		$endTime = microtime(TRUE);
-		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
+//		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
 
 
 		// Let's see how many people in the database have brown or blue eyes
@@ -122,7 +122,7 @@ class ExampleTest extends AbstractDataBasedCase {
 		$this->assertSame($blueEyes + $brownEyes, $blueBrownEyes);
 
 		$endTime = microtime(TRUE);
-		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
+//		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
 
 
 		$filterResult = $database->filter(
@@ -160,6 +160,6 @@ class ExampleTest extends AbstractDataBasedCase {
 		$this->assertEquals('blue', $currentObject->valueForKey('eyeColor'));
 
 		$endTime = microtime(TRUE);
-		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
+//		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
 	}
 } 

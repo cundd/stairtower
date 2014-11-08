@@ -92,6 +92,9 @@ class HandlerTest extends AbstractCase {
 		// Validate the last result
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
 		$this->assertEquals(201, $handlerResult->getStatusCode());
+		$dataInstance = $handlerResult->getData();
+		$this->assertEquals(sprintf('info%d-for-me@cundd.net', $i - 1), $dataInstance->valueForKey('email'));
+
 
 		$iHalf = intval($i / 2);
 		$this->assertTrue($this->database->contains("info$iHalf-for-me@cundd.net"));
