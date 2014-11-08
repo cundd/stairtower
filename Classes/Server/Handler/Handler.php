@@ -16,7 +16,6 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Handler implementation
@@ -205,6 +204,7 @@ class Handler implements HandlerInterface {
 
 		$database = $this->getDatabaseForRequestInfo($requestInfo);
 
+		$data[Constants::DATA_ID_KEY] = $requestInfo->getDataIdentifier();
 		$newDocument = new Document($data, $database->getIdentifier());
 		$database->update($newDocument);
 		$this->eventEmitter->emit(Event::DOCUMENT_UPDATED, array($document));
