@@ -5,6 +5,7 @@ Stairtower is a database server for schema-free, JSON documents, that provides a
 
 [![Build Status](https://travis-ci.org/cundd/pos.svg?branch=develop)](https://travis-ci.org/cundd/pos)
 
+
 What?
 -----
 
@@ -53,8 +54,8 @@ Requirements
 PHP 5.4 or higher
 
 
-Installation and Usage
-----------------------
+Installation
+------------
 
 ### 1. Get the source code
 
@@ -77,28 +78,151 @@ Install the libraries:
 php composer.phar update
 ```
 
-### 3. Start the server
+Usage
+-----
+
+[curl](http://curl.haxx.se/) will be used to interact with the database. But first the server has to be started.
+
+### Starting the server
 
 ```bash
+cd /path/to/stairtower/root/
 bin/server
 ```
 
-### 4. Use curl to play with Stairtower
+### Performing requests
+
+#### Get a welcome message
+```bash
+curl http://127.0.0.1:1338/
+```
+
+#### Read statistics
+```bash
+curl http://127.0.0.1:1338/_stats
+```
+
+#### List all databases
+```bash
+curl http://127.0.0.1:1338/_all_dbs
+```
+
+#### Create a database 
+
+Create a database with name 'myDb'. The empty body will let curl set the `Content-Length` header which Stairtower requires for `PUT` and `POST` requests
 
 ```bash
-# Get a welcome message
-curl http://127.0.0.1:1338/
+curl -X PUT http://127.0.0.1:1338/myDb -d ""
 
-# Read stats
-curl http://127.0.0.1:1338/_stats
-
-# List all databases
+# Listing all databases should contain 'myDb'
 curl http://127.0.0.1:1338/_all_dbs
 
-# Create a database
+# Listing the Documents of 'myDb' should return 
+# an empty array
+curl http://127.0.0.1:1338/myDb
+```
 
-# Add a document
+#### Add a Document
 
+If the Document body is a JSON string it is important to tell curl to send the appropriate header (`--header "Content-Type:application/json"`)
+```bash
+curl --header "Content-Type:application/json" \
+	-X POST http://127.0.0.1:1338/myDb \
+	-d '{
+	"name": "T-Shirt - Stairtower",
+	"type": "clothes",
+	"category": "merchandise",
+	"price": 12.50,
+	"options": {
+		"colors": ["green", "red", "blue"],
+		"size": ["xs", "s", "m", "l"]
+		}
+	}'
+```
+
+Adding two more example Documents:
+
+```bash
+curl --header "Content-Type:application/json" -X POST http://127.0.0.1:1338/myDb -d '{	"name": "Hoodie - Stairtower",	"type": "clothes",		"category": "merchandise",	"price": 19.50,	"options": {	"colors": ["black", "blue"],		"size": ["s", "m", "l"]	}}';
+curl --header "Content-Type:application/json" -X POST http://127.0.0.1:1338/myDb -d '{	"name": "USB stick",			"type": "electronics",	"category": "merchandise",	"price": 10.50,	"options": {	"memory": ["8GB", "32GB", "64GB"]	}}';
+```
+
+And check if the exist in the database:
+
+```bash
+curl http://127.0.0.1:1338/myDb
+```
+
+#### Query Documents by ID
+
+You may have recognized that the Documents have been assigned an `_id` property. This defines a unique identifier inside the Database. These property is indexed by default and allows fast lookups.
+
+To retrieve a single Document you can use it's resource URI, which is built from the Database identifier and the Document identifier (e.g. `myDb/stairtower_0.0.1_1920_document_1415440762`).
+
+```bash
+curl http://127.0.0.1:1338/myDb/document_identifier
+```
+
+#### Search for Documents
+
+You can search by adding a property value pair as query string to the request.
+This example should return the hoodie and the t-shirt we added above.
+
+```bash
+curl "http://127.0.0.1:1338/myDb/?type=clothes"
+```
+
+
+#### Update a Document
+
+Documents are updated by sending a `PUT` request to the Documents resource URI. Please keep in mind that those updates do NOT patch a Document but will replace it completely.
+
+```bash
+curl --header "Content-Type:application/json" \
+	-X PUT http://127.0.0.1:1338/myDb/document_identifier \
+	-d '{
+	"name": "T-Shirt - Stairtower",
+	"type": "clothes",
+	"category": "merchandise",
+	"price": 13.50,
+	"options": {
+		"colors": ["green", "red", "blue"],
+		"size": ["xs", "s", "m", "l"]
+		}
+	}'
+```
+
+
+#### Delete a Document
+
+Documents are deleted by sending a `DELETE` request to the Documents resource URI.
+
+```bash
+curl -X DELETE http://127.0.0.1:1338/myDb/document_identifier
+```
+
+
+#### Delete a Database
+
+Deletion of a whole Database is similar to removing a single Document. You simply omit the Document identifier when sending a `DELETE` request.
+
+```bash
+curl -X DELETE http://127.0.0.1:1338/myDb/
+```
+
+
+#### Manage the server
+
+##### Restart
+
+```bash
+curl -X POST http://127.0.0.1:1338/_restart
+```
+
+##### Shutdown
+
+```bash
+curl -X POST http://127.0.0.1:1338/_shutdown
 ```
 
 
@@ -111,6 +235,7 @@ This section lists some planed features.
 - Improved memory usage assumptions (before loading databases)
 - Implement a queue to schedule tasks (like database updates or reindexing)
 - Additional indexes and index types
+- Update and delete collision prevention (like in [CouchDB](http://docs.couchdb.org/en/1.6.1/intro/api.html#revisions))
 - Authentication (via Basic Auth and header)
 - Request caching
 - MapReduce/Views to customize data aggregation
