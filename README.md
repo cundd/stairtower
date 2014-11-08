@@ -20,6 +20,7 @@ The aim was to create a database system that is
 - offers database seeding
 - does not require additional configuration
 - does not require additional software or languages
+- stores data in a human readable format
 - fits into the PHP environment
 - and is written in the language that we now and love
 
