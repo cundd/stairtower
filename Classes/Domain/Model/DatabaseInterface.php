@@ -9,6 +9,11 @@
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 
+/**
+ * Interface for Database implementations
+ *
+ * @package Cundd\PersistentObjectStore\Domain\Model
+ */
 interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	/**
 	 * Returns the database identifier
@@ -48,30 +53,30 @@ interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	/**
 	 * Adds the given Document to the database
 	 *
-	 * @param DocumentInterface $dataInstance
+	 * @param DocumentInterface $document
 	 */
-	public function add($dataInstance);
+	public function add($document);
 
 	/**
 	 * Updates the given Document in the database
 	 *
-	 * @param DocumentInterface $dataInstance
+	 * @param DocumentInterface $document
 	 */
-	public function update($dataInstance);
+	public function update($document);
 
 	/**
 	 * Removes the given Document from the database
 	 *
-	 * @param DocumentInterface $dataInstance
+	 * @param DocumentInterface $document
 	 */
-	public function remove($dataInstance);
+	public function remove($document);
 
 	/**
 	 * Returns if the database contains the given Document
 	 *
-	 * @param DocumentInterface|string $dataInstance Actual Document instance or it's GUID
+	 * @param DocumentInterface|string $document Actual Document instance or it's GUID
 	 * @return boolean
 	 */
-	public function contains($dataInstance);
+	public function contains($document);
 
 } 

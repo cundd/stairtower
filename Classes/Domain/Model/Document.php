@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
+use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\LogicException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
@@ -24,18 +25,14 @@ class Document implements DocumentInterface {
 	protected $databaseIdentifier;
 	protected $id;
 	protected $data;
-	protected $identifierKey;
 
-	function __construct($data = array(), $databaseIdentifier = '', $identifierKey = '') {
+	function __construct($data = array(), $databaseIdentifier = '') {
 		if ($data) {
 			$this->data = $data;
 		}
 		if ($databaseIdentifier) {
 			GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
 			$this->databaseIdentifier = $databaseIdentifier;
-		}
-		if ($identifierKey) {
-			$this->identifierKey = $identifierKey;
 		}
 	}
 
@@ -107,45 +104,12 @@ class Document implements DocumentInterface {
 	}
 
 	/**
-	 * Returns the key for the identifier of the Document object
-	 *
-	 * @return string
-	 */
-	public function getIdentifierKey() {
-		if (!$this->identifierKey) {
-			// If no identifier key is defined check the most common
-			$commonIdentifiers = array('id', 'uid', 'email');
-			foreach ($commonIdentifiers as $identifier) {
-				if (isset($this->data[$identifier])) {
-					$this->identifierKey = $identifier;
-					break;
-				}
-			}
-		}
-		return $this->identifierKey;
-	}
-
-	/**
-	 * Sets the key for the identifier of the Document object
-	 *
-	 * @param string $identifierKey
-	 * @return $this
-	 */
-	public function setIdentifierKey($identifierKey) {
-		$this->identifierKey = $identifierKey;
-		return $this;
-	}
-
-	/**
 	 * Returns the ID
 	 *
 	 * @return string
 	 */
 	public function getId() {
-		if (!$this->id) {
-			$this->id = $this->_valueForKey($this->getIdentifierKey());
-		}
-		return $this->id;
+		return $this->valueForKey(Constants::DATA_ID_KEY);
 	}
 
 	/**
@@ -173,21 +137,9 @@ class Document implements DocumentInterface {
 	 * @return mixed
 	 */
 	public function valueForKey($key) {
-		if ($key === 'id') {
-			return $this->getId();
-		} else if ($key === 'guid') {
+		if ($key === 'guid') {
 			return $this->getGuid();
 		}
-		return $this->_valueForKey($key);
-	}
-
-	/**
-	 * Returns the value for the given key from the data
-	 *
-	 * @param string $key
-	 * @return mixed
-	 */
-	protected function _valueForKey($key) {
 		if (isset($this->data[$key])) {
 			return $this->data[$key];
 		}

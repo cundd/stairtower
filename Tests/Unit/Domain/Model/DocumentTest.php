@@ -10,8 +10,9 @@ namespace Cundd\PersistentObjectStore\Domain\Model;
 
 
 use Cundd\PersistentObjectStore\AbstractCase;
+use Cundd\PersistentObjectStore\Constants;
 
-class DataTest extends AbstractCase {
+class DocumentTest extends AbstractCase {
 	/**
 	 * @var \Cundd\PersistentObjectStore\Domain\Model\Document
 	 */
@@ -25,6 +26,7 @@ class DataTest extends AbstractCase {
 
 		$fixtureJSON = <<<FIXTURE
 {
+        "_id": 1,
         "congress_numbers": [
             99
         ],
@@ -32,7 +34,6 @@ class DataTest extends AbstractCase {
         "description": "Representative for Hawaii's 1st congressional district",
         "district": 1,
         "enddate": "1986-10-18",
-        "id": 1,
         "leadership_title": null,
         "party": "Democrat",
         "person": {
@@ -69,14 +70,14 @@ class DataTest extends AbstractCase {
 FIXTURE;
 
 
-		$dataObject = new Document();
-		$dataObject->setData(json_decode($fixtureJSON, TRUE));
+		$document = new Document();
+		$document->setData(json_decode($fixtureJSON, TRUE));
 
-		$dataObject->setDatabaseIdentifier('congress_members');
-		$dataObject->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : NULL);
-		$dataObject->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
+		$document->setDatabaseIdentifier('congress_members');
+		$document->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : NULL);
+		$document->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : NULL);
 
-		$this->fixture = $dataObject;
+		$this->fixture = $document;
 	}
 
 	protected function tearDown() {
@@ -141,22 +142,6 @@ FIXTURE;
 	/**
 	 * @test
 	 */
-	public function getIdentifierKeyTest() {
-		$this->assertEquals('id', $this->fixture->getIdentifierKey());
-	}
-
-	/**
-	 * @test
-	 */
-	public function setIdentifierKeyTest() {
-		$identifierKey = 'name';
-		$this->fixture->setIdentifierKey($identifierKey);
-		$this->assertEquals($identifierKey, $this->fixture->getIdentifierKey());
-	}
-
-	/**
-	 * @test
-	 */
 	public function getIdTest() {
 		$this->assertEquals(1, $this->fixture->getId());
 	}
@@ -185,7 +170,7 @@ FIXTURE;
 	 * @test
 	 */
 	public function valueForKeyTest() {
-		$this->assertEquals(1, $this->fixture->valueForKey('id'));
+		$this->assertEquals(1, $this->fixture->getId());
 		$this->assertEquals('Representative for Hawaii\'s 1st congressional district', $this->fixture->valueForKey('description'));
 		$this->assertEquals(1, $this->fixture->valueForKey('district'));
 		$this->assertEquals('1986-10-18', $this->fixture->valueForKey('enddate'));
@@ -201,6 +186,8 @@ FIXTURE;
 		$this->fixture->setValueForKey($id, 'id');
 		$this->assertEquals($id, $this->fixture->valueForKey('id'));
 
+		$this->assertEquals(1, $this->fixture->getId());
+
 		$description = 'Champion';
 		$this->fixture->setValueForKey($description, 'description');
 		$this->assertEquals($description, $this->fixture->valueForKey('description'));
@@ -211,7 +198,7 @@ FIXTURE;
 	 * @test
 	 */
 	public function valueForKeyPathTest() {
-		$this->assertEquals(1, $this->fixture->valueForKeyPath('id'));
+		$this->assertEquals(1, $this->fixture->valueForKeyPath(Constants::DATA_ID_KEY));
 		$this->assertEquals('Representative for Hawaii\'s 1st congressional district', $this->fixture->valueForKeyPath('description'));
 		$this->assertEquals(1, $this->fixture->valueForKeyPath('district'));
 		$this->assertEquals('1986-10-18', $this->fixture->valueForKeyPath('enddate'));

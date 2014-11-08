@@ -50,19 +50,19 @@ class RemoveCommand extends AbstractDataCommand {
 //		$databaseIdentifier = $input->getArgument('database');
 //		$objectIdentifier = $input->getArgument('identifier');
 //		$database = $this->coordinator->getDatabase($databaseIdentifier);
-//		$dataInstance = $database->findByIdentifier($objectIdentifier);
-//		if (!$dataInstance) {
+//		$document = $database->findByIdentifier($objectIdentifier);
+//		if (!$document) {
 //			throw new InvalidDataException(sprintf('Object with ID "%s" not found in database %s', $objectIdentifier, $databaseIdentifier));
 //		}
 
-		$dataInstance = $this->findDataInstanceFromInput($input);
+		$document = $this->findDataInstanceFromInput($input);
 		$database = $this->findDatabaseInstanceFromInput($input);
-		$database->remove($dataInstance);
-		$objectIdentifier = $dataInstance->getId();
+		$database->remove($document);
+		$objectIdentifier = $document->getId();
 
 		$this->coordinator->commitDatabase($database);
 
-		if (!$database->contains($dataInstance)) {
+		if (!$database->contains($document)) {
 			$output->writeln(sprintf('<info>Object with ID %s was deleted from database %s</info>', $objectIdentifier, $database->getIdentifier()));
 		} else {
 			$output->writeln(sprintf('<info>Object with ID %s could not be deleted from database %s</info>', $objectIdentifier, $database->getIdentifier()));

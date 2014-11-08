@@ -22,7 +22,12 @@ class AbstractDataBasedCase extends AbstractCase {
 	 * @return array
 	 */
 	public function getAllTestData() {
-		return json_decode(file_get_contents(__DIR__ . '/../Resources/contacts.json'), TRUE);
+		return array_map(function($item) {
+			if (isset($item['email'])) {
+				$item[Constants::DATA_ID_KEY] = $item['email'];
+			}
+			return $item;
+		}, json_decode(file_get_contents(__DIR__ . '/../Resources/contacts.json'), TRUE));
 	}
 
 	/**

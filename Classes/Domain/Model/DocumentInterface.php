@@ -37,13 +37,6 @@ interface DocumentInterface extends KeyValueCodingInterface {
 	public function getDatabaseIdentifier();
 
 	/**
-	 * Returns the key for the identifier of the Document object
-	 *
-	 * @return string
-	 */
-	public function getIdentifierKey();
-
-	/**
 	 * Returns the global unique identifier
 	 *
 	 * @return string

@@ -5,7 +5,7 @@
  * Date: 17.10.14
  * Time: 13:47
  */
-namespace Cundd\PersistentObjectStore\System\Lock;
+namespace Cundd\PersistentObjectStore\System\Lock\Exception;
 
 use Cundd\PersistentObjectStore\RuntimeException;
 

@@ -66,6 +66,13 @@ class DatabaseTest extends AbstractDataBasedCase {
 
 		$this->assertSame('McKenzy', $person->valueForKeyPath('lastName'));
 		$this->assertSame('Paul', $person->valueForKeyPath('firstName'));
+
+
+		$person        = $this->fixture->findByIdentifier('rob@ells.on');
+		$this->assertNotNull($person);
+
+		$this->assertSame('Ellson', $person->valueForKeyPath('lastName'));
+		$this->assertSame('Robert', $person->valueForKeyPath('firstName'));
 	}
 
 	/**
@@ -82,9 +89,28 @@ class DatabaseTest extends AbstractDataBasedCase {
 		$this->assertTrue($this->fixture->contains($dataInstance));
 		$this->assertTrue($this->fixture->contains('paul@mckenzy.net'));
 
+		$dataInstance = new Document(array('email' => 'rob@ells.on'), $this->fixture->getIdentifier());
+		$this->assertTrue($this->fixture->contains($dataInstance));
+		$this->assertTrue($this->fixture->contains('rob@ells.on'));
+
 		$dataInstance = new Document(array('email' => 'info-not-found@cundd.net'), $this->fixture->getIdentifier());
 		$this->assertFalse($this->fixture->contains($dataInstance));
 		$this->assertFalse($this->fixture->contains('info-not-found@cundd.net'));
+	}
+
+	/**
+	 * @test
+	 */
+	public function containsHeavyTest() {
+		$i = 0;
+		do {
+			$this->assertTrue($this->fixture->contains('lambhorn@virxo.com'));
+		} while (++$i < 1000);
+
+		$i = 0;
+		do {
+			$this->assertFalse($this->fixture->contains("something-thats-not@there-$i.com"));
+		} while (++$i < 1000);
 	}
 
 	/**

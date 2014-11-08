@@ -9,12 +9,50 @@
     <orderEntry type="module-library">
       <library name="PHP">
         <CLASSES>
-          <root url="file://$MODULE_DIR$/vendor" />
-          <root url="file://$MODULE_DIR$/../Resources/phpunit" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/cache" />
+          <root url="file://$MODULE_DIR$/vendor/evenement/evenement" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-eventmanager" />
+          <root url="file://$MODULE_DIR$/vendor/myclabs/php-enum" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-stdlib" />
+          <root url="file://$MODULE_DIR$/vendor/guzzle/parser" />
+          <root url="file://$MODULE_DIR$/vendor/mnapoli/phpdocreader" />
+          <root url="file://$MODULE_DIR$/vendor/ocramius/proxy-manager" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/annotations" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/common" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/lexer" />
+          <root url="file://$MODULE_DIR$/../../PHPUnit" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-code" />
+          <root url="file://$MODULE_DIR$/vendor/composer" />
+          <root url="file://$MODULE_DIR$/vendor/react/react" />
+          <root url="file://$MODULE_DIR$/vendor/container-interop/container-interop" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/inflector" />
+          <root url="file://$MODULE_DIR$/vendor/mnapoli/php-di" />
+          <root url="file://$MODULE_DIR$/vendor/react/promise" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/dbal" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/collections" />
         </CLASSES>
         <SOURCES>
-          <root url="file://$MODULE_DIR$/vendor" />
-          <root url="file://$MODULE_DIR$/../Resources/phpunit" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/cache" />
+          <root url="file://$MODULE_DIR$/vendor/evenement/evenement" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-eventmanager" />
+          <root url="file://$MODULE_DIR$/vendor/myclabs/php-enum" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-stdlib" />
+          <root url="file://$MODULE_DIR$/vendor/guzzle/parser" />
+          <root url="file://$MODULE_DIR$/vendor/mnapoli/phpdocreader" />
+          <root url="file://$MODULE_DIR$/vendor/ocramius/proxy-manager" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/annotations" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/common" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/lexer" />
+          <root url="file://$MODULE_DIR$/../../PHPUnit" />
+          <root url="file://$MODULE_DIR$/vendor/zendframework/zend-code" />
+          <root url="file://$MODULE_DIR$/vendor/composer" />
+          <root url="file://$MODULE_DIR$/vendor/react/react" />
+          <root url="file://$MODULE_DIR$/vendor/container-interop/container-interop" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/inflector" />
+          <root url="file://$MODULE_DIR$/vendor/mnapoli/php-di" />
+          <root url="file://$MODULE_DIR$/vendor/react/promise" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/dbal" />
+          <root url="file://$MODULE_DIR$/vendor/doctrine/collections" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -22,12 +60,12 @@
     <orderEntry type="module-library">
       <library name="PHARS">
         <CLASSES>
-          <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit.phar" />
-          <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit3.7/phpunit-lts.phar" />
+          <root url="phar://$MODULE_DIR$/../../PHPUnit/phpunit.phar" />
+          <root url="phar://$MODULE_DIR$/phpunit.phar" />
         </CLASSES>
         <SOURCES>
-          <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit.phar" />
-          <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit3.7/phpunit-lts.phar" />
+          <root url="phar://$MODULE_DIR$/../../PHPUnit/phpunit.phar" />
+          <root url="phar://$MODULE_DIR$/phpunit.phar" />
         </SOURCES>
       </library>
     </orderEntry>

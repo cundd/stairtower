@@ -8,6 +8,7 @@
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
 use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
@@ -15,6 +16,7 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Handler implementation
@@ -80,7 +82,7 @@ class Handler implements HandlerInterface {
 		if ($requestInfo->getMethod() === 'PUT') { // Create a Database
 			return $this->_createDatabase($requestInfo, $data);
 		}
-		return new HandlerResult(400);
+		return new HandlerResult(400, sprintf('Invalid HTTP method %s', $requestInfo->getMethod()));
 	}
 
 	/**
@@ -92,31 +94,26 @@ class Handler implements HandlerInterface {
 	 */
 	protected function _createDataInstance(RequestInfo $requestInfo, $data) {
 		$database = $this->getDatabaseForRequestInfo($requestInfo);
-		$dataInstance = new Document($data);
+		$document = new Document($data);
 
 		if ($requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException(
 			'Document identifier in request path is not allowed when creating a Document instance. Use PUT to update',
 			1413278767
 		);
-		if ($database->contains($dataInstance)) throw new InvalidBodyException(
+		if ($database->contains($document)) throw new InvalidBodyException(
 			sprintf(
-				'Database \'%s\' already contains the given data. Maybe the values of the identifier \'%s\' are not expressive',
-				$database->getIdentifier(),
-				$dataInstance->getIdentifierKey()
+				'Database \'%s\' already contains the given data. Maybe the values of the identifier are not expressive',
+				$database->getIdentifier()
 			),
 			1413215990
 		);
 
-		$database->add($dataInstance);
-		if ($database->contains($dataInstance)) {
-			$this->eventEmitter->emit(Event::DOCUMENT_CREATED, array($dataInstance));
+		$database->add($document);
+			$this->eventEmitter->emit(Event::DOCUMENT_CREATED, array($document));
 			return new HandlerResult(
 				201,
-				$dataInstance
+				$document
 			);
-		} else {
-			return new HandlerResult(400);
-		}
 	}
 
 	/**
@@ -150,11 +147,11 @@ class Handler implements HandlerInterface {
 	 */
 	public function read(RequestInfo $requestInfo) {
 		if ($requestInfo->getDataIdentifier()) { // Load Document instance
-			$dataInstance = $this->getDataForRequest($requestInfo);
-			if ($dataInstance) {
+			$document = $this->getDataForRequest($requestInfo);
+			if ($document) {
 				return new HandlerResult(
 					200,
-					$dataInstance
+					$document
 				);
 			} else {
 				return new HandlerResult(
@@ -197,8 +194,8 @@ class Handler implements HandlerInterface {
 	 */
 	public function update(RequestInfo $requestInfo, $data) {
 		if (!$requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException('Document identifier is missing', 1413292389);
-		$dataInstance = $this->getDataForRequest($requestInfo);
-		if (!$dataInstance) {
+		$document = $this->getDataForRequest($requestInfo);
+		if (!$document) {
 			return new HandlerResult(404, sprintf(
 				'Document instance with identifier "%s" not found in database "%s"',
 				$requestInfo->getDataIdentifier(),
@@ -208,10 +205,10 @@ class Handler implements HandlerInterface {
 
 		$database = $this->getDatabaseForRequestInfo($requestInfo);
 
-		$newDataInstance = new Document($data, $database->getIdentifier(), $dataInstance->getIdentifierKey());
-		$database->update($newDataInstance);
-		$this->eventEmitter->emit(Event::DOCUMENT_UPDATED, array($dataInstance));
-		return new HandlerResult(200, $newDataInstance);
+		$newDocument = new Document($data, $database->getIdentifier());
+		$database->update($newDocument);
+		$this->eventEmitter->emit(Event::DOCUMENT_UPDATED, array($document));
+		return new HandlerResult(200, $newDocument);
 	}
 
 	/**
@@ -235,8 +232,8 @@ class Handler implements HandlerInterface {
 
 //		if (!$requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException('Document identifier is missing', 1413035855);
 		if ($requestInfo->getDataIdentifier()) {
-			$dataInstance = $this->getDataForRequest($requestInfo);
-			if (!$dataInstance) {
+			$document = $this->getDataForRequest($requestInfo);
+			if (!$document) {
 				throw new InvalidRequestParameterException(
 					sprintf(
 						'Document with identifier "%s" not found in database "%s"',
@@ -246,9 +243,9 @@ class Handler implements HandlerInterface {
 					1413035855
 				);
 			}
+			$database->remove($document);
 
-			$database->remove($dataInstance);
-			$this->eventEmitter->emit(Event::DOCUMENT_DELETED, array($dataInstance));
+			$this->eventEmitter->emit(Event::DOCUMENT_DELETED, array($document));
 			return new HandlerResult(204, sprintf('Document "%s" deleted', $requestInfo->getDataIdentifier()));
 		}
 
@@ -290,10 +287,14 @@ class Handler implements HandlerInterface {
 			return NULL;
 		}
 		$databaseIdentifier = $requestInfo->getDatabaseIdentifier();
-		if (!$this->coordinator->databaseExists($databaseIdentifier)) {
+//		if (!$this->coordinator->databaseExists($databaseIdentifier)) {
+//			return NULL;
+//		}
+		try {
+			return $this->coordinator->getDatabase($databaseIdentifier);
+		} catch (ReaderException $exception) {
 			return NULL;
 		}
-		return $this->coordinator->getDatabase($databaseIdentifier);
 	}
 
 	/**

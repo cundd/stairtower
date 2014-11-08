@@ -58,7 +58,7 @@ class HandlerTest extends AbstractCase {
 	 * @test
 	 */
 	public function noRouteTest() {
-		$requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/info@cundd.net'));
+		$requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/'));
 		$handlerResult = $this->fixture->noRoute($requestInfo);
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
 		$this->assertEquals(200, $handlerResult->getStatusCode());
@@ -83,6 +83,18 @@ class HandlerTest extends AbstractCase {
 		$this->assertEquals('info-for-me@cundd.net', $dataInstance->valueForKey('email'));
 
 		$this->assertTrue($this->database->contains($dataInstance));
+
+		$i = 0;
+		do {
+			$data = array('email' => "info$i-for-me@cundd.net", 'name' => 'Daniel');
+			$handlerResult = $this->fixture->create($requestInfo, $data);
+		} while(++$i < 10000);
+		// Validate the last result
+		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
+		$this->assertEquals(201, $handlerResult->getStatusCode());
+
+		$iHalf = intval($i / 2);
+		$this->assertTrue($this->database->contains("info$iHalf-for-me@cundd.net"));
 	}
 
 	/**

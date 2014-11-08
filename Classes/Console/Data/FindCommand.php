@@ -47,9 +47,9 @@ class FindCommand extends AbstractDataCommand {
 	 * @return int|null|void
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$dataInstance = $this->findDataInstanceFromInput($input);
-		if ($dataInstance) {
-			$output->write($this->serializer->serialize($dataInstance->getData()));
+		$document = $this->findDataInstanceFromInput($input);
+		if ($document) {
+			$output->write($this->serializer->serialize($document->getData()));
 		} else {
 			$output->write(sprintf('<info>Object with ID %s not found in database %s</info>', $input->getArgument('identifier'), $input->getArgument('database')));
 		}

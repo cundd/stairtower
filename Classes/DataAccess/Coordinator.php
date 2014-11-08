@@ -111,6 +111,9 @@ class Coordinator implements CoordinatorInterface {
 	 */
 	public function databaseExists($databaseIdentifier) {
 		GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
+		if (Manager::hasObject($databaseIdentifier)) {
+			return TRUE;
+		}
 		return $this->dataReader->databaseExists($databaseIdentifier);
 	}
 
