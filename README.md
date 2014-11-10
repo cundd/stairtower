@@ -147,7 +147,7 @@ curl --header "Content-Type:application/json" -X POST http://127.0.0.1:1338/myDb
 curl --header "Content-Type:application/json" -X POST http://127.0.0.1:1338/myDb -d '{	"name": "USB stick",			"type": "electronics",	"category": "merchandise",	"price": 10.50,	"options": {	"memory": ["8GB", "32GB", "64GB"]	}}';
 ```
 
-And check if the exist in the database:
+And check if they exist in the database:
 
 ```bash
 curl http://127.0.0.1:1338/myDb
@@ -155,7 +155,7 @@ curl http://127.0.0.1:1338/myDb
 
 #### Query Documents by ID
 
-You may have recognized that the Documents have been assigned an `_id` property. This defines a unique identifier inside the Database. These property is indexed by default and allows fast lookups.
+You may have recognized that the Documents have been assigned an `_id` property. This defines a unique identifier inside the Database. This property is indexed by default and allows fast lookups.
 
 To retrieve a single Document you can use it's resource URI, which is built from the Database identifier and the Document identifier (e.g. `myDb/stairtower_0.0.1_1920_document_1415440762`).
 
@@ -241,3 +241,27 @@ This section lists some planed features.
 - MapReduce/Views to customize data aggregation
 
 
+License
+-------
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Daniel Corn
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
