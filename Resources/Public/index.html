@@ -1,0 +1,46 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style type="text/css">
+            .logo > div {
+                /*
+                width: 1800px;
+                height: 1350px;
+                */
+                width: 100vw;
+                height: 100vh;
+
+
+                position: absolute;
+                top: 0;
+                left: 0;
+
+                background: no-repeat;
+                background-size: cover;
+                background-position: 50% 50%;
+            }
+            .logo > div.dark {
+                background-image: url('stairtower.png');
+            }
+            .logo > div.glow {
+                opacity: 0.0;
+                transition: opacity 1.5s ease-in-out;
+                background-image: url('stairtower-glow.png');
+            }
+            .logo > div.glow:hover {
+                opacity: 1.0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="logo">
+            <div class="dark"></div>
+            <div class="glow"></div>
+        </div>
+    </body>
+</html>
