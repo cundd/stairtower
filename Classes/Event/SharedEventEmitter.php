@@ -27,6 +27,13 @@ class SharedEventEmitter {
 	protected $eventEmitter;
 
 	/**
+	 * Event loop
+	 *
+	 * @var \React\EventLoop\LoopInterface
+	 */
+	protected $eventLoop;
+
+	/**
 	 * @var SharedEventEmitter
 	 */
 	static protected $_sharedEventEmitter;
@@ -48,6 +55,26 @@ class SharedEventEmitter {
 	}
 
 	/**
+	 * Returns the event loop
+	 *
+	 * @return \React\EventLoop\LoopInterface
+	 */
+	public function getEventLoop() {
+		return $this->eventLoop;
+	}
+
+	/**
+	 * Set the event loop
+	 *
+	 * @param \React\EventLoop\LoopInterface $eventLoop
+	 * @return $this
+	 */
+	public function setEventLoop($eventLoop) {
+		$this->eventLoop = $eventLoop;
+		return $this;
+	}
+
+	/**
 	 * Returns the shared Event Emitter
 	 *
 	 * @return SharedEventEmitter
@@ -57,6 +84,28 @@ class SharedEventEmitter {
 			throw new RuntimeException('Shared Event Emitter has not been created', 1413369080);
 		}
 		return static::$_sharedEventEmitter;
+	}
+
+	/**
+	 * Schedule a future emit of the given event
+	 *
+	 * If the event loop is not set, the event will be emitted immediately
+	 *
+	 * @param string $event
+	 * @param array $arguments
+	 */
+	public function scheduleFutureEmit($event, array $arguments = []) {
+		if ($this->eventLoop) {
+			$this->eventLoop->futureTick(function () use ($event, $arguments) {
+				$this->getEventEmitter()->emit($event, $arguments);
+			});
+		} else {
+			$this->getEventEmitter()->emit($event, $arguments);
+		}
+	}
+
+	static public function futureEmit($event, array $arguments = []) {
+		return static::sharedEventEmitter()->getEventEmitter()->emit($event, $arguments);
 	}
 
 	static public function on($event, callable $listener) {
@@ -82,6 +131,4 @@ class SharedEventEmitter {
 	static public function emit($event, array $arguments = []) {
 		return static::sharedEventEmitter()->getEventEmitter()->emit($event, $arguments);
 	}
-
-
 }

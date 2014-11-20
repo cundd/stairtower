@@ -55,7 +55,6 @@ class AbstractCase extends \PHPUnit_Framework_TestCase {
 //			$this->diContainer = ContainerBuilder::buildDevContainer();
 
 			$this->diContainer->get('Cundd\\PersistentObjectStore\\Event\\SharedEventEmitter');
-
 		}
 		return $this->diContainer;
 	}

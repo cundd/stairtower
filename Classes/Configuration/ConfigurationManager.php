@@ -90,6 +90,15 @@ class ConfigurationManager implements ConfigurationManagerInterface {
 	}
 
 	/**
+	 * Returns the map from events to classes and methods
+	 *
+	 * @return array
+	 */
+	protected function _getEventToClassMap() {
+
+	}
+
+	/**
 	 * Returns the shared instance
 	 *
 	 * @return ConfigurationManagerInterface

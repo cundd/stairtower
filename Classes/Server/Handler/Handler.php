@@ -47,10 +47,12 @@ class Handler implements HandlerInterface {
 	 */
 	protected $filterBuilder;
 
+	// 	 * @var \Evenement\EventEmitterInterface
+
 	/**
 	 * Event Emitter
 	 *
-	 * @var \Evenement\EventEmitterInterface
+	 * @var \Cundd\PersistentObjectStore\Event\SharedEventEmitter
 	 * @Inject
 	 */
 	protected $eventEmitter;
@@ -108,7 +110,7 @@ class Handler implements HandlerInterface {
 		);
 
 		$database->add($document);
-			$this->eventEmitter->emit(Event::DOCUMENT_CREATED, array($document));
+			$this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_CREATED, array($document));
 			return new HandlerResult(
 				201,
 				$document
@@ -131,7 +133,7 @@ class Handler implements HandlerInterface {
 		$databaseIdentifier = $requestInfo->getDatabaseIdentifier();
 		$database = $this->coordinator->createDatabase($databaseIdentifier);
 		if ($database) {
-			$this->eventEmitter->emit(Event::DATABASE_CREATED, array($database));
+			$this->eventEmitter->scheduleFutureEmit(Event::DATABASE_CREATED, array($database));
 			return new HandlerResult(201, sprintf('Database "%s" created', $databaseIdentifier));
 		} else {
 			return new HandlerResult(400);
@@ -207,7 +209,7 @@ class Handler implements HandlerInterface {
 		$data[Constants::DATA_ID_KEY] = $requestInfo->getDataIdentifier();
 		$newDocument = new Document($data, $database->getIdentifier());
 		$database->update($newDocument);
-		$this->eventEmitter->emit(Event::DOCUMENT_UPDATED, array($document));
+		$this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_UPDATED, array($document));
 		return new HandlerResult(200, $newDocument);
 	}
 
@@ -245,13 +247,13 @@ class Handler implements HandlerInterface {
 			}
 			$database->remove($document);
 
-			$this->eventEmitter->emit(Event::DOCUMENT_DELETED, array($document));
+			$this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_DELETED, array($document));
 			return new HandlerResult(204, sprintf('Document "%s" deleted', $requestInfo->getDataIdentifier()));
 		}
 
 		$databaseIdentifier = $database->getIdentifier();
 		$this->coordinator->dropDatabase($databaseIdentifier);
-		$this->eventEmitter->emit(Event::DATABASE_DELETED, array($database));
+		$this->eventEmitter->scheduleFutureEmit(Event::DATABASE_DELETED, array($database));
 		return new HandlerResult(204, sprintf('Database "%s" deleted', $databaseIdentifier));
 	}
 

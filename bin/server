@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 ini_set('display_errors', TRUE);
@@ -49,6 +51,7 @@ $diContainer = $bootstrap->getDiContainer();
 
 $eventLoop = \React\EventLoop\Factory::create();
 $diContainer->set('React\\EventLoop\\LoopInterface', $eventLoop);
+$diContainer->get('Cundd\\PersistentObjectStore\\Event\\SharedEventEmitter')->setEventLoop($eventLoop);
 
 $diContainer->get('Cundd\\PersistentObjectStore\\CrashHandler')->register();
 
@@ -77,6 +80,22 @@ if (isset($options['test'])) {
 		$server->setAutoShutdownTime(intval($options['test']));
 	}
 }
+
+
+
+//$XHPROF_ROOT = __DIR__ . '/../xhprof-0.9.4/';
+//if (file_exists($XHPROF_ROOT)) {
+//	require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_lib.php';
+//	require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_runs.php';
+//}
+//
+//ini_set('xhprof.output_dir', ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('tempPath'));
+//xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
+
 $server->start();
 
-
+//$xhprofData = xhprof_disable();
+//$xhprofRuns = new \XHProfRuns_Default();
+//$runId      = $xhprofRuns->save_run($xhprofData, 'cundd_pos');
+//
+//echo PHP_EOL . 'http://localhost:8080/index.php?run=' . $runId . '&source=cundd_pos' . PHP_EOL;

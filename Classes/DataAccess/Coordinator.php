@@ -126,7 +126,6 @@ class Coordinator implements CoordinatorInterface {
 		$persistedDatabases = $this->listPersistedDatabases();
 		$persistedDatabases = array_combine($persistedDatabases, $persistedDatabases);
 
-
 		$inMemoryDatabases = Manager::getIdentifiersByTag(self::MEMORY_MANAGER_TAG, TRUE);
 		$inMemoryDatabases = array_combine($inMemoryDatabases, $inMemoryDatabases);
 
@@ -191,9 +190,6 @@ class Coordinator implements CoordinatorInterface {
 		if ($type == QueryConstants::SELECT) {
 			$result = $this->_performSearchQueryOnDatabase($queryParts, $parameters, $database);
 		}
-
-
-
 		return $result;
 	}
 
@@ -215,7 +211,6 @@ class Coordinator implements CoordinatorInterface {
 			$this->commitDatabase($database);
 		}
 	}
-
 
 	/**
 	 * Performs the query from the given query parts on the database
