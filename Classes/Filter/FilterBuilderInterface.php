@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Filter;
+
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 
 /**
@@ -14,13 +15,14 @@ use Cundd\PersistentObjectStore\Domain\Model\Database;
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-interface FilterBuilderInterface {
-	/**
-	 * Build a Filter with the given query parts
-	 *
-	 * @param array $queryParts
-	 * @param Database|\Iterator$collection
-	 * @return FilterResult
-	 */
-	public function buildFilterFromQueryParts($queryParts, $collection);
+interface FilterBuilderInterface
+{
+    /**
+     * Build a Filter with the given query parts
+     *
+     * @param array              $queryParts
+     * @param Database|\Iterator $collection
+     * @return FilterResult
+     */
+    public function buildFilterFromQueryParts($queryParts, $collection);
 } 

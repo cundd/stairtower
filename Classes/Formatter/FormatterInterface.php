@@ -13,27 +13,28 @@ namespace Cundd\PersistentObjectStore\Formatter;
  *
  * @package Cundd\PersistentObjectStore\Formatter
  */
-interface FormatterInterface {
-	/**
-	 * Sets the configuration for the formatter
-	 *
-	 * @param $configuration
-	 * @return $this
-	 */
-	public function setConfiguration($configuration);
+interface FormatterInterface
+{
+    /**
+     * Sets the configuration for the formatter
+     *
+     * @param $configuration
+     * @return $this
+     */
+    public function setConfiguration($configuration);
 
-	/**
-	 * Formats the given input model(s)
-	 *
-	 * @param DocumentInterface|array<DocumentInterface> $inputModel
-	 * @return string
-	 */
-	public function format($inputModel);
+    /**
+     * Formats the given input model(s)
+     *
+     * @param DocumentInterface|array<DocumentInterface> $inputModel
+     * @return string
+     */
+    public function format($inputModel);
 
-	/**
-	 * Returns the content suffix for the formatter
-	 *
-	 * @return string
-	 */
-	public function getContentSuffix();
+    /**
+     * Returns the content suffix for the formatter
+     *
+     * @return string
+     */
+    public function getContentSuffix();
 }

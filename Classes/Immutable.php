@@ -15,5 +15,6 @@ namespace Cundd\PersistentObjectStore;
  *
  * @package Cundd\PersistentObjectStore
  */
-interface Immutable {
+interface Immutable
+{
 }

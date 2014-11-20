@@ -13,187 +13,204 @@ namespace Cundd\PersistentObjectStore\Core;
  *
  * @package Cundd\PersistentObjectStore\Core
  */
-class IndexArrayTest extends \PHPUnit_Framework_TestCase {
-	/**
-	 * @var IndexArray
-	 */
-	protected $fixture;
+class IndexArrayTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @var IndexArray
+     */
+    protected $fixture;
 
-	protected $testData = array(
-		'Daniel',
-		'Lisa',
-		'Yvonne',
-		'Hubert',
-		'Alfons',
-		'Steve',
-		'Bob',
-	);
+    protected $testData = array(
+        'Daniel',
+        'Lisa',
+        'Yvonne',
+        'Hubert',
+        'Alfons',
+        'Steve',
+        'Bob',
+    );
 
-	protected function setUp() {
-		$this->fixture = new IndexArray();
-		$this->fixture->initWithArray($this->testData);
-	}
+    /**
+     * @test
+     */
+    public function getFirstTest()
+    {
+        $this->assertEquals('Daniel', $this->fixture->first());
+    }
 
-	protected function tearDown() {
-		unset($this->fixture);
-	}
+    /**
+     * @test
+     */
+    public function getLastTest()
+    {
+        $this->assertEquals('Bob', $this->fixture->last());
+    }
 
-	/**
-	 * @test
-	 */
-	public function getFirstTest() {
-		$this->assertEquals('Daniel', $this->fixture->first());
-	}
+    /**
+     * @test
+     */
+    public function countTest()
+    {
+        $this->assertSame(7, $this->fixture->count());
+    }
 
-	/**
-	 * @test
-	 */
-	public function getLastTest() {
-		$this->assertEquals('Bob', $this->fixture->last());
-	}
+    /**
+     * @test
+     */
+    public function pushTest()
+    {
+        $this->fixture->push('Elvis');
+        $this->assertEquals('Elvis', $this->fixture->last());
+        $this->assertSame(8, $this->fixture->count());
+    }
 
-	/**
-	 * @test
-	 */
-	public function countTest() {
-		$this->assertSame(7, $this->fixture->count());
-	}
+    /**
+     * @test
+     */
+    public function popTest()
+    {
+        $this->assertEquals('Bob', $this->fixture->pop());
+        $this->assertEquals('Steve', $this->fixture->last());
+        $this->assertSame(6, $this->fixture->count());
 
-	/**
-	 * @test
-	 */
-	public function pushTest() {
-		$this->fixture->push('Elvis');
-		$this->assertEquals('Elvis', $this->fixture->last());
-		$this->assertSame(8, $this->fixture->count());
-	}
+        $this->assertEquals('Steve', $this->fixture->pop());
+        $this->assertEquals('Alfons', $this->fixture->last());
+        $this->assertSame(5, $this->fixture->count());
 
-	/**
-	 * @test
-	 */
-	public function popTest() {
-		$this->assertEquals('Bob', $this->fixture->pop());
-		$this->assertEquals('Steve', $this->fixture->last());
-		$this->assertSame(6, $this->fixture->count());
+        $this->fixture->push('Bob');
+        $this->assertEquals('Bob', $this->fixture->last());
+        $this->assertSame(6, $this->fixture->count());
+    }
 
-		$this->assertEquals('Steve', $this->fixture->pop());
-		$this->assertEquals('Alfons', $this->fixture->last());
-		$this->assertSame(5, $this->fixture->count());
+    /**
+     * @test
+     */
+    public function currentTest()
+    {
+        $this->assertEquals('Daniel', $this->fixture->current());
+    }
 
-		$this->fixture->push('Bob');
-		$this->assertEquals('Bob', $this->fixture->last());
-		$this->assertSame(6, $this->fixture->count());
-	}
+    /**
+     * @test
+     */
+    public function nextTest()
+    {
+        $this->assertEquals('Daniel', $this->fixture->current());
+        $this->fixture->next();
+        $this->assertEquals('Lisa', $this->fixture->current());
+    }
 
-	/**
-	 * @test
-	 */
-	public function currentTest() {
-		$this->assertEquals('Daniel', $this->fixture->current());
-	}
+    /**
+     * @test
+     */
+    public function keyTest()
+    {
+        $this->assertEquals(0, $this->fixture->key());
+        $this->fixture->next();
+        $this->assertEquals(1, $this->fixture->key());
+    }
 
-	/**
-	 * @test
-	 */
-	public function nextTest() {
-		$this->assertEquals('Daniel', $this->fixture->current());
-		$this->fixture->next();
-		$this->assertEquals('Lisa', $this->fixture->current());
-	}
+    /**
+     * @test
+     */
+    public function validTest()
+    {
+        $this->assertTrue($this->fixture->valid());
+        $this->fixture->next();
+        $this->assertTrue($this->fixture->valid());
+        $this->fixture->next();
+        $this->assertTrue($this->fixture->valid());
+        $this->fixture->next();
+        $this->assertTrue($this->fixture->valid());
+        $this->fixture->next();
+        $this->assertTrue($this->fixture->valid());
+        $this->fixture->next();
+        $this->assertTrue($this->fixture->valid());
+        $this->fixture->next();
+        $this->assertTrue($this->fixture->valid());
+        $this->fixture->next();
 
-	/**
-	 * @test
-	 */
-	public function keyTest() {
-		$this->assertEquals(0, $this->fixture->key());
-		$this->fixture->next();
-		$this->assertEquals(1, $this->fixture->key());
-	}
+        $this->assertFalse($this->fixture->valid());
+    }
 
-	/**
-	 * @test
-	 */
-	public function validTest() {
-		$this->assertTrue($this->fixture->valid());
-		$this->fixture->next();
-		$this->assertTrue($this->fixture->valid());
-		$this->fixture->next();
-		$this->assertTrue($this->fixture->valid());
-		$this->fixture->next();
-		$this->assertTrue($this->fixture->valid());
-		$this->fixture->next();
-		$this->assertTrue($this->fixture->valid());
-		$this->fixture->next();
-		$this->assertTrue($this->fixture->valid());
-		$this->fixture->next();
-		$this->assertTrue($this->fixture->valid());
-		$this->fixture->next();
+    /**
+     * @test
+     */
+    public function rewindTest()
+    {
+        $this->assertEquals('Daniel', $this->fixture->current());
+        $this->fixture->next();
+        $this->fixture->next();
+        $this->assertEquals('Yvonne', $this->fixture->current());
 
-		$this->assertFalse($this->fixture->valid());
-	}
+        $this->fixture->rewind();
+        $this->assertEquals('Daniel', $this->fixture->current());
+    }
 
-	/**
-	 * @test
-	 */
-	public function rewindTest() {
-		$this->assertEquals('Daniel', $this->fixture->current());
-		$this->fixture->next();
-		$this->fixture->next();
-		$this->assertEquals('Yvonne', $this->fixture->current());
+    /**
+     * @test
+     */
+    public function offsetExistsTest()
+    {
+        $this->assertTrue($this->fixture->offsetExists(0));
+        $this->assertTrue($this->fixture->offsetExists(1));
+        $this->assertTrue($this->fixture->offsetExists(2));
+        $this->assertTrue($this->fixture->offsetExists(3));
+        $this->assertTrue($this->fixture->offsetExists(4));
+        $this->assertTrue($this->fixture->offsetExists(5));
+        $this->assertTrue($this->fixture->offsetExists(6));
 
-		$this->fixture->rewind();
-		$this->assertEquals('Daniel', $this->fixture->current());
-	}
+        $this->assertFalse($this->fixture->offsetExists(7));
+    }
 
-	/**
-	 * @test
-	 */
-	public function offsetExistsTest() {
-		$this->assertTrue($this->fixture->offsetExists(0));
-		$this->assertTrue($this->fixture->offsetExists(1));
-		$this->assertTrue($this->fixture->offsetExists(2));
-		$this->assertTrue($this->fixture->offsetExists(3));
-		$this->assertTrue($this->fixture->offsetExists(4));
-		$this->assertTrue($this->fixture->offsetExists(5));
-		$this->assertTrue($this->fixture->offsetExists(6));
+    /**
+     * @test
+     */
+    public function offsetGetTest()
+    {
+        $this->assertEquals('Daniel', $this->fixture->offsetGet(0));
+        $this->assertEquals('Lisa', $this->fixture->offsetGet(1));
+        $this->assertEquals('Yvonne', $this->fixture->offsetGet(2));
+    }
 
-		$this->assertFalse($this->fixture->offsetExists(7));
-	}
+    /**
+     * @test
+     */
+    public function offsetSetTest()
+    {
+        $this->fixture->offsetSet(0, 'Sture');
+        $this->assertEquals('Sture', $this->fixture->offsetGet(0));
 
-	/**
-	 * @test
-	 */
-	public function offsetGetTest() {
-		$this->assertEquals('Daniel', $this->fixture->offsetGet(0));
-		$this->assertEquals('Lisa', $this->fixture->offsetGet(1));
-		$this->assertEquals('Yvonne', $this->fixture->offsetGet(2));
-	}
+        $this->fixture->offsetSet(1, 'Lars');
+        $this->assertEquals('Lars', $this->fixture->offsetGet(1));
 
-	/**
-	 * @test
-	 */
-	public function offsetSetTest() {
-		$this->fixture->offsetSet(0, 'Sture');
-		$this->assertEquals('Sture', $this->fixture->offsetGet(0));
+        $this->fixture->offsetSet(2, 'Sandra');
+        $this->assertEquals('Sandra', $this->fixture->offsetGet(2));
+    }
 
-		$this->fixture->offsetSet(1, 'Lars');
-		$this->assertEquals('Lars', $this->fixture->offsetGet(1));
+    /**
+     * @test
+     */
+    public function offsetUnsetTest()
+    {
+        $this->fixture->offsetUnset(0);
+        $this->assertNull($this->fixture->offsetGet(0));
+        $this->assertNotNull($this->fixture->offsetGet(1));
 
-		$this->fixture->offsetSet(2, 'Sandra');
-		$this->assertEquals('Sandra', $this->fixture->offsetGet(2));
-	}
+        $this->fixture->offsetUnset(2);
+        $this->assertNull($this->fixture->offsetGet(2));
+    }
 
-	/**
-	 * @test
-	 */
-	public function offsetUnsetTest() {
-		$this->fixture->offsetUnset(0);
-		$this->assertNull($this->fixture->offsetGet(0));
-		$this->assertNotNull($this->fixture->offsetGet(1));
+    protected function setUp()
+    {
+        $this->fixture = new IndexArray();
+        $this->fixture->initWithArray($this->testData);
+    }
 
-		$this->fixture->offsetUnset(2);
-		$this->assertNull($this->fixture->offsetGet(2));
-	}
+    protected function tearDown()
+    {
+        unset($this->fixture);
+    }
 
 
 }

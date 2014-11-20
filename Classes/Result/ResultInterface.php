@@ -13,6 +13,7 @@ namespace Cundd\PersistentObjectStore\Result;
  *
  * @package Cundd\PersistentObjectStore\Result
  */
-interface ResultInterface extends \Iterator, \Countable {
+interface ResultInterface extends \Iterator, \Countable
+{
 
 }

@@ -13,5 +13,6 @@ namespace Cundd\PersistentObjectStore\DataAccess;
  *
  * @package Cundd\PersistentObjectStore\DataAccess
  */
-class QueryParser {
+class QueryParser
+{
 }

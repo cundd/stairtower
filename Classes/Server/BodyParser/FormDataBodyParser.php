@@ -16,16 +16,18 @@ use React\Http\Request;
  *
  * @package Cundd\PersistentObjectStore\Server\BodyParser
  */
-class FormDataBodyParser implements BodyParserInterface {
-	/**
-	 * @param string  $data
-	 * @param Request $request
-	 * @return mixed
-	 */
-	public function parse($data, $request) {
-		$parsedData = array();
-		parse_str($data, $parsedData);
-		return $parsedData;
-	}
+class FormDataBodyParser implements BodyParserInterface
+{
+    /**
+     * @param string  $data
+     * @param Request $request
+     * @return mixed
+     */
+    public function parse($data, $request)
+    {
+        $parsedData = array();
+        parse_str($data, $parsedData);
+        return $parsedData;
+    }
 
 } 

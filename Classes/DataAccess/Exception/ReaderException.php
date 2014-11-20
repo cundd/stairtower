@@ -16,5 +16,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\DataAccess\Exception
  */
-class ReaderException extends RuntimeException {
+class ReaderException extends RuntimeException
+{
 } 

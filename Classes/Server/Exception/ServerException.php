@@ -16,5 +16,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\Server\Exception
  */
-class ServerException extends RuntimeException {
+class ServerException extends RuntimeException
+{
 } 

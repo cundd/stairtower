@@ -40,5 +40,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\Sorting\Exception
  */
-class SortingException extends RuntimeException {
+class SortingException extends RuntimeException
+{
 }

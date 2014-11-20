@@ -14,5 +14,6 @@ namespace Cundd\PersistentObjectStore\Sorting;
  *
  * @package Cundd\PersistentObjectStore\Sorting
  */
-class SortResult extends \SplFixedArray implements SortResultInterface {
+class SortResult extends \SplFixedArray implements SortResultInterface
+{
 }

@@ -16,5 +16,6 @@ use Cundd\PersistentObjectStore\Result\ResultInterface;
  *
  * @package Cundd\PersistentObjectStore\Sorting
  */
-interface SortResultInterface extends ResultInterface {
+interface SortResultInterface extends ResultInterface
+{
 }

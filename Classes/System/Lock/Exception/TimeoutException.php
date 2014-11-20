@@ -14,5 +14,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\System\Lock
  */
-class TimeoutException extends RuntimeException {
+class TimeoutException extends RuntimeException
+{
 }

@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Server\BodyParser;
+
 use React\Http\Request;
 
 /**
@@ -14,11 +15,12 @@ use React\Http\Request;
  *
  * @package Cundd\PersistentObjectStore\Server\BodyParser
  */
-interface BodyParserInterface {
-	/**
-	 * @param string $data
-	 * @param Request $request
-	 * @return mixed
-	 */
-	public function parse($data, $request);
+interface BodyParserInterface
+{
+    /**
+     * @param string  $data
+     * @param Request $request
+     * @return mixed
+     */
+    public function parse($data, $request);
 } 
