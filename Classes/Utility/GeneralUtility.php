@@ -117,4 +117,23 @@ abstract class GeneralUtility {
 		}
 		return FALSE;
 	}
+
+	/**
+	 * Removes the directory recursive
+	 *
+	 * @param string $dir
+	 * @return bool
+	 */
+	static public function removeDirectoryRecursive($dir) {
+		$success = TRUE;
+		$files = array_diff(scandir($dir), array('.', '..'));
+		foreach ($files as $file) {
+			if (is_dir("$dir/$file")) {
+				$success *= self::removeDirectoryRecursive("$dir/$file");
+			} else {
+				$success *= unlink("$dir/$file");
+			}
+		}
+		return (bool)($success * rmdir($dir));
+	}
 } 
