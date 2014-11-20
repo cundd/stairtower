@@ -314,16 +314,16 @@
         },
         {
             "name": "mnapoli/php-di",
-            "version": "4.4.1",
+            "version": "4.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mnapoli/PHP-DI.git",
-                "reference": "de13eb81314d9a51673e74d73d57f5768788ec0f"
+                "reference": "0e267e20226589105ac3c6ae9d893cfbc350a193"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mnapoli/PHP-DI/zipball/de13eb81314d9a51673e74d73d57f5768788ec0f",
-                "reference": "de13eb81314d9a51673e74d73d57f5768788ec0f",
+                "url": "https://api.github.com/repos/mnapoli/PHP-DI/zipball/0e267e20226589105ac3c6ae9d893cfbc350a193",
+                "reference": "0e267e20226589105ac3c6ae9d893cfbc350a193",
                 "shasum": ""
             },
             "require": {
@@ -360,7 +360,7 @@
                 "dependency injection",
                 "di"
             ],
-            "time": "2014-11-04 10:15:17"
+            "time": "2014-11-10 01:37:46"
         },
         {
             "name": "mnapoli/phpdocreader",
