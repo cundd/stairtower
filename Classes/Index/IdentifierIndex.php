@@ -115,12 +115,9 @@ class IdentifierIndex extends Key {
 	 * @return $this
 	 */
 	public function deleteEntry($document) {
-		DebugUtility::var_dump($this->map);
 		$key = DocumentUtility::getIdentifierForDocument($document);
 		if (!isset($this->map[$key])) throw new InvalidEntryException(sprintf('Entry \'%s\' not found to delete', $key), 1415047176);
 		unset($this->map[$key]);
-
-		DebugUtility::var_dump($this->map);
 		return $this;
 	}
 

@@ -214,7 +214,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 			if ($indexLookupResult === IndexInterface::NOT_FOUND) {
 				return NULL;
 			}
-			return $indexLookupResult;
+			return $indexLookupResult[0];
 		}
 
 		$i     = 0;
@@ -411,7 +411,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 	 *
 	 * @param mixed $value
 	 * @param string $property
-	 * @return bool|DocumentInterface Returns the Document if found in one of the Indexes or IndexInterface::NOT_FOUND or IndexInterface::ERROR if an error occurred
+	 * @return bool|DocumentInterface[] Returns the Documents if found in one of the Indexes, IndexInterface::NOT_FOUND or IndexInterface::ERROR if an error occurred
 	 */
 	protected function _queryIndexesForValueOfProperty($value, $property) {
 		if (!$this->indexes) {
@@ -434,7 +434,11 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 				}
 //				DebugUtility::pl('Hit index %s', get_class($indexInstance));
 //				DebugUtility::var_dump($indexLookupResult);
-				return $this->getObjectDataForIndexOrTransformIfNotExists($indexLookupResult);
+				$resultCollection = array();
+				foreach ($indexLookupResult as $currentIndexLookupResult) {
+					$resultCollection[] = $this->getObjectDataForIndexOrTransformIfNotExists($currentIndexLookupResult);
+				}
+				return $resultCollection;
 			}
 		} while (++$i < $indexesCount);
 		return IndexInterface::ERROR;
