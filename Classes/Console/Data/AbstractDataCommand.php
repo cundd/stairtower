@@ -21,32 +21,38 @@ use Symfony\Component\Console\Input\InputInterface;
  *
  * @package Cundd\PersistentObjectStore\Console\Document
  */
-class AbstractDataCommand extends AbstractCommand {
-	/**
-	 * Returns the Database instance defined by the arguments 'database'
-	 *
-	 * @param InputInterface $input
-	 * @return DatabaseInterface
-	 */
-	protected function findDatabaseInstanceFromInput(InputInterface $input) {
-		$databaseIdentifier = $input->getArgument('database');
-		return $this->coordinator->getDatabase($databaseIdentifier);
-	}
+class AbstractDataCommand extends AbstractCommand
+{
+    /**
+     * Returns the Document instance defined by the arguments 'database' and 'identifier' and will throw an exception if
+     * none is found and graceful is FALSE
+     *
+     * @param InputInterface $input
+     * @param bool           $graceful
+     * @return DocumentInterface
+     */
+    protected function findDataInstanceFromInput(InputInterface $input, $graceful = false)
+    {
+        $objectIdentifier = $input->getArgument('identifier');
+        GeneralUtility::assertDataIdentifier($objectIdentifier);
+        $database = $this->findDatabaseInstanceFromInput($input);
+        $document = $database->findByIdentifier($objectIdentifier);
+        if (!$document && !$graceful) {
+            throw new InvalidDataException(sprintf('Object with ID "%s" not found in database %s', $objectIdentifier,
+                $database->getIdentifier()));
+        }
+        return $document;
+    }
 
-	/**
-	 * Returns the Document instance defined by the arguments 'database' and 'identifier' and will throw an exception if
-	 * none is found and graceful is FALSE
-	 *
-	 * @param InputInterface $input
-	 * @param bool           $graceful
-	 * @return DocumentInterface
-	 */
-	protected function findDataInstanceFromInput(InputInterface $input, $graceful = FALSE) {
-		$objectIdentifier = $input->getArgument('identifier');
-		GeneralUtility::assertDataIdentifier($objectIdentifier);
-		$database = $this->findDatabaseInstanceFromInput($input);
-		$document = $database->findByIdentifier($objectIdentifier);
-		if (!$document && !$graceful) throw new InvalidDataException(sprintf('Object with ID "%s" not found in database %s', $objectIdentifier, $database->getIdentifier()));
-		return $document;
-	}
+    /**
+     * Returns the Database instance defined by the arguments 'database'
+     *
+     * @param InputInterface $input
+     * @return DatabaseInterface
+     */
+    protected function findDatabaseInstanceFromInput(InputInterface $input)
+    {
+        $databaseIdentifier = $input->getArgument('database');
+        return $this->coordinator->getDatabase($databaseIdentifier);
+    }
 } 

@@ -13,5 +13,6 @@ namespace Cundd\PersistentObjectStore;
  *
  * @package Cundd\PersistentObjectStore
  */
-class LogicException extends \LogicException {
+class LogicException extends \LogicException
+{
 } 

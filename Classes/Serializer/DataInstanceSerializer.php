@@ -20,45 +20,49 @@ use Cundd\PersistentObjectStore\Utility\ObjectUtility;
  *
  * @package Cundd\PersistentObjectStore\Serializer
  */
-class DataInstanceSerializer extends JsonSerializer {
-	/**
-	 * Serialize the given data
-	 *
-	 * @param mixed $data
-	 * @throws \Cundd\PersistentObjectStore\Serializer\Exception if the data could not be serialized
-	 * @return string
-	 */
-	public function serialize($data) {
-		if ($data instanceof DocumentInterface) {
-			$objectData = $data->getData();
-			$objectData[Constants::DATA_META_KEY] = array(
-				'guid' => $data->getGuid(),
-				'database' => $data->getDatabaseIdentifier(),
-				'creationTime' => $data->getCreationTime(),
-				'modificationTime' => $data->getModificationTime(),
-			);
-			return parent::serialize($objectData);
-		}
-		return parent::serialize($data);
-	}
+class DataInstanceSerializer extends JsonSerializer
+{
+    /**
+     * Serialize the given data
+     *
+     * @param mixed $data
+     * @throws \Cundd\PersistentObjectStore\Serializer\Exception if the data could not be serialized
+     * @return string
+     */
+    public function serialize($data)
+    {
+        if ($data instanceof DocumentInterface) {
+            $objectData                           = $data->getData();
+            $objectData[Constants::DATA_META_KEY] = array(
+                'guid'             => $data->getGuid(),
+                'database'         => $data->getDatabaseIdentifier(),
+                'creationTime'     => $data->getCreationTime(),
+                'modificationTime' => $data->getModificationTime(),
+            );
+            return parent::serialize($objectData);
+        }
+        return parent::serialize($data);
+    }
 
-	/**
-	 * Unserialize the given data
-	 *
-	 * @param string $string
-	 * @throws \Cundd\PersistentObjectStore\Serializer\Exception if the data could not be unserialized
-	 * @return mixed
-	 */
-	public function unserialize($string) {
-		$data = parent::unserialize($string);
-		if ($data === NULL) {
-			return NULL;
-		}
+    /**
+     * Unserialize the given data
+     *
+     * @param string $string
+     * @throws \Cundd\PersistentObjectStore\Serializer\Exception if the data could not be unserialized
+     * @return mixed
+     */
+    public function unserialize($string)
+    {
+        $data = parent::unserialize($string);
+        if ($data === null) {
+            return null;
+        }
 
-		$databaseIdentifier = ObjectUtility::valueForKeyPathOfObject(Constants::DATA_META_KEY . '.' . Constants::DATA_DATABASE_KEY, $data, '');
-		if ($databaseIdentifier) {
-			GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
-		}
-		return new Document($data, $databaseIdentifier);
-	}
+        $databaseIdentifier = ObjectUtility::valueForKeyPathOfObject(Constants::DATA_META_KEY . '.' . Constants::DATA_DATABASE_KEY,
+            $data, '');
+        if ($databaseIdentifier) {
+            GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
+        }
+        return new Document($data, $databaseIdentifier);
+    }
 } 

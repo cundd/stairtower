@@ -16,29 +16,30 @@ use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-interface DatabaseRawDataInterface {
-	/**
-	 * Sets the raw data
-	 *
-	 * @param \SplFixedArray|array|\Iterator $rawData
-	 * @throws InvalidCollectionException if the given data can not be used
-	 * @internal
-	 */
-	public function setRawData($rawData);
+interface DatabaseRawDataInterface
+{
+    /**
+     * Sets the raw data
+     *
+     * @param \SplFixedArray|array|\Iterator $rawData
+     * @throws InvalidCollectionException if the given data can not be used
+     * @internal
+     */
+    public function setRawData($rawData);
 
-	/**
-	 * Returns the raw data
-	 *
-	 * @return \SplFixedArray
-	 * @internal
-	 */
-	public function getRawData();
+    /**
+     * Returns the raw data
+     *
+     * @return \SplFixedArray
+     * @internal
+     */
+    public function getRawData();
 
-	/**
-	 * Returns the current raw data
-	 *
-	 * @return mixed Can return any type
-	 * @throws IndexOutOfRangeException if the current index is out of range
-	 */
-	public function currentRaw();
+    /**
+     * Returns the current raw data
+     *
+     * @return mixed Can return any type
+     * @throws IndexOutOfRangeException if the current index is out of range
+     */
+    public function currentRaw();
 } 

@@ -14,30 +14,33 @@ namespace Cundd\PersistentObjectStore\Formatter;
  *
  * @package Cundd\PersistentObjectStore\Formatter
  */
-class JsonFormatter extends AbstractFormatter {
-	/**
-	 * @var \Cundd\PersistentObjectStore\Serializer\DataInstanceSerializer
-	 * @Inject
-	 */
-	protected $serializer;
+class JsonFormatter extends AbstractFormatter
+{
+    /**
+     * @var \Cundd\PersistentObjectStore\Serializer\DataInstanceSerializer
+     * @Inject
+     */
+    protected $serializer;
 
-	/**
-	 * Formats the given input model(s)
-	 *
-	 * @param DocumentInterface|array<DocumentInterface> $inputModel
-	 * @return string
-	 */
-	public function format($inputModel) {
-		return $this->serializer->serialize($this->_prepareData($inputModel));
-	}
+    /**
+     * Formats the given input model(s)
+     *
+     * @param DocumentInterface|array<DocumentInterface> $inputModel
+     * @return string
+     */
+    public function format($inputModel)
+    {
+        return $this->serializer->serialize($this->prepareData($inputModel));
+    }
 
-	/**
-	 * Returns the content suffix for the formatter
-	 *
-	 * @return string
-	 */
-	public function getContentSuffix() {
-		return 'json';
-	}
+    /**
+     * Returns the content suffix for the formatter
+     *
+     * @return string
+     */
+    public function getContentSuffix()
+    {
+        return 'json';
+    }
 
 } 

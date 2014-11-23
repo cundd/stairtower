@@ -19,24 +19,27 @@ use React\Http\Request;
  *
  * @package Cundd\PersistentObjectStore\Server\BodyParser
  */
-class JsonBodyParser implements BodyParserInterface {
-	/**
-	 * @var JsonSerializer
-	 * @Inject
-	 */
-	protected $serializer;
+class JsonBodyParser implements BodyParserInterface
+{
+    /**
+     * @var JsonSerializer
+     * @Inject
+     */
+    protected $serializer;
 
-	/**
-	 * @param string  $data
-	 * @param Request $request
-	 * @return mixed
-	 */
-	public function parse($data, $request) {
-		try {
-			return $this->serializer->unserialize($data);
-		} catch (Exception $exception) {
-			throw new InvalidBodyException(sprintf('Could not parse body of request with path %s and method %s', $request->getPath(), $request->getMethod()), 1413214227, $exception);
-		}
-	}
+    /**
+     * @param string  $data
+     * @param Request $request
+     * @return mixed
+     */
+    public function parse($data, $request)
+    {
+        try {
+            return $this->serializer->unserialize($data);
+        } catch (Exception $exception) {
+            throw new InvalidBodyException(sprintf('Could not parse body of request with path %s and method %s',
+                $request->getPath(), $request->getMethod()), 1413214227, $exception);
+        }
+    }
 
 } 

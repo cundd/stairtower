@@ -14,5 +14,6 @@ namespace Cundd\PersistentObjectStore\Memory\Exception;
  *
  * @package Cundd\PersistentObjectStore\Exception
  */
-class ManagerException extends MemoryException {
+class ManagerException extends MemoryException
+{
 } 

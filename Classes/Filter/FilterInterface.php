@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Filter;
+
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 
@@ -15,56 +16,57 @@ use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-interface FilterInterface {
-	/**
-	 * Adds the given comparison
-	 *
-	 * Multiple comparisons will be added as "or"
-	 *
-	 * @param PropertyComparisonInterface $comparison
-	 * @return $this
-	 */
-	public function addComparison($comparison);
+interface FilterInterface
+{
+    /**
+     * Adds the given comparison
+     *
+     * Multiple comparisons will be added as "or"
+     *
+     * @param PropertyComparisonInterface $comparison
+     * @return $this
+     */
+    public function addComparison($comparison);
 
-	/**
-	 * Removes the given comparison
-	 *
-	 * @param PropertyComparisonInterface $comparison
-	 * @throws Exception\InvalidComparisonException if the given comparison is not in the list
-	 * @return $this
-	 */
-	public function removeComparison($comparison);
+    /**
+     * Removes the given comparison
+     *
+     * @param PropertyComparisonInterface $comparison
+     * @throws Exception\InvalidComparisonException if the given comparison is not in the list
+     * @return $this
+     */
+    public function removeComparison($comparison);
 
-	/**
-	 * Sets the comparisons
-	 *
-	 * The comparisons will be added as "or"
-	 *
-	 * @param \SplObjectStorage(ComparisonInterface) $comparisons
-	 * @return $this
-	 */
-	public function setComparisons(\SplObjectStorage $comparisons);
+    /**
+     * Sets the comparisons
+     *
+     * The comparisons will be added as "or"
+     *
+     * @param \SplObjectStorage(ComparisonInterface) $comparisons
+     * @return $this
+     */
+    public function setComparisons(\SplObjectStorage $comparisons);
 
-	/**
-	 * Returns the comparisons
-	 *
-	 * @return \SplObjectStorage(ComparisonInterface)
-	 */
-	public function getComparisons();
+    /**
+     * Returns the comparisons
+     *
+     * @return \SplObjectStorage(ComparisonInterface)
+     */
+    public function getComparisons();
 
-	/**
-	 * Returns the filter result
-	 *
-	 * @param Database|\Iterator|array $collection
-	 * @return FilterResultInterface
-	 */
-	public function filterCollection($collection);
+    /**
+     * Returns the filter result
+     *
+     * @param Database|\Iterator|array $collection
+     * @return FilterResultInterface
+     */
+    public function filterCollection($collection);
 
-	/**
-	 * Returns if this collection item matches the comparisons
-	 *
-	 * @param mixed $item
-	 * @return bool
-	 */
-	public function checkItem($item);
+    /**
+     * Returns if this collection item matches the comparisons
+     *
+     * @param mixed $item
+     * @return bool
+     */
+    public function checkItem($item);
 }

@@ -17,14 +17,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package Cundd\PersistentObjectStore\Console
  */
-class ListCommand extends AbstractCommand {
-	/**
-	 * Configure the command
-	 */
-	protected function configure() {
-		$this
-			->setName('database:list')
-			->setDescription('List available databases')
+class ListCommand extends AbstractCommand
+{
+    /**
+     * Configure the command
+     */
+    protected function configure()
+    {
+        $this
+            ->setName('database:list')
+            ->setDescription('List available databases')
 //			->addArgument(
 //				'name',
 //				InputArgument::OPTIONAL,
@@ -36,25 +38,26 @@ class ListCommand extends AbstractCommand {
 //				InputOption::VALUE_NONE,
 //				'If set, the task will yell in uppercase letters'
 //			)
-		;
-	}
+        ;
+    }
 
-	/**
-	 * Execute the command
-	 *
-	 * @param InputInterface  $input
-	 * @param OutputInterface $output
-	 * @return int|null|void
-	 */
-	protected function execute(InputInterface $input, OutputInterface $output) {
-		$databases = $this->coordinator->listDatabases();
-		if ($databases) {
-			$output->writeln('<info>Databases:</info>');
-			foreach ($databases as $databaseIdentifier) {
-				$output->writeln($databaseIdentifier);
-			}
-		} else {
-			$output->writeln('<info>No databases found</info>');
-		}
-	}
+    /**
+     * Execute the command
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $databases = $this->coordinator->listDatabases();
+        if ($databases) {
+            $output->writeln('<info>Databases:</info>');
+            foreach ($databases as $databaseIdentifier) {
+                $output->writeln($databaseIdentifier);
+            }
+        } else {
+            $output->writeln('<info>No databases found</info>');
+        }
+    }
 } 

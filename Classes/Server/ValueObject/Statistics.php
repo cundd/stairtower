@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
+
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use DateTime;
@@ -17,123 +18,132 @@ use JsonSerializable;
  *
  * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class Statistics implements Immutable, JsonSerializable {
-	/**
-	 * Server version number
-	 *
-	 * @var string
-	 */
-	protected $version;
+class Statistics implements Immutable, JsonSerializable
+{
+    /**
+     * Server version number
+     *
+     * @var string
+     */
+    protected $version;
 
-	/**
-	 * Global unique identifier for the server
-	 *
-	 * @var string
-	 */
-	protected $guid;
+    /**
+     * Global unique identifier for the server
+     *
+     * @var string
+     */
+    protected $guid;
 
-	/**
-	 * Time of the server start
-	 *
-	 * @var DateTime
-	 */
-	protected $startTime;
+    /**
+     * Time of the server start
+     *
+     * @var DateTime
+     */
+    protected $startTime;
 
-	/**
-	 * Current memory usage
-	 *
-	 * @var float
-	 */
-	protected $memoryUsage;
+    /**
+     * Current memory usage
+     *
+     * @var float
+     */
+    protected $memoryUsage;
 
-	/**
-	 * Peak memory usage
-	 *
-	 * @var float
-	 */
-	protected $memoryPeakUsage;
+    /**
+     * Peak memory usage
+     *
+     * @var float
+     */
+    protected $memoryPeakUsage;
 
-	/**
-	 * @param string $version
-	 * @param string $guid
-	 * @param DateTime $startTime
-	 * @param float $memoryUsage
-	 * @param float $memoryPeakUsage
-	 */
-	function __construct($version, $guid, $startTime, $memoryUsage, $memoryPeakUsage) {
-		$this->guid            = $guid;
-		$this->memoryPeakUsage = $memoryPeakUsage;
-		$this->memoryUsage     = $memoryUsage;
-		$this->startTime       = $startTime;
-		$this->version         = $version;
-	}
+    /**
+     * @param string   $version
+     * @param string   $guid
+     * @param DateTime $startTime
+     * @param float    $memoryUsage
+     * @param float    $memoryPeakUsage
+     */
+    public function __construct($version, $guid, $startTime, $memoryUsage, $memoryPeakUsage)
+    {
+        $this->guid            = $guid;
+        $this->memoryPeakUsage = $memoryPeakUsage;
+        $this->memoryUsage     = $memoryUsage;
+        $this->startTime       = $startTime;
+        $this->version         = $version;
+    }
 
+    /**
+     * @return array|mixed
+     */
+    public function jsonSerialize()
+    {
+        return array(
+            'version'         => $this->getVersion(),
+            'guid'            => $this->getGuid(),
+            'startTime'       => $this->getStartTime() ? $this->getStartTime()->format('r') : 'undefined',
+            'upTime'          => $this->getUpTime() ? $this->getStartTime()->format('r') : 'undefined',
+            'memoryUsage'     => GeneralUtility::formatBytes($this->getMemoryUsage()),
+            'memoryPeakUsage' => GeneralUtility::formatBytes($this->getMemoryPeakUsage()),
+        );
+    }
 
-	/**
-	 * Returns the global unique identifier for the server
-	 *
-	 * @return string
-	 */
-	public function getGuid() {
-		return $this->guid;
-	}
+    /**
+     * Returns the server version
+     *
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
 
-	/**
-	 * Returns the peak memory usage
-	 *
-	 * @return float
-	 */
-	public function getMemoryPeakUsage() {
-		return $this->memoryPeakUsage;
-	}
+    /**
+     * Returns the global unique identifier for the server
+     *
+     * @return string
+     */
+    public function getGuid()
+    {
+        return $this->guid;
+    }
 
-	/**
-	 * Returns the current memory usage
-	 *
-	 * @return float
-	 */
-	public function getMemoryUsage() {
-		return $this->memoryUsage;
-	}
+    /**
+     * Returns the time of the server start
+     *
+     * @return DateTime
+     */
+    public function getStartTime()
+    {
+        return $this->startTime;
+    }
 
-	/**
-	 * Returns the time of the server start
-	 *
-	 * @return DateTime
-	 */
-	public function getStartTime() {
-		return $this->startTime;
-	}
+    /**
+     * Returns the server upTime
+     *
+     * @return bool|\DateInterval
+     */
+    public function getUpTime()
+    {
+        $now = new DateTime();
+        return $now->diff($this->getStartTime());
+    }
 
-	/**
-	 * Returns the server upTime
-	 * @return bool|\DateInterval
-	 */
-	public function getUpTime() {
-		$now = new DateTime();
-		return $now->diff($this->getStartTime());
-	}
+    /**
+     * Returns the current memory usage
+     *
+     * @return float
+     */
+    public function getMemoryUsage()
+    {
+        return $this->memoryUsage;
+    }
 
-	/**
-	 * Returns the server version
-	 *
-	 * @return string
-	 */
-	public function getVersion() {
-		return $this->version;
-	}
-
-	/**
-	 * @return array|mixed
-	 */
-	public function jsonSerialize() {
-		return array(
-			'version' => $this->getVersion(),
-			'guid' => $this->getGuid(),
-			'startTime' => $this->getStartTime() ? $this->getStartTime()->format('r') : 'undefined',
-			'upTime' => $this->getUpTime() ? $this->getStartTime()->format('r') : 'undefined',
-			'memoryUsage' => GeneralUtility::formatBytes($this->getMemoryUsage()),
-			'memoryPeakUsage' => GeneralUtility::formatBytes($this->getMemoryPeakUsage()),
-		);
-	}
+    /**
+     * Returns the peak memory usage
+     *
+     * @return float
+     */
+    public function getMemoryPeakUsage()
+    {
+        return $this->memoryPeakUsage;
+    }
 }

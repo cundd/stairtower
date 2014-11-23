@@ -13,5 +13,6 @@ namespace Cundd\PersistentObjectStore;
  *
  * @package Cundd\PersistentObjectStore
  */
-class RuntimeException extends \RuntimeException {
+class RuntimeException extends \RuntimeException
+{
 } 

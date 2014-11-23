@@ -15,52 +15,58 @@ use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
  *
  * @package Cundd\PersistentObjectStore\System\Lock
  */
-class FileLock extends AbstractLock {
-	/**
-	 * Returns if the lock is currently locked
-	 *
-	 * @return bool
-	 */
-	public function isLocked() {
-		return file_exists($this->_getLockPath());
-	}
+class FileLock extends AbstractLock
+{
+    /**
+     * Locks a lock. Only for internal use.
+     *
+     * @return    boolean    Returns if the lock could be acquired
+     */
+    protected function lockInternal()
+    {
+        return touch($this->getLockPath());
+    }
 
-	/**
-	 * Locks a lock. Only for internal use.
-	 * @return	boolean	Returns if the lock could be acquired
-	 */
-	protected function _lock() {
-		return touch($this->_getLockPath());
-	}
+    /**
+     * Returns the path to the lock file.
+     *
+     * @return    string
+     */
+    protected function getLockPath()
+    {
+        $lockPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('lockPath');
 
-	/**
-	 * Relinquishes a previously acquired lock. Only for internal use.
-	 *
-	 * @return	boolean	Returns if the lock could be relinquished
-	 */
-	protected function _unlock() {
-		if ($this->isLocked()) {
-			return unlink($this->_getLockPath());
-		}
-		return TRUE;
-	}
+        static $lockPathExists = -1;
+        if ($lockPathExists === -1) {
+            if (!file_exists($lockPath)) {
+                mkdir($lockPath, 0777, true);
+            }
+            $lockPathExists = true;
+        }
+        return $lockPath . 'lock_' . sha1($this->getName());
+    }
 
-	/**
-	 * Returns the path to the lock file.
-	 *
-	 * @return	string
-	 */
-	protected function _getLockPath() {
-		$lockPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('lockPath');
+    /**
+     * Relinquishes a previously acquired lock. Only for internal use.
+     *
+     * @return    boolean    Returns if the lock could be relinquished
+     */
+    protected function unlockInternal()
+    {
+        if ($this->isLocked()) {
+            return unlink($this->getLockPath());
+        }
+        return true;
+    }
 
-		static $lockPathExists = -1;
-		if ($lockPathExists === -1) {
-			if (!file_exists($lockPath)) {
-				mkdir($lockPath, 0777, TRUE);
-			}
-			$lockPathExists = TRUE;
-		}
-		return $lockPath . 'lock_' . sha1($this->getName());
-	}
+    /**
+     * Returns if the lock is currently locked
+     *
+     * @return bool
+     */
+    public function isLocked()
+    {
+        return file_exists($this->getLockPath());
+    }
 
 } 

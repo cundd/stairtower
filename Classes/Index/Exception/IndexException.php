@@ -16,5 +16,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\Index\Exception
  */
-class IndexException extends RuntimeException {
+class IndexException extends RuntimeException
+{
 }

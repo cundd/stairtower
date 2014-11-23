@@ -1,26 +1,24 @@
 #!/usr/bin/env php
 <?php
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
-ini_set('display_errors', TRUE);
+ini_set('display_errors', true);
 
 // Parse the arguments
-$longOptions  = array(
-	"port::",
-	"ip::",
-	"data-path::",
-	'test::',
+$longOptions = array(
+    "port::",
+    "ip::",
+    "data-path::",
+    'test::',
 );
-$options = getopt('h::', $longOptions);
+$options     = getopt('h::', $longOptions);
 
 // Print the help
 if (isset($options['h'])) {
-	print(\Cundd\PersistentObjectStore\Constants::MESSAGE_CLI_WELCOME . PHP_EOL);
-	printf('Usage: %s [--port=port] [--ip=ip] [--data-path=path/to/data/folder/]' . PHP_EOL, $argv[0]);
-	exit;
+    print(\Cundd\PersistentObjectStore\Constants::MESSAGE_CLI_WELCOME . PHP_EOL);
+    printf('Usage: %s [--port=port] [--ip=ip] [--data-path=path/to/data/folder/]' . PHP_EOL, $argv[0]);
+    exit;
 }
 
 /**
@@ -30,19 +28,21 @@ if (isset($options['h'])) {
  * @param $options
  * @return null
  */
-function checkArgument($key, $options) {
-	if (isset($options[$key])) {
-		if ($options[$key] === FALSE) {
-			printf('The option --%s requires a valid path' . PHP_EOL, $key);
-			exit(1);
-		}
-		return $options[$key];
-	}
-	return NULL;
+function checkArgument($key, $options)
+{
+    if (isset($options[$key])) {
+        if ($options[$key] === false) {
+            printf('The option --%s requires a valid path' . PHP_EOL, $key);
+            exit(1);
+        }
+        return $options[$key];
+    }
+    return null;
 }
+
 $dataPath = checkArgument('data-path', $options);
-$port = checkArgument('port', $options);
-$ip = checkArgument('ip', $options);
+$port        = checkArgument('port', $options);
+$ip          = checkArgument('ip', $options);
 
 $bootstrap = new \Cundd\PersistentObjectStore\Bootstrap();
 
@@ -61,26 +61,25 @@ $diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $serv
 
 
 if ($dataPath) {
-	$configurationManager = \Cundd\PersistentObjectStore\Configuration\ConfigurationManager::getSharedInstance();
-	$configurationManager->setConfigurationForKeyPath('dataPath', $dataPath);
-	$configurationManager->setConfigurationForKeyPath('writeDataPath', $dataPath);
+    $configurationManager = \Cundd\PersistentObjectStore\Configuration\ConfigurationManager::getSharedInstance();
+    $configurationManager->setConfigurationForKeyPath('dataPath', $dataPath);
+    $configurationManager->setConfigurationForKeyPath('writeDataPath', $dataPath);
 }
 
 if ($ip) {
-	$server->setIp($ip);
+    $server->setIp($ip);
 }
 if ($port) {
-	$server->setPort($port);
+    $server->setPort($port);
 }
 
 // If the test option is set start the server in test mode
 if (isset($options['test'])) {
-	$server->setMode(\Cundd\PersistentObjectStore\Server\ServerInterface::SERVER_MODE_TEST);
-	if (is_numeric($options['test'])) {
-		$server->setAutoShutdownTime(intval($options['test']));
-	}
+    $server->setMode(\Cundd\PersistentObjectStore\Server\ServerInterface::SERVER_MODE_TEST);
+    if (is_numeric($options['test'])) {
+        $server->setAutoShutdownTime(intval($options['test']));
+    }
 }
-
 
 
 //$XHPROF_ROOT = __DIR__ . '/../xhprof-0.9.4/';

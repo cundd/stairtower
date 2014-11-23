@@ -16,5 +16,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\Domain\Model\Exception
  */
-class InvalidDataIdentifierException extends RuntimeException {
+class InvalidDataIdentifierException extends RuntimeException
+{
 }

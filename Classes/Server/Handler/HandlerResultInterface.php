@@ -12,18 +12,19 @@ namespace Cundd\PersistentObjectStore\Server\Handler;
  *
  * @package Cundd\PersistentObjectStore\Server\Handler
  */
-interface HandlerResultInterface {
-	/**
-	 * Returns the status code for the response
-	 *
-	 * @return integer
-	 */
-	public function getStatusCode();
+interface HandlerResultInterface
+{
+    /**
+     * Returns the status code for the response
+     *
+     * @return integer
+     */
+    public function getStatusCode();
 
-	/**
-	 * Returns the requests response data
-	 *
-	 * @return mixed
-	 */
-	public function getData();
+    /**
+     * Returns the requests response data
+     *
+     * @return mixed
+     */
+    public function getData();
 }

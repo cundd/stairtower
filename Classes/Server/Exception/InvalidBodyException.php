@@ -13,5 +13,6 @@ namespace Cundd\PersistentObjectStore\Server\Exception;
  *
  * @package Cundd\PersistentObjectStore\Server\Exception
  */
-class InvalidBodyException extends InvalidRequestException {
+class InvalidBodyException extends InvalidRequestException
+{
 } 

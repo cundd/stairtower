@@ -13,5 +13,6 @@ namespace Cundd\PersistentObjectStore\Index\Exception;
  *
  * @package Cundd\PersistentObjectStore\Index\Exception
  */
-class InvalidEntryException extends IndexException {
+class InvalidEntryException extends IndexException
+{
 } 
