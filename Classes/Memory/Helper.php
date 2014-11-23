@@ -38,6 +38,7 @@ class Helper {
 	 * @return bool Returns if the memory could be freed
 	 */
 	public function freeMemory($size) {
+        $size = abs($size);
 		$currentMemory = memory_get_usage(TRUE);
 		$freedMemory = 0;
 		$databases = Manager::getIdentifiersByTag(Coordinator::MEMORY_MANAGER_TAG, TRUE);
