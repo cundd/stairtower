@@ -275,13 +275,11 @@ class PropertyComparison implements PropertyComparisonInterface
         if ($operator === PropertyComparisonInterface::TYPE_AND) {
             $result2 = (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform($testValue) : $expression2);
             return $result1 && $result2;
-        } else {
-            if ($operator === PropertyComparisonInterface::TYPE_OR) {
-                if ($result1) {
-                    return $result1;
-                }
-                return (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform($testValue) : $expression2);
+        } elseif ($operator === PropertyComparisonInterface::TYPE_OR) {
+            if ($result1) {
+                return $result1;
             }
+            return (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform($testValue) : $expression2);
         }
         throw new InvalidComparisonException(sprintf('Can not perform logical comparison with operator %s', $operator),
             1410704637);

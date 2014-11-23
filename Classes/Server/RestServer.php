@@ -74,32 +74,30 @@ class RestServer extends AbstractServer
 
             if ($specialHandlerAction) { // Handle a special handler action
                 $requestResult = call_user_func(array($handler, $specialHandlerAction), $requestInfo);
-            } else {
-                if (!$requestInfo->getDatabaseIdentifier()) { // Show the welcome message
-                    $requestResult = $handler->noRoute($requestInfo);
-                } else { // Run normal methods
-                    $method = $request->getMethod();
+            } elseif (!$requestInfo->getDatabaseIdentifier()) { // Show the welcome message
+                $requestResult = $handler->noRoute($requestInfo);
+            } else { // Run normal methods
+                $method = $request->getMethod();
 
-                    switch ($method) {
-                        case 'POST':
-                        case 'PUT':
-                            $delayedRequest = true;
-                            $this->waitForBodyAndPerformAction($request, $response, $requestInfo);
-                            break;
+                switch ($method) {
+                    case 'POST':
+                    case 'PUT':
+                        $delayedRequest = true;
+                        $this->waitForBodyAndPerformAction($request, $response, $requestInfo);
+                        break;
 
-                        case 'GET':
-                            $requestResult = $handler->read($requestInfo);
-                            break;
+                    case 'GET':
+                        $requestResult = $handler->read($requestInfo);
+                        break;
 
-                        case 'DELETE':
-                            $requestResult = $handler->delete($requestInfo);
-                            break;
+                    case 'DELETE':
+                        $requestResult = $handler->delete($requestInfo);
+                        break;
 
-                        default:
-                            $requestResult = new HandlerResult(405,
-                                new InvalidRequestMethodException(sprintf('Request method "%s" not valid', $method)),
-                                1413033763);
-                    }
+                    default:
+                        $requestResult = new HandlerResult(405,
+                            new InvalidRequestMethodException(sprintf('Request method "%s" not valid', $method)),
+                            1413033763);
                 }
             }
             if (!$delayedRequest) {
@@ -206,10 +204,8 @@ class RestServer extends AbstractServer
             $contentType = $header['Content-Type'];
             if (substr($contentType, 0, 19) === 'multipart/form-data') {
                 throw new InvalidBodyException(sprintf('No body parser for Content-Type "%s" found', $contentType));
-            } else {
-                if ($contentType === 'application/x-www-form-urlencoded') {
-                    $bodyParser = 'Cundd\\PersistentObjectStore\\Server\\BodyParser\\FormDataBodyParser';
-                }
+            } elseif ($contentType === 'application/x-www-form-urlencoded') {
+                $bodyParser = 'Cundd\\PersistentObjectStore\\Server\\BodyParser\\FormDataBodyParser';
             }
         }
         return $this->diContainer->get($bodyParser);
@@ -237,16 +233,14 @@ class RestServer extends AbstractServer
                 $response->end();
             }
 
+        } elseif ($result === null) {
+            $response->writeHead(
+                204,
+                array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
+            );
+            $response->end($formatter->format('No content'));
         } else {
-            if ($result === null) {
-                $response->writeHead(
-                    204,
-                    array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
-                );
-                $response->end($formatter->format('No content'));
-            } else {
-                throw new \UnexpectedValueException('Handler result is of type ' . gettype($result), 1413210970);
-            }
+            throw new \UnexpectedValueException('Handler result is of type ' . gettype($result), 1413210970);
         }
     }
 
@@ -275,13 +269,11 @@ class RestServer extends AbstractServer
         }
         if ($json < $html) {
             $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter';
+        } elseif ($html < $json) {
+            // TODO: implement the XmlFormatter
+            $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\XmlFormatter';
         } else {
-            if ($html < $json) {
-                // TODO: implement the XmlFormatter
-                $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\XmlFormatter';
-            } else {
-                $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter';
-            }
+            $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter';
         }
         return $this->diContainer->get($formatter);
     }

@@ -64,10 +64,8 @@ class Writer
         $writeFolder = $this->getWriteDirectory();
         if (!file_exists($writeFolder)) {
             mkdir($writeFolder, 0774, true);
-        } else {
-            if (file_exists($writeFolder) && !is_writable($writeFolder)) {
-                throw new WriterException('Document folder exists but is not writable', 1410188161);
-            }
+        } elseif (file_exists($writeFolder) && !is_writable($writeFolder)) {
+            throw new WriterException('Document folder exists but is not writable', 1410188161);
         }
     }
 

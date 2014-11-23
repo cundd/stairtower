@@ -41,8 +41,8 @@ function checkArgument($key, $options)
 }
 
 $dataPath = checkArgument('data-path', $options);
-$port        = checkArgument('port', $options);
-$ip          = checkArgument('ip', $options);
+$port = checkArgument('port', $options);
+$ip = checkArgument('ip', $options);
 
 $bootstrap = new \Cundd\PersistentObjectStore\Bootstrap();
 

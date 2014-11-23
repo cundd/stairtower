@@ -47,10 +47,8 @@ class LogicalComparison implements LogicalComparisonInterface
             $arguments = func_get_args();
             array_shift($arguments);
             $this->constraints = $arguments;
-        } else {
-            if ($constraints) {
-                $this->constraints = $constraints;
-            }
+        } elseif ($constraints) {
+            $this->constraints = $constraints;
         }
     }
 

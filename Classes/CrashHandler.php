@@ -110,10 +110,8 @@ class CrashHandler
                 $currentData = null;
                 if ($database instanceof Database) {
                     $currentData = $database->getRawData();
-                } else {
-                    if ($database instanceof \Iterator) {
-                        $currentData = iterator_to_array($database);
-                    }
+                } elseif ($database instanceof \Iterator) {
+                    $currentData = iterator_to_array($database);
                 }
 
                 if (!$currentData) {

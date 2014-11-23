@@ -79,21 +79,17 @@ class Key extends AbstractIndex
 
         if ($database instanceof SplFixedArray) {
             // Use the fixed array as is
+        } elseif (is_array($database)) {
+            $collection = SplFixedArray::fromArray($database);
+        } elseif ($database instanceof \Iterator) {
+            $collection = SplFixedArray::fromArray(iterator_to_array($database));
         } else {
-            if (is_array($database)) {
-                $collection = SplFixedArray::fromArray($database);
-            } else {
-                if ($database instanceof \Iterator) {
-                    $collection = SplFixedArray::fromArray(iterator_to_array($database));
-                } else {
-                    throw new InvalidIndexException(
-                        sprintf(
-                            'Can not build index of argument of type %s',
-                            is_object($database) ? get_class($database) : gettype($database)
-                        )
-                    );
-                }
-            }
+            throw new InvalidIndexException(
+                sprintf(
+                    'Can not build index of argument of type %s',
+                    is_object($database) ? get_class($database) : gettype($database)
+                )
+            );
         }
 
         $position = 0;

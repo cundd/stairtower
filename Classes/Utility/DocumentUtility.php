@@ -31,15 +31,13 @@ class DocumentUtility
             if (!isset($document[Constants::DATA_ID_KEY])) {
                 $document[Constants::DATA_ID_KEY] = static::getIdentifierForDocument($document);
             }
-        } else {
-            if ($document instanceof DocumentInterface) {
-                if (!$document->getId()) {
-                    $document->setValueForKey(static::getIdentifierForDocument($document), Constants::DATA_ID_KEY);
-                }
-            } else {
-                throw new InvalidDataException(sprintf('Given data instance is not of type object but %s',
-                    gettype($document)), 1412859398);
+        } elseif ($document instanceof DocumentInterface) {
+            if (!$document->getId()) {
+                $document->setValueForKey(static::getIdentifierForDocument($document), Constants::DATA_ID_KEY);
             }
+        } else {
+            throw new InvalidDataException(sprintf('Given data instance is not of type object but %s',
+                gettype($document)), 1412859398);
         }
         return $document;
     }

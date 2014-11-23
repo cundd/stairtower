@@ -55,10 +55,8 @@ abstract class AbstractFormatter implements FormatterInterface
                 }
             }
             return $foundData;
-        } else {
-            if (is_scalar($data)) {
-                return array('message' => $data);
-            }
+        } elseif (is_scalar($data)) {
+            return array('message' => $data);
         }
         return $data;
     }

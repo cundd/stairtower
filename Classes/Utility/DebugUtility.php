@@ -64,12 +64,10 @@ class DebugUtility
         if ($htmlOutput) {
             echo "<span class='rest-debug-path' style='font-size:9px'><a href='file:$file'>see $file($line)</a></span>";
             echo "</pre>";
-        } else {
-            if ($colorOutput) {
+        } elseif ($colorOutput) {
                 echo "\033[0;35m" . "$file($line)" . "\033[0m";
             } else {
                 echo "($file:$line)";
-            }
         }
 
         if ($htmlOutput) {
@@ -144,13 +142,12 @@ class DebugUtility
         if ($htmlOutput) {
             echo "<span class='rest-debug-path' style='font-size:9px'><a href='file:$file'>see $file($line)</a></span>";
             echo "</pre>";
-        } else {
-            if ($colorOutput) {
+        } elseif ($colorOutput) {
                 echo "\033[0;35m" . "$file($line)" . "\033[0m";
             } else {
                 echo "($file:$line)";
             }
-        }
+
 
         if ($htmlOutput) {
             echo '</pre>';

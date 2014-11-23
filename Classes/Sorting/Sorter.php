@@ -132,17 +132,13 @@ class Sorter
 
         if (is_array($collection)) {
             $dataCollectionRaw = SplFixedArray::fromArray($collection);
-        } else {
-            if ($collection instanceof SplFixedArray) {
-                $dataCollectionRaw = $collection;
-            } else {
-                if ($collection instanceof Database) {
+        } elseif ($collection instanceof SplFixedArray) {
+            $dataCollectionRaw = $collection;
+        } elseif ($collection instanceof Database) {
 //			$dataCollectionRaw = $collection->getRawData();
-                    $dataCollectionRaw = $collection->toFixedArray();
-                } else {
-                    $dataCollectionRaw = SplFixedArray::fromArray(iterator_to_array($collection));
-                }
-            }
+            $dataCollectionRaw = $collection->toFixedArray();
+        } else {
+            $dataCollectionRaw = SplFixedArray::fromArray(iterator_to_array($collection));
         }
         $dataCollectionCount = $dataCollectionRaw->getSize();
 
@@ -162,17 +158,15 @@ class Sorter
             // Prepare the packed result array
             if (is_float($propertyValue)) {
                 $propertyValue .= '';
-            } else {
-                if ($propertyValue !== null && !is_scalar($propertyValue)) {
-                    throw new SortingException(
-                        sprintf(
-                            'Could not sort by property key path %s, because one value is of type %s',
-                            $keyPath,
-                            gettype($propertyValue)
-                        ),
-                        1412021636
-                    );
-                }
+            } elseif ($propertyValue !== null && !is_scalar($propertyValue)) {
+                throw new SortingException(
+                    sprintf(
+                        'Could not sort by property key path %s, because one value is of type %s',
+                        $keyPath,
+                        gettype($propertyValue)
+                    ),
+                    1412021636
+                );
             }
             if (!isset($resultArray[$propertyValue])) {
                 $resultArray[$propertyValue] = array(
@@ -229,13 +223,11 @@ class Sorter
     {
         if (is_array($collection)) {
             $dataCollection = SplFixedArray::fromArray($collection);
-        } else {
-            if ($collection instanceof Database) {
+        } elseif ($collection instanceof Database) {
 //			$dataCollectionRaw = $collection->getRawData();
-                $dataCollection = $collection->toFixedArray();
-            } else {
-                $dataCollection = SplFixedArray::fromArray(iterator_to_array($collection));
-            }
+            $dataCollection = $collection->toFixedArray();
+        } else {
+            $dataCollection = SplFixedArray::fromArray(iterator_to_array($collection));
         }
 
         $dataCollectionRaw = $dataCollection->toArray();

@@ -48,14 +48,10 @@ class ObjectUtility
         if (is_object($currentValue)) {
             if (method_exists($currentValue, $accessorMethod)) { // Getter method
                 $currentValue->$accessorMethod($value);
-            } else {
-                if (method_exists($currentValue, 'set')) { // General "set" method
-                    $currentValue->set($key);
-                } else {
-                    if (array_key_exists($key, get_object_vars($currentValue))) { // Direct access
-                        $currentValue->$key = $value;
-                    }
-                }
+            } elseif (method_exists($currentValue, 'set')) { // General "set" method
+                $currentValue->set($key);
+            } elseif (array_key_exists($key, get_object_vars($currentValue))) { // Direct access
+                $currentValue->$key = $value;
             }
         }
     }
@@ -85,27 +81,20 @@ class ObjectUtility
             // Current value is an array
             if (is_array($currentValue) && isset($currentValue[$key])) {
                 $currentValue = $currentValue[$key];
-            } else // Current value is an object
-            {
-                if (is_object($currentValue)) {
-                    $accessorMethod = 'get' . ucfirst($key);
+            } elseif (is_object($currentValue)) { // Current value is an object
+                $accessorMethod = 'get' . ucfirst($key);
 
-                    if (method_exists($currentValue, $accessorMethod)) { // Getter method
-                        $currentValue = $currentValue->$accessorMethod();
-                    } else {
-                        if (method_exists($currentValue, 'get')) { // General "get" method
-                            $currentValue = $currentValue->get($key);
-                        } else {
-                            if (array_key_exists($key, get_object_vars($currentValue))) { // Direct access
-                                $currentValue = $currentValue->$key;
-                            } else {
-                                $currentValue = null;
-                            }
-                        }
-                    }
+                if (method_exists($currentValue, $accessorMethod)) { // Getter method
+                    $currentValue = $currentValue->$accessorMethod();
+                } elseif (method_exists($currentValue, 'get')) { // General "get" method
+                    $currentValue = $currentValue->get($key);
+                } elseif (array_key_exists($key, get_object_vars($currentValue))) { // Direct access
+                    $currentValue = $currentValue->$key;
                 } else {
                     $currentValue = null;
                 }
+            } else {
+                $currentValue = null;
             }
 
             if ($currentValue === null) {

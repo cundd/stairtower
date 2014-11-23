@@ -132,16 +132,12 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
     {
         if ($rawData instanceof SplFixedArray) {
             // Use the fixed array as is
+        } elseif (is_array($rawData)) {
+            $rawData = SplFixedArray::fromArray($rawData);
+        } elseif ($rawData instanceof \Iterator) {
+            $rawData = SplFixedArray::fromArray(iterator_to_array($rawData));
         } else {
-            if (is_array($rawData)) {
-                $rawData = SplFixedArray::fromArray($rawData);
-            } else {
-                if ($rawData instanceof \Iterator) {
-                    $rawData = SplFixedArray::fromArray(iterator_to_array($rawData));
-                } else {
-                    throw new InvalidCollectionException('Could not set raw data', 1412017652);
-                }
-            }
+            throw new InvalidCollectionException('Could not set raw data', 1412017652);
         }
 
         // Make sure all raw Documents have an ID
