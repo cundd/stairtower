@@ -39,7 +39,7 @@ class LogicalComparison implements LogicalComparisonInterface
      * @param string                    $operator One of the ComparisonInterface::TYPE constants
      * @param array|ComparisonInterface $constraints
      */
-    function __construct($operator, $constraints)
+    public function __construct($operator, $constraints)
     {
         $this->operator = $operator;
 

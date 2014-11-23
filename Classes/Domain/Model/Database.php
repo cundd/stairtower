@@ -84,7 +84,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
      * @param string $identifier
      * @param array  $rawData
      */
-    function __construct($identifier, $rawData = array())
+    public function __construct($identifier, $rawData = array())
     {
         GeneralUtility::assertDatabaseIdentifier($identifier);
         $this->identifier = $identifier;

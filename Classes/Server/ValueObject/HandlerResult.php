@@ -35,7 +35,7 @@ class HandlerResult implements HandlerResultInterface, Immutable
      * @param integer $statusCode
      * @param mixed   $data
      */
-    function __construct($statusCode, $data = null)
+    public function __construct($statusCode, $data = null)
     {
         $this->statusCode = $statusCode;
         $this->data       = $data;

@@ -20,12 +20,12 @@ class DebugUtility
      *
      * @var int
      */
-    static public $backtraceOffset = 1;
+    public static $backtraceOffset = 1;
 
     /**
      * @see debug()
      */
-    static public function var_dump($variable)
+    public static function var_dump($variable)
     {
         $variables = func_get_args();
         static::$backtraceOffset += 2;
@@ -39,7 +39,7 @@ class DebugUtility
      * @param string $message
      * @param mixed  $additional ...
      */
-    static public function pl($message, $additional = null)
+    public static function pl($message, $additional = null)
     {
         $caller      = static::getCaller();
         $htmlOutput  = php_sapi_name() !== 'cli';
@@ -85,7 +85,7 @@ class DebugUtility
      *
      * @return array
      */
-    static public function getCaller()
+    public static function getCaller()
     {
         static $basePathLength = '';
         if (!$basePathLength) {
@@ -119,7 +119,7 @@ class DebugUtility
      *
      * @param $variable
      */
-    static public function debug($variable)
+    public static function debug($variable)
     {
         $caller      = static::getCaller();
         $htmlOutput  = php_sapi_name() !== 'cli';

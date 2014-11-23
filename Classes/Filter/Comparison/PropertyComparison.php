@@ -49,7 +49,7 @@ class PropertyComparison implements PropertyComparisonInterface
      * @param string $operator One of the ComparisonInterface::TYPE constants
      * @param mixed  $value    Value to test against
      */
-    function __construct($property, $operator, $value = null)
+    public function __construct($property, $operator, $value = null)
     {
         $this->property = $property;
         $this->value    = $value;

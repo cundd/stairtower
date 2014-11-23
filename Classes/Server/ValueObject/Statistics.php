@@ -62,7 +62,7 @@ class Statistics implements Immutable, JsonSerializable
      * @param float    $memoryUsage
      * @param float    $memoryPeakUsage
      */
-    function __construct($version, $guid, $startTime, $memoryUsage, $memoryPeakUsage)
+    public function __construct($version, $guid, $startTime, $memoryUsage, $memoryPeakUsage)
     {
         $this->guid            = $guid;
         $this->memoryPeakUsage = $memoryPeakUsage;

@@ -25,7 +25,7 @@ class DocumentUtility
      * @param DocumentInterface|array $document
      * @return DocumentInterface|array Returns the modified object or array
      */
-    static public function assertDocumentIdentifier($document)
+    public static function assertDocumentIdentifier($document)
     {
         if (is_array($document)) {
             if (!isset($document[Constants::DATA_ID_KEY])) {
@@ -50,7 +50,7 @@ class DocumentUtility
      * @param DocumentInterface|array $document
      * @return string
      */
-    static public function getIdentifierForDocument($document)
+    public static function getIdentifierForDocument($document)
     {
         $argumentIsArray = is_array($document);
 
@@ -93,7 +93,7 @@ class DocumentUtility
      * @param array $data
      * @return array Returns the modified array
      */
-    static public function assertDocumentIdentifierOfData($data)
+    public static function assertDocumentIdentifierOfData($data)
     {
         if (!isset($data[Constants::DATA_ID_KEY])) {
             $data[Constants::DATA_ID_KEY] = static::getIdentifierForDocument($data);

@@ -22,21 +22,21 @@ abstract class Manager implements ManagerInterface
      *
      * @var array
      */
-    static protected $managedObjects = array();
+    protected static $managedObjects = array();
 
     /**
      * A collection tags
      *
      * @var array
      */
-    static protected $managedObjectTags = array();
+    protected static $managedObjectTags = array();
 
     /**
      * Returns all registered objects
      *
      * @return array
      */
-    static public function getAllObjects()
+    public static function getAllObjects()
     {
         return self::$managedObjects;
     }
@@ -48,7 +48,7 @@ abstract class Manager implements ManagerInterface
      * @param string $identifier
      * @param array  $tags
      */
-    static public function registerObject($object, $identifier, $tags = array())
+    public static function registerObject($object, $identifier, $tags = array())
     {
         if (!is_string($identifier)) {
             throw new ManagerException('Given identifier is not of type string. Maybe the arguments are swapped',
@@ -68,7 +68,7 @@ abstract class Manager implements ManagerInterface
      * @param string $identifier
      * @return string
      */
-    static public function prepareIdentifier($identifier)
+    public static function prepareIdentifier($identifier)
     {
         if (!is_scalar($identifier)) {
             throw new ManagerException(sprintf(
@@ -84,7 +84,7 @@ abstract class Manager implements ManagerInterface
      * @param string $identifier
      * @param string $tag
      */
-    static protected function addIdentifierForTag($identifier, $tag)
+    protected static function addIdentifierForTag($identifier, $tag)
     {
         $identifier = self::prepareIdentifier($identifier);
         if (!isset(self::$managedObjectTags[$tag])) {
@@ -99,7 +99,7 @@ abstract class Manager implements ManagerInterface
      * @param string $tag
      * @return array
      */
-    static public function getObjectsByTag($tag)
+    public static function getObjectsByTag($tag)
     {
         $foundObjects     = array();
         $foundIdentifiers = self::getIdentifiersByTag($tag, true);
@@ -116,7 +116,7 @@ abstract class Manager implements ManagerInterface
      * @param bool   $graceful
      * @return array
      */
-    static public function getIdentifiersByTag($tag, $graceful = false)
+    public static function getIdentifiersByTag($tag, $graceful = false)
     {
         if (!isset(self::$managedObjectTags[$tag])) {
             if (!$graceful) {
@@ -133,7 +133,7 @@ abstract class Manager implements ManagerInterface
      * @param string $identifier
      * @return object|bool
      */
-    static public function getObject($identifier)
+    public static function getObject($identifier)
     {
         $identifier = self::prepareIdentifier($identifier);
         if (!self::hasObject($identifier)) {
@@ -148,7 +148,7 @@ abstract class Manager implements ManagerInterface
      * @param string $identifier
      * @return object|bool
      */
-    static public function hasObject($identifier)
+    public static function hasObject($identifier)
     {
         $identifier = self::prepareIdentifier($identifier);
         return isset(self::$managedObjects[$identifier]);
@@ -160,7 +160,7 @@ abstract class Manager implements ManagerInterface
      * @param string $tag
      * @return array
      */
-    static public function freeObjectsByTag($tag)
+    public static function freeObjectsByTag($tag)
     {
         $foundIdentifiers = self::getIdentifiersByTag($tag, true);
         foreach ($foundIdentifiers as $identifier) {
@@ -173,7 +173,7 @@ abstract class Manager implements ManagerInterface
      *
      * @param string $identifier
      */
-    static public function free($identifier)
+    public static function free($identifier)
     {
         $identifier = self::prepareIdentifier($identifier);
         if (!isset(self::$managedObjects[$identifier])) {
@@ -190,7 +190,7 @@ abstract class Manager implements ManagerInterface
     /**
      * @param string $identifier
      */
-    static protected function removeIdentifier($identifier)
+    protected static function removeIdentifier($identifier)
     {
         $identifier = self::prepareIdentifier($identifier);
         foreach (self::$managedObjectTags as $tag => $values) {
@@ -201,7 +201,7 @@ abstract class Manager implements ManagerInterface
     /**
      * Tells the Memory Manager to clean up the memory
      */
-    static public function cleanup()
+    public static function cleanup()
     {
         gc_collect_cycles();
     }
@@ -211,7 +211,7 @@ abstract class Manager implements ManagerInterface
      *
      * @internal
      */
-    static public function freeAll()
+    public static function freeAll()
     {
         $identifiers = array_keys(self::$managedObjects);
         foreach ($identifiers as $identifier) {

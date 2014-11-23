@@ -51,7 +51,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
      * @param Database|Iterator $originalCollection
      * @param FilterInterface   $filter
      */
-    function __construct($originalCollection, $filter)
+    public function __construct($originalCollection, $filter)
     {
         $this->collection = $this->cloneCollection($originalCollection);
         $this->filter     = $filter;

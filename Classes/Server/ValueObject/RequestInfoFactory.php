@@ -23,7 +23,7 @@ class RequestInfoFactory
      *
      * @var array
      */
-    static protected $pathToRequestInfoMap = array();
+    protected static $pathToRequestInfoMap = array();
 
     /**
      * Builds a RequestInfo instance for the given path
@@ -31,7 +31,7 @@ class RequestInfoFactory
      * @param Request $request
      * @return RequestInfo
      */
-    static public function buildRequestInfoFromRequest(Request $request)
+    public static function buildRequestInfoFromRequest(Request $request)
     {
         $requestInfoIdentifier = sha1(sprintf('%s-%s-%s', $request->getMethod(), $request->getPath(),
             json_encode($request->getQuery())));
@@ -65,7 +65,7 @@ class RequestInfoFactory
      * @param Request $request
      * @return string|bool
      */
-    static public function getHandlerActionForRequest($request)
+    public static function getHandlerActionForRequest($request)
     {
         return static::getActionForRequestAndInterface($request,
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface');
@@ -79,7 +79,7 @@ class RequestInfoFactory
      * @param string  $interface
      * @return string|bool
      */
-    static protected function getActionForRequestAndInterface($request, $interface)
+    protected static function getActionForRequestAndInterface($request, $interface)
     {
         $path   = $request->getPath();
         $method = $request->getMethod();
@@ -104,7 +104,7 @@ class RequestInfoFactory
      * @param Request $request
      * @return string|bool
      */
-    static public function getServerActionForRequest($request)
+    public static function getServerActionForRequest($request)
     {
         $path   = $request->getPath();
         $method = $request->getMethod();

@@ -23,20 +23,20 @@ use DateTime;
  */
 class CrashHandler
 {
-    static public $sharedCrashHandler;
+    public static $sharedCrashHandler;
     /**
      * Defines if the crash handler has been registered
      *
      * @var bool
      */
-    static protected $didRegister = false;
+    protected static $didRegister = false;
     /**
      * @var CoordinatorInterface
      * @Inject
      */
     protected $coordinator;
 
-    function __construct()
+    public function __construct()
     {
         self::$sharedCrashHandler = $this;
     }

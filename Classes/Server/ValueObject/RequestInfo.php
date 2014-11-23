@@ -64,7 +64,7 @@ class RequestInfo implements Immutable
      * @param string  $method
      * @param string  $specialHandlerAction
      */
-    function __construct($request, $dataIdentifier, $databaseIdentifier, $method, $specialHandlerAction = null)
+    public function __construct($request, $dataIdentifier, $databaseIdentifier, $method, $specialHandlerAction = null)
     {
         if ($method) {
             GeneralUtility::assertRequestMethod($method);

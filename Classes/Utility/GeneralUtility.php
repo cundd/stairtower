@@ -25,7 +25,7 @@ abstract class GeneralUtility
      * @param string $identifier
      * @throws \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException if the database isn't valid
      */
-    static public function assertDatabaseIdentifier($identifier)
+    public static function assertDatabaseIdentifier($identifier)
     {
         if (!preg_match('(^([a-zA-Z]{1}[a-zA-Z0-9_\-]{0,})$)', $identifier)) {
             throw new InvalidDatabaseIdentifierException("Invalid database identifier '$identifier'", 1408996075);
@@ -38,7 +38,7 @@ abstract class GeneralUtility
      * @param string $identifier
      * @throws \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException if the database isn't valid
      */
-    static public function assertDataIdentifier($identifier)
+    public static function assertDataIdentifier($identifier)
     {
         if (!preg_match('(^([a-zA-Z0-9]{1}[a-zA-Z0-9_\-\.@]{0,})$)', $identifier)) {
             throw new InvalidDataIdentifierException("Invalid data identifier '$identifier'", 1412889537);
@@ -51,7 +51,7 @@ abstract class GeneralUtility
      * @param string $method
      * @throw \Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodServerException
      */
-    static public function assertRequestMethod($method)
+    public static function assertRequestMethod($method)
     {
         if (!in_array($method, array('GET', 'POST', 'PUT', 'DELETE', 'HEAD'))) {
             throw new InvalidRequestMethodException("Invalid method '$method'", 1413052000);
@@ -65,7 +65,7 @@ abstract class GeneralUtility
      * @param int $precision
      * @return string
      */
-    static public function formatBytes($bytes, $precision = 2)
+    public static function formatBytes($bytes, $precision = 2)
     {
         $units = array('B', 'KB', 'MB', 'GB', 'TB');
 
@@ -86,7 +86,7 @@ abstract class GeneralUtility
      * @param $var
      * @return int|null
      */
-    static public function validateInteger($var)
+    public static function validateInteger($var)
     {
         if (is_integer($var) || ((string)(int)$var === $var)) {
             return intval($var);
@@ -100,7 +100,7 @@ abstract class GeneralUtility
      * @param string $underscoreString
      * @return string
      */
-    static public function underscoreToCamelCase($underscoreString)
+    public static function underscoreToCamelCase($underscoreString)
     {
         $prefix = $underscoreString[0] === '_' ? '_' : '';
         return $prefix . lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $underscoreString))));
@@ -112,7 +112,7 @@ abstract class GeneralUtility
      * @param mixed $value
      * @return bool|string Returns the string representation or FALSE on error
      */
-    static public function toString($value)
+    public static function toString($value)
     {
         switch (true) {
             case is_null($value):
@@ -139,7 +139,7 @@ abstract class GeneralUtility
      * @param string $dir
      * @return bool
      */
-    static public function removeDirectoryRecursive($dir)
+    public static function removeDirectoryRecursive($dir)
     {
         $success = true;
         $files   = array_diff(scandir($dir), array('.', '..'));

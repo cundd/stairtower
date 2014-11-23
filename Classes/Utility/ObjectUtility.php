@@ -25,7 +25,7 @@ class ObjectUtility
      * @param object|array $object  Source to fetch the data from
      * @throws LogicException if the given key path is no string
      */
-    static public function setValueForKeyPathOfObject($value, $keyPath, $object)
+    public static function setValueForKeyPathOfObject($value, $keyPath, $object)
     {
         if (!is_string($keyPath)) {
             throw new LogicException('Given key path is not of type string (maybe arguments are ordered incorrect)',
@@ -69,7 +69,7 @@ class ObjectUtility
      * @throws LogicException if the given key path is no string
      * @return mixed
      */
-    static public function valueForKeyPathOfObject($keyPath, $object, $default = null)
+    public static function valueForKeyPathOfObject($keyPath, $object, $default = null)
     {
         if (!is_string($keyPath)) {
             throw new LogicException('Given key path is not of type string (maybe arguments are ordered incorrect)',

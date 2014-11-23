@@ -23,7 +23,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
      *
      * @var ConfigurationManagerInterface
      */
-    static protected $sharedInstance;
+    protected static $sharedInstance;
     /**
      * Configuration as array
      *
@@ -31,7 +31,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
      */
     protected $configuration;
 
-    function __construct()
+    public function __construct()
     {
         $basePath            = $this->getBasePath();
         $varPath             = $basePath . 'var/';
@@ -69,7 +69,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
      *
      * @return ConfigurationManagerInterface
      */
-    static public function getSharedInstance()
+    public static function getSharedInstance()
     {
         if (!self::$sharedInstance) {
             new static();

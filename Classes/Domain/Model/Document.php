@@ -27,7 +27,7 @@ class Document implements DocumentInterface
     protected $id;
     protected $data;
 
-    function __construct($data = array(), $databaseIdentifier = '')
+    public function __construct($data = array(), $databaseIdentifier = '')
     {
         if ($data) {
             $this->data = $data;

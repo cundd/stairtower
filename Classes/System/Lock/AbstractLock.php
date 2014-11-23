@@ -24,7 +24,7 @@ abstract class AbstractLock implements LockInterface
      */
     protected $name;
 
-    function __construct($name = null)
+    public function __construct($name = null)
     {
         $this->name = $name;
     }

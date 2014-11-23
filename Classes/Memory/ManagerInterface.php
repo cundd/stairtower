@@ -20,7 +20,7 @@ interface ManagerInterface
      * @param string $identifier
      * @param array  $tags
      */
-    static public function registerObject($object, $identifier, $tags = array());
+    public static function registerObject($object, $identifier, $tags = array());
 
     /**
      * Returns the object for the given identifier or FALSE if it was not found
@@ -28,7 +28,7 @@ interface ManagerInterface
      * @param string $identifier
      * @return object|bool
      */
-    static public function getObject($identifier);
+    public static function getObject($identifier);
 
     /**
      * Returns if an object for the given identifier is registered
@@ -36,7 +36,7 @@ interface ManagerInterface
      * @param string $identifier
      * @return object|bool
      */
-    static public function hasObject($identifier);
+    public static function hasObject($identifier);
 
     /**
      * Frees the object with the given identifier from the Memory Manager
@@ -44,7 +44,7 @@ interface ManagerInterface
      * @param string $identifier
      * @throws ManagerException if no object for the given identifier is registered
      */
-    static public function free($identifier);
+    public static function free($identifier);
 
 
     /**
@@ -55,7 +55,7 @@ interface ManagerInterface
      * @return array
      * @throws ManagerException if the given tag is not found an graceful is FALSE
      */
-    static public function getIdentifiersByTag($tag, $graceful = false);
+    public static function getIdentifiersByTag($tag, $graceful = false);
 
     /**
      * Returns all objects with a given tag
@@ -63,7 +63,7 @@ interface ManagerInterface
      * @param string $tag
      * @return array
      */
-    static public function getObjectsByTag($tag);
+    public static function getObjectsByTag($tag);
 
     /**
      * Free all objects with a given tag
@@ -71,17 +71,17 @@ interface ManagerInterface
      * @param string $tag
      * @return array
      */
-    static public function freeObjectsByTag($tag);
+    public static function freeObjectsByTag($tag);
 
     /**
      * Frees all managed objects
      *
      * @internal
      */
-    static public function freeAll();
+    public static function freeAll();
 
     /**
      * Tells the Memory Manager to clean up the memory
      */
-    static public function cleanup();
+    public static function cleanup();
 }

@@ -33,7 +33,7 @@ class Filter implements FilterInterface
      *
      * @param \SplObjectStorage|array $comparisons The comparisons
      */
-    function __construct($comparisons = null)
+    public function __construct($comparisons = null)
     {
         if (!$comparisons) {
             $this->comparisons = new \SplObjectStorage();

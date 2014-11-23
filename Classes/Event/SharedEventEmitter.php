@@ -22,7 +22,7 @@ class SharedEventEmitter
     /**
      * @var SharedEventEmitter
      */
-    static protected $_sharedEventEmitter;
+    protected static $_sharedEventEmitter;
     /**
      * Event Emitter instance
      *
@@ -40,12 +40,12 @@ class SharedEventEmitter
     /**
      * Save the instance as shared Event Emitter
      */
-    function __construct()
+    public function __construct()
     {
         static::$_sharedEventEmitter = $this;
     }
 
-    static public function futureEmit($event, array $arguments = [])
+    public static function futureEmit($event, array $arguments = [])
     {
         return static::sharedEventEmitter()->getEventEmitter()->emit($event, $arguments);
     }
@@ -55,7 +55,7 @@ class SharedEventEmitter
      *
      * @return SharedEventEmitter
      */
-    static public function sharedEventEmitter()
+    public static function sharedEventEmitter()
     {
         if (!static::$_sharedEventEmitter) {
             throw new RuntimeException('Shared Event Emitter has not been created', 1413369080);
@@ -63,32 +63,32 @@ class SharedEventEmitter
         return static::$_sharedEventEmitter;
     }
 
-    static public function on($event, callable $listener)
+    public static function on($event, callable $listener)
     {
         return static::sharedEventEmitter()->getEventEmitter()->on($event, $listener);
     }
 
-    static public function once($event, callable $listener)
+    public static function once($event, callable $listener)
     {
         return static::sharedEventEmitter()->getEventEmitter()->once($event, $listener);
     }
 
-    static public function removeListener($event, callable $listener)
+    public static function removeListener($event, callable $listener)
     {
         return static::sharedEventEmitter()->getEventEmitter()->removeListener($event, $listener);
     }
 
-    static public function removeAllListeners($event = null)
+    public static function removeAllListeners($event = null)
     {
         return static::sharedEventEmitter()->getEventEmitter()->removeAllListeners($event);
     }
 
-    static public function listeners($event)
+    public static function listeners($event)
     {
         return static::sharedEventEmitter()->getEventEmitter()->listeners($event);
     }
 
-    static public function emit($event, array $arguments = [])
+    public static function emit($event, array $arguments = [])
     {
         return static::sharedEventEmitter()->getEventEmitter()->emit($event, $arguments);
     }

@@ -30,7 +30,7 @@ abstract class AbstractIndex implements IndexInterface
      * @param DatabaseInterface|\Iterator $database
      * @param string                      $property
      */
-    function __construct($database = null, $property = '')
+    public function __construct($database = null, $property = '')
     {
         if ($database) {
             $this->indexDatabase($database);

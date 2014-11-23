@@ -22,7 +22,7 @@ class ContentTypeUtility
      *
      * @var array
      */
-    static protected $suffixToContentTypeMap = array(
+    protected static $suffixToContentTypeMap = array(
         'jpg'   => ContentType::JPEG_IMAGE,
         'jpeg'  => ContentType::JPEG_IMAGE,
         'png'   => ContentType::PNG_IMAGE,
@@ -42,7 +42,7 @@ class ContentTypeUtility
      * @param string $contentType
      * @return string
      */
-    static public function convertContentTypeToSuffix($contentType)
+    public static function convertContentTypeToSuffix($contentType)
     {
         return array_search($contentType, static::$suffixToContentTypeMap);
     }
@@ -53,7 +53,7 @@ class ContentTypeUtility
      * @param string $suffix
      * @return string
      */
-    static public function convertSuffixToContentType($suffix)
+    public static function convertSuffixToContentType($suffix)
     {
         return isset(static::$suffixToContentTypeMap[$suffix]) ? static::$suffixToContentTypeMap[$suffix] : false;
     }

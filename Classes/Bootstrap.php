@@ -26,7 +26,7 @@ class Bootstrap
      */
     protected $diContainer;
 
-    function __construct()
+    public function __construct()
     {
         $this->init();
     }

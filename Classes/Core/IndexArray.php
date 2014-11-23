@@ -47,7 +47,7 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
      *
      * @param array $elements
      */
-    function __construct($elements = null)
+    public function __construct($elements = null)
     {
         if ($elements !== null) {
             $this->initWithArray($elements);
