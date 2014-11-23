@@ -10,7 +10,6 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Memory\Helper;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
 
@@ -24,6 +23,12 @@ class Reader {
 	 * Used data encoding
 	 */
 	const DATA_ENCODING = 'json';
+
+    /**
+     * @var \Cundd\PersistentObjectStore\Memory\Helper
+     * @Inject
+     */
+    protected $memoryHelper;
 
 	/**
 	 * Loads the database with the given identifier
@@ -66,8 +71,7 @@ class Reader {
 		$this->databaseExists($databaseIdentifier, $error);
 		if ($error instanceof ReaderException) throw $error;
 
-		$memoryHelper = new Helper();
-		$memoryHelper->checkMemoryForJsonFile($path);
+        $this->memoryHelper->checkMemoryForJsonFile($path);
 
 //		DebugUtility::printMemorySample();
 		$lock = Factory::createLock($databaseIdentifier);
