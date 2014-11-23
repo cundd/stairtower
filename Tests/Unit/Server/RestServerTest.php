@@ -10,7 +10,6 @@ namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Test for REST commands
@@ -274,6 +273,10 @@ class RestServerTest extends \PHPUnit_Framework_TestCase {
 			$this->assertEquals($testDocument['id'], $response['id']);
 			$this->assertEquals($testDocument['ip'], $response['ip']);
 			$this->assertEquals($testDocument['os'], $response['os']);
+
+            $response = $this->_performRestRequest($databaseIdentifier . '/' . $documentIdentifier, 'GET');
+            $this->assertTrue($response !== false);
+            $this->assertEquals($testDocument['id'], $response['id']);
 		}
 
 		// List Documents in that database
