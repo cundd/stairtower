@@ -72,6 +72,13 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
     protected $index = 0;
 
     /**
+     * Database's current state
+     *
+     * @var string
+     */
+    protected $state = self::STATE_CLEAN;
+
+    /**
      * Collection of Indexes
      *
      * @var IndexInterface[]
@@ -154,6 +161,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
         }
         $this->objectData = new SplFixedArray($this->rawData->getSize());
 
+        $this->state = self::STATE_DIRTY;
+
         $this->rebuildIndexes();
     }
 
@@ -185,6 +194,31 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
             return DocumentUtility::assertDocumentIdentifierOfData($data);
         }
         return false;
+    }
+
+    // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+    // STATE
+    // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
+    /**
+     * Returns the Database's current state
+     *
+     * @return string
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Sets the Database's state
+     *
+     * @param string $newState
+     * @return $this
+     */
+    public function setState($newState)
+    {
+        $this->state = $newState;
+        return $this;
     }
 
     // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
@@ -233,6 +267,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 
         $this->addToIndexAtPosition($document, $currentCount);
 
+        $this->state = self::STATE_DIRTY;
         SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_ADDED, array($document));
     }
 
@@ -653,6 +688,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
         if ($this->contains($document)) {
             throw new RuntimeException(sprintf('Database still contains object %s', $document->getGuid()), 1413290094);
         }
+        $this->state = self::STATE_DIRTY;
         SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_REMOVED, array($document));
     }
 

@@ -11,6 +11,7 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseStateInterface;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
 
@@ -60,6 +61,7 @@ class Reader
     protected function _fillDatabaseWithData($database, $dataCollection, $metaDataCollection)
     {
         $database->setRawData($dataCollection);
+        $database->setState(DatabaseStateInterface::STATE_CLEAN);
     }
 
     /**

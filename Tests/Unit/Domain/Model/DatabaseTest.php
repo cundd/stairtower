@@ -145,6 +145,62 @@ class DatabaseTest extends AbstractDataBasedCase
     /**
      * @test
      */
+    public function addAndGetStateTest()
+    {
+        $this->fixture = $this->coordinator->getDatabase('contacts');
+        $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
+
+        $this->fixture->add(new Document(
+            array(
+                'email'    => 'mail' . time() . '@test.com',
+                'age'      => 31,
+                'eyeColor' => 'green'
+            ),
+            $this->fixture->getIdentifier()
+        ));
+
+        $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
+        $this->coordinator->commitDatabase($this->fixture);
+        $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
+
+
+        $this->fixture->add(new Document(
+            array(
+                'email'    => 'mail-2-' . time() . '@test.com',
+                'age'      => 32,
+                'eyeColor' => 'brown'
+            ),
+            $this->fixture->getIdentifier()
+        ));
+
+        $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
+        $this->coordinator->commitDatabases();
+        $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
+    }
+
+    /**
+     * @test
+     */
+    public function removeAndGetStateTest()
+    {
+        $this->fixture = $this->coordinator->getDatabase('contacts');
+        $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
+
+        $this->fixture->remove(new Document(array('email' => 'alice@mckenzy.net'), $this->fixture->getIdentifier()));
+        $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
+        $this->coordinator->commitDatabase($this->fixture);
+        $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
+
+
+        $this->fixture->remove(new Document(array('email' => 'paul@mckenzy.net'), $this->fixture->getIdentifier()));
+        $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
+        $this->coordinator->commitDatabases();
+        $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
+    }
+
+    /**
+     * @test
+     */
     public function addAndFindByIdentifierTest()
     {
         $testEmail    = 'mail' . time() . '@test.com';

@@ -33,10 +33,23 @@ class ConfigurationManager implements ConfigurationManagerInterface
 
     public function __construct()
     {
+        $configurationReader = new ConfigurationReader();
+        $this->configuration = array_merge_recursive($this->getDefaults(),
+            $configurationReader->readConfigurationFiles());
+
+        self::$sharedInstance = $this;
+    }
+
+    /**
+     * Returns the default configuration
+     *
+     * @return array
+     */
+    public function getDefaults()
+    {
         $basePath            = $this->getBasePath();
         $varPath             = $basePath . 'var/';
-        $configurationReader = new ConfigurationReader();
-        $this->configuration = array_merge_recursive(array(
+        return array(
             'basePath'      => $basePath,
             'dataPath'      => $varPath . 'Data/',
             'writeDataPath' => $varPath . 'Data/',
@@ -45,9 +58,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
             'logPath'       => $varPath . 'Log/',
             'tempPath'      => $varPath . 'Temp/',
             'rescuePath'    => $varPath . 'Rescue/',
-        ), $configurationReader->readConfigurationFiles());
-
-        self::$sharedInstance = $this;
+        );
     }
 
     /**
@@ -101,7 +112,6 @@ class ConfigurationManager implements ConfigurationManagerInterface
             throw new RuntimeException('Dot notation is currently not supported');
         }
         $this->configuration[$keyPath] = $value;
-//		ObjectUtility::setValueForKeyPathOfObject($value, $keyPath, $this->configuration);
         return $this;
     }
 

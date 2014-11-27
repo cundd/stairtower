@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\DataAccess;
 
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseStateInterface;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException;
 use Cundd\PersistentObjectStore\Memory\Manager;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
@@ -34,12 +35,6 @@ class Coordinator implements CoordinatorInterface
      * @Inject
      */
     protected $dataWriter;
-
-    /**
-     * @var \Cundd\PersistentObjectStore\DataAccess\ObjectFinderInterface
-     * @Inject
-     */
-    protected $objectFinder;
 
     /**
      * @var \Evenement\EventEmitterInterface
@@ -189,8 +184,11 @@ class Coordinator implements CoordinatorInterface
      */
     public function commitDatabases()
     {
+        /** @var DatabaseInterface $database */
         foreach (Manager::getObjectsByTag(self::MEMORY_MANAGER_TAG) as $database) {
-            $this->commitDatabase($database);
+            if ($database->getState() === DatabaseStateInterface::STATE_DIRTY) {
+                $this->commitDatabase($database);
+            }
         }
     }
 
@@ -202,6 +200,7 @@ class Coordinator implements CoordinatorInterface
     public function commitDatabase($database)
     {
         $this->dataWriter->writeDatabase($database);
+        $database->setState(DatabaseStateInterface::STATE_CLEAN);
         $this->eventEmitter->emit(Event::DATABASE_COMMITTED, array($database));
     }
 
