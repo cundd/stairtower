@@ -78,11 +78,11 @@ class DocumentUtility
                 }
             }
         }
-        return sprintf('stairtower_%s_%s_document_%s',
+        return sha1(sprintf('stairtower_%s_%s_document_%s',
             Constants::VERSION,
             getmypid(),
             microtime()
-        );
+        ));
     }
 
     /**
