@@ -81,6 +81,10 @@ class Bootstrap
         $logFileDirectory     = $configurationManager->getConfigurationForKeyPath('logPath');
 //        $logFilePath      = $logFileDirectory . 'log-' . getmypid() . '.log';
         $logFilePath = $logFileDirectory . 'log-' . gmdate('Y-m-d') . '.log';
+        if (!file_exists($logFileDirectory)) {
+            mkdir($logFileDirectory);
+        }
+
         $logLevel    = $configurationManager->getConfigurationForKeyPath('logLevel');
         $logger      = new Logger('core');
 

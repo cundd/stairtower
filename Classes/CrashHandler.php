@@ -12,7 +12,7 @@ namespace Cundd\PersistentObjectStore;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
 use Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface;
-use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use DateTime;
 
@@ -108,7 +108,7 @@ class CrashHandler
         if ($data) {
             foreach ($data as $databaseIdentifier => $database) {
                 $currentData = null;
-                if ($database instanceof Database) {
+                if ($database instanceof DatabaseRawDataInterface) {
                     $currentData = $database->getRawData();
                 } elseif ($database instanceof \Iterator) {
                     $currentData = iterator_to_array($database);
