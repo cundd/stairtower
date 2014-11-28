@@ -51,7 +51,7 @@ class Coordinator implements CoordinatorInterface
     /**
      * Array of databases and their objects
      *
-     * @var array<array<mixed>>
+     * @var array[]
      */
     #protected $objectStore = array();
 
@@ -143,7 +143,7 @@ class Coordinator implements CoordinatorInterface
     /**
      * Returns an array of the identifiers of databases that are not already persisted
      *
-     * @return array<string>
+     * @return string[]
      */
     public function listInMemoryDatabases()
     {
@@ -170,7 +170,7 @@ class Coordinator implements CoordinatorInterface
     /**
      * Returns an array of the identifiers of databases that are already persisted
      *
-     * @return array<string>
+     * @return string[]
      */
     public function listPersistedDatabases()
     {
@@ -216,7 +216,7 @@ class Coordinator implements CoordinatorInterface
     /**
      * Returns the static object store
      *
-     * @return array
+     * @return DatabaseInterface[]
      * @internal
      */
     public function getObjectStore()

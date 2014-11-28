@@ -8,6 +8,8 @@
 
 namespace Cundd\PersistentObjectStore\Formatter;
 
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+
 /**
  * Interface for data formatter responsible to transform Document objects into matching string representations
  *
@@ -26,7 +28,7 @@ interface FormatterInterface
     /**
      * Formats the given input model(s)
      *
-     * @param DocumentInterface|array<DocumentInterface> $inputModel
+     * @param DocumentInterface|DocumentInterface[] $inputModel
      * @return string
      */
     public function format($inputModel);
