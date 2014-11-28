@@ -75,6 +75,12 @@ abstract class AbstractServer implements ServerInterface
     protected $eventLoop;
 
     /**
+     * @var \Psr\Log\LoggerInterface
+     * @inject
+     */
+    protected $logger;
+
+    /**
      * Indicates if the server is currently running
      *
      * @var bool
@@ -510,9 +516,8 @@ abstract class AbstractServer implements ServerInterface
     protected function writeln($format, $vars = null)
     {
         $arguments = func_get_args();
-        call_user_func_array(array($this, 'write'), $arguments);
-
-        $this->write(PHP_EOL);
+        call_user_func_array(array($this, 'formatAndWrite'), $arguments);
+        $this->formatAndWrite(PHP_EOL);
     }
 
     /**
@@ -523,13 +528,24 @@ abstract class AbstractServer implements ServerInterface
      */
     protected function write($format, $vars = null)
     {
+        $arguments = func_get_args();
+        call_user_func_array(array($this, 'formatAndWrite'), $arguments);
+    }
+
+    /**
+     * Outputs the given value for information
+     *
+     * @param string $format
+     * @param mixed  $vars …
+     */
+    protected function formatAndWrite($format, $vars = null)
+    {
         if (func_num_args() > 1) {
             $arguments = func_get_args();
             array_shift($arguments);
             $format = vsprintf($format, $arguments);
         }
         fwrite(STDOUT, $format);
-        $this->log($format);
     }
 
     /**
@@ -550,25 +566,7 @@ abstract class AbstractServer implements ServerInterface
         } else {
             $writeData = $format;
         }
-
-        $writeData = gmdate('r') . ': ' . $writeData . PHP_EOL;
-
-        $logFileDirectory = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logPath');
-        $logFilePath      = $logFileDirectory . 'log-' . getmypid() . '.log';
-        $logFilePath      = $logFileDirectory . 'log-' . gmdate('Y-m-d') . '.log';
-
-        if (!file_exists($logFileDirectory)) {
-            mkdir($logFileDirectory);
-        }
-        $fileHandle = fopen($logFilePath, 'w');
-
-        if (!$fileHandle) {
-            throw new RuntimeException(sprintf('Could not open file %s', $logFilePath), 1413294319);
-        }
-        stream_set_blocking($fileHandle, 0);
-
-        fwrite($fileHandle, $writeData);
-        fclose($fileHandle);
+        $this->logger->info($writeData);
     }
 
     /**

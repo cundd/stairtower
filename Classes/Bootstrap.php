@@ -11,6 +11,8 @@ namespace Cundd\PersistentObjectStore;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use DI\ContainerBuilder;
 use Doctrine\Common\Cache\FilesystemCache;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 
 /**
  * Class Bootstrap
@@ -41,6 +43,9 @@ class Bootstrap
         if ($timezone) {
             date_default_timezone_set($timezone);
         }
+
+        $this->getDiContainer();
+        $this->initializeLogger();
     }
 
     /**
@@ -65,9 +70,22 @@ class Bootstrap
 //			$this->diContainer = ContainerBuilder::buildDevContainer();
         }
         return $this->diContainer;
-
-
     }
 
+    /**
+     * Initializes the logger instance
+     */
+    public function initializeLogger()
+    {
+        $configurationManager = ConfigurationManager::getSharedInstance();
+        $logFileDirectory     = $configurationManager->getConfigurationForKeyPath('logPath');
+//        $logFilePath      = $logFileDirectory . 'log-' . getmypid() . '.log';
+        $logFilePath = $logFileDirectory . 'log-' . gmdate('Y-m-d') . '.log';
+        $logLevel    = $configurationManager->getConfigurationForKeyPath('logLevel');
+        $logger      = new Logger('core');
 
+        $logger->pushHandler(new StreamHandler($logFilePath, $logLevel));
+        $logger->pushHandler(new StreamHandler(STDOUT, $logLevel));
+        $this->getDiContainer()->set('Psr\\Log\\LoggerInterface', $logger);
+    }
 }

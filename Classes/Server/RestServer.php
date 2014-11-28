@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Server;
 
+use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
 use Cundd\PersistentObjectStore\LogicException;
@@ -22,6 +23,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
+use Monolog\Logger;
 use React\Http\Request;
 use React\Http\Response;
 use React\Http\Server as HttpServer;
@@ -57,6 +59,17 @@ class RestServer extends AbstractServer
      */
     public function handle($request, $response)
     {
+        // If the configured log level is DEBUG log all requests
+        static $logRequests = -1;
+        if ($logRequests === -1) {
+            $logRequests = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logLevel') <= Logger::DEBUG;
+        }
+        if ($logRequests) {
+            $this->logger->debug(
+                sprintf('Request %s %s %s', $request->getMethod(), $request->getPath(), $request->getHttpVersion())
+            );
+        }
+
         try {
             $serverAction = RequestInfoFactory::getServerActionForRequest($request);
             if ($serverAction) { // Handle a very special server action
@@ -302,17 +315,13 @@ class RestServer extends AbstractServer
     {
         $this->socketServer = new SocketServer($this->getEventLoop());
 
-//		$this->socketServer->on('connection', function ($conn) {
-//			/** @var ConnectionInterface $conn */
-//			$this->writeln('rcv');
-//		});
-
         $httpServer = new HttpServer($this->socketServer, $this->getEventLoop());
         $httpServer->on('request', array($this, 'handle'));
         $this->socketServer->listen($this->port, $this->ip);
 
         $this->writeln(Constants::MESSAGE_CLI_WELCOME . PHP_EOL);
         $this->writeln('Start listening on %s:%s', $this->ip, $this->port);
+        $this->logger->info(sprintf('Start listening on %s:%s', $this->ip, $this->port));
     }
 
 }
