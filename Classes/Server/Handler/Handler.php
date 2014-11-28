@@ -99,6 +99,16 @@ class Handler implements HandlerInterface
     protected function createDataInstance(RequestInfo $requestInfo, $data)
     {
         $database = $this->getDatabaseForRequestInfo($requestInfo);
+        if (!$database) {
+            return new HandlerResult(
+                404,
+                sprintf(
+                    'Database with identifier "%s" not found',
+                    $requestInfo->getDatabaseIdentifier()
+                )
+            );
+        }
+
         $document = new Document($data);
 
         if ($requestInfo->getDataIdentifier()) {
