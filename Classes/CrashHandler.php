@@ -13,6 +13,7 @@ use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
 use Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
+use Cundd\PersistentObjectStore\Memory\Manager;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use DateTime;
 
@@ -103,7 +104,7 @@ class CrashHandler
     public function rescueData()
     {
         $resultMessageParts = array();
-        $data               = ($this->coordinator instanceof Coordinator) ? $this->coordinator->getObjectStore() : array();
+        $data = Manager::getObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
         $backupDirectory    = $this->getRescueDirectory();
         if ($data) {
             foreach ($data as $databaseIdentifier => $database) {

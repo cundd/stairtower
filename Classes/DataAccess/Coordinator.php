@@ -214,17 +214,6 @@ class Coordinator implements CoordinatorInterface
     }
 
     /**
-     * Returns the static object store
-     *
-     * @return DatabaseInterface[]
-     * @internal
-     */
-    public function getObjectStore()
-    {
-        return Manager::getObjectsByTag(self::MEMORY_MANAGER_TAG);
-    }
-
-    /**
      * Performs the query from the given query parts on the database
      *
      * @param array    $queryParts
