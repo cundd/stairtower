@@ -136,7 +136,7 @@ class Coordinator implements CoordinatorInterface
         }
 
         $this->dataWriter->dropDatabase($databaseIdentifier);
-        $this->logger->info(sprintf('Dropped database "%s"', $databaseIdentifier));
+        $this->logger->info(sprintf('Drop database "%s"', $databaseIdentifier));
         $this->eventEmitter->emit(Event::DATABASE_DROPPED, array($databaseIdentifier));
     }
 
