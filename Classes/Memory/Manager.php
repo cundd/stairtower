@@ -218,5 +218,6 @@ abstract class Manager implements ManagerInterface
             self::free($identifier);
         }
         self::$managedObjects = array();
+        self::cleanup();
     }
 } 
