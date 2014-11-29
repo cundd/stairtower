@@ -68,7 +68,7 @@ class Reader
      * Loads the given raw database
      *
      * @param string $databaseIdentifier
-     * @return array<Document>
+     * @return array
      * @throws ReaderException if the database could not be found
      */
     protected function _loadDataCollection($databaseIdentifier)
@@ -119,7 +119,7 @@ class Reader
     /**
      * Returns an array of the identifiers of databases that are already persisted
      *
-     * @return array<string>
+     * @return string[]
      */
     public function listPersistedDatabases()
     {
@@ -139,7 +139,7 @@ class Reader
      * Loads the given meta database
      *
      * @param string $databaseIdentifier
-     * @return array<Document>
+     * @return array
      */
     protected function _loadMetaDataCollection($databaseIdentifier)
     {

@@ -761,7 +761,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
     /**
      * Returns all Document instances of this database
      *
-     * @return array<DatabaseInterface>
+     * @return DatabaseInterface[]
      */
     public function toArray()
     {

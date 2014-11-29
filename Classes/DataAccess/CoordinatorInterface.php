@@ -60,14 +60,14 @@ interface CoordinatorInterface
     /**
      * Returns an array of the identifiers of databases that are not already persisted
      *
-     * @return array<string>
+     * @return string[]
      */
     public function listInMemoryDatabases();
 
     /**
      * Returns an array of the identifiers of databases that are already persisted
      *
-     * @return array<string>
+     * @return string[]
      */
     public function listPersistedDatabases();
 

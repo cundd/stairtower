@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Configuration;
 
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+use Monolog\Logger;
 
 /**
  * Configuration Manager class
@@ -24,6 +25,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
      * @var ConfigurationManagerInterface
      */
     protected static $sharedInstance;
+
     /**
      * Configuration as array
      *
@@ -47,8 +49,8 @@ class ConfigurationManager implements ConfigurationManagerInterface
      */
     public function getDefaults()
     {
-        $basePath            = $this->getBasePath();
-        $varPath             = $basePath . 'var/';
+        $basePath = $this->getBasePath();
+        $varPath  = $basePath . 'var/';
         return array(
             'basePath'      => $basePath,
             'dataPath'      => $varPath . 'Data/',
@@ -58,6 +60,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
             'logPath'       => $varPath . 'Log/',
             'tempPath'      => $varPath . 'Temp/',
             'rescuePath'    => $varPath . 'Rescue/',
+            'logLevel' => Logger::INFO,
         );
     }
 

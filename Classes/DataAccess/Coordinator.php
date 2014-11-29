@@ -43,9 +43,15 @@ class Coordinator implements CoordinatorInterface
     protected $eventEmitter;
 
     /**
+     * @var \Psr\Log\LoggerInterface
+     * @inject
+     */
+    protected $logger;
+
+    /**
      * Array of databases and their objects
      *
-     * @var array<array<mixed>>
+     * @var array[]
      */
     #protected $objectStore = array();
 
@@ -88,6 +94,7 @@ class Coordinator implements CoordinatorInterface
 
         $this->dataWriter->createDatabase($databaseIdentifier, $options);
         $this->eventEmitter->emit(Event::DATABASE_CREATED, array($databaseIdentifier));
+        $this->logger->info(sprintf('Create database "%s"', $databaseIdentifier));
 
         $newDatabase = new Database($databaseIdentifier);
         Manager::registerObject($newDatabase, $databaseIdentifier, array(self::MEMORY_MANAGER_TAG));
@@ -129,13 +136,14 @@ class Coordinator implements CoordinatorInterface
         }
 
         $this->dataWriter->dropDatabase($databaseIdentifier);
+        $this->logger->info(sprintf('Drop database "%s"', $databaseIdentifier));
         $this->eventEmitter->emit(Event::DATABASE_DROPPED, array($databaseIdentifier));
     }
 
     /**
      * Returns an array of the identifiers of databases that are not already persisted
      *
-     * @return array<string>
+     * @return string[]
      */
     public function listInMemoryDatabases()
     {
@@ -162,7 +170,7 @@ class Coordinator implements CoordinatorInterface
     /**
      * Returns an array of the identifiers of databases that are already persisted
      *
-     * @return array<string>
+     * @return string[]
      */
     public function listPersistedDatabases()
     {
@@ -199,20 +207,10 @@ class Coordinator implements CoordinatorInterface
      */
     public function commitDatabase($database)
     {
+        $this->logger->info(sprintf('Commit database "%s"', $database->getIdentifier()));
         $this->dataWriter->writeDatabase($database);
         $database->setState(DatabaseStateInterface::STATE_CLEAN);
         $this->eventEmitter->emit(Event::DATABASE_COMMITTED, array($database));
-    }
-
-    /**
-     * Returns the static object store
-     *
-     * @return array
-     * @internal
-     */
-    public function getObjectStore()
-    {
-        return Manager::getObjectsByTag(self::MEMORY_MANAGER_TAG);
     }
 
     /**

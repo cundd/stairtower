@@ -8,6 +8,8 @@
 
 namespace Cundd\PersistentObjectStore\Formatter;
 
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+
 
 /**
  * Class JsonFormatter
@@ -25,7 +27,7 @@ class JsonFormatter extends AbstractFormatter
     /**
      * Formats the given input model(s)
      *
-     * @param DocumentInterface|array<DocumentInterface> $inputModel
+     * @param DocumentInterface|DocumentInterface[] $inputModel
      * @return string
      */
     public function format($inputModel)
