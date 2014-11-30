@@ -63,6 +63,41 @@ class RequestInfoFactory
     }
 
     /**
+     * Returns the handler class if the path contains a special information identifier, otherwise the Handler interface
+     * name
+     *
+     * @param Request $request
+     * @return string
+     */
+    public static function getHandlerClassForRequest($request)
+    {
+        $default = 'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface';
+        $path    = $request->getPath();
+        if (!$path) {
+            return $default;
+        }
+        if ($path[0] === '/') {
+            $path = substr($path, 1);
+        }
+        if ($path[0] !== '_') {
+            return $default;
+        }
+
+        $handlerIdentifier = strstr($path, '/', true);
+        if ($handlerIdentifier === false) {
+            $handlerIdentifier = $path;
+        }
+
+        $handlerIdentifier = substr($handlerIdentifier, 1);
+        $handlerName       = sprintf('Cundd\\PersistentObjectStore\\Server\\Handler\\%sHandler',
+            ucfirst($handlerIdentifier));
+        if (class_exists($handlerName)) {
+            return $handlerName;
+        }
+        return $default;
+    }
+
+    /**
      * Returns the handler action if the path contains a special information identifier, otherwise FALSE
      *
      * @param Request $request
@@ -70,8 +105,10 @@ class RequestInfoFactory
      */
     public static function getHandlerActionForRequest($request)
     {
-        return static::getActionForRequestAndInterface($request,
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface');
+        return static::getActionForRequestAndClass(
+            $request,
+            self::getHandlerClassForRequest($request)
+        );
 
     }
 
@@ -82,10 +119,13 @@ class RequestInfoFactory
      * @param string  $interface
      * @return string|bool
      */
-    protected static function getActionForRequestAndInterface($request, $interface)
+    protected static function getActionForRequestAndClass($request, $interface)
     {
         $path   = $request->getPath();
         $method = $request->getMethod();
+        if (!$path) {
+            return false;
+        }
         if ($path[0] === '/') {
             $path = substr($path, 1);
         }
