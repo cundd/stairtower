@@ -12,6 +12,7 @@ use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
@@ -342,6 +343,29 @@ class Handler implements HandlerInterface
     public function getAllDbsAction(RequestInfo $requestInfo)
     {
         return new HandlerResult(200, $this->coordinator->listDatabases());
+    }
+
+    /**
+     * Returns the count of the result set
+     *
+     * @param RequestInfo $requestInfo
+     * @return HandlerResultInterface
+     */
+    public function getCountAction(RequestInfo $requestInfo)
+    {
+        $count      = null;
+        $readResult = $this->read($requestInfo);
+        $data       = $readResult->getData();
+        if ($data instanceof DatabaseInterface || $data instanceof FilterResultInterface) {
+            $count = $data->count();
+        }
+        if ($count === null) {
+            return new HandlerResult(400, sprintf(
+                'Could not count result of type %s',
+                (is_object($data) ? get_class($data) : gettype($data))
+            ));
+        }
+        return new HandlerResult(200, array('count' => $count));
     }
 
 

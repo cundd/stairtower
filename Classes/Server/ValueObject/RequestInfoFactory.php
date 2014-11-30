@@ -50,8 +50,11 @@ class RequestInfoFactory
                 $databaseIdentifier = $pathParts[0];
             }
             $handlerAction = static::getHandlerActionForRequest($request);
-            if ($handlerAction) {
+            if ($databaseIdentifier && $databaseIdentifier[0] === '_') {
                 $databaseIdentifier = '';
+            }
+            if ($dataIdentifier && $dataIdentifier[0] === '_') {
+                $dataIdentifier = '';
             }
             static::$pathToRequestInfoMap[$requestInfoIdentifier] = new RequestInfo($request, $dataIdentifier,
                 $databaseIdentifier, $request->getMethod(), $handlerAction);
@@ -86,13 +89,16 @@ class RequestInfoFactory
         if ($path[0] === '/') {
             $path = substr($path, 1);
         }
-        if ($path[0] === '_') {
-            list($path,) = explode('/', $path, 2);
+        $pathParts = explode('/', $path);
 
-            $handlerAction = GeneralUtility::underscoreToCamelCase(strtolower($method) . '_' . substr($path,
-                        1)) . 'Action';
-            if (method_exists($interface, $handlerAction)) {
-                return $handlerAction;
+        foreach ($pathParts as $currentPathPart) {
+            if ($currentPathPart && $currentPathPart[0] === '_') {
+                $handlerAction = GeneralUtility::underscoreToCamelCase(
+                        strtolower($method) . '_' . substr($currentPathPart, 1)
+                    ) . 'Action';
+                if (method_exists($interface, $handlerAction)) {
+                    return $handlerAction;
+                }
             }
         }
         return false;

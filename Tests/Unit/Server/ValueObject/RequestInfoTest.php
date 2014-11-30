@@ -541,6 +541,51 @@ class RequestInfoTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD', '/restart')));
         $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD', '/restart/')));
         $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD', '/restart/something')));
+
+
+        $this->assertEquals('getCountAction',
+            RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/_count')));
+        $this->assertEquals('getCountAction',
+            RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/_count/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('POST', '/_count')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('POST', '/_count/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('PUT', '/_count')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('PUT', '/_count/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('DELETE', '/_count')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('DELETE', '/_count/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD', '/_count')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD', '/_count/')));
+
+
+        $this->assertEquals('getCountAction',
+            RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/database-identifier/_count')));
+        $this->assertEquals('getCountAction',
+            RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/database-identifier/_count/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('POST',
+            '/database-identifier/_count')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('POST',
+            '/database-identifier/_count/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('PUT',
+            '/database-identifier/_count')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('PUT',
+            '/database-identifier/_count/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('DELETE',
+            '/database-identifier/_count')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('DELETE',
+            '/database-identifier/_count/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD',
+            '/database-identifier/_count')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD',
+            '/database-identifier/_count/')));
+
     }
 }
  

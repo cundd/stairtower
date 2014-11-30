@@ -73,4 +73,12 @@ interface HandlerInterface
      * @return HandlerResultInterface
      */
     public function getAllDbsAction(RequestInfo $requestInfo);
+
+    /**
+     * Returns the count of the result set
+     *
+     * @param RequestInfo $requestInfo
+     * @return HandlerResultInterface
+     */
+    public function getCountAction(RequestInfo $requestInfo);
 }
