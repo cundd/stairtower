@@ -47,11 +47,11 @@ abstract class AbstractFormatter implements FormatterInterface
         }
         if (is_array($data) || $data instanceof \Iterator) {
             $foundData = array();
-            foreach ($data as $dataObject) {
+            foreach ($data as $key => $dataObject) {
                 if ($dataObject instanceof DocumentInterface) {
-                    $foundData[] = $dataObject->getData();
+                    $foundData[$key] = $dataObject->getData();
                 } else {
-                    $foundData[] = $dataObject;
+                    $foundData[$key] = $dataObject;
                 }
             }
             return $foundData;
