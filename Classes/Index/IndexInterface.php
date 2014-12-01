@@ -37,11 +37,11 @@ interface IndexInterface
     public function canLookup($value);
 
     /**
-     * Looks up the given value and returns the position of the entry in the Database or NOT_FOUND if it was not found
+     * Looks up the given value and returns an array of the positions in the Database, NOT_FOUND if it was not found
      * or ERROR if a problem was detected
      *
      * @param mixed $value Value to look for
-     * @return int
+     * @return int[]
      */
     public function lookup($value);
 
