@@ -5,6 +5,10 @@
  * Date: 30.08.14
  * Time: 12:56
  */
+use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+
 $persistentObjectStoreClassBase = 'Cundd\\PersistentObjectStore\\';
 return array(
     $persistentObjectStoreClassBase . 'Formatter\\FormatterInterface'     => DI\object($persistentObjectStoreClassBase . 'Formatter\\Formatter'),
@@ -15,5 +19,23 @@ return array(
     $persistentObjectStoreClassBase . 'Serializer\\SerializerInterface'   => DI\object($persistentObjectStoreClassBase . 'Serializer\\JsonSerializer'),
     $persistentObjectStoreClassBase . 'Serializer\\SerializerInterface'   => DI\object($persistentObjectStoreClassBase . 'Serializer\\JsonSerializer'),
     $persistentObjectStoreClassBase . 'Filter\\FilterBuilderInterface'    => DI\object($persistentObjectStoreClassBase . 'Filter\\FilterBuilder'),
+
     'Evenement\\EventEmitterInterface'                                    => DI\object('Evenement\\EventEmitter'),
+    'Psr\\Log\\LoggerInterface' => DI\factory(function () {
+        $configurationManager = ConfigurationManager::getSharedInstance();
+        $logFileDirectory     = $configurationManager->getConfigurationForKeyPath('logPath');
+//        $logFilePath      = $logFileDirectory . 'log-' . getmypid() . '.log';
+//        $logFilePath = $logFileDirectory . 'log-' . gmdate('Y-m-d') . '.log';
+        if (!file_exists($logFileDirectory)) {
+            mkdir($logFileDirectory);
+        }
+
+        $logLevel = $configurationManager->getConfigurationForKeyPath('logLevel');
+        $logger   = new Logger('core');
+
+//        $logger->pushHandler(new StreamHandler($logFilePath, $logLevel));
+        $logger->pushHandler(new StreamHandler(STDOUT, $logLevel));
+
+        return $logger;
+    }),
 );

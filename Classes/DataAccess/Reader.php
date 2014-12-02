@@ -110,8 +110,10 @@ class Reader
      */
     public function listPersistedDatabases()
     {
-        $foundDatabases = glob(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . '*.json',
-            GLOB_MARK);
+        $foundDatabases = glob(
+            ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . '*.json',
+            GLOB_MARK
+        );
         $foundDatabases = array_filter($foundDatabases, function ($item) {
             return substr($item, -1) !== DIRECTORY_SEPARATOR;
         });
