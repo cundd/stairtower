@@ -153,7 +153,7 @@ class CrashHandler
         $backupDirectory = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('rescuePath');
         $backupDirectory .= gmdate('Y-m-d-H-i-s') . '/';
         if (!file_exists($backupDirectory)) {
-            mkdir($backupDirectory, 0770, true);
+            GeneralUtility::createDirectoryRecursive($backupDirectory, true);
         }
         return $backupDirectory;
     }

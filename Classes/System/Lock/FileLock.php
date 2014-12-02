@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\System\Lock;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
  * File based lock implementation
@@ -39,7 +40,7 @@ class FileLock extends AbstractLock
         static $lockPathExists = -1;
         if ($lockPathExists === -1) {
             if (!file_exists($lockPath)) {
-                mkdir($lockPath, 0777, true);
+                GeneralUtility::createDirectoryRecursive($lockPath, true);
             }
             $lockPathExists = true;
         }

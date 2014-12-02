@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Utility;
 
+use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
@@ -151,5 +152,18 @@ abstract class GeneralUtility
             }
         }
         return (bool)($success * rmdir($dir));
+    }
+
+    /**
+     * Create the directory (recursive)
+     *
+     * @param string $dir
+     * @param bool   $recursive
+     * @return bool
+     */
+    public static function createDirectoryRecursive($dir, $recursive = false)
+    {
+        return mkdir($dir,
+            octdec(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('fs.folderMode')), $recursive);
     }
 } 

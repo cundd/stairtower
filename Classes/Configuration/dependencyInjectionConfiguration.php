@@ -6,6 +6,7 @@
  * Time: 12:56
  */
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
@@ -25,15 +26,15 @@ return array(
         $configurationManager = ConfigurationManager::getSharedInstance();
         $logFileDirectory     = $configurationManager->getConfigurationForKeyPath('logPath');
 //        $logFilePath      = $logFileDirectory . 'log-' . getmypid() . '.log';
-//        $logFilePath = $logFileDirectory . 'log-' . gmdate('Y-m-d') . '.log';
+        $logFilePath = $logFileDirectory . 'log-' . gmdate('Y-m-d') . '.log';
         if (!file_exists($logFileDirectory)) {
-            mkdir($logFileDirectory);
+            GeneralUtility::createDirectoryRecursive($logFileDirectory, true);
         }
 
         $logLevel = $configurationManager->getConfigurationForKeyPath('logLevel');
-        $logger   = new Logger('core');
+        $logger      = new Logger('stairtower');
 
-//        $logger->pushHandler(new StreamHandler($logFilePath, $logLevel));
+        $logger->pushHandler(new StreamHandler($logFilePath, $logLevel));
         $logger->pushHandler(new StreamHandler(STDOUT, $logLevel));
 
         return $logger;

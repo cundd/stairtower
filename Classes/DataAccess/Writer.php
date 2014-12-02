@@ -15,6 +15,7 @@ use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 
 /**
@@ -63,7 +64,7 @@ class Writer
     {
         $writeFolder = $this->getWriteDirectory();
         if (!file_exists($writeFolder)) {
-            mkdir($writeFolder, 0774, true);
+            GeneralUtility::createDirectoryRecursive($writeFolder, true);
         } elseif (file_exists($writeFolder) && !is_writable($writeFolder)) {
             throw new WriterException('Document folder exists but is not writable', 1410188161);
         }

@@ -36,8 +36,10 @@ class ConfigurationManager implements ConfigurationManagerInterface
     public function __construct()
     {
         $configurationReader = new ConfigurationReader();
-        $this->configuration = array_merge_recursive($this->getDefaults(),
-            $configurationReader->readConfigurationFiles());
+        $this->configuration = array_merge_recursive(
+            $this->getDefaults(),
+            $configurationReader->readConfigurationFiles()
+        );
 
         self::$sharedInstance = $this;
     }
@@ -61,6 +63,9 @@ class ConfigurationManager implements ConfigurationManagerInterface
             'tempPath'      => $varPath . 'Temp/',
             'rescuePath'    => $varPath . 'Rescue/',
             'logLevel' => Logger::INFO,
+            'fs' => array(
+                'folderMode' => '0755'
+            )
         );
     }
 

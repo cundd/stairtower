@@ -7,11 +7,12 @@
  */
 
 /**
- * Interface GeneralUtilityInterface
+ * Interface Memory_GeneralUtilityInterface
  *
  * @package Cundd\PersistentObjectStore\Utility
  */
-class GeneralUtility {
+class Memory_GeneralUtility
+{
 	/**
 	 * Checks if the given database identifier is valid
 	 *
@@ -129,18 +130,28 @@ $fileHandle = fopen($csvPath, 'a');
 
 $standardMemoryUsage = memory_get_usage(TRUE);
 
-printf('Memory: %s Peak: %s' . PHP_EOL, GeneralUtility::formatBytes(memory_get_usage(TRUE) - $standardMemoryUsage), GeneralUtility::formatBytes(memory_get_peak_usage(TRUE) - $standardMemoryUsage));
-printf('File size: %s' . PHP_EOL, GeneralUtility::formatBytes(filesize($file)));
-printf('Memory: %s Peak: %s' . PHP_EOL, GeneralUtility::formatBytes(memory_get_usage(TRUE) - $standardMemoryUsage), GeneralUtility::formatBytes(memory_get_peak_usage(TRUE) - $standardMemoryUsage));
+printf('Memory: %s Peak: %s' . PHP_EOL,
+	Memory_GeneralUtility::formatBytes(memory_get_usage(true) - $standardMemoryUsage),
+	Memory_GeneralUtility::formatBytes(memory_get_peak_usage(true) - $standardMemoryUsage));
+printf('File size: %s' . PHP_EOL, Memory_GeneralUtility::formatBytes(filesize($file)));
+printf('Memory: %s Peak: %s' . PHP_EOL,
+	Memory_GeneralUtility::formatBytes(memory_get_usage(true) - $standardMemoryUsage),
+	Memory_GeneralUtility::formatBytes(memory_get_peak_usage(true) - $standardMemoryUsage));
 file_get_contents($file);
-printf('Memory: %s Peak: %s' . PHP_EOL, GeneralUtility::formatBytes(memory_get_usage(TRUE) - $standardMemoryUsage), GeneralUtility::formatBytes(memory_get_peak_usage(TRUE) - $standardMemoryUsage));
+printf('Memory: %s Peak: %s' . PHP_EOL,
+	Memory_GeneralUtility::formatBytes(memory_get_usage(true) - $standardMemoryUsage),
+	Memory_GeneralUtility::formatBytes(memory_get_peak_usage(true) - $standardMemoryUsage));
 
 $fileContents = file_get_contents($file);
-printf('Memory: %s Peak: %s' . PHP_EOL, GeneralUtility::formatBytes(memory_get_usage(TRUE) - $standardMemoryUsage), GeneralUtility::formatBytes(memory_get_peak_usage(TRUE) - $standardMemoryUsage));
+printf('Memory: %s Peak: %s' . PHP_EOL,
+	Memory_GeneralUtility::formatBytes(memory_get_usage(true) - $standardMemoryUsage),
+	Memory_GeneralUtility::formatBytes(memory_get_peak_usage(true) - $standardMemoryUsage));
 printf('Memory ratio: memory/filesize = %s' . PHP_EOL, (memory_get_usage(TRUE) - $standardMemoryUsage) / filesize($file));
 
 $json = json_decode(file_get_contents($file), TRUE);
-printf('Memory: %s Peak: %s' . PHP_EOL, GeneralUtility::formatBytes(memory_get_usage(TRUE) - $standardMemoryUsage), GeneralUtility::formatBytes(memory_get_peak_usage(TRUE) - $standardMemoryUsage));
+printf('Memory: %s Peak: %s' . PHP_EOL,
+	Memory_GeneralUtility::formatBytes(memory_get_usage(true) - $standardMemoryUsage),
+	Memory_GeneralUtility::formatBytes(memory_get_peak_usage(true) - $standardMemoryUsage));
 printf('Memory ratio: memory/filesize = %s' . PHP_EOL, (memory_get_usage(TRUE) - $standardMemoryUsage) / filesize($file));
 printf('Memory ratio: memory/strlen = %s' . PHP_EOL, (memory_get_usage(TRUE) - $standardMemoryUsage) / strlen($fileContents));
 printf('Memory ratio: memory/braces = %s' . PHP_EOL, (memory_get_usage(TRUE) - $standardMemoryUsage) / substr_count($fileContents, '{'));
