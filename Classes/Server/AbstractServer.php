@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Server;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Memory\Manager;
 use Cundd\PersistentObjectStore\RuntimeException;
@@ -218,6 +217,35 @@ abstract class AbstractServer implements ServerInterface
     }
 
     /**
+     * Returns the event loop instance
+     *
+     * @throws InvalidEventLoopException if the event loop is not set
+     * @return \React\EventLoop\LoopInterface
+     */
+    public function getEventLoop()
+    {
+        if (!$this->eventLoop) {
+            throw new InvalidEventLoopException('Event loop not set', 1412942824);
+        }
+        return $this->eventLoop;
+    }
+
+    /**
+     * Sets the event loop
+     *
+     * @param \React\EventLoop\LoopInterface $eventLoop
+     * @return $this
+     */
+    public function setEventLoop($eventLoop)
+    {
+        if ($this->_isRunning) {
+            throw new InvalidServerChangeException('Can not change the event loop when server is running', 1412956592);
+        }
+        $this->eventLoop = $eventLoop;
+        return $this;
+    }
+
+    /**
      * Handles the given exception
      *
      * @param \Exception           $error
@@ -231,6 +259,35 @@ abstract class AbstractServer implements ServerInterface
         $this->writeln($error->getTraceAsString());
         $this->handleResult(new HandlerResult($this->getStatusCodeForException($error), $error->getMessage()), $request,
             $response);
+    }
+
+    /**
+     * Outputs the given value for information
+     *
+     * @param string $format
+     * @param mixed  $vars …
+     */
+    protected function writeln($format, $vars = null)
+    {
+        $arguments = func_get_args();
+        call_user_func_array(array($this, 'formatAndWrite'), $arguments);
+        $this->formatAndWrite(PHP_EOL);
+    }
+
+    /**
+     * Outputs the given value for information
+     *
+     * @param string $format
+     * @param mixed  $vars …
+     */
+    protected function formatAndWrite($format, $vars = null)
+    {
+        if (func_num_args() > 1) {
+            $arguments = func_get_args();
+            array_shift($arguments);
+            $format = vsprintf($format, $arguments);
+        }
+        fwrite(STDOUT, $format);
     }
 
     /**
@@ -356,6 +413,15 @@ abstract class AbstractServer implements ServerInterface
     }
 
     /**
+     * Stops to listen for connections
+     */
+    public function stop()
+    {
+        $this->getEventLoop()->stop();
+        $this->_isRunning = false;
+    }
+
+    /**
      * Starts the request loop
      */
     public function start()
@@ -399,6 +465,15 @@ abstract class AbstractServer implements ServerInterface
             $this->runMaintenance();
             $this->postponeMaintenance();
         });
+    }
+
+    /**
+     * A maintenance task that will be performed when the server becomes idle
+     */
+    public function runMaintenance()
+    {
+        $this->coordinator->commitDatabases();
+        Manager::cleanup();
     }
 
     /**
@@ -461,64 +536,9 @@ abstract class AbstractServer implements ServerInterface
     }
 
     /**
-     * Stops to listen for connections
+     * Create and configure the server objects
      */
-    public function stop()
-    {
-        $this->getEventLoop()->stop();
-        $this->_isRunning = false;
-    }
-
-    /**
-     * Returns the event loop instance
-     *
-     * @throws InvalidEventLoopException if the event loop is not set
-     * @return \React\EventLoop\LoopInterface
-     */
-    public function getEventLoop()
-    {
-        if (!$this->eventLoop) {
-            throw new InvalidEventLoopException('Event loop not set', 1412942824);
-        }
-        return $this->eventLoop;
-    }
-
-    /**
-     * Sets the event loop
-     *
-     * @param \React\EventLoop\LoopInterface $eventLoop
-     * @return $this
-     */
-    public function setEventLoop($eventLoop)
-    {
-        if ($this->_isRunning) {
-            throw new InvalidServerChangeException('Can not change the event loop when server is running', 1412956592);
-        }
-        $this->eventLoop = $eventLoop;
-        return $this;
-    }
-
-    /**
-     * A maintenance task that will be performed when the server becomes idle
-     */
-    public function runMaintenance()
-    {
-        $this->coordinator->commitDatabases();
-        Manager::cleanup();
-    }
-
-    /**
-     * Outputs the given value for information
-     *
-     * @param string $format
-     * @param mixed  $vars …
-     */
-    protected function writeln($format, $vars = null)
-    {
-        $arguments = func_get_args();
-        call_user_func_array(array($this, 'formatAndWrite'), $arguments);
-        $this->formatAndWrite(PHP_EOL);
-    }
+    abstract protected function setupServer();
 
     /**
      * Outputs the given value for information
@@ -530,22 +550,6 @@ abstract class AbstractServer implements ServerInterface
     {
         $arguments = func_get_args();
         call_user_func_array(array($this, 'formatAndWrite'), $arguments);
-    }
-
-    /**
-     * Outputs the given value for information
-     *
-     * @param string $format
-     * @param mixed  $vars …
-     */
-    protected function formatAndWrite($format, $vars = null)
-    {
-        if (func_num_args() > 1) {
-            $arguments = func_get_args();
-            array_shift($arguments);
-            $format = vsprintf($format, $arguments);
-        }
-        fwrite(STDOUT, $format);
     }
 
     /**
@@ -568,11 +572,6 @@ abstract class AbstractServer implements ServerInterface
         }
         $this->logger->info($writeData);
     }
-
-    /**
-     * Create and configure the server objects
-     */
-    abstract protected function setupServer();
 
 
 }
