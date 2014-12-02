@@ -219,6 +219,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
         // Delete the database
         $response = $this->_performRestRequest($databaseIdentifier, 'DELETE');
+        $this->assertTrue($response !== false);
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" deleted', $databaseIdentifier), $response['message']);
 
@@ -300,6 +301,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
         // Delete the database
         $response = $this->_performRestRequest($databaseIdentifier, 'DELETE');
+        $this->assertTrue($response !== false);
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" deleted', $databaseIdentifier), $response['message']);
 
@@ -344,6 +346,8 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         );
         $context  = stream_context_create($options);
         $response = @file_get_contents($url, false, $context);
+//        var_dump($url, $method);
+//        var_dump($response);
         if ($response) {
             return json_decode($response, true);
         }
