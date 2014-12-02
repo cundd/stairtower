@@ -255,10 +255,12 @@ abstract class AbstractServer implements ServerInterface
      */
     public function handleError($error, $request, Response $response)
     {
-        $this->writeln('Caught exception #%d: %s', $error->getCode(), $error->getMessage());
-        $this->writeln($error->getTraceAsString());
-        $this->handleResult(new HandlerResult($this->getStatusCodeForException($error), $error->getMessage()), $request,
-            $response);
+        $statusCode = $this->getStatusCodeForException($error);
+        if ($statusCode >= 500) {
+            $this->writeln('Caught exception #%d: %s', $error->getCode(), $error->getMessage());
+            $this->writeln($error->getTraceAsString());
+        }
+        $this->handleResult(new HandlerResult($statusCode, $error->getMessage()), $request, $response);
     }
 
     /**
