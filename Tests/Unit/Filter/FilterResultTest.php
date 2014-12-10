@@ -6,13 +6,12 @@
  * Time: 16:13
  */
 
-namespace Cundd\PersistentObjectStore\DataAccess;
+namespace Cundd\PersistentObjectStore\Filter;
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
-use Cundd\PersistentObjectStore\Filter\Filter;
 use PHPUnit_Framework_TestCase;
 
 /**

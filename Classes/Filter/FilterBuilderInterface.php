@@ -20,7 +20,7 @@ interface FilterBuilderInterface
     /**
      * Build a Filter with the given query parts
      *
-     * @param array              $queryParts
+     * @param string[] $queryParts
      * @param Database|\Iterator $collection
      * @return FilterResult
      */

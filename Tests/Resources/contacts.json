@@ -2,26 +2,35 @@
 	{
 		"firstName": "Daniel",
 		"lastName": "Corn",
-		"email": "info@cundd.net"
+	  "email": "info@cundd.net",
+	  "eyeColor": "brown"
 	},
 	{
 		"firstName": "Steve",
 		"lastName": "Laim",
-		"email": "spm@cundd.net"
+	  "email": "spm@cundd.net",
+	  "eyeColor": "green"
+
 	},
 	{
 		"firstName": "Paul",
 		"lastName": "McKenzy",
-		"email": "paul@mckenzy.net"
+	  "email": "paul@mckenzy.net",
+	  "eyeColor": "blue"
+
 	},
 	{
 		"firstName": "Alice",
 		"lastName": "McKenzy",
-		"email": "alice@mckenzy.net"
+	  "email": "alice@mckenzy.net",
+	  "eyeColor": "brown"
+
 	},
 	{
 		"firstName": "Robert",
 		"lastName": "Ellson",
-		"_id": "rob@ells.on"
+	  "_id": "rob@ells.on",
+	  "eyeColor": "green"
+
 	}
 ]
