@@ -8,7 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Filter;
 
-use Cundd\PersistentObjectStore\AbstractDataBasedCase;
+use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 
@@ -17,7 +17,7 @@ use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
  *
  * @package Cundd\PersistentObjectStore\FilterBuilderInterface
  */
-class FilterBuilderTest extends AbstractDataBasedCase
+class FilterBuilderTest extends AbstractDatabaseBasedCase
 {
     /**
      * @var \Cundd\PersistentObjectStore\Filter\FilterBuilderInterface
@@ -582,25 +582,14 @@ class FilterBuilderTest extends AbstractDataBasedCase
     protected function setUp()
     {
         parent::setUp();
-        //$this->checkPersonFile();
-
         $this->setUpXhprof();
-
-        /** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
-        $coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-
-        //$this->database = $coordinator->getDatabase('contacts');
-        $this->database = $coordinator->getDatabase('people-small');
-//		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
-
-        //$this->database = $coordinator->getDatabase('people');
-//        $this->filter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
-//        $this->fixture = $this->filter->filterCollection($database);
+        $this->database = $this->getSmallPeopleDatabase();
     }
 
     protected function tearDown()
     {
         unset($this->fixture);
+        unset($this->database);
         parent::tearDown();
     }
 
