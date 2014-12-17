@@ -8,6 +8,9 @@
 
 namespace Cundd\PersistentObjectStore\System\Lock;
 
+use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\PersistentObjectStore\Server\ServerInterface;
+
 /**
  * Factory class to retrieve the best lock implementation
  *
@@ -23,6 +26,9 @@ class Factory
      */
     public static function createLock($name = null)
     {
+        if (ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('serverMode') !== ServerInterface::SERVER_MODE_NOT_RUNNING) {
+            return new TransientLock($name);
+        }
         return new FileLock($name);
     }
 } 
