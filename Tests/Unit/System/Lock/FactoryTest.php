@@ -25,6 +25,11 @@ class FactoryTest extends AbstractCase
     public function getLockTest()
     {
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\System\\Lock\\FileLock', Factory::createLock('test'));
+
+        Factory::setLockImplementationClass('Cundd\\PersistentObjectStore\\System\\Lock\\TransientLock');
+        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\System\\Lock\\TransientLock',
+            Factory::createLock('test'));
+
     }
 }
  
