@@ -68,8 +68,10 @@ class ObjectUtility
     public static function valueForKeyPathOfObject($keyPath, $object, $default = null)
     {
         if (!is_string($keyPath)) {
-            throw new LogicException('Given key path is not of type string (maybe arguments are ordered incorrect)',
-                1395484136);
+            throw new LogicException(
+                'Given key path is not of type string (maybe arguments are ordered incorrect)',
+                1395484136
+            );
         }
 
         $currentValue = $object;

@@ -13,6 +13,7 @@ use Cundd\PersistentObjectStore\Core\IndexArray;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Exception\ImmutableException;
+use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Iterator;
@@ -278,9 +279,9 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
     /**
      * Filter the given Database by the given comparisons
      *
-     * @param Database                              $dataCollection       Database instance to filter
-     * @param array|SplFixedArray|\SplObjectStorage $comparisonCollection Filter conditions
-     * @param bool                                  $pushMatchesToResult  If set to TRUE the matching objects will be added to the result through calling parent::push()
+     * @param Database                                              $dataCollection       Database instance to filter
+     * @param ComparisonInterface[]|SplFixedArray|\SplObjectStorage $comparisonCollection Filter conditions
+     * @param bool                                                  $pushMatchesToResult  If set to TRUE the matching objects will be added to the result through calling parent::push()
      * @return SplFixedArray
      */
     protected function filterCollectionWithComparisons(
@@ -313,6 +314,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
 
             $comparisonResult = true;
             while ($j < $comparisonCollectionCount) {
+                /** @var ComparisonInterface $comparison */
                 $comparison = $comparisonCollection[$j];
                 if (!$comparison->perform($item)) {
                     $comparisonResult = false;

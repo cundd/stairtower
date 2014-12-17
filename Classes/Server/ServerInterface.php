@@ -27,6 +27,10 @@ use React\Http\Response;
 interface ServerInterface
 {
     /**
+     * Server is not running
+     */
+    const SERVER_MODE_NOT_RUNNING = -1;
+    /**
      * Server is in normal operation mode
      */
     const SERVER_MODE_NORMAL = 0;

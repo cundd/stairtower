@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Filter;
 
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
@@ -31,7 +32,7 @@ class Filter implements FilterInterface
     /**
      * Creates a new filter
      *
-     * @param \SplObjectStorage|array $comparisons The comparisons
+     * @param \SplObjectStorage|ComparisonInterface[] $comparisons The comparisons
      */
     public function __construct($comparisons = null)
     {
@@ -45,16 +46,20 @@ class Filter implements FilterInterface
     /**
      * Initialize the filter with the given comparisons
      *
-     * @param $comparisons
+     * @param ComparisonInterface[] $comparisons
      * @return \SplObjectStorage
      */
     public function initWithComparisons($comparisons)
     {
         $tempComparisons = new \SplObjectStorage();
-        foreach ($comparisons as $comparison) {
-            $tempComparisons->attach($comparison);
+        if (!is_array($comparisons) && !$comparisons instanceof \Traversable) {
+            $tempComparisons->attach($comparisons);
+        } else {
+            foreach ($comparisons as $comparison) {
+                $tempComparisons->attach($comparison);
+            }
+            $tempComparisons->rewind();
         }
-        $tempComparisons->rewind();
         $this->comparisons = $tempComparisons;
     }
 
@@ -64,7 +69,7 @@ class Filter implements FilterInterface
      *
      * Multiple comparisons will be added as "or"
      *
-     * @param PropertyComparisonInterface $comparison
+     * @param ComparisonInterface $comparison
      * @return $this
      */
     public function addComparison($comparison)
@@ -75,7 +80,7 @@ class Filter implements FilterInterface
     /**
      * Removes the given comparison
      *
-     * @param PropertyComparisonInterface $comparison
+     * @param ComparisonInterface $comparison
      * @throws Exception\InvalidComparisonException if the given comparison is not in the list
      * @return $this
      */

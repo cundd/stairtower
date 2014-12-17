@@ -17,6 +17,7 @@ if (file_exists($XHPROF_ROOT)) {
 require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/AbstractCase.php';
 require_once __DIR__ . '/AbstractDataBasedCase.php';
+require_once __DIR__ . '/AbstractDatabaseBasedCase.php';
 
 ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('dataPath', __DIR__ . '/../Resources/');
 ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('writeDataPath', __DIR__ . '/../../var/Temp/');

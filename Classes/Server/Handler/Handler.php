@@ -226,8 +226,8 @@ class Handler implements HandlerInterface
             return new HandlerResult(200, $database);
         }
 
-        $filterResult = $this->filterBuilder->buildFilterFromQueryParts($requestInfo->getRequest()->getQuery(),
-            $database);
+        $filter       = $this->filterBuilder->buildFilter($requestInfo->getRequest()->getQuery());
+        $filterResult = $filter->filterCollection($database);
         $statusCode   = $filterResult->count() > 0 ? 200 : 404;
         return new HandlerResult($statusCode, $filterResult);
     }
