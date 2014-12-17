@@ -20,91 +20,91 @@ interface ComparisonInterface
      *
      * @api
      */
-    const TYPE_EQUAL_TO = '==';
+    const TYPE_EQUAL_TO = '$eq';
 
     /**
      * The '!=' comparison operator
      *
      * @api
      */
-    const TYPE_NOT_EQUAL_TO = '!=';
+    const TYPE_NOT_EQUAL_TO = '$ne';
 
     /**
      * The '<' comparison operator
      *
      * @api
      */
-    const TYPE_LESS_THAN = '<';
+    const TYPE_LESS_THAN = '$lt';
 
     /**
      * The '<=' comparison operator
      *
      * @api
      */
-    const TYPE_LESS_THAN_OR_EQUAL_TO = '<=';
+    const TYPE_LESS_THAN_OR_EQUAL_TO = '$lte';
 
     /**
      * The '>' comparison operator
      *
      * @api
      */
-    const TYPE_GREATER_THAN = '>';
+    const TYPE_GREATER_THAN = '$gt';
 
     /**
      * The '>=' comparison operator
      *
      * @api
      */
-    const TYPE_GREATER_THAN_OR_EQUAL_TO = '>=';
+    const TYPE_GREATER_THAN_OR_EQUAL_TO = '$gte';
 
     /**
      * The 'like' comparison operator
      *
      * @api
      */
-    const TYPE_LIKE = '><';
+    const TYPE_LIKE = '$lk';
 
     /**
      * The 'contains' comparison operator for collections
      *
      * @api
      */
-    const TYPE_CONTAINS = 8;
+    const TYPE_CONTAINS = '$con';
 
     /**
      * The 'in' comparison operator
      *
      * @api
      */
-    const TYPE_IN = 9;
+    const TYPE_IN = '$in';
 
     /**
      * The 'is NULL' comparison operator
      *
      * @api
      */
-    const TYPE_IS_NULL = 10;
+    const TYPE_IS_NULL = '$null';
 
     /**
      * The 'is empty' comparison operator for collections
      *
      * @api
      */
-    const TYPE_IS_EMPTY = 11;
+    const TYPE_IS_EMPTY = '$em';
 
     /**
      * The 'and' comparison operator for collections
      *
      * @api
      */
-    const TYPE_AND = 'AND';
+    const TYPE_AND = '$and';
 
     /**
      * The 'or' comparison operator for collections
      *
      * @api
      */
-    const TYPE_OR = 'OR';
+    const TYPE_OR = '$or';
 
     /**
      * Performs the comparison against the given test value

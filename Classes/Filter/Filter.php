@@ -52,10 +52,14 @@ class Filter implements FilterInterface
     public function initWithComparisons($comparisons)
     {
         $tempComparisons = new \SplObjectStorage();
-        foreach ($comparisons as $comparison) {
-            $tempComparisons->attach($comparison);
+        if (!is_array($comparisons) && !$comparisons instanceof \Traversable) {
+            $tempComparisons->attach($comparisons);
+        } else {
+            foreach ($comparisons as $comparison) {
+                $tempComparisons->attach($comparison);
+            }
+            $tempComparisons->rewind();
         }
-        $tempComparisons->rewind();
         $this->comparisons = $tempComparisons;
     }
 
@@ -65,7 +69,7 @@ class Filter implements FilterInterface
      *
      * Multiple comparisons will be added as "or"
      *
-     * @param PropertyComparisonInterface $comparison
+     * @param ComparisonInterface $comparison
      * @return $this
      */
     public function addComparison($comparison)
@@ -76,7 +80,7 @@ class Filter implements FilterInterface
     /**
      * Removes the given comparison
      *
-     * @param PropertyComparisonInterface $comparison
+     * @param ComparisonInterface $comparison
      * @throws Exception\InvalidComparisonException if the given comparison is not in the list
      * @return $this
      */

@@ -77,19 +77,26 @@ class TypeHelper
     }
 
     /**
-     * Returns the Comparison Type constant for the given Dollar Comparison Types or NULL if none matches
+     * Returns if the given value is a Logical Comparison Type
      *
-     * @param string $dollarComparisonQueryOperator
-     * @return string|null
+     * @param string|int $input
+     * @return bool
      */
-    public function getComparisonTypeForDollarNotation($dollarComparisonQueryOperator)
+    public function isLogicalComparisonType($input)
     {
-        if ($dollarComparisonQueryOperator === null || $dollarComparisonQueryOperator === '' || $dollarComparisonQueryOperator[0] !== '$') {
-            return null;
-        }
-        if (isset(self::$comparisonTypesMapDollar[$dollarComparisonQueryOperator])) {
-            return self::$comparisonTypesMapDollar[$dollarComparisonQueryOperator];
-        }
-        return null;
+        return $input === ComparisonInterface::TYPE_AND || $input === ComparisonInterface::TYPE_OR;
+    }
+
+    /**
+     * Returns if the given value is a Property Comparison Type
+     *
+     * @param string|int $input
+     * @return bool
+     */
+    public function isPropertyComparisonType($input)
+    {
+        return $this->isComparisonType($input)
+        && $input !== ComparisonInterface::TYPE_OR
+        && $input !== ComparisonInterface::TYPE_AND;
     }
 }

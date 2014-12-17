@@ -20,13 +20,6 @@ use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
 class LogicalComparison implements LogicalComparisonInterface
 {
     /**
-     * Collection of constraints
-     *
-     * @var array
-     */
-    protected $constraints = array();
-
-    /**
      * Type of the comparison from the comparison value against the given test data's property
      *
      * @var string One of the ComparisonInterface::TYPE constants
@@ -42,6 +35,13 @@ class LogicalComparison implements LogicalComparisonInterface
      * @var bool
      */
     protected $strict = false;
+
+    /**
+     * Collection of constraints
+     *
+     * @var array
+     */
+    protected $constraints = array();
 
     /**
      * Creates a new comparison
@@ -95,13 +95,18 @@ class LogicalComparison implements LogicalComparisonInterface
                 ), 1418037096);
             }
 
+            $constraintResult = !!($constraint instanceof ComparisonInterface ? $constraint->perform($testValue) : $constraint);
+            //if ($operator === ComparisonInterface::TYPE_AND) {
+            //    DebugUtility::var_dump($constraint, $this, $constraint->perform($testValue));
+            //}
+
             // If the operator is OR and one constraint is TRUE return TRUE
-            if ($isOr && ($constraint instanceof ComparisonInterface ? $constraint->perform($testValue) : $constraint)) {
+            if ($isOr && $constraintResult) {
                 return true;
             }
 
             // If the operator is AND and one constraint is FALSE return FALSE
-            if (!$isOr && !($constraint instanceof ComparisonInterface ? $constraint->perform($testValue) : $constraint)) {
+            if (!$isOr && !$constraintResult) {
                 return false;
             }
         }

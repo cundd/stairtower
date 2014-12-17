@@ -22,7 +22,16 @@ interface FilterBuilderInterface
      *
      * @param string[] $queryParts
      * @param Database|\Iterator $collection
-     * @return FilterResult
+     * @return Filter
+     * @deprecated use buildFilter instead
      */
     public function buildFilterFromQueryParts($queryParts, $collection);
+
+    /**
+     * Build a Filter from the given definition
+     *
+     * @param array $filterDefinition
+     * @return Filter
+     */
+    public function buildFilter($filterDefinition);
 } 
