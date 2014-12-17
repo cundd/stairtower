@@ -12,14 +12,14 @@ use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\LogicException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
-
+use \JsonSerializable;
 
 /**
  * Class that represents a block of data
  *
  * @package Cundd\PersistentObjectStore
  */
-class Document implements DocumentInterface
+class Document implements DocumentInterface, JsonSerializable
 {
     protected $creationTime;
     protected $modificationTime;
@@ -185,5 +185,25 @@ class Document implements DocumentInterface
     public function setData($data)
     {
         $this->data = $data;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.4.0)<br/>
+     * Specify data which should be serialized to JSON
+     *
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     *       which is a value of any type other than a resource.
+     */
+    function jsonSerialize()
+    {
+        $objectData                           = $this->getData();
+        $objectData[Constants::DATA_META_KEY] = array(
+            'guid'             => $this->getGuid(),
+            'database'         => $this->getDatabaseIdentifier(),
+            'creationTime'     => $this->getCreationTime(),
+            'modificationTime' => $this->getModificationTime(),
+        );
+        return $objectData;
     }
 }
