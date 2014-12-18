@@ -153,7 +153,10 @@ class Writer
             /** @var DocumentInterface $item */
             $item = $database->current();
             if ($item) {
-                $objectsToWrite[] = $item->getData();
+                if ($item instanceof DocumentInterface) {
+                    $item = $item->getData();
+                }
+                $objectsToWrite[] = $item;
 //			} else {
 //				DebugUtility::pl('Current item is NULL');
             }

@@ -70,7 +70,7 @@ class AbstractDataBasedCase extends AbstractCase
 
         /** @var DocumentInterface $dataObject */
         foreach ($database as $dataObject) {
-            $foundData[] = $dataObject->getData();
+            $foundData[] = $dataObject;
         }
         return $foundData;
     }

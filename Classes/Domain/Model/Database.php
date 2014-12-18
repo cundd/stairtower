@@ -34,7 +34,7 @@ use SplFixedArray;
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-class Database implements DatabaseInterface, DatabaseRawDataInterface, ArrayableInterface
+class Database implements DatabaseInterface, ArrayableInterface
 {
     /**
      * Raw data array
@@ -42,13 +42,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
      * @var \SplFixedArray
      */
     protected $rawData;
-
-    /**
-     * Converted objects
-     *
-     * @var \SplFixedArray
-     */
-    protected $objectData;
 
 //	/**
 //	 * Map of object identifiers to the index
@@ -100,7 +93,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
             $this->setRawData($rawData);
         } else {
             $this->rawData    = new SplFixedArray(0);
-            $this->objectData = new SplFixedArray(0);
         }
 
         $this->indexes[] = new IdentifierIndex();
@@ -159,7 +151,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
         } else {
             $this->rawData = new SplFixedArray(0);
         }
-        $this->objectData = new SplFixedArray($this->rawData->getSize());
 
         $this->state = self::STATE_DIRTY;
 
@@ -172,7 +163,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
      * @link http://php.net/manual/en/iterator.current.php
      * @return mixed Can return any type.
      */
-    public function currentRaw()
+    public function current()
     {
         $document = $this->getRawDataForIndex($this->index);
         if ($document === false) {
@@ -187,7 +178,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
      * @param int $index
      * @return bool|mixed
      */
-    protected function getRawDataForIndex($index)
+    public function getRawDataForIndex($index)
     {
         if (isset($this->rawData[$index])) {
             $data = $this->rawData[$index];
@@ -259,8 +250,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
             );
         }
 
-        $this->objectData->setSize($currentCount + 1);
-        $this->setObjectDataForIndex($document, $currentCount);
 
         $this->rawData->setSize($currentCount + 1);
         $this->setRawDataForIndex($document->getData(), $currentCount);
@@ -313,10 +302,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
      */
     public function count()
     {
-        if ($this->rawData->count() !== $this->objectData->count()) {
-            throw new RuntimeException(sprintf('Object and raw data count mismatch (%d/%d)', $this->rawData->count(),
-                $this->objectData->count()), 1413713529);
-        }
         return $this->rawData->count();
     }
 
@@ -372,15 +357,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
         do {
 //			DebugUtility::pl($i);
             if (isset($this->rawData[$i]) && $this->rawData[$i] && $this->rawData[$i][Constants::DATA_ID_KEY]) {
-                if (isset($this->objectData[$i])) {
-                    $foundObject = $this->objectData[$i];
-                } else {
-                    $foundObject = $this->setObjectDataForIndex($this->convertDataAtIndexToObject($i), $i);
-                }
-
-                if ($foundObject instanceof DocumentInterface && $foundObject->getId() === $identifier) {
-                    return $foundObject;
-                }
+                return $this->rawData[$i];
             }
         } while (++$i < $count);
 
@@ -432,41 +409,12 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
 //                return $this->getObjectDataForIndexOrTransformIfNotExists($indexLookupResult);
                 $resultCollection = array();
                 foreach ($indexLookupResult as $currentIndexLookupResult) {
-                    $resultCollection[] = $this->getObjectDataForIndexOrTransformIfNotExists($currentIndexLookupResult);
+                    $resultCollection[] = $this->getRawDataForIndex($currentIndexLookupResult);
                 }
                 return $resultCollection;
             }
         } while (++$i < $indexesCount);
         return IndexInterface::ERROR;
-    }
-
-    /**
-     * Returns the Document instance at the given index or sets it if it is not already set
-     *
-     * @param int $index
-     * @return bool|DocumentInterface
-     */
-    public function getObjectDataForIndexOrTransformIfNotExists($index)
-    {
-        $document = $this->getObjectDataForIndex($index);
-        if (!$document) {
-            $document = $this->setObjectDataForIndex($this->convertDataAtIndexToObject($index), $index);
-        }
-        return $document;
-    }
-
-    /**
-     * Returns the Document instance at the given index or FALSE if it is not already set
-     *
-     * @param int $index
-     * @return bool|DocumentInterface
-     */
-    protected function getObjectDataForIndex($index)
-    {
-        if (isset($this->objectData[$index])) {
-            return $this->objectData[$index];
-        }
-        return false;
     }
 
 
@@ -475,21 +423,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
     // ITERATOR, COUNTABLE AND SEEKABLE
     // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 
-    /**
-     * Sets the Document instance at the given index
-     *
-     * @param DocumentInterface $object
-     * @param int               $index
-     * @return \Cundd\PersistentObjectStore\Domain\Model\DocumentInterface Returns the given object
-     */
-    protected function setObjectDataForIndex($object, $index)
-    {
-        if ($index >= $this->objectData->getSize()) {
-            throw new InvalidIndexException("Index $index out of range", 1413712508);
-        }
-        $this->objectData[$index] = $object;
-        return $object;
-    }
 
     /**
      * Converts the raw data at the given index to a Document instance
@@ -580,22 +513,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
         }
 
         $index           = $this->getIndexForIdentifier($document->getId());
-        $oldDataInstance = $this->getObjectDataForIndex($index);
-        if (!$oldDataInstance) {
-            throw new InvalidDataException('No data instance found to replace', 1413711010);
-        }
-        if ($document->getId() !== $oldDataInstance->getId()) {
-            throw new InvalidDataException(
-                sprintf(
-                    'Given identifier "%s" does not match the found instance\'s identifier "%s"',
-                    $document->getId(),
-                    $oldDataInstance->getId()
-                ),
-                1413711010
-            );
-        }
 
-        $this->setObjectDataForIndex($document, $index);
+
         $this->setRawDataForIndex($document->getData(), $index);
 
         $this->updateIndexForPosition($document, $index);
@@ -616,11 +535,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
         $matchingIndex = -1;
 
         do {
-            $foundObject = $this->getObjectDataForIndex($i);
-            if ($foundObject instanceof DocumentInterface && $foundObject->getId() === $identifier) {
-                $matchingIndex = $i;
-                break;
-            }
             $rawData = $this->setRawDataIdentifierIfNotSetForIndex($i);
             if ($rawData[Constants::DATA_ID_KEY] === $identifier) {
                 $matchingIndex = $i;
@@ -685,7 +599,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
         }
 
 
-        $this->removeObjectDataForIndex($index);
         $this->removeRawDataForIndex($index);
 
         $this->removeFromIndex($document);
@@ -702,19 +615,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
     // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
     // HELPER METHODS
     // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
-
-    /**
-     * Removes the Document instance at the given index
-     *
-     * @param int $index
-     * @return void
-     */
-    protected function removeObjectDataForIndex($index)
-    {
-        $basicArray       = $this->objectData->toArray();
-        $newArray         = array_merge(array_slice($basicArray, 0, $index), array_slice($basicArray, $index + 1));
-        $this->objectData = SplFixedArray::fromArray($newArray);
-    }
 
     /**
      * Removes the raw data at the given index
@@ -751,17 +651,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
         }
     }
 
-    /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Return the current element
-     *
-     * @link http://php.net/manual/en/iterator.current.php
-     * @return mixed Can return any type.
-     */
-    public function current()
-    {
-        return $this->getObjectDataForIndexOrTransformIfNotExists($this->index);
-    }
 
     /**
      * Returns all Document instances of this database
@@ -780,17 +669,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
      */
     public function toFixedArray()
     {
-        $count = $this->count();
-        $i     = 0;
-
-        if ($count === 0) {
-            return new SplFixedArray(0);
-        }
-        do {
-            $this->getObjectDataForIndexOrTransformIfNotExists($i);
-        } while (++$i < $count);
-
-        return $this->objectData;
+        return $this->rawData;
     }
 
     /**
@@ -827,7 +706,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, Arrayable
      */
     public function valid()
     {
-        return $this->index < $this->rawData->count() || $this->index < $this->objectData->count();
+        return $this->index < $this->rawData->count();
     }
 
     /**
