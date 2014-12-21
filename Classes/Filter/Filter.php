@@ -32,37 +32,48 @@ class Filter implements FilterInterface
     /**
      * Creates a new filter
      *
-     * @param \SplObjectStorage|ComparisonInterface[] $comparisons The comparisons
+     * @param \SplObjectStorage|ComparisonInterface[]|ComparisonInterface $comparisons The comparisons to filter by as a single Comparison instance or an array
      */
     public function __construct($comparisons = null)
     {
         if (!$comparisons) {
             $this->comparisons = new \SplObjectStorage();
+        } elseif (is_array($comparisons) || $comparisons instanceof \Traversable) {
+            $this->initWithComparisonCollection($comparisons);
         } else {
-            $this->initWithComparisons($comparisons);
+            $this->initWithComparison($comparisons);
         }
     }
 
     /**
      * Initialize the filter with the given comparisons
      *
-     * @param ComparisonInterface[] $comparisons
+     * @param ComparisonInterface[] $comparisonCollection
      * @return \SplObjectStorage
      */
-    public function initWithComparisons($comparisons)
+    public function initWithComparisonCollection($comparisonCollection)
     {
         $tempComparisons = new \SplObjectStorage();
-        if (!is_array($comparisons) && !$comparisons instanceof \Traversable) {
-            $tempComparisons->attach($comparisons);
-        } else {
-            foreach ($comparisons as $comparison) {
-                $tempComparisons->attach($comparison);
-            }
-            $tempComparisons->rewind();
+        foreach ($comparisonCollection as $comparison) {
+            $tempComparisons->attach($comparison);
         }
+        $tempComparisons->rewind();
         $this->comparisons = $tempComparisons;
     }
 
+    /**
+     * Initialize the filter with the given single comparison
+     *
+     * @param ComparisonInterface[] $comparison
+     * @return \SplObjectStorage
+     */
+    public function initWithComparison($comparison)
+    {
+        $tempComparisons = new \SplObjectStorage();
+        $tempComparisons->attach($comparison);
+        $tempComparisons->rewind();
+        $this->comparisons = $tempComparisons;
+    }
 
     /**
      * Adds the given comparison
