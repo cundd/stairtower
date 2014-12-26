@@ -17,6 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Console command to find data
  *
  * @package Cundd\PersistentObjectStore\Console
+ * @deprecated Use the Filter command instead
  */
 class FindCommand extends AbstractDataCommand
 {
