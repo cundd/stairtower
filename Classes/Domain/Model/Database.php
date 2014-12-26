@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
-use Cundd\PersistentObjectStore\ArrayableInterface;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
@@ -34,7 +33,7 @@ use SplFixedArray;
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-class Database implements DatabaseInterface, DatabaseRawDataInterface, ArrayableInterface
+class Database implements DatabaseInterface, DatabaseRawDataInterface
 {
     /**
      * Raw data array

@@ -8,13 +8,15 @@
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
+use Cundd\PersistentObjectStore\ArrayableInterface;
+
 
 /**
  * Interface for Database implementations
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-interface DatabaseInterface extends DatabaseStateInterface, \Iterator, \Countable, \SeekableIterator
+interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, \Iterator, \Countable, \SeekableIterator
 {
     /**
      * Returns the database identifier
