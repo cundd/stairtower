@@ -34,4 +34,13 @@ abstract class AbstractCommand extends Command
      * @Inject
      */
     protected $serializer;
+
+    /**
+     * Formatter
+     *
+     * @var \Cundd\PersistentObjectStore\Formatter\JsonFormatter
+     * @Inject
+     */
+    protected $formatter;
+
 }

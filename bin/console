@@ -21,6 +21,7 @@ $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data
 
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\ListCommand'));
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\AddCommand'));
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\FilterCommand'));
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\FindCommand'));
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\RemoveCommand'));
 
