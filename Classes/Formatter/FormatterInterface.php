@@ -26,12 +26,12 @@ interface FormatterInterface
     public function setConfiguration($configuration);
 
     /**
-     * Formats the given input model(s)
+     * Formats the given input
      *
-     * @param DocumentInterface|DocumentInterface[] $inputModel
+     * @param DocumentInterface|DocumentInterface[]|\SplFixedArray $input
      * @return string
      */
-    public function format($inputModel);
+    public function format($input);
 
     /**
      * Returns the content suffix for the formatter
