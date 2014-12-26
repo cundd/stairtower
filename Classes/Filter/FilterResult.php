@@ -325,8 +325,8 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
             if ($comparisonResult) {
                 $matchingItem = $dataCollection->getObjectDataForIndexOrTransformIfNotExists($i);
                 if ($matchingItem === null) {
-                    DebugUtility::var_dump($item);
-                    DebugUtility::pl('Object for index %d is NULL', $i);
+                    //DebugUtility::var_dump($item);
+                    //DebugUtility::pl('Object for index %d is NULL', $i);
                 }
                 $resultArray[$matchesIndex] = $matchingItem;
 

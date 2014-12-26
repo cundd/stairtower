@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Filter;
 
 use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
@@ -301,9 +302,6 @@ class FilterResultTest extends AbstractDatabaseBasedCase
 
         $newFilter = new Filter();
 
-//		$database = $coordinator->getDataByDatabase('contacts');
-//		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
-
         $database = $coordinator->getDatabase('people');
         $newFilter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
         $newFilterResult = $newFilter->filterCollection($database);
@@ -327,6 +325,50 @@ class FilterResultTest extends AbstractDatabaseBasedCase
 
     }
 
+    /**
+     * @test
+     */
+    public function filterNormalCollectionTest()
+    {
+        $exampleCollection = new \SplObjectStorage();
+        $exampleCollection->attach(new Document(array(
+            'name'    => 'Red Hot Chili Peppers',
+            'founded' => 1983,
+            'breakUp' => null,
+            'url'     => 'http://www.redhotchilipeppers.com/',
+        )));
+
+        $exampleCollection->attach(new Document(array(
+            'name'    => 'The Beatles',
+            'founded' => 1960,
+            'breakUp' => 1970,
+            'url'     => 'http://thebeatles.com/',
+        )));
+
+        $exampleCollection->attach(new Document(array(
+            'name'    => 'Pink Floyd',
+            'founded' => 1965,
+            'breakUp' => 2014,
+            'url'     => 'http://thebeatles.com/',
+        )));
+
+        $filter       = new Filter(new PropertyComparison('breakUp', ComparisonInterface::TYPE_LESS_THAN_OR_EQUAL_TO,
+            2014));
+        $filterResult = $filter->filterCollection($exampleCollection);
+
+        $this->assertEquals(3, $filterResult->count());
+
+
+        $exampleCollection->attach(new Document(array(
+            'name'    => 'Starflyer 59',
+            'founded' => 1993,
+            'breakUp' => null,
+            'url'     => 'http://www.sf59.com/',
+        )));
+
+        $this->assertEquals(3, $filterResult->count());
+    }
+
     protected function setUp()
     {
         $this->checkPersonFile();
@@ -336,12 +378,9 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         /** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
         $coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
 
-        $this->filter = new Filter();
-
-//		$database = $coordinator->getDataByDatabase('contacts');
-//		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
-
         $database = $coordinator->getDatabase('people');
+
+        $this->filter = new Filter();
         $this->filter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
         $this->fixture = $this->filter->filterCollection($database);
     }
