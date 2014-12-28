@@ -138,6 +138,12 @@ abstract class AbstractServer implements ServerInterface
 
         $detailedStatistics = $statistics->jsonSerialize() + [
                 'eventLoopImplementation' => get_class($this->getEventLoop()),
+                'os' => array(
+                    'vendor'  => php_uname('s'),
+                    'version' => php_uname('r'),
+                    'machine' => php_uname('m'),
+                    'info'    => php_uname('v'),
+                ),
             ];
         return $detailedStatistics;
     }

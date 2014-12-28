@@ -79,8 +79,9 @@ class Statistics implements Immutable, JsonSerializable
         return array(
             'version'         => $this->getVersion(),
             'guid'            => $this->getGuid(),
+            'host'   => php_uname('n'),
             'startTime'       => $this->getStartTime() ? $this->getStartTime()->format('r') : 'undefined',
-            'upTime'          => $this->getUpTime() ? $this->getStartTime()->format('r') : 'undefined',
+            'upTime' => $this->getUpTime() ? $this->getUpTime()->format('%a days %H:%I:%S') : 'undefined',
             'memoryUsage'     => GeneralUtility::formatBytes($this->getMemoryUsage()),
             'memoryPeakUsage' => GeneralUtility::formatBytes($this->getMemoryPeakUsage()),
         );

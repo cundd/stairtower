@@ -278,8 +278,10 @@ class PropertyComparison implements PropertyComparisonInterface
             }
             return (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform($testValue) : $expression2);
         }
-        throw new InvalidComparisonException(sprintf('Can not perform logical comparison with operator %s', $operator),
-            1410704637);
+        throw new InvalidComparisonException(
+            sprintf('Can not perform logical comparison with operator %s', $operator),
+            1410704637
+        );
     }
 
 
