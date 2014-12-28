@@ -19,7 +19,22 @@ use DateTime;
 use React\Http\Request;
 use React\Http\Response;
 
+/**
+ * Interface for server implementations
+ *
+ * @package Cundd\PersistentObjectStore\Server
+ */
 interface ServerInterface {
+	/**
+	 * Server is in normal operation mode
+	 */
+	const SERVER_MODE_NORMAL = 0;
+
+	/**
+	 * Server is in test mode
+	 */
+	const SERVER_MODE_TEST = 1;
+
 	/**
 	 * Handle the given request
 	 *
@@ -32,8 +47,8 @@ interface ServerInterface {
 	 * Handle the given request result
 	 *
 	 * @param HandlerResultInterface $result
-	 * @param Request $request
-	 * @param Response $response
+	 * @param Request                $request
+	 * @param Response               $response
 	 */
 	public function handleResult($result, $request, $response);
 
@@ -41,7 +56,7 @@ interface ServerInterface {
 	 * Handles the given exception
 	 *
 	 * @param \Exception           $error
-	 * @param \React\Http\Request $request
+	 * @param \React\Http\Request  $request
 	 * @param \React\Http\Response $response
 	 * @throws \Exception
 	 */
@@ -66,13 +81,14 @@ interface ServerInterface {
 	/**
 	 * Total shutdown of the server
 	 *
-	 * Stops to listen for incoming connections, runs the maintenance task and terminates the programm
+	 * Stops to listen for incoming connections, runs the maintenance task and terminates the program
 	 */
 	public function shutdown();
 
 
 	/**
 	 * Returns the servers global unique identifier
+	 *
 	 * @return string
 	 */
 	public function getGuid();
@@ -141,6 +157,7 @@ interface ServerInterface {
 
 	/**
 	 * Sets the port number to listen on
+	 *
 	 * @param int $port
 	 * @return $this
 	 */
@@ -148,6 +165,7 @@ interface ServerInterface {
 
 	/**
 	 * Returns the port number to listen on
+	 *
 	 * @return int
 	 */
 	public function getPort();
@@ -167,4 +185,34 @@ interface ServerInterface {
 	 * @return $this
 	 */
 	public function setEventLoop($eventLoop);
+
+	/**
+	 * Returns the mode of the server
+	 *
+	 * @return int
+	 */
+	public function getMode();
+
+	/**
+	 * Sets the mode of the server
+	 *
+	 * @param int $mode
+	 * @return $this
+	 */
+	public function setMode($mode);
+
+	/**
+	 * Returns the number of seconds after which to stop the server if run in test mode
+	 *
+	 * @return int
+	 */
+	public function getAutoShutdownTime();
+
+	/**
+	 * Sets the number of seconds after which to stop the server if run in test mode
+	 *
+	 * @param int $autoShutdownTime
+	 * @return $this
+	 */
+	public function setAutoShutdownTime($autoShutdownTime);
 }

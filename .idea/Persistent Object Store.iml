@@ -9,12 +9,12 @@
     <orderEntry type="module-library">
       <library name="PHP">
         <CLASSES>
-          <root url="file://$MODULE_DIR$/vendor" />
           <root url="file://$MODULE_DIR$/../Resources/phpunit" />
+          <root url="file://$MODULE_DIR$/vendor" />
         </CLASSES>
         <SOURCES>
-          <root url="file://$MODULE_DIR$/vendor" />
           <root url="file://$MODULE_DIR$/../Resources/phpunit" />
+          <root url="file://$MODULE_DIR$/vendor" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -22,15 +22,14 @@
     <orderEntry type="module-library">
       <library name="PHARS">
         <CLASSES>
-          <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit.phar" />
           <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit3.7/phpunit-lts.phar" />
+          <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit.phar" />
         </CLASSES>
         <SOURCES>
-          <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit.phar" />
           <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit3.7/phpunit-lts.phar" />
+          <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit.phar" />
         </SOURCES>
       </library>
     </orderEntry>
   </component>
 </module>
-

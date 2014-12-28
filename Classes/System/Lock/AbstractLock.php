@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\System\Lock;
+use Cundd\PersistentObjectStore\System\Lock\Exception\TimeoutException;
 
 /**
  * Abstract lock implementation
@@ -42,7 +43,7 @@ abstract class AbstractLock implements LockInterface {
 	 *
 	 * @param int $timeout Microseconds to wait before throwing a TimeoutException
 	 * @return void
-	 * @throws \Cundd\PersistentObjectStore\System\Lock\TimeoutException if the timeout is reached before the lock can be acquired
+	 * @throws \Cundd\PersistentObjectStore\System\Lock\Exception\TimeoutException if the timeout is reached before the lock can be acquired
 	 */
 	public function lockWithTimeout($timeout) {
 		$timeUntilTimeout = $timeout;
@@ -107,4 +108,4 @@ abstract class AbstractLock implements LockInterface {
 	 * @return	boolean	Returns if the lock could be relinquished
 	 */
 	abstract protected function _unlock();
-} 
+}

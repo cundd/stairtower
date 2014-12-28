@@ -41,7 +41,7 @@ abstract class AbstractServer implements ServerInterface {
 	protected $ip = '127.0.0.1';
 
 	/**
-	 * Data Access Coordinator
+	 * Document Access Coordinator
 	 *
 	 * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
 	 * @Inject
@@ -101,6 +101,20 @@ abstract class AbstractServer implements ServerInterface {
 	protected $maintenanceInterval = 5.0;
 
 	/**
+	 * If run in test mode the server will stop after this number of seconds
+	 *
+	 * @var int
+	 */
+	protected $autoShutdownTime = 60;
+
+	/**
+	 * Mode in which the server is started
+	 *
+	 * @var int
+	 */
+	protected $mode = ServerInterface::SERVER_MODE_NORMAL;
+
+	/**
 	 * Create and configure the server objects
 	 */
 	abstract protected function setupServer();
@@ -137,7 +151,7 @@ abstract class AbstractServer implements ServerInterface {
 	/**
 	 * Total shutdown of the server
 	 *
-	 * Stops to listen for incoming connections, runs the maintenance task and terminates the programm
+	 * Stops to listen for incoming connections, runs the maintenance task and terminates the program
 	 */
 	public function shutdown() {
 		$this->stop();
@@ -150,6 +164,16 @@ abstract class AbstractServer implements ServerInterface {
 	 */
 	public function prepareEventLoop() {
 		$this->postponeMaintenance();
+
+
+		// If the server is run in test-mode shut it down after 1 minute
+		if ($this->getMode() === ServerInterface::SERVER_MODE_TEST) {
+			$this->writeln('Server is started in test mode and will shut down after %d seconds', $this->getAutoShutdownTime());
+			$this->eventLoop->addTimer($this->getAutoShutdownTime(), function($timer) {
+				$this->writeln('Auto shutdown time reached');
+				$this->shutdown();
+			});
+		}
 	}
 
 	/**
@@ -237,6 +261,47 @@ abstract class AbstractServer implements ServerInterface {
 	}
 
 	/**
+	 * Returns the mode of the server
+	 *
+	 * @return int
+	 */
+	public function getMode() {
+		return $this->mode;
+	}
+
+	/**
+	 * Sets the mode of the server
+	 *
+	 * @param int $mode
+	 * @return $this
+	 */
+	public function setMode($mode) {
+		if ($this->_isRunning) throw new InvalidServerChangeException('Can not change the mode when server is running', 1414835788);
+		$this->mode = $mode;
+		return $this;
+	}
+
+	/**
+	 * Returns the number of seconds after which to stop the server if run in test mode
+	 *
+	 * @return int
+	 */
+	public function getAutoShutdownTime() {
+		return $this->autoShutdownTime;
+	}
+
+	/**
+	 * Sets the number of seconds after which to stop the server if run in test mode
+	 *
+	 * @param int $autoShutdownTime
+	 * @return $this
+	 */
+	public function setAutoShutdownTime($autoShutdownTime) {
+		$this->autoShutdownTime = $autoShutdownTime;
+		return $this;
+	}
+
+	/**
 	 * Returns the servers global unique identifier
 	 * @return string
 	 */
@@ -294,9 +359,9 @@ abstract class AbstractServer implements ServerInterface {
 	 * @throws \Exception
 	 */
 	public function handleError($error, $request, Response $response) {
-		$this->handleResult(new HandlerResult($this->getStatusCodeForException($error), $error->getMessage()), $request, $response);
 		$this->writeln('Caught exception #%d: %s', $error->getCode(), $error->getMessage());
 		$this->writeln($error->getTraceAsString());
+		$this->handleResult(new HandlerResult($this->getStatusCodeForException($error), $error->getMessage()), $request, $response);
 	}
 
 	/**
@@ -372,10 +437,10 @@ abstract class AbstractServer implements ServerInterface {
 		if (func_num_args() > 1) {
 			$arguments = func_get_args();
 			array_shift($arguments);
-			fwrite(STDOUT, vsprintf($format, $arguments));
-		} else {
-			fwrite(STDOUT, $format);
+			$format = vsprintf($format, $arguments);
 		}
+		fwrite(STDOUT, $format);
+		$this->log($format);
 	}
 
 	/**
@@ -413,6 +478,7 @@ abstract class AbstractServer implements ServerInterface {
 
 		$logFileDirectory = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logPath');
 		$logFilePath = $logFileDirectory . 'log-' . getmypid() . '.log';
+		$logFilePath = $logFileDirectory . 'log-' . gmdate('Y-m-d') . '.log';
 
 		if (!file_exists($logFileDirectory)) {
 			mkdir($logFileDirectory);

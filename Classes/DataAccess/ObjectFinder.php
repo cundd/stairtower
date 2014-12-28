@@ -7,8 +7,8 @@
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
-use Cundd\PersistentObjectStore\DataInterface;
 
 /**
  * Object Finder implementation
@@ -76,21 +76,21 @@ class ObjectFinder implements ObjectFinderInterface {
 	 */
 	public function findInDatabase($database) {
 		$matchingInstances = array();
-		foreach ($database as $dataInstance) {
-			if ($this->compareDataInstanceWithConstraints($dataInstance)) {
-				$matchingInstances[] = $dataInstance;
+		foreach ($database as $document) {
+			if ($this->compareDataInstanceWithConstraints($document)) {
+				$matchingInstances[] = $document;
 			}
 		}
 		return $matchingInstances;
 	}
 
 	/**
-	 * Returns if the given data instance matches the constraints
+	 * Returns if the given Document matches the constraints
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $document
 	 * @return boolean
 	 */
-	public function compareDataInstanceWithConstraints($dataInstance) {
+	public function compareDataInstanceWithConstraints($document) {
 		$constraints = $this->getConstraints();
 		var_dump($constraints, (string)$constraints);
 

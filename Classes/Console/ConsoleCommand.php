@@ -8,11 +8,11 @@
 
 namespace Cundd\PersistentObjectStore\Console;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
+
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
+
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -42,7 +42,7 @@ class ConsoleCommand extends Command {
 WELCOME;
 
 	/**
-	 * Data Access Coordinator
+	 * Document Access Coordinator
 	 *
 	 * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
 	 * @Inject

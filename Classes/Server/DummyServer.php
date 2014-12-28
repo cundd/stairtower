@@ -43,7 +43,7 @@ class DummyServer implements ServerInterface {
 	protected $ip = '127.0.0.1';
 
 	/**
-	 * Data Access Coordinator
+	 * Document Access Coordinator
 	 *
 	 * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
 	 * @Inject
@@ -184,6 +184,41 @@ class DummyServer implements ServerInterface {
 		$this->eventLoop = $eventLoop;
 		return $this;
 	}
+
+	/**
+	 * Returns the mode of the server
+	 *
+	 * @return int
+	 */
+	public function getMode() {
+	}
+
+	/**
+	 * Sets the mode of the server
+	 *
+	 * @param int $mode
+	 * @return $this
+	 */
+	public function setMode($mode) {
+	}
+
+	/**
+	 * Returns the number of seconds after which to stop the server if run in test mode
+	 *
+	 * @return int
+	 */
+	public function getAutoShutdownTime() {
+	}
+
+	/**
+	 * Sets the number of seconds after which to stop the server if run in test mode
+	 *
+	 * @param int $autoShutdownTime
+	 * @return $this
+	 */
+	public function setAutoShutdownTime($autoShutdownTime) {
+	}
+
 
 	/**
 	 * Returns the servers global unique identifier

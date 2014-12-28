@@ -12,9 +12,9 @@ namespace Cundd\PersistentObjectStore\Server\Handler;
 use Cundd\PersistentObjectStore\AbstractCase;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Memory\Manager;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use React\Http\Request;
@@ -58,7 +58,7 @@ class HandlerTest extends AbstractCase {
 	 * @test
 	 */
 	public function noRouteTest() {
-		$requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/info@cundd.net'));
+		$requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/'));
 		$handlerResult = $this->fixture->noRoute($requestInfo);
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
 		$this->assertEquals(200, $handlerResult->getStatusCode());
@@ -76,13 +76,28 @@ class HandlerTest extends AbstractCase {
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
 		$this->assertEquals(201, $handlerResult->getStatusCode());
 		$this->assertNotNull($handlerResult->getData());
-		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DataInterface', $handlerResult->getData());
+		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface', $handlerResult->getData());
 
-		/** @var DataInterface $dataInstance */
+		/** @var DocumentInterface $dataInstance */
 		$dataInstance = $handlerResult->getData();
 		$this->assertEquals('info-for-me@cundd.net', $dataInstance->valueForKey('email'));
 
 		$this->assertTrue($this->database->contains($dataInstance));
+
+		$i = 0;
+		do {
+			$data = array('email' => "info$i-for-me@cundd.net", 'name' => 'Daniel');
+			$handlerResult = $this->fixture->create($requestInfo, $data);
+		} while(++$i < 10000);
+		// Validate the last result
+		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
+		$this->assertEquals(201, $handlerResult->getStatusCode());
+		$dataInstance = $handlerResult->getData();
+		$this->assertEquals(sprintf('info%d-for-me@cundd.net', $i - 1), $dataInstance->valueForKey('email'));
+
+
+		$iHalf = intval($i / 2);
+		$this->assertTrue($this->database->contains("info$iHalf-for-me@cundd.net"));
 	}
 
 	/**
@@ -118,9 +133,9 @@ class HandlerTest extends AbstractCase {
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
 		$this->assertEquals(201, $handlerResult->getStatusCode());
 		$this->assertNotNull($handlerResult->getData());
-		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DataInterface', $handlerResult->getData());
+		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface', $handlerResult->getData());
 
-		/** @var DataInterface $dataInstance */
+		/** @var DocumentInterface $dataInstance */
 		$dataInstance = $handlerResult->getData();
 		$this->assertEquals('info-for-me@cundd.net', $dataInstance->valueForKey('email'));
 
@@ -135,9 +150,9 @@ class HandlerTest extends AbstractCase {
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
 		$this->assertEquals(200, $handlerResult->getStatusCode());
 		$this->assertNotNull($handlerResult->getData());
-		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DataInterface', $handlerResult->getData());
+		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface', $handlerResult->getData());
 
-		/** @var DataInterface $dataInstance */
+		/** @var DocumentInterface $dataInstance */
 		$dataInstance = $handlerResult->getData();
 		$this->assertEquals('info@cundd.net', $dataInstance->valueForKey('email'));
 	}
@@ -153,7 +168,7 @@ class HandlerTest extends AbstractCase {
 		$this->assertNotNull($handlerResult->getData());
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DatabaseInterface', $handlerResult->getData());
 
-		/** @var DataInterface $dataInstance */
+		/** @var DocumentInterface $dataInstance */
 		$dataInstance = $handlerResult->getData()->current();
 		$this->assertEquals('info@cundd.net', $dataInstance->valueForKey('email'));
 	}
@@ -172,7 +187,7 @@ class HandlerTest extends AbstractCase {
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResultInterface', $handlerResult->getData());
 		$this->assertEquals(1, $handlerResult->getData()->count());
 
-		/** @var DataInterface $dataInstance */
+		/** @var DocumentInterface $dataInstance */
 		$dataInstance = $handlerResult->getData()->current();
 		$this->assertEquals('info@cundd.net', $dataInstance->valueForKey('email'));
 	}
@@ -189,9 +204,9 @@ class HandlerTest extends AbstractCase {
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
 		$this->assertEquals(200, $handlerResult->getStatusCode());
 		$this->assertNotNull($handlerResult->getData());
-		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DataInterface', $handlerResult->getData());
+		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface', $handlerResult->getData());
 
-		/** @var DataInterface $dataInstance */
+		/** @var DocumentInterface $dataInstance */
 		$dataInstance = $handlerResult->getData();
 		$this->assertEquals('info@cundd.net', $dataInstance->valueForKey('email'));
 		$this->assertEquals($newName, $dataInstance->valueForKey('name'));
@@ -215,12 +230,26 @@ class HandlerTest extends AbstractCase {
 
 		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
 		$this->assertEquals(204, $handlerResult->getStatusCode());
-		$this->assertNull($handlerResult->getData());
+		$this->assertEquals('Document "info@cundd.net" deleted', $handlerResult->getData());
 
-		/** @var DataInterface $dataInstance */
-		$dataInstance = new Data(['email' => 'info@cundd.net']);
+		/** @var DocumentInterface $dataInstance */
+		$dataInstance = new Document(['email' => 'info@cundd.net']);
 
 		$this->assertFalse($this->database->contains($dataInstance));
+	}
+
+	/**
+	 * @test
+	 */
+	public function deleteDatabaseTest() {
+		// Running this test would remove our test data :(
+		return;
+		$requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('DELETE', '/contacts/'));
+		$handlerResult = $this->fixture->delete($requestInfo);
+
+		$this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface', $handlerResult);
+		$this->assertEquals(204, $handlerResult->getStatusCode());
+		$this->assertEquals('Database "contacts" deleted', $handlerResult->getData());
 	}
 
 	/**

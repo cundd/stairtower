@@ -28,8 +28,8 @@ class FilterBuilder implements FilterBuilderInterface {
 	public function buildFilterFromQueryParts($queryParts, $collection) {
 		$comparisons = array();
 		foreach ($queryParts as $propertyKey => $testValue) {
-			$comparisons[] = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_EQUAL_TO, $testValue);
-//			$comparisons[] = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_LIKE, $testValue);
+//			$comparisons[] = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_EQUAL_TO, $testValue);
+			$comparisons[] = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_LIKE, $testValue);
 		}
 		$filter = new Filter($comparisons);
 		return $filter->filterCollection($collection);

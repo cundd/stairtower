@@ -10,10 +10,10 @@ namespace Cundd\PersistentObjectStore\Sorting;
 
 
 use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+
 use Cundd\PersistentObjectStore\KeyValueCodingInterface;
 use Cundd\PersistentObjectStore\Sorting\Exception\SortingException;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 use Doctrine\DBAL\Driver;
 use SplFixedArray;

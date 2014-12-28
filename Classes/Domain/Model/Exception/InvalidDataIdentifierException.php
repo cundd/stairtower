@@ -12,7 +12,7 @@ namespace Cundd\PersistentObjectStore\Domain\Model\Exception;
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**
- * Exception thrown if a Data instance is somehow invalid
+ * Exception thrown if a Document instances identifier is somehow invalid
  *
  * @package Cundd\PersistentObjectStore\Domain\Model\Exception
  */

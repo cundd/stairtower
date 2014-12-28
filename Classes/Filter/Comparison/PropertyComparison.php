@@ -191,20 +191,84 @@ class PropertyComparison implements PropertyComparisonInterface {
 	 * @return bool
 	 */
 	protected function performLike($value, $search) {
-		if (is_array($value) && $value instanceof \Traversable) {
+		if (is_array($value) || $value instanceof \Traversable) {
 			return $this->performContains($value, $search);
 		}
+		if (is_int($value)) {
+			return $this->performLikeInt($value, $search);
+		}
+		if (is_float($value)) {
+			return $this->performLikeFloat($value, $search);
+		}
 		if (is_string($search)) {
-			$stringValue = GeneralUtility::toString($value);
-			$regexDelimiter = '!';
-			if (strpos($stringValue, $regexDelimiter) !== FALSE) {
-				$regexDelimiter = '\\';
-				if (strpos($stringValue, $regexDelimiter) !== FALSE) {}
-			}
-			$regex = $regexDelimiter . $search . $regexDelimiter;
-			return preg_match($regex, $stringValue) > 0;
+			return $this->performLikeString($value, $search);
 		}
 		return FALSE;
+	}
+
+	/**
+	 * Perform a 'like' comparison for strings
+	 *
+	 * @param int $value
+	 * @param mixed $search
+	 * @return bool
+	 */
+	protected function performLikeString($value, $search){
+		$stringValue = strtolower(GeneralUtility::toString($value));
+
+		// Check if the search is false-ish
+		if (strlen($search) === 0) {
+			return !$stringValue;
+		}
+
+		// Check if search is a regular expression
+		if ($search[0] === '/' && strpos($search, '/', 2) !== FALSE) {
+			return preg_match($search, $stringValue) > 0;
+		}
+
+		// Check if search contains a wildcard
+		if (strpos($search, '?') !== FALSE || strpos($search, '%') !== FALSE) {
+			$regexDelimiter = '/';
+			if (strpos($stringValue, $regexDelimiter) !== FALSE) {
+				$regexDelimiter = '!';
+//				if (strpos($stringValue, $regexDelimiter) !== FALSE) {}
+			}
+
+			$search = str_replace('?', '\w', $search);
+			$search = str_replace('%', '\w*', $search);
+			$regex = sprintf('%s^%s$%s', $regexDelimiter, $search, $regexDelimiter);
+			return preg_match($regex, $stringValue) > 0;
+		}
+
+		return $stringValue == strtolower($search);
+	}
+
+	/**
+	 * Perform a 'like' comparison for integers
+	 *
+	 * @param int $int
+	 * @param mixed $search
+	 * @return bool
+	 */
+	protected function performLikeInt($int, $search){
+		$searchAsInt = GeneralUtility::validateInteger($search);
+		if ($searchAsInt === NULL) {
+			return FALSE;
+		}
+		return $int === $searchAsInt;
+	}
+
+	/**
+	 * Perform a 'like' comparison for float
+	 *
+	 * @param float $float
+	 * @param mixed $search
+	 * @return bool
+	 */
+	protected function performLikeFloat($float, $search){
+		$searchAsFloat = floatval($search);
+		return abs(($float - $searchAsFloat) / $searchAsFloat) < 0.00001;
+//		return abs($float - $searchAsFloat) > abs(($float - $searchAsFloat) / $searchAsFloat);
 	}
 
 

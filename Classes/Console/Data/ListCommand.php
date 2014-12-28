@@ -9,7 +9,7 @@
 namespace Cundd\PersistentObjectStore\Console\Data;
 
 use Cundd\PersistentObjectStore\Console\AbstractCommand;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -47,9 +47,9 @@ class ListCommand extends AbstractCommand {
 		if (!$databaseIdentifier) throw new \InvalidArgumentException('Missing database identifier argument', 1412524227);
 		$database = $this->coordinator->getDatabase($databaseIdentifier);
 
-		/** @var DataInterface $dataInstance */
-		foreach ($database as $dataInstance) {
-			$description = sprintf('%s', $dataInstance->getGuid());
+		/** @var DocumentInterface $document */
+		foreach ($database as $document) {
+			$description = sprintf('%s', $document->getGuid());
 			$output->writeln($description);
 		}
 	}

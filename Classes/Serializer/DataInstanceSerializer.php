@@ -9,14 +9,14 @@
 namespace Cundd\PersistentObjectStore\Serializer;
 
 use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
-use Doctrine\Tests\Common\Persistence\ObjectManagerDecoratorTest;
+
 
 /**
- * Specialized version of the JsonSerializer to transform JSON data to and from Data instances
+ * Specialized version of the JsonSerializer to transform JSON data to and from Document instances
  *
  * @package Cundd\PersistentObjectStore\Serializer
  */
@@ -29,7 +29,7 @@ class DataInstanceSerializer extends JsonSerializer {
 	 * @return string
 	 */
 	public function serialize($data) {
-		if ($data instanceof DataInterface) {
+		if ($data instanceof DocumentInterface) {
 			$objectData = $data->getData();
 			$objectData[Constants::DATA_META_KEY] = array(
 				'guid' => $data->getGuid(),
@@ -59,6 +59,6 @@ class DataInstanceSerializer extends JsonSerializer {
 		if ($databaseIdentifier) {
 			GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
 		}
-		return new Data($data, $databaseIdentifier);
+		return new Document($data, $databaseIdentifier);
 	}
 } 

@@ -24,7 +24,7 @@ interface HandlerInterface {
 	public function noRoute(RequestInfo $requestInfo);
 
 	/**
-	 * Creates a new Data instance or Database with the given data for the given RequestInfo
+	 * Creates a new Document instance or Database with the given data for the given RequestInfo
 	 *
 	 * @param RequestInfo $requestInfo
 	 * @param mixed $data
@@ -33,7 +33,7 @@ interface HandlerInterface {
 	public function create(RequestInfo $requestInfo, $data);
 
 	/**
-	 * Read Data instances for the given RequestInfo
+	 * Read Document instances for the given RequestInfo
 	 *
 	 * @param RequestInfo $requestInfo
 	 * @return HandlerResultInterface
@@ -41,7 +41,7 @@ interface HandlerInterface {
 	public function read(RequestInfo $requestInfo);
 
 	/**
-	 * Update a Data instance with the given data for the given RequestInfo
+	 * Update a Document instance with the given data for the given RequestInfo
 	 *
 	 * @param RequestInfo $requestInfo
 	 * @param mixed $data
@@ -50,7 +50,7 @@ interface HandlerInterface {
 	public function update(RequestInfo $requestInfo, $data);
 
 	/**
-	 * Deletes a Data instance for the given RequestInfo
+	 * Deletes a Document instance for the given RequestInfo
 	 *
 	 * @param RequestInfo $requestInfo
 	 * @return HandlerResultInterface

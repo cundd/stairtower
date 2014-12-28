@@ -11,6 +11,7 @@ namespace Cundd\PersistentObjectStore\Server\Handler;
 
 interface Event {
 	const DATABASE_CREATED = 'database.created';
+	const DATABASE_DELETED = 'database.updated';
 
 	const DOCUMENT_CREATED = 'document.created';
 	const DOCUMENT_UPDATED = 'document.updated';

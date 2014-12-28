@@ -7,7 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Utility;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException;
 
@@ -194,7 +194,7 @@ class GeneralUtilityTest extends \PHPUnit_Framework_TestCase {
 		$this->assertContains('Resource id ', GeneralUtility::toString($tempFile));
 		fclose($tempFile);
 
-		$dataInstance = new Data(array('my' => 'life'));
+		$dataInstance = new Document(array('my' => 'life'));
 		$this->assertFalse(GeneralUtility::toString($dataInstance));
 
 		$object = new DummyObjectThatCanBeConvertedToString('my life');

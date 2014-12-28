@@ -9,6 +9,11 @@
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 
+/**
+ * Interface for Database implementations
+ *
+ * @package Cundd\PersistentObjectStore\Domain\Model
+ */
 interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	/**
 	 * Returns the database identifier
@@ -29,7 +34,7 @@ interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	 * Returns the object with the given identifier
 	 *
 	 * @param string $identifier
-	 * @return DataInterface|NULL
+	 * @return DocumentInterface|NULL
 	 */
 	public function findByIdentifier($identifier);
 
@@ -46,32 +51,32 @@ interface DatabaseInterface extends \Iterator, \Countable, \SeekableIterator {
 	// MANAGING OBJECTS
 	// MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
 	/**
-	 * Adds the given data instance to the database
+	 * Adds the given Document to the database
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $document
 	 */
-	public function add($dataInstance);
+	public function add($document);
 
 	/**
-	 * Updates the given data instance in the database
+	 * Updates the given Document in the database
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $document
 	 */
-	public function update($dataInstance);
+	public function update($document);
 
 	/**
-	 * Removes the given data instance from the database
+	 * Removes the given Document from the database
 	 *
-	 * @param DataInterface $dataInstance
+	 * @param DocumentInterface $document
 	 */
-	public function remove($dataInstance);
+	public function remove($document);
 
 	/**
-	 * Returns if the database contains the given data instance
+	 * Returns if the database contains the given Document
 	 *
-	 * @param DataInterface|string $dataInstance Actual Data instance or it's GUID
+	 * @param DocumentInterface|string $document Actual Document instance or it's GUID
 	 * @return boolean
 	 */
-	public function contains($dataInstance);
+	public function contains($document);
 
 } 

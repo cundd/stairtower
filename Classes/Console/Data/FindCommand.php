@@ -8,9 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Console\Data;
 
-use Cundd\PersistentObjectStore\Console\AbstractCommand;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -36,7 +34,7 @@ class FindCommand extends AbstractDataCommand {
 			->addArgument(
 				'identifier',
 				InputArgument::REQUIRED,
-				'Data identifier to search for'
+				'Document identifier to search for'
 			)
 		;
 	}
@@ -49,9 +47,9 @@ class FindCommand extends AbstractDataCommand {
 	 * @return int|null|void
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$dataInstance = $this->findDataInstanceFromInput($input);
-		if ($dataInstance) {
-			$output->write($this->serializer->serialize($dataInstance->getData()));
+		$document = $this->findDataInstanceFromInput($input);
+		if ($document) {
+			$output->write($this->serializer->serialize($document->getData()));
 		} else {
 			$output->write(sprintf('<info>Object with ID %s not found in database %s</info>', $input->getArgument('identifier'), $input->getArgument('database')));
 		}

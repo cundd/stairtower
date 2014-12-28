@@ -11,12 +11,12 @@ namespace Cundd\PersistentObjectStore\Sorting;
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
 use Cundd\PersistentObjectStore\DataAccess\Reader;
-use Cundd\PersistentObjectStore\Domain\Model\Data;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\DataInterface;
-use Cundd\PersistentObjectStore\KeyValueCodingInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+
 
 /**
  * Test for the sorting
@@ -73,7 +73,7 @@ class SorterTest extends AbstractDataBasedCase {
 
 		$lastLatitude = -PHP_INT_MAX;
 		for ($i = 0; $i < $maxIterations; $i++) {
-			/** @var DataInterface $item */
+			/** @var DocumentInterface $item */
 			$item = $sortedDatabase[$i];
 			$this->assertNotNull($item);
 
@@ -90,7 +90,7 @@ class SorterTest extends AbstractDataBasedCase {
 //
 //		$lastLatitude = PHP_INT_MAX;
 //		for ($i = 0; $i < $maxIterations; $i++) {
-//			/** @var DataInterface $item */
+//			/** @var DocumentInterface $item */
 //			$item = $sortedDatabase[$i];
 //			$this->assertNotNull($item);
 //
@@ -108,7 +108,7 @@ class SorterTest extends AbstractDataBasedCase {
 		/** @var Reader $databaseReader */
 		$databaseReader = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Reader');
 		$newlyLoadedDatabase = $databaseReader->loadDatabase('people');
-		$dataInstance = new Data();
+		$dataInstance = new Document();
 		$dataInstance->setData(array(
 			'_id'           => '541f004ef8f4d2df32ca60c2',
 			'index'         => 5000,
@@ -177,7 +177,7 @@ class SorterTest extends AbstractDataBasedCase {
 
 		$lastLatitude = -PHP_INT_MAX;
 		for ($i = 0; $i < $maxIterations; $i++) {
-			/** @var DataInterface $item */
+			/** @var DocumentInterface $item */
 			$item = $sortedDatabase[$i];
 			$this->assertNotNull($item);
 
@@ -197,7 +197,7 @@ class SorterTest extends AbstractDataBasedCase {
 //
 //		$lastLatitude = PHP_INT_MAX;
 //		for ($i = 0; $i < $maxIterations; $i++) {
-//			/** @var DataInterface $item */
+//			/** @var DocumentInterface $item */
 //			$item = $sortedDatabase[$i];
 //			$this->assertNotNull($item);
 //
@@ -217,8 +217,8 @@ class SorterTest extends AbstractDataBasedCase {
 
 		$start = microtime(TRUE);
 		$sortedDatabase = $this->fixture->sortCollectionByCallback($database, function($itemA, $itemB) {
-			/** @var DataInterface $itemA */
-			/** @var DataInterface $itemB */
+			/** @var DocumentInterface $itemA */
+			/** @var DocumentInterface $itemB */
 			$latA = $itemA->valueForKey('latitude');
 			$latB = $itemB->valueForKey('latitude');
 
@@ -240,7 +240,7 @@ class SorterTest extends AbstractDataBasedCase {
 
 		$lastLatitude = -PHP_INT_MAX;
 		for ($i = 0; $i < $maxIterations; $i++) {
-			/** @var DataInterface $item */
+			/** @var DocumentInterface $item */
 			$item = $sortedDatabase[$i];
 			$this->assertNotNull($item);
 
@@ -268,8 +268,8 @@ class SorterTest extends AbstractDataBasedCase {
 		$myLongitude = 9.599398;
 
 		$sortedDatabase = $this->fixture->sortCollectionByCallback($database, function($itemA, $itemB) use ($myLongitude, $myLatitude) {
-			/** @var DataInterface $itemA */
-			/** @var DataInterface $itemB */
+			/** @var DocumentInterface $itemA */
+			/** @var DocumentInterface $itemB */
 			$distanceA = SorterTest::distance(
 				$itemA->valueForKey('latitude'),
 				$itemA->valueForKey('longitude'),
@@ -296,7 +296,7 @@ class SorterTest extends AbstractDataBasedCase {
 
 		$lastDistance = 0;
 		for ($i = 0; $i < $maxIterations; $i++) {
-			/** @var DataInterface $item */
+			/** @var DocumentInterface $item */
 			$item = $sortedDatabase[$i];
 			$this->assertNotNull($item);
 
@@ -316,7 +316,7 @@ class SorterTest extends AbstractDataBasedCase {
 //
 //		$lastLatitude = PHP_INT_MAX;
 //		for ($i = 0; $i < 100; $i++) {
-//			/** @var DataInterface $item */
+//			/** @var DocumentInterface $item */
 //			$item = $sortedDatabase[$i++];
 //			$this->assertNotNull($item);
 //

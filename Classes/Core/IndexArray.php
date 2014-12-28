@@ -11,7 +11,7 @@ use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
 
 /**
- * The IndexArray class provides the main functionalities of array
+ * The IndexArray class provides the main functions of array
  *
  * The main differences between a IndexArray and a normal PHP array is that it allows only integers as indexes.
  * The advantage is that it allows a faster array implementation.
@@ -102,7 +102,6 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable {
 		$this->length++;
 	}
 	/**
-	 *
 	 * @see push()
 	 */
 	protected function _push($value) {

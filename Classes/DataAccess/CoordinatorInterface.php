@@ -7,7 +7,6 @@
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess;
-use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 
 /**
