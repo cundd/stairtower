@@ -175,7 +175,7 @@ class FilterBuilder implements FilterBuilderInterface
                 } else {
                     $logicalComparisonConstraints[] = $this->getComparisonForValueAndKey($subValue, $subKey);
                 }
-            }
+                }
                 $comparison = new LogicalComparison($comparisonType, $logicalComparisonConstraints);
                 $comparison->setStrict(true);
                 break;
