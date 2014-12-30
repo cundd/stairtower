@@ -355,7 +355,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
     {
         // Query the Indexes and return the result if it is not an error
         $indexLookupResult = $this->queryIndexesForValueOfProperty($identifier, Constants::DATA_ID_KEY);
-        if ($indexLookupResult !== IndexInterface::ERROR) {
+        if ($indexLookupResult > IndexInterface::NO_RESULT) {
             if ($indexLookupResult === IndexInterface::NOT_FOUND) {
                 return null;
             }
@@ -409,7 +409,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
     protected function queryIndexesForValueOfProperty($value, $property)
     {
         if (!$this->indexes) {
-            return IndexInterface::ERROR;
+            return IndexInterface::NO_RESULT;
         }
 
         // Loop through each of the Indexes
@@ -420,7 +420,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
             // If the Index can look up the given value and the Index manages the ID property take the resulte from it
             if ($indexInstance->getProperty() === $property && $indexInstance->canLookup($value)) {
                 $indexLookupResult = $indexInstance->lookup($value);
-                if ($indexLookupResult === IndexInterface::ERROR) {
+                if ($indexLookupResult <= IndexInterface::NO_RESULT) {
                     continue;
                 }
                 if ($indexLookupResult === IndexInterface::NOT_FOUND) {
@@ -436,7 +436,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
                 return $resultCollection;
             }
         } while (++$i < $indexesCount);
-        return IndexInterface::ERROR;
+        return IndexInterface::NO_RESULT;
     }
 
     /**
