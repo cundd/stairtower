@@ -8,6 +8,8 @@
 
 namespace Cundd\PersistentObjectStore\Expand;
 
+use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\Expand\Exception\InvalidConfigurationException;
 use Cundd\PersistentObjectStore\Immutable;
 
 /**
@@ -45,8 +47,19 @@ class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
      * @param string $localKey
      * @param string $foreignKey
      */
-    function __construct($databaseIdentifier, $localKey, $foreignKey)
+    function __construct($databaseIdentifier, $localKey, $foreignKey = Constants::DATA_ID_KEY)
     {
+        if (!$databaseIdentifier) {
+            throw new InvalidConfigurationException('Database identifier must not be empty', 1419938511);
+        }
+        if (!$localKey) {
+            throw new InvalidConfigurationException('Local property key must not be empty', 1419938512);
+        }
+        if (!$foreignKey) {
+            throw new InvalidConfigurationException('Foreign property key must not be empty', 1419938513);
+        }
+
+
         $this->databaseIdentifier = $databaseIdentifier;
         $this->localKey           = $localKey;
         $this->foreignKey         = $foreignKey;
