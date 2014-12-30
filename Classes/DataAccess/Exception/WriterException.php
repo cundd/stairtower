@@ -8,14 +8,11 @@
 
 namespace Cundd\PersistentObjectStore\DataAccess\Exception;
 
-
-use Cundd\PersistentObjectStore\RuntimeException;
-
 /**
  * Exception thrown on write errors
  *
  * @package Cundd\PersistentObjectStore\DataAccess\Exception
  */
-class WriterException extends RuntimeException
+class WriterException extends DataAccessException
 {
 } 
