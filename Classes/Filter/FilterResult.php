@@ -8,14 +8,12 @@
 
 namespace Cundd\PersistentObjectStore\Filter;
 
-use Cundd\PersistentObjectStore\ArrayableInterface;
 use Cundd\PersistentObjectStore\Core\IndexArray;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Exception\ImmutableException;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Immutable;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Iterator;
 use SplFixedArray;
 
@@ -24,7 +22,7 @@ use SplFixedArray;
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-class FilterResult extends IndexArray implements FilterResultInterface, ArrayableInterface, Immutable
+class FilterResult extends IndexArray implements FilterResultInterface, Immutable
 {
     /**
      * Collection to filter
