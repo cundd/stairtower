@@ -43,25 +43,24 @@ class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
     /**
      * Creates a new configuration
      *
-     * @param string $databaseIdentifier
      * @param string $localKey
+     * @param string $databaseIdentifier
      * @param string $foreignKey
      */
-    function __construct($databaseIdentifier, $localKey, $foreignKey = Constants::DATA_ID_KEY)
+    function __construct($localKey, $databaseIdentifier, $foreignKey = Constants::DATA_ID_KEY)
     {
-        if (!$databaseIdentifier) {
-            throw new InvalidConfigurationException('Database identifier must not be empty', 1419938511);
-        }
         if (!$localKey) {
             throw new InvalidConfigurationException('Local property key must not be empty', 1419938512);
+        }
+        if (!$databaseIdentifier) {
+            throw new InvalidConfigurationException('Database identifier must not be empty', 1419938511);
         }
         if (!$foreignKey) {
             throw new InvalidConfigurationException('Foreign property key must not be empty', 1419938513);
         }
 
-
-        $this->databaseIdentifier = $databaseIdentifier;
         $this->localKey           = $localKey;
+        $this->databaseIdentifier = $databaseIdentifier;
         $this->foreignKey         = $foreignKey;
     }
 

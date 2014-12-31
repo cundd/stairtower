@@ -19,4 +19,8 @@ As query string:
 $expand=property-database-foreign
 ```
 
+```
+$expand=property1-database1-foreign1/property2-database2-foreign2
+```
+
 Learn more about [filtering Documents](http://stairtower.cundd.net/Docs/Search/).
