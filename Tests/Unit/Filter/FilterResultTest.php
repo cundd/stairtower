@@ -14,6 +14,7 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -241,11 +242,11 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         $this->fixture->next();
         $this->fixture->next();
         $this->fixture->next();
-        $this->assertEquals(1713, $this->fixture->count());
+        $this->assertEquals(24, $this->fixture->count());
         $this->assertNotNull($this->fixture->current());
 
         iterator_to_array($this->fixture);
-        $this->assertEquals(1713, $this->fixture->count());
+        $this->assertEquals(24, $this->fixture->count());
     }
 
     /**
@@ -254,11 +255,11 @@ class FilterResultTest extends AbstractDatabaseBasedCase
      */
     public function iterateAndGetCurrentShouldThrowAnException()
     {
-        $this->assertEquals(1713, $this->fixture->count());
+        $this->assertEquals(24, $this->fixture->count());
         $this->assertNotNull($this->fixture->current());
 
         iterator_to_array($this->fixture);
-        $this->assertEquals(1713, $this->fixture->count());
+        $this->assertEquals(24, $this->fixture->count());
         $this->assertNotNull($this->fixture->current());
     }
 
@@ -267,14 +268,12 @@ class FilterResultTest extends AbstractDatabaseBasedCase
      */
     public function doALotOfThings()
     {
-        $exception = null;
-        $this->assertEquals(1713, $this->fixture->count());
+        $this->assertEquals(24, $this->fixture->count());
         $this->assertNotNull($this->fixture->current());
 
         iterator_to_array($this->fixture);
-        $this->assertEquals(1713, $this->fixture->count());
+        $this->assertEquals(24, $this->fixture->count());
 
-        try {
             $this->fixture->rewind();
             $this->fixture->next();
             iterator_to_array($this->fixture);
@@ -284,10 +283,6 @@ class FilterResultTest extends AbstractDatabaseBasedCase
             while (++$i < $this->fixture->count()) {
                 $this->fixture->next();
             }
-        } catch (\Exception $exception) {
-            echo $exception;
-        }
-        $this->assertNull($exception);
     }
 
     /**
@@ -297,12 +292,9 @@ class FilterResultTest extends AbstractDatabaseBasedCase
      */
     public function objectLiveCycleTest()
     {
-        /** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
-        $coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-
         $newFilter = new Filter();
 
-        $database = $coordinator->getDatabase('people');
+        $database = $this->getSmallPeopleDatabase();
         $newFilter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
         $newFilterResult = $newFilter->filterCollection($database);
 
@@ -322,7 +314,6 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         $this->assertEquals(spl_object_hash($memberFromNewFilter), spl_object_hash($memberFromFixture));
         $this->assertEquals($movie, $memberFromNewFilter->valueForKey($key));
         $this->assertEquals($movie, $memberFromFixture->valueForKey($key));
-
     }
 
     /**
@@ -371,15 +362,9 @@ class FilterResultTest extends AbstractDatabaseBasedCase
 
     protected function setUp()
     {
-        $this->checkPersonFile();
-
         $this->setUpXhprof();
 
-        /** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
-        $coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-
-        $database = $coordinator->getDatabase('people');
-
+        $database = $this->getSmallPeopleDatabase();
         $this->filter = new Filter();
         $this->filter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
         $this->fixture = $this->filter->filterCollection($database);
