@@ -130,7 +130,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
         $collection = null;
         if ($this->collection instanceof IndexableInterface) {
             /** @var ComparisonInterface $comparison */
-            $comparison = $this->filter->getComparisons()->current();
+            $comparison = $this->filter->getComparison();
             $collection = $this->queryIndexesForComparison($this->collection, $comparison);
         }
         if ($collection === null) {
@@ -250,31 +250,27 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
     protected function findAll()
     {
         $lastIndex = $this->currentIndex;
-        $this->filterCollectionWithComparisons($this->collection, $this->filter->getComparisons(), true);
+        $this->filterCollectionWithComparison($this->collection, $this->filter->getComparison(), true);
         $this->fullyFiltered = true;
         $this->currentIndex = $lastIndex;
     }
 
     /**
-     * Filter the given Database by the given comparisons
+     * Filter the given Database by the given comparison
      *
-     * @param Database|\Iterator $dataCollection Database instance to filter
-     * @param ComparisonInterface[]|SplFixedArray|\SplObjectStorage $comparisonCollection Filter conditions
-     * @param bool                                                  $pushMatchesToResult  If set to TRUE the matching objects will be added to the result through calling parent::push()
+     * @param Database|\Iterator  $dataCollection      Database instance to filter
+     * @param ComparisonInterface $comparison          Filter condition
+     * @param bool                $pushMatchesToResult If set to TRUE the matching objects will be added to the result through calling parent::push()
      * @return SplFixedArray
      */
-    protected function filterCollectionWithComparisons(
+    protected function filterCollectionWithComparison(
         $dataCollection,
-        $comparisonCollection,
+        $comparison,
         $pushMatchesToResult = false
     ) {
-        if (is_array($comparisonCollection)) {
-            $comparisonCollection = SplFixedArray::fromArray($comparisonCollection);
-        } else {
-            $comparisonCollection->rewind();
-            $comparisonCollection = SplFixedArray::fromArray(iterator_to_array($comparisonCollection));
+        if (!$comparison) {
+            return $dataCollection;
         }
-        $comparisonCollectionCount = $comparisonCollection->getSize();
 
         // Get the collection data as SplFixedArray
         $callMethodGetObjectDataForIndexOrTransformIfNotExists = false;
@@ -282,13 +278,8 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
             $callMethodGetObjectDataForIndexOrTransformIfNotExists = true;
         }
 
-        if ($comparisonCollectionCount == 0) {
-            return $dataCollection;
-        }
-
         $fixedDataCollection = null;
         if ($dataCollection instanceof IndexableInterface) {
-            $comparison          = $comparisonCollection[0];
             $fixedDataCollection = $this->queryIndexesForComparison($dataCollection, $comparison);
         }
         if ($fixedDataCollection === null) {
@@ -302,20 +293,9 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
         $i            = 0;
         $matchesIndex = 0;
         while ($i < $dataCollectionCount) {
-            $j    = 0;
-            $item            = $fixedDataCollection[$i];
+            $item = $fixedDataCollection[$i];
 
-            $comparisonResult = true;
-            while ($j < $comparisonCollectionCount) {
-                /** @var ComparisonInterface $comparison */
-                $comparison = $comparisonCollection[$j];
-                if (!$comparison->perform($item)) {
-                    $comparisonResult = false;
-                }
-                $j++;
-            }
-
-            if ($comparisonResult) {
+            if ($comparison->perform($item)) {
                 if ($callMethodGetObjectDataForIndexOrTransformIfNotExists) {
                     /** @var DatabaseRawDataInterface $dataCollection */
                     $item = $dataCollection->getObjectDataForIndexOrTransformIfNotExists($i);

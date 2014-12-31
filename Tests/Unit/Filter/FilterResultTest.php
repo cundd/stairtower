@@ -14,7 +14,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -63,36 +62,12 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         /** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
         $coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
 
-        $filter = new Filter(array(
+        $filter = new Filter(new LogicalComparison(ComparisonInterface::TYPE_AND, [
             new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'),
             new PropertyComparison('name', ComparisonInterface::TYPE_EQUAL_TO, 'Booker Oneil'),
-        ));
+        ]));
 
         $database     = $coordinator->getDatabase('people');
-        $filterResult = $filter->filterCollection($database);
-
-        $currentObject = $filterResult->current();
-        $this->assertNotNull($currentObject);
-
-        $this->assertNotNull($filterResult->current());
-
-        $this->assertSame('Booker Oneil', $filterResult->current()->valueForKeyPath('name'));
-        $this->assertContains('laboris', $filterResult->current()->valueForKeyPath('tags'));
-    }
-
-    /**
-     * @test
-     */
-    public function currentWithMoreConstraintsAddTest()
-    {
-        /** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
-        $coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-
-        $filter = new Filter();
-
-        $database = $coordinator->getDatabase('people');
-        $filter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
-        $filter->addComparison(new PropertyComparison('name', ComparisonInterface::TYPE_EQUAL_TO, 'Booker Oneil'));
         $filterResult = $filter->filterCollection($database);
 
         $currentObject = $filterResult->current();
@@ -110,8 +85,7 @@ class FilterResultTest extends AbstractDatabaseBasedCase
     public function currentWithNestedConstraintsTest()
     {
         $database = $this->getSmallPeopleDatabase();
-        $filter   = new Filter();
-        $filter->addComparison(
+        $filter = new Filter(
             new LogicalComparison(
                 ComparisonInterface::TYPE_OR,
                 new LogicalComparison(
@@ -148,8 +122,7 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         $this->assertContains('green', $currentObject->valueForKey('eyeColor'));
 
 
-        $filter = new Filter();
-        $filter->addComparison(
+        $filter = new Filter(
             new LogicalComparison(
                 ComparisonInterface::TYPE_AND,
                 [
@@ -187,8 +160,7 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         $this->assertContains('green', $currentObject->valueForKey('eyeColor'));
 
 
-        $filter = new Filter();
-        $filter->addComparison(
+        $filter = new Filter(
             new LogicalComparison(
                 ComparisonInterface::TYPE_AND,
                 new LogicalComparison(
@@ -292,10 +264,8 @@ class FilterResultTest extends AbstractDatabaseBasedCase
      */
     public function objectLiveCycleTest()
     {
-        $newFilter = new Filter();
-
         $database = $this->getSmallPeopleDatabase();
-        $newFilter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
+        $newFilter = new Filter(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
         $newFilterResult = $newFilter->filterCollection($database);
 
         /** @var DocumentInterface $memberFromNewFilter */
@@ -366,7 +336,7 @@ class FilterResultTest extends AbstractDatabaseBasedCase
 
         $database = $this->getSmallPeopleDatabase();
         $this->filter = new Filter();
-        $this->filter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
+        $this->filter->setComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
         $this->fixture = $this->filter->filterCollection($database);
     }
 
