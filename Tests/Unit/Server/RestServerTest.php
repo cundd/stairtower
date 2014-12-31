@@ -149,6 +149,12 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($testDocument2['os'], $response[1]['os']);
 
 
+        // List Documents in that database
+        $response = $this->_performRestRequest($databaseIdentifier . '/_count');
+        $this->assertNotEmpty($response);
+        $this->assertEquals(2, $response['count']);
+
+
         // Update a Document
         $testDocument1['os'] = 'Cundbuntu';
         $response            = $this->_performRestRequest($databaseIdentifier . '/' . $documentIdentifier1, 'PUT',

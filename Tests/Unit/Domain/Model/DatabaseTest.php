@@ -10,8 +10,10 @@ namespace Cundd\PersistentObjectStore\Domain\Model;
 
 
 use Cundd\PersistentObjectStore\AbstractDataBasedCase;
+use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
+use Cundd\PersistentObjectStore\Index\IndexInterface;
 
 class DatabaseTest extends AbstractDataBasedCase
 {
@@ -243,9 +245,9 @@ class DatabaseTest extends AbstractDataBasedCase
         $this->assertNotNull($person);
 
         // Now really test the filter
-        $filterResult = $this->fixture->filter(array(
+        $filterResult = $this->fixture->filter(
             new PropertyComparison('email', ComparisonInterface::TYPE_EQUAL_TO, $testEmail)
-        ));
+        );
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
         $this->assertGreaterThan(0, $filterResult->count());
 
@@ -292,6 +294,54 @@ class DatabaseTest extends AbstractDataBasedCase
         $this->assertSame($personFromDatabase2, $personFromFixture);
         $this->assertEquals($movie, $personFromFixture->valueForKey($key));
         $this->assertEquals($movie, $personFromDatabase2->valueForKey($key));
+    }
+
+    /**
+     * @test
+     */
+    public function hasIndexesForValueOfPropertyTest()
+    {
+        $this->assertTrue($this->fixture->hasIndexesForValueOfProperty('an-id', Constants::DATA_ID_KEY));
+        $this->assertFalse($this->fixture->hasIndexesForValueOfProperty('Cundd Lane 1', 'address'));
+    }
+
+    /**
+     * @test
+     */
+    public function getIndexesForValueOfPropertyTest()
+    {
+        $this->assertEmpty($this->fixture->getIndexesForValueOfProperty('Cundd Lane 1', 'address'));
+
+        $indexes = $this->fixture->getIndexesForValueOfProperty('an-id', Constants::DATA_ID_KEY);
+        $this->assertNotEmpty($indexes);
+        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Index\\IdentifierIndex', $indexes[0]);
+    }
+
+    /**
+     * @test
+     */
+    public function queryIndexesForValueOfPropertyTest()
+    {
+        $this->assertSame(IndexInterface::NO_RESULT,
+            $this->fixture->queryIndexesForValueOfProperty('Cundd Lane 1', 'address'));
+        $this->assertSame(IndexInterface::NOT_FOUND,
+            $this->fixture->queryIndexesForValueOfProperty('not-existing-identifier', Constants::DATA_ID_KEY));
+
+        $documents = $this->fixture->queryIndexesForValueOfProperty('georgettebenjamin@andryx.com',
+            Constants::DATA_ID_KEY);
+        $this->assertNotEmpty($documents);
+        $this->assertInternalType('array', $documents);
+
+        /** @var DocumentInterface $person */
+        $person = $documents[0];
+
+        $this->assertNotNull($person);
+        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\Document', $person);
+
+        $this->assertSame(31, $person->valueForKeyPath('age'));
+        $this->assertSame('green', $person->valueForKeyPath('eyeColor'));
+        $this->assertSame('Georgette Benjamin', $person->valueForKeyPath('name'));
+        $this->assertSame('female', $person->valueForKeyPath('gender'));
     }
 
     protected function setUp()
