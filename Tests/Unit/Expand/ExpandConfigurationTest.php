@@ -23,7 +23,7 @@ class ExpandConfigurationTest extends \PHPUnit_Framework_TestCase
      */
     public function expandConfigurationShouldReturnIdAsDefaultForeignFieldTest()
     {
-        $fixture = new ExpandConfiguration('person-small', 'person');
+        $fixture = new ExpandConfiguration('person', 'person-small');
         $this->assertEquals(Constants::DATA_ID_KEY, $fixture->getForeignKey());
     }
 
@@ -33,7 +33,7 @@ class ExpandConfigurationTest extends \PHPUnit_Framework_TestCase
      */
     public function expandConfigurationDatabaseMustNotBeEmptyTest()
     {
-        new ExpandConfiguration('', 'person');
+        new ExpandConfiguration('person', '');
     }
 
     /**
@@ -42,7 +42,7 @@ class ExpandConfigurationTest extends \PHPUnit_Framework_TestCase
      */
     public function expandConfigurationLocalKeyMustNotBeEmptyTest()
     {
-        new ExpandConfiguration('person-small', '');
+        new ExpandConfiguration('', 'person-small');
     }
 
     /**
@@ -51,6 +51,6 @@ class ExpandConfigurationTest extends \PHPUnit_Framework_TestCase
      */
     public function expandConfigurationForeignKeyMustNotBeEmptyTest()
     {
-        new ExpandConfiguration('person-small', 'person', '');
+        new ExpandConfiguration('person', 'person-small', '');
     }
 }

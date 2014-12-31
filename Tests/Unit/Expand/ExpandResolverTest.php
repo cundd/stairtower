@@ -66,7 +66,7 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
         $document      = new Document([
             'person' => 'spm@cundd.net'
         ]);
-        $configuration = new ExpandConfiguration('people-small', 'person', 'email');
+        $configuration = new ExpandConfiguration('person', 'people-small', 'email');
         $this->fixture->expandDocument($document, $configuration);
         $this->assertEquals('spm@cundd.net', $document->valueForKeyPath('person.email'));
     }
@@ -79,7 +79,7 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
         $document      = new Document([
             'person' => time() . 'not-existing-email@cundd.net'
         ]);
-        $configuration = new ExpandConfiguration('people-small', 'person', 'email');
+        $configuration = new ExpandConfiguration('person', 'people-small', 'email');
         $this->fixture->expandDocument($document, $configuration);
         $this->assertNull($document->valueForKeyPath('person'));
     }
@@ -92,7 +92,7 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
         $document      = new Document([
             'person' => 'spm@cundd.net'
         ]);
-        $configuration = new ExpandConfiguration('people-small', 'not-existing-key', 'email');
+        $configuration = new ExpandConfiguration('not-existing-key', 'people-small', 'email');
         $this->fixture->expandDocument($document, $configuration);
         $this->assertNull($document->valueForKeyPath('not-existing-key'));
         $this->assertEquals('spm@cundd.net', $document->valueForKeyPath('person'),
@@ -107,7 +107,7 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
         $document      = new Document([
             'person' => 'spm@cundd.net'
         ]);
-        $configuration = new ExpandConfiguration('people-small', 'person', 'not-existing-key');
+        $configuration = new ExpandConfiguration('person', 'people-small', 'not-existing-key');
         $this->fixture->expandDocument($document, $configuration);
         $this->assertNull($document->valueForKeyPath('person'));
     }
@@ -118,7 +118,7 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
     public function expandDocumentWithoutAnyValueTest()
     {
         $document      = new Document();
-        $configuration = new ExpandConfiguration('people-small', 'person', 'email');
+        $configuration = new ExpandConfiguration('person', 'people-small', 'email');
         $this->fixture->expandDocument($document, $configuration);
         $this->assertNull($document->valueForKeyPath('person'));
     }
