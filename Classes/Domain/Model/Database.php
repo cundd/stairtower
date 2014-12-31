@@ -16,6 +16,7 @@ use Cundd\PersistentObjectStore\Domain\Model\Exception\DatabaseMismatchException
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
 use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
+use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Filter;
 use Cundd\PersistentObjectStore\Index\IdentifierIndex;
@@ -194,17 +195,24 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
     }
 
     /**
-     * Filters the database using the given comparisons
+     * Filters the database using the given comparison
      *
-     * @param array|ComparisonInterface $comparisons
+     * @param ComparisonInterface $comparison
      * @return \Cundd\PersistentObjectStore\Filter\FilterResultInterface
      */
-    public function filter($comparisons)
+    public function filter($comparison)
     {
-        if (!is_array($comparisons)) {
-            $comparisons = func_get_args();
+        if (is_array($comparison) || func_num_args() > 1) {
+            DebugUtility::$backtraceOffset++;
+            DebugUtility::pl('Deprecated arguments passed. Use only one comparison as argument');
+            DebugUtility::$backtraceOffset--;
+            if (is_array($comparison)) {
+                $comparison = new LogicalComparison(ComparisonInterface::TYPE_AND, $comparison);
+            } else {
+                $comparison = new LogicalComparison(ComparisonInterface::TYPE_AND, func_get_args());
+            }
         }
-        $filter = new Filter($comparisons);
+        $filter = new Filter($comparison);
         return $filter->filterCollection($this);
     }
 

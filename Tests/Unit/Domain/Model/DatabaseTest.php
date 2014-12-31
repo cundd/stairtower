@@ -245,9 +245,9 @@ class DatabaseTest extends AbstractDataBasedCase
         $this->assertNotNull($person);
 
         // Now really test the filter
-        $filterResult = $this->fixture->filter(array(
+        $filterResult = $this->fixture->filter(
             new PropertyComparison('email', ComparisonInterface::TYPE_EQUAL_TO, $testEmail)
-        ));
+        );
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
         $this->assertGreaterThan(0, $filterResult->count());
 

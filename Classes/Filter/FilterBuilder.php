@@ -80,7 +80,6 @@ class FilterBuilder implements FilterBuilderInterface
         foreach ($filterDefinition as $key => $value) {
             $comparisons[] = $this->getComparisonForValueAndKey($value, $key);
         }
-        //DebugUtility::var_dump($comparisons, $filterDefinition);
         return new LogicalComparison(ComparisonInterface::TYPE_AND, $comparisons);
     }
 
