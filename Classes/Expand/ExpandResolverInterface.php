@@ -8,7 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Expand;
 
-use Cundd\PersistentObjectStore\Domain\Model\Document;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
 /**
  * Interface for the class that will fetch the Documents and set the property according to a Expand configuration
@@ -20,9 +20,9 @@ interface ExpandResolverInterface
     /**
      * Expand the given Document according to the given configuration
      *
-     * @param Document                     $document
+     * @param DocumentInterface            $document
      * @param ExpandConfigurationInterface $configuration
-     * @return void
+     * @return boolean Returns if the Document has been expanded
      * @throws Exception\ExpandException
      */
     public function expandDocument($document, $configuration);

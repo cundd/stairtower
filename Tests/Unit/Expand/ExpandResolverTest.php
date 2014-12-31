@@ -61,42 +61,64 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
     /**
      * @test
      */
-    public function expandDocumentTest()
+    public function expandDocumentValidTest()
     {
         $document      = new Document([
             'person' => 'spm@cundd.net'
         ]);
-        $configuration = new ExpandConfiguration('person-small', 'person', 'email');
+        $configuration = new ExpandConfiguration('people-small', 'person', 'email');
         $this->fixture->expandDocument($document, $configuration);
         $this->assertEquals('spm@cundd.net', $document->valueForKeyPath('person.email'));
+    }
 
-
+    /**
+     * @test
+     */
+    public function expandDocumentWithNotExistingSearchValueTest()
+    {
         $document      = new Document([
             'person' => time() . 'not-existing-email@cundd.net'
         ]);
-        $configuration = new ExpandConfiguration('person-small', 'person', 'email');
+        $configuration = new ExpandConfiguration('people-small', 'person', 'email');
         $this->fixture->expandDocument($document, $configuration);
         $this->assertNull($document->valueForKeyPath('person'));
+    }
 
-
+    /**
+     * @test
+     */
+    public function expandDocumentWithNotExistingLocalKeyTest()
+    {
         $document      = new Document([
             'person' => 'spm@cundd.net'
         ]);
-        $configuration = new ExpandConfiguration('person-small', 'not-existing-key', 'email');
+        $configuration = new ExpandConfiguration('people-small', 'not-existing-key', 'email');
         $this->fixture->expandDocument($document, $configuration);
-        $this->assertNull($document->valueForKeyPath('person'));
+        $this->assertNull($document->valueForKeyPath('not-existing-key'));
+        $this->assertEquals('spm@cundd.net', $document->valueForKeyPath('person'),
+            'The property \'person\' should not have been touched');
+    }
 
-
+    /**
+     * @test
+     */
+    public function expandDocumentWithNotExistingForeignKeyTest()
+    {
         $document      = new Document([
             'person' => 'spm@cundd.net'
         ]);
-        $configuration = new ExpandConfiguration('person-small', 'person', 'not-existing-key');
+        $configuration = new ExpandConfiguration('people-small', 'person', 'not-existing-key');
         $this->fixture->expandDocument($document, $configuration);
         $this->assertNull($document->valueForKeyPath('person'));
+    }
 
-
+    /**
+     * @test
+     */
+    public function expandDocumentWithoutAnyValueTest()
+    {
         $document      = new Document();
-        $configuration = new ExpandConfiguration('person-small', 'person', 'email');
+        $configuration = new ExpandConfiguration('people-small', 'person', 'email');
         $this->fixture->expandDocument($document, $configuration);
         $this->assertNull($document->valueForKeyPath('person'));
     }
