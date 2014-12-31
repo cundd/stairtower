@@ -12,10 +12,13 @@ use Cundd\PersistentObjectStore\ArrayableInterface;
 use Cundd\PersistentObjectStore\Core\IndexArray;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
 use Cundd\PersistentObjectStore\Exception\ImmutableException;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
+use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Immutable;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Cundd\PersistentObjectStore\Index\IndexableInterface;
+use Cundd\PersistentObjectStore\Index\IndexInterface;
 use Iterator;
 use SplFixedArray;
 
@@ -124,26 +127,19 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
             return parent::current();
         }
         $foundObject = null;
+        $collection = null;
+        if ($this->collection instanceof IndexableInterface) {
+            /** @var ComparisonInterface $comparison */
+            $comparison = $this->filter->getComparisons()->current();
+            $collection = $this->queryIndexesForComparison($this->collection, $comparison);
+        }
+        if ($collection === null) {
+            //$collection = $this->collectionToFixedArray($this->collection);
+            $collection = $this->collection;
+        }
 
-        $collection = $this->collection;
-//		$collection = $this->_preFilterCollection($this->collection);
         $filter = $this->filter;
-
         $useRaw = method_exists($collection, 'currentRaw');
-//		DebugUtility::pl('use raw ' . ($useRaw ? 'yes' : 'no'));
-
-
-//		$start = microtime(TRUE);
-//		while ($collection->valid()) {
-//			if ($useRaw) {
-//				$item = $collection->currentRaw();
-//			} else {
-//				$item = $collection->current();
-//			}
-//			$collection->next();
-//		}
-//		DebugUtility::pl('while %0.6f', microtime(TRUE) - $start);
-//		$collection->rewind();
 
         // Loop through the collection until one matching object was found
         while ($collection->valid()) {
@@ -254,32 +250,15 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
     protected function findAll()
     {
         $lastIndex = $this->currentIndex;
-        if ($this->collection instanceof Database) {
-            $this->findAllFromDatabase();
-        } else {
-            $this->findAllFromCollection();
-        }
-        $this->currentIndex = $lastIndex;
-    }
-
-    /**
-     * Loops through each of the items in the given Database and tests if it matches the Filter conditions
-     */
-    protected function findAllFromDatabase()
-    {
-//		$start = microtime(TRUE);
         $this->filterCollectionWithComparisons($this->collection, $this->filter->getComparisons(), true);
-
-//		$end = microtime(TRUE);
-//		DebugUtility::pl("Full filter: %0.6f\n", $end - $start);
-
         $this->fullyFiltered = true;
+        $this->currentIndex = $lastIndex;
     }
 
     /**
      * Filter the given Database by the given comparisons
      *
-     * @param Database                                              $dataCollection       Database instance to filter
+     * @param Database|\Iterator $dataCollection Database instance to filter
      * @param ComparisonInterface[]|SplFixedArray|\SplObjectStorage $comparisonCollection Filter conditions
      * @param bool                                                  $pushMatchesToResult  If set to TRUE the matching objects will be added to the result through calling parent::push()
      * @return SplFixedArray
@@ -296,12 +275,27 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
             $comparisonCollection = SplFixedArray::fromArray(iterator_to_array($comparisonCollection));
         }
         $comparisonCollectionCount = $comparisonCollection->getSize();
+
+        // Get the collection data as SplFixedArray
+        $callMethodGetObjectDataForIndexOrTransformIfNotExists = false;
+        if ($dataCollection instanceof DatabaseRawDataInterface) {
+            $callMethodGetObjectDataForIndexOrTransformIfNotExists = true;
+        }
+
         if ($comparisonCollectionCount == 0) {
             return $dataCollection;
         }
 
-        $dataCollectionRaw   = $dataCollection->getRawData();
-        $dataCollectionCount = $dataCollectionRaw->getSize();
+        $fixedDataCollection = null;
+        if ($dataCollection instanceof IndexableInterface) {
+            $comparison          = $comparisonCollection[0];
+            $fixedDataCollection = $this->queryIndexesForComparison($dataCollection, $comparison);
+        }
+        if ($fixedDataCollection === null) {
+            $fixedDataCollection = $this->collectionToFixedArray($dataCollection);
+        }
+        $dataCollectionCount = $fixedDataCollection->getSize();
+
 
         $resultArray = new SplFixedArray($dataCollectionCount);
 
@@ -309,8 +303,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
         $matchesIndex = 0;
         while ($i < $dataCollectionCount) {
             $j    = 0;
-            $item = $dataCollectionRaw[$i];
-
+            $item            = $fixedDataCollection[$i];
 
             $comparisonResult = true;
             while ($j < $comparisonCollectionCount) {
@@ -323,15 +316,15 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
             }
 
             if ($comparisonResult) {
-                $matchingItem = $dataCollection->getObjectDataForIndexOrTransformIfNotExists($i);
-                if ($matchingItem === null) {
-                    //DebugUtility::var_dump($item);
-                    //DebugUtility::pl('Object for index %d is NULL', $i);
+                if ($callMethodGetObjectDataForIndexOrTransformIfNotExists) {
+                    /** @var DatabaseRawDataInterface $dataCollection */
+                    $item = $dataCollection->getObjectDataForIndexOrTransformIfNotExists($i);
                 }
-                $resultArray[$matchesIndex] = $matchingItem;
+                // Todo: Check for null values
+                $resultArray[$matchesIndex] = $item;
 
                 if ($pushMatchesToResult) {
-                    parent::offsetSet($matchesIndex, $matchingItem);
+                    parent::offsetSet($matchesIndex, $item);
                 }
                 $matchesIndex++;
             }
@@ -339,24 +332,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
         }
         $resultArray->setSize($matchesIndex);
         return SplFixedArray::fromArray($resultArray->toArray());
-    }
-
-    /**
-     * Loops through each of the items in the given collection and tests if it matches the Filter conditions
-     */
-    protected function findAllFromCollection()
-    {
-        $dataCollection = $this->collection;
-        $filter         = $this->filter;
-
-        while ($dataCollection->valid()) {
-            $item = $dataCollection->current();
-            if ($filter->checkItem($item)) {
-                parent::push($item);
-            }
-            $dataCollection->next();
-        }
-        $this->fullyFiltered = true;
     }
 
     /**
@@ -438,6 +413,59 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
     public function offsetUnset($offset)
     {
         throw new ImmutableException('Can not modify this immutable', 1410628420);
+    }
+
+    /**
+     * Returns the matching elements for the given comparison queried from the collection's Indexes or the full
+     * collection (as SplFixedArray) if no Index is handling the comparison
+     *
+     * @param IndexableInterface  $collection
+     * @param ComparisonInterface $comparison
+     * @return SplFixedArray
+     */
+    protected function queryIndexesForComparison($collection, $comparison)
+    {
+        $foundObjects = null;
+        if ($comparison instanceof PropertyComparisonInterface) {
+            $comparisonValue    = $comparison->getValue();
+            $comparisonProperty = $comparison->getProperty();
+
+            if ($comparison->getOperator() === ComparisonInterface::TYPE_EQUAL_TO
+                && $collection->hasIndexesForValueOfProperty($comparisonValue, $comparisonProperty)
+            ) {
+                $indexQueryResult = $collection->queryIndexesForValueOfProperty($comparisonValue, $comparisonProperty);
+                if ($indexQueryResult <= IndexInterface::NO_RESULT) {
+                    $foundObjects = null;
+                } elseif ($indexQueryResult === IndexInterface::NOT_FOUND) {
+                    $foundObjects = new SplFixedArray(0);
+                } else {
+                    $foundObjects = SplFixedArray::fromArray($indexQueryResult);
+                }
+            }
+        }
+        return $foundObjects;
+    }
+
+    /**
+     * Transforms the given collection into a SplFixedArray
+     *
+     * @param DatabaseRawDataInterface|Iterator|array $collection
+     * @return SplFixedArray
+     */
+    protected function collectionToFixedArray($collection)
+    {
+        // Get the collection data as SplFixedArray and return it
+        if ($collection instanceof DatabaseRawDataInterface) {
+            $fixedCollection = $collection->getRawData();
+        } elseif (is_array($collection)) {
+            $fixedCollection = SplFixedArray::fromArray($collection);
+        } elseif ($collection instanceof Iterator) {
+            $collection->rewind();
+            $fixedCollection = SplFixedArray::fromArray(iterator_to_array($collection));
+        } else {
+            $fixedCollection = new SplFixedArray(0);
+        }
+        return $fixedCollection;
     }
 
     /**

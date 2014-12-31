@@ -9,7 +9,7 @@
 namespace Cundd\PersistentObjectStore\Sorting;
 
 
-use Cundd\PersistentObjectStore\AbstractDataBasedCase;
+use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
 use Cundd\PersistentObjectStore\DataAccess\Reader;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\Document;
@@ -22,7 +22,7 @@ use Cundd\PersistentObjectStore\Utility\DebugUtility;
  *
  * @package Cundd\PersistentObjectStore\Sorting
  */
-class SorterTest extends AbstractDataBasedCase
+class SorterTest extends AbstractDatabaseBasedCase
 {
     /**
      * @var \Cundd\PersistentObjectStore\Sorting\Sorter
@@ -39,23 +39,13 @@ class SorterTest extends AbstractDataBasedCase
      */
     public function sortPersonsByLatitudeTest()
     {
-        $this->checkPersonFile();
-
         /** @var Database $database */
-        $database = $this->coordinator->getDatabase('people');
+        $database      = $this->getSmallPeopleDatabase();
 
-        $start          = microtime(true);
         $sortedDatabase = $this->fixture->sortCollectionByPropertyKeyPath($database, 'latitude');
-        $end            = microtime(true);
-//		printf("Sort %0.8f\n", $end - $start);
-
-        $maxIterations = 100;
         $maxIterations = $database->count();
 
-        // TODO: Make this work
-        // $this->assertEquals($database->count(), $sortedDatabase->count());
-
-//		var_dump($sortedDatabase[$sortedDatabase->count() - 1]);
+        $this->assertEquals($database->count(), $sortedDatabase->count());
 
         $lastLatitude = -PHP_INT_MAX;
         for ($i = 0; $i < $maxIterations; $i++) {
@@ -63,27 +53,10 @@ class SorterTest extends AbstractDataBasedCase
             $item = $sortedDatabase[$i];
             $this->assertNotNull($item);
 
-//			printf('%d: Last latitude %0.9f to current %0.9f' . PHP_EOL, $i, $lastLatitude, $item->valueForKey('latitude'));
-
             $this->assertGreaterThan($lastLatitude, $item->valueForKey('latitude'),
                 'Current latitude is not bigger than last for loop number ' . $i);
             $lastLatitude = $item->valueForKey('latitude');
         }
-
-
-//		$sortedDatabase = $this->fixture->sortCollectionByPropertyKeyPath($database, 'latitude', TRUE);
-//
-//		$this->assertEquals($database->count(), $sortedDatabase->count());
-//
-//		$lastLatitude = PHP_INT_MAX;
-//		for ($i = 0; $i < $maxIterations; $i++) {
-//			/** @var DocumentInterface $item */
-//			$item = $sortedDatabase[$i];
-//			$this->assertNotNull($item);
-//
-//			$this->assertLessThan($lastLatitude, $item->valueForKey('latitude'));
-//			$lastLatitude = $item->valueForKey('latitude');
-//		}
     }
 
     /**
@@ -148,28 +121,16 @@ class SorterTest extends AbstractDataBasedCase
         /** @var Database $database */
         $database = $this->coordinator->getDatabase('people');
 
-//		$start = microtime(TRUE);
         $sortedDatabase = $this->fixture->sortCollectionByPropertyKeyPath($newlyLoadedDatabase, 'latitude');
-//		$end = microtime(TRUE);
-//		printf("Sort %0.8f\n", $end - $start);
 
-        $maxIterations = 100;
         $maxIterations = $database->count();
-
-        // TODO: Make this work
-        // $this->assertEquals($database->count(), $sortedDatabase->count());
-        // $this->assertNotEquals($database->count(), $newlyLoadedDatabase->count());
-
-
-//		var_dump($sortedDatabase[$sortedDatabase->count() - 1]);
+        $this->assertNotEquals($database->count(), $newlyLoadedDatabase->count());
 
         $lastLatitude = -PHP_INT_MAX;
         for ($i = 0; $i < $maxIterations; $i++) {
             /** @var DocumentInterface $item */
             $item = $sortedDatabase[$i];
             $this->assertNotNull($item);
-
-//			printf('%d: Last latitude %0.9f to current %0.9f' . PHP_EOL, $i, $lastLatitude, $item->valueForKey('latitude'));
 
             if ($lastLatitude === $item->valueForKey('latitude')) {
                 DebugUtility::var_dump($i, $item, $sortedDatabase[$i - 1]);
@@ -178,21 +139,6 @@ class SorterTest extends AbstractDataBasedCase
                 'Current latitude is not bigger than last for loop number ' . $i);
             $lastLatitude = $item->valueForKey('latitude');
         }
-
-
-//		$sortedDatabase = $this->fixture->sortCollectionByPropertyKeyPath($database, 'latitude', TRUE);
-//
-//		$this->assertEquals($database->count(), $sortedDatabase->count());
-//
-//		$lastLatitude = PHP_INT_MAX;
-//		for ($i = 0; $i < $maxIterations; $i++) {
-//			/** @var DocumentInterface $item */
-//			$item = $sortedDatabase[$i];
-//			$this->assertNotNull($item);
-//
-//			$this->assertLessThan($lastLatitude, $item->valueForKey('latitude'));
-//			$lastLatitude = $item->valueForKey('latitude');
-//		}
     }
 
     /**
@@ -200,41 +146,29 @@ class SorterTest extends AbstractDataBasedCase
      */
     public function sortPersonsByLatitudeWithCallbackTest()
     {
-        $this->checkPersonFile();
-
         /** @var Database $database */
-        $database = $this->coordinator->getDatabase('people');
+        $database = $this->getSmallPeopleDatabase();
 
-        $start          = microtime(true);
         $sortedDatabase = $this->fixture->sortCollectionByCallback($database, function ($itemA, $itemB) {
             /** @var DocumentInterface $itemA */
             /** @var DocumentInterface $itemB */
             $latA = $itemA->valueForKey('latitude');
             $latB = $itemB->valueForKey('latitude');
 
-//			printf('Compare %s to %s', $latA, $latB);
-//			var_dump($latA);
             if ($latA == $latB) {
                 return 0;
             }
             return ($latA < $latB) ? -1 : 1;
         });
-        $end            = microtime(true);
-//		printf("Sort %0.8f\n", $end - $start);
 
-        $maxIterations = 100;
-//		$maxIterations = $database->count();
-
-        // TODO: Make this work
-        // $this->assertEquals($database->count(), $sortedDatabase->count());
+        $maxIterations = $database->count();
+        $this->assertEquals($database->count(), $sortedDatabase->count());
 
         $lastLatitude = -PHP_INT_MAX;
         for ($i = 0; $i < $maxIterations; $i++) {
             /** @var DocumentInterface $item */
             $item = $sortedDatabase[$i];
             $this->assertNotNull($item);
-
-//			printf('%d: Last latitude %0.9f to current %0.9f' . PHP_EOL, $i, $lastLatitude, $item->valueForKey('latitude'));
 
             $this->assertGreaterThan($lastLatitude, $item->valueForKey('latitude'),
                 'Current latitude is not bigger than last for loop number ' . $i);
@@ -247,10 +181,8 @@ class SorterTest extends AbstractDataBasedCase
      */
     public function sortPersonsByDistanceWithCallbackTest()
     {
-        $this->checkPersonFile();
-
         /** @var Database $database */
-        $database = $this->coordinator->getDatabase('people');
+        $database = $this->getSmallPeopleDatabase();
 
 
         // Sort the people database by comparing the persons distance to me (47.235934, 9.599398)
@@ -281,11 +213,8 @@ class SorterTest extends AbstractDataBasedCase
                 return ($distanceA < $distanceB) ? -1 : 1;
             });
 
-        $maxIterations = 100;
-//		$maxIterations = $database->count();
-
-        // TODO: Make this work
-        // $this->assertEquals($database->count(), $sortedDatabase->count());
+        $maxIterations = $database->count();
+        $this->assertEquals($database->count(), $sortedDatabase->count());
 
         $lastDistance = 0;
         for ($i = 0; $i < $maxIterations; $i++) {
@@ -304,21 +233,40 @@ class SorterTest extends AbstractDataBasedCase
                 'Current distance is not bigger than or equal to last for loop number ' . $i);
             $lastDistance = $currentDistance;
         }
-
-
-//		$sortedDatabase = $this->fixture->sortCollectionByPropertyKeyPath($database, 'latitude', TRUE);
-//
-//		$lastLatitude = PHP_INT_MAX;
-//		for ($i = 0; $i < 100; $i++) {
-//			/** @var DocumentInterface $item */
-//			$item = $sortedDatabase[$i++];
-//			$this->assertNotNull($item);
-//
-//			$this->assertLessThan($lastLatitude, $item->valueForKey('latitude'));
-//			$lastLatitude = $item->valueForKey('latitude');
-//		}
     }
 
+    /**
+     *
+     * This routine calculates the distance between two points (given the
+     * latitude/longitude of those points). It is being used to calculate
+     * the distance between two locations using GeoDataSource(TM) Products
+     *
+     * Definitions:
+     * South latitudes are negative, east longitudes are positive
+     *
+     * Passed to function:
+     * lat1, lon1 = Latitude and Longitude of point 1 (in decimal degrees)
+     * lat2, lon2 = Latitude and Longitude of point 2 (in decimal degrees)
+     * unit = the unit you desire for results
+     * where: 'M' is statute miles
+     * 'K' is kilometers (default)
+     * 'N' is nautical miles
+     * Worldwide cities and other features databases with latitude longitude
+     * are available at http://www.geodatasource.com
+     *
+     * For enquiries, please contact sales@geodatasource.com
+     *
+     * Official Web site: http://www.geodatasource.com
+     *
+     * GeoDataSource.com (C) All Rights Reserved 2014
+     *
+     * @param float  $lat1
+     * @param float  $lon1
+     * @param float  $lat2
+     * @param float  $lon2
+     * @param string $unit
+     * @return float
+     */
     static public function distance($lat1, $lon1, $lat2, $lon2, $unit = 'K')
     {
 
@@ -329,10 +277,10 @@ class SorterTest extends AbstractDataBasedCase
         $miles = $dist * 60 * 1.1515;
         $unit  = strtoupper($unit);
 
-        if ($unit == "K") {
+        if ($unit == 'K') {
             return ($miles * 1.609344);
         } else {
-            if ($unit == "N") {
+            if ($unit == 'N') {
                 return ($miles * 0.8684);
             } else {
                 return $miles;
@@ -350,38 +298,11 @@ class SorterTest extends AbstractDataBasedCase
         $this->fixture     = new Sorter();
     }
 
-
-    /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-    /*::                                                                         :*/
-    /*::  This routine calculates the distance between two points (given the     :*/
-    /*::  latitude/longitude of those points). It is being used to calculate     :*/
-    /*::  the distance between two locations using GeoDataSource(TM) Products    :*/
-    /*::                     													 :*/
-    /*::  Definitions:                                                           :*/
-    /*::    South latitudes are negative, east longitudes are positive           :*/
-    /*::                                                                         :*/
-    /*::  Passed to function:                                                    :*/
-    /*::    lat1, lon1 = Latitude and Longitude of point 1 (in decimal degrees)  :*/
-    /*::    lat2, lon2 = Latitude and Longitude of point 2 (in decimal degrees)  :*/
-    /*::    unit = the unit you desire for results                               :*/
-    /*::           where: 'M' is statute miles                                   :*/
-    /*::                  'K' is kilometers (default)                            :*/
-    /*::                  'N' is nautical miles                                  :*/
-    /*::  Worldwide cities and other features databases with latitude longitude  :*/
-    /*::  are available at http://www.geodatasource.com                          :*/
-    /*::                                                                         :*/
-    /*::  For enquiries, please contact sales@geodatasource.com                  :*/
-    /*::                                                                         :*/
-    /*::  Official Web site: http://www.geodatasource.com                        :*/
-    /*::                                                                         :*/
-    /*::         GeoDataSource.com (C) All Rights Reserved 2014		   		     :*/
-    /*::                                                                         :*/
-    /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
-
     protected function tearDown()
     {
         unset($this->fixture);
 //		unset($this->coordinator);
+        parent::tearDown();
     }
 
 }

@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore;
 
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 
 /**
  * Abstract database based test case
@@ -17,9 +18,28 @@ use Cundd\PersistentObjectStore\Domain\Model\Database;
  */
 class AbstractDatabaseBasedCase extends AbstractDataBasedCase
 {
+    /**
+     * @var DatabaseInterface
+     */
+    protected $smallPeopleDatabase;
+
+    protected function tearDown()
+    {
+        unset($this->smallPeopleDatabase);
+        parent::tearDown();
+    }
+
+    /**
+     * Returns a dummy database
+     *
+     * @return DatabaseInterface
+     */
     public function getSmallPeopleDatabase()
     {
-        return new Database('people-small', array(
+        if ($this->smallPeopleDatabase) {
+            return $this->smallPeopleDatabase;
+        }
+        return $this->smallPeopleDatabase = new Database('people-small', array(
             /*{*/
             array(
                 'index'         => 0,
@@ -86,7 +106,7 @@ class AbstractDatabaseBasedCase extends AbstractDataBasedCase
                 'email'         => 'nolanbyrd@vantage.com',
                 'phone'         => '+1 (943) 421-2090',
                 'address'       => '620 Bulwer Place, Shasta, Oregon, 2035',
-                'about'         => 'Consequat consequat mollit minim proident labore nisi magna. Deserunt est duis ea incididunt laboris quis enim exercitation aute dolore occaecat cillum aute. Labore ex incididunt incididunt laborum non. Qui ad ex veniam enim incididunt laborum incididunt labore. Aliquip proident non eiusmod proident incididunt exercitation ut minim aliqua enim. Eu non tempor do amet velit est et magna ea. Deserunt deserunt in non eiusmod excepteur labore reprehenderit aute excepteur non.\r\n',
+                'about'         => 'Consequat consequat mollit minim proident labore nisi magna. Deserunt est duis ea incididunt laboris quis enim exercitation aute dolore occaecat cillum aute. Labore ex incididunt incididunt laborum non. Qui ad ex veniam enim incididunt laborum incididunt labore. Aliquip proident non eiusmod proident incididunt exercitation ut minim aliqua enim. Eu non tempor do amet velit est et magna ea. Deserunt deserunt in non eiusmod excepteur labore reprehenderit aute excepteur non.',
                 'registered'    => '2014-03-03T22:37:19 -01:00',
                 'latitude'      => 63.638742,
                 'longitude'     => 149.091224,
@@ -4767,4 +4787,4 @@ class AbstractDatabaseBasedCase extends AbstractDataBasedCase
 
         ));
     }
-} 
+}

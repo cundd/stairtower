@@ -157,4 +157,22 @@ class DebugUtility
         echo PHP_EOL;
     }
 
+    /**
+     * Invokes the given callback and measures the time it takes to complete
+     *
+     * @param callable $callback
+     * @return mixed
+     */
+    public static function measureCallback($callback)
+    {
+        $startTime = microtime(true);
+        $result    = $callback();
+        $endTime   = microtime(true);
+
+        static::$backtraceOffset++;
+        static::pl('Callback took %0.6f seconds', $endTime - $startTime);
+        static::$backtraceOffset--;
+        return $result;
+    }
+
 }
