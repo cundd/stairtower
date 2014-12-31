@@ -12,11 +12,13 @@ use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+use Cundd\PersistentObjectStore\Expand\ExpandConfigurationInterface;
 use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Handler implementation
@@ -48,6 +50,22 @@ class Handler implements HandlerInterface
      * @Inject
      */
     protected $filterBuilder;
+
+    /**
+     * ExpandConfigurationBuilder instance
+     *
+     * @var \Cundd\PersistentObjectStore\Expand\ExpandConfigurationBuilderInterface
+     * @Inject
+     */
+    protected $expandConfigurationBuilder;
+
+    /**
+     * Expand Resolver instance
+     *
+     * @var \Cundd\PersistentObjectStore\Expand\ExpandResolverInterface
+     * @Inject
+     */
+    protected $expandResolver;
 
     // 	 * @var \Evenement\EventEmitterInterface
 
@@ -222,14 +240,38 @@ class Handler implements HandlerInterface
             );
         }
 
-        if (!$requestInfo->getRequest()->getQuery()) {
+        $query = $requestInfo->getRequest()->getQuery();
+
+
+        if (!$query) {
             return new HandlerResult(200, $database);
         }
 
-        $filter       = $this->filterBuilder->buildFilter($requestInfo->getRequest()->getQuery());
-        $filterResult = $filter->filterCollection($database);
-        $statusCode   = $filterResult->count() > 0 ? 200 : 404;
-        return new HandlerResult($statusCode, $filterResult);
+        $expandConfiguration = null;
+        if (isset($query[Constants::REQUEST_EXPAND_KEY]) && $query[Constants::REQUEST_EXPAND_KEY]) {
+            $expandConfiguration = $this->expandConfigurationBuilder->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
+
+            DebugUtility::var_dump($expandConfiguration);
+
+            unset($query[Constants::REQUEST_EXPAND_KEY]);
+        }
+
+        DebugUtility::var_dump($query);
+        $statusCode = 200;
+        if ($query) {
+            $filter       = $this->filterBuilder->buildFilter($query);
+            $filterResult = $filter->filterCollection($database);
+            $statusCode   = $filterResult->count() > 0 ? 200 : 404;
+            $collection   = $filterResult->toFixedArray();
+        } else {
+            $collection = $database->toFixedArray();
+        }
+
+        if ($expandConfiguration) {
+            $collection = $this->expandObjectsInCollection($collection, $expandConfiguration);
+        }
+
+        return new HandlerResult($statusCode, $collection);
     }
 
     /**
@@ -368,5 +410,25 @@ class Handler implements HandlerInterface
         return new HandlerResult(200, array('count' => $count));
     }
 
+    /**
+     * @param \SplFixedArray                 $collection
+     * @param ExpandConfigurationInterface[] $expandConfigurationCollection
+     * @return \SplFixedArray
+     */
+    protected function expandObjectsInCollection($collection, $expandConfigurationCollection)
+    {
+        $expandedObjects = new \SplFixedArray($collection->getSize());
+        $collectionCount = $collection->getSize();
+        $i               = 0;
+        while ($i < $collectionCount) {
+            $item = clone $collection[$i];
+            foreach ($expandConfigurationCollection as $expandConfiguration) {
+                $this->expandResolver->expandDocument($item, $expandConfiguration);
+            }
 
+            $expandedObjects[$i] = $item;
+            $i++;
+        }
+        return $expandedObjects;
+    }
 }

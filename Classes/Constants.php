@@ -67,4 +67,19 @@ WELCOME;
      * Key used to store the database identifier in JSON
      */
     const DATA_DATABASE_KEY = 'database';
+
+    /**
+     * Request query key for expand statements
+     */
+    const REQUEST_EXPAND_KEY = '$expand';
+
+    /**
+     * Request query delimiter for expand statements
+     */
+    const REQUEST_EXPAND_DELIMITER = '/';
+
+    /**
+     * Request query character to split expand statement's parts
+     */
+    const REQUEST_EXPAND_SPLIT_CHAR = '-';
 } 
