@@ -18,7 +18,6 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Handler implementation
@@ -241,8 +240,6 @@ class Handler implements HandlerInterface
         }
 
         $query = $requestInfo->getRequest()->getQuery();
-
-
         if (!$query) {
             return new HandlerResult(200, $database);
         }
@@ -250,18 +247,17 @@ class Handler implements HandlerInterface
         $expandConfiguration = null;
         if (isset($query[Constants::REQUEST_EXPAND_KEY]) && $query[Constants::REQUEST_EXPAND_KEY]) {
             $expandConfiguration = $this->expandConfigurationBuilder->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
-
-            DebugUtility::var_dump($expandConfiguration);
-
             unset($query[Constants::REQUEST_EXPAND_KEY]);
         }
 
-        DebugUtility::var_dump($query);
         $statusCode = 200;
         if ($query) {
             $filter       = $this->filterBuilder->buildFilter($query);
             $filterResult = $filter->filterCollection($database);
             $statusCode   = $filterResult->count() > 0 ? 200 : 404;
+            if (!$expandConfiguration) {
+                return new HandlerResult($statusCode, $filterResult);
+            }
             $collection   = $filterResult->toFixedArray();
         } else {
             $collection = $database->toFixedArray();
