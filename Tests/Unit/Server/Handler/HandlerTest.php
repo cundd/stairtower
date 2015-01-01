@@ -227,7 +227,13 @@ class HandlerTest extends AbstractCase
      */
     public function readWithExpandTest()
     {
-        parse_str('$expand=person-contacts-email', $query);
+        // Query '$expand=person-contacts-email'
+        $queryString = vsprintf('%s=person%scontacts%semail', [
+            Constants::REQUEST_EXPAND_KEY,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+        ]);
+        parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
@@ -252,9 +258,54 @@ class HandlerTest extends AbstractCase
     /**
      * @test
      */
+    public function readWithMoreThanOneExpandsTest()
+    {
+        $queryString = vsprintf('%s=person%scontacts%semail%sbook%sbook%sisbn_10', [
+            Constants::REQUEST_EXPAND_KEY,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_DELIMITER,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+        ]);
+        parse_str($queryString, $query);
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $handlerResult = $this->fixture->read($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertEquals(200, $handlerResult->getStatusCode());
+        $this->assertNotNull($handlerResult->getData());
+
+        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertEquals(4, $handlerResult->getData()->count());
+
+        /** @var DocumentInterface $dataInstance */
+        $dataInstance = $handlerResult->getData()->current();
+        $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
+        $this->assertEquals('0395595118', $dataInstance->valueForKeyPath('book.isbn_10'));
+        $this->assertEquals('The Lord of the rings', $dataInstance->valueForKeyPath('book.title'));
+        $handlerResult->getData()->next();
+        $handlerResult->getData()->next();
+        $dataInstance = $handlerResult->getData()->current();
+        $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
+        $this->assertEquals('0345253426', $dataInstance->valueForKeyPath('book.isbn_10'));
+        $this->assertEquals('The Hobbit', $dataInstance->valueForKeyPath('book.title'));
+    }
+
+    /**
+     * @test
+     */
     public function readWithSearchAndExpandTest()
     {
-        parse_str('book=The Hobbit&$expand=person-contacts-email', $query);
+        // Query 'title=The Hobbit&$expand=person-contacts-email'
+        $queryString = vsprintf('title=The Hobbit&%s=person%scontacts%semail', [
+            Constants::REQUEST_EXPAND_KEY,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+        ]);
+        parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
@@ -269,11 +320,17 @@ class HandlerTest extends AbstractCase
 
         /** @var DocumentInterface $dataInstance */
         $dataInstance = $handlerResult->getData()->current();
-        $this->assertEquals('The Hobbit', $dataInstance->valueForKeyPath('book'));
+        $this->assertEquals('The Hobbit', $dataInstance->valueForKeyPath('title'));
         $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
 
 
-        parse_str('$expand=person-contacts-email&book=The Hobbit', $query);
+        // Query '$expand=person-contacts-email&title=The Hobbit'
+        $queryString = vsprintf('%s=person%scontacts%semail&title=The Hobbit', [
+            Constants::REQUEST_EXPAND_KEY,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+        ]);
+        parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
@@ -288,7 +345,7 @@ class HandlerTest extends AbstractCase
 
         /** @var DocumentInterface $dataInstance */
         $dataInstance = $handlerResult->getData()->current();
-        $this->assertEquals('The Hobbit', $dataInstance->valueForKeyPath('book'));
+        $this->assertEquals('The Hobbit', $dataInstance->valueForKeyPath('title'));
         $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
     }
 
@@ -366,7 +423,6 @@ class HandlerTest extends AbstractCase
     public function deleteDatabaseTest()
     {
         // Running this test would remove our test data :(
-        return;
         /*
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('DELETE', '/contacts/'));
         $handlerResult = $this->fixture->delete($requestInfo);

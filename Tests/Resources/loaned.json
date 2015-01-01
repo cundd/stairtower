@@ -1,26 +1,26 @@
 [
   {
     "date": 1415628000,
-    "iban10": "0395595118",
-    "book": "The Lord of the Rings",
+    "book": "0395595118",
+    "title": "The Lord of the Rings",
     "person": "info@cundd.net"
   },
   {
     "date": 1352464200,
-    "iban10": "3407796757",
-    "book": "Der Brief für den König",
+    "book": "3407796757",
+    "title": "Der Brief für den König",
     "person": "spm@cundd.net"
   },
   {
     "date": 1419087600,
-    "iban10": "0345253426",
-    "book": "The Hobbit",
+    "book": "0345253426",
+    "title": "The Hobbit",
     "person": "info@cundd.net"
   },
   {
     "date": 1391949000,
-    "iban10": "3407797532",
-    "book": "Der Wilde Wald",
+    "book": "3407797532",
+    "title": "Der Wilde Wald",
     "person": "paul@mckenzy.net"
   }
 ]
