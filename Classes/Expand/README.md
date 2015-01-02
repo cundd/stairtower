@@ -24,7 +24,7 @@ Below are some example query strings utilizing the Expand module
 Schema:
 
 ```
-$expand=property-database-foreign
+$expand=property/database/foreign
 ```
 
 
@@ -40,7 +40,7 @@ $expand=person/contacts/email
 Schema:
 
 ```
-$expand=property1-database1-foreign1/property2-database2-foreign2
+$expand=property1/database1/foreign1/-/property2/database2/foreign2
 ```
 
 
@@ -55,9 +55,9 @@ $expand=person/contacts/email/-/book/book/isbn_10
 Schema:
 
 ```
-filter-property=filter-value&$expand=property-database-foreign
+filter-property=filter-value&$expand=property/database/foreign
 
-$expand=property-database-foreign&filter-property=filter-value
+$expand=property/database/foreign&filter-property=filter-value
 ```
 
 
@@ -91,7 +91,7 @@ Such Expand statements are slightly different:
 Schema:
 
 ```
-$expand=property-database-foreign-as
+$expand=property/database/foreign/as
 ```
 
 
