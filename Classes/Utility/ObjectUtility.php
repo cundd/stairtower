@@ -123,6 +123,12 @@ class ObjectUtility
 
                 if ($currentValue instanceof KeyValueCodingInterface) { // Key value coding
                     $currentValue = $currentValue->valueForKey($key);
+                } elseif ($currentValue instanceof \ArrayAccess) { // ArrayAccess
+                    if ($currentValue->offsetExists($key)) {
+                        $currentValue = $currentValue[$key];
+                    } elseif (is_numeric($key) && $currentValue->offsetExists(intval($key))) {
+                        $currentValue = $currentValue[intval($key)];
+                    }
                 } elseif (method_exists($currentValue, $accessorMethod)) { // Getter method
                     $currentValue = $currentValue->$accessorMethod();
                 } elseif (method_exists($currentValue, 'get')) { // General "get" method
@@ -142,7 +148,8 @@ class ObjectUtility
                 break;
             }
 
-        } while ($key = strtok('.'));
+            $key = strtok('.');
+        } while ($key !== false);
 
         if (($pathFullyResolved === false || strtok('.'))
             && func_num_args() > 2
