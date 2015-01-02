@@ -1,7 +1,7 @@
 Expand
 ======
 
-The Expand module allows a Model's property to be filled with connected data - read from the same or another Database. In SQL one would speak about JOINs.
+The Expand module allows a Model's property to be filled with connected data - read from the same or another Database. In SQL this could be achieved with JOINs.
 
 
 Simple Expand
@@ -18,6 +18,7 @@ An Expand statement can be described as follows:
 - matches the value of the local property (`property`).
 
 Below are some example query strings utilizing the Expand module
+
 
 ### Expand a single property
 
