@@ -41,9 +41,9 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%semail', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
@@ -74,9 +74,9 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%s%s', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
             Constants::DATA_ID_KEY,
         ]);
         parse_str($queryString, $query);
@@ -108,12 +108,12 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
         $queryString = vsprintf('%s=person%scontacts%semail%sbook%sbook%sisbn_10', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_DELIMITER,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_DELIMITER,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
@@ -148,9 +148,9 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%semail', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
@@ -179,9 +179,9 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%s%s', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
             Constants::DATA_ID_KEY,
         ]);
         parse_str($queryString, $query);
@@ -211,12 +211,12 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
         $queryString = vsprintf('%s=person%scontacts%semail%sbook%sbook%sisbn_10', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_DELIMITER,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_DELIMITER,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
@@ -247,9 +247,9 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query 'title=The Hobbit&$expand=person/contacts/email'
         $queryString = vsprintf('title=The Hobbit&%s=person%scontacts%semail', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
@@ -272,9 +272,9 @@ class HandlerExpandTest extends AbstractCase
 
         // Query '$expand=person/contacts/email&title=The Hobbit'
         $queryString = vsprintf('%s=person%scontacts%semail&title=The Hobbit', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
@@ -302,9 +302,9 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query 'firstName=Some-thing-not-existing&$expand=person/contacts/email'
         $queryString = vsprintf('firstName=Some-thing-not-existing&%s=person%scontacts%semail', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
@@ -324,9 +324,9 @@ class HandlerExpandTest extends AbstractCase
 
         // Query 'some-thing-not-existing=Daniel&$expand=person/contacts/email'
         $queryString = vsprintf('some-thing-not-existing=Daniel&%s=person%scontacts%semail', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
@@ -352,10 +352,10 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%semail%sperson-data', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
@@ -388,11 +388,11 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%s%s%sperson-data', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
             Constants::DATA_ID_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
@@ -425,13 +425,13 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
         $queryString = vsprintf('%s=person%scontacts%semail%sperson-data%sbook%sbook%sisbn_10', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_DELIMITER,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_DELIMITER,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
@@ -468,10 +468,10 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%semail%sperson-data', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
@@ -501,11 +501,11 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%s%s%sperson-data', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
             Constants::DATA_ID_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
@@ -535,13 +535,13 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
         $queryString = vsprintf('%s=person%scontacts%semail%sperson-data%sbook%sbook%sisbn_10', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_DELIMITER,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_DELIMITER,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
@@ -573,10 +573,10 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query 'title=The Hobbit&$expand=person/contacts/email'
         $queryString = vsprintf('title=The Hobbit&%s=person%scontacts%semail%sperson-data', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
@@ -600,10 +600,10 @@ class HandlerExpandTest extends AbstractCase
 
         // Query '$expand=person/contacts/email&title=The Hobbit'
         $queryString = vsprintf('%s=person%scontacts%semail%sperson-data&title=The Hobbit', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
@@ -632,10 +632,10 @@ class HandlerExpandTest extends AbstractCase
     {
         // Query 'firstName=Some-thing-not-existing&$expand=person/contacts/email'
         $queryString = vsprintf('firstName=Some-thing-not-existing&%s=person%scontacts%semail%sperson-data', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
@@ -655,10 +655,10 @@ class HandlerExpandTest extends AbstractCase
 
         // Query 'some-thing-not-existing=Daniel&$expand=person/contacts/email'
         $queryString = vsprintf('some-thing-not-existing=Daniel&%s=person%scontacts%semail%sperson-data', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));

@@ -31,12 +31,12 @@ class ExpandConfigurationBuilderTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%semail', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
+        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
             $expandConfigurations[0]);
@@ -53,13 +53,13 @@ class ExpandConfigurationBuilderTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%s%s', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
             Constants::DATA_ID_KEY,
         ]);
         parse_str($queryString, $query);
-        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
+        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
             $expandConfigurations[0]);
@@ -76,15 +76,15 @@ class ExpandConfigurationBuilderTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
         $queryString = vsprintf('%s=person%scontacts%semail%sbook%sbook%sisbn_10', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_DELIMITER,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_DELIMITER,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
+        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(2, count($expandConfigurations));
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
             $expandConfigurations[0]);
@@ -108,13 +108,13 @@ class ExpandConfigurationBuilderTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%semail%sperson-data', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
+        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
             $expandConfigurations[0]);
@@ -131,14 +131,14 @@ class ExpandConfigurationBuilderTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%s%s%sperson-data', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
             Constants::DATA_ID_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
+        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
             $expandConfigurations[0]);
@@ -155,16 +155,16 @@ class ExpandConfigurationBuilderTest extends AbstractCase
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
         $queryString = vsprintf('%s=person%scontacts%semail%sperson-data%sbook%sbook%sisbn_10', [
-            Constants::REQUEST_EXPAND_KEY,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_DELIMITER,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
-            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::EXPAND_KEYWORD,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_DELIMITER,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
+        $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(2, count($expandConfigurations));
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
             $expandConfigurations[0]);

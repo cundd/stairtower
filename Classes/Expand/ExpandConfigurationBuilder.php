@@ -27,9 +27,9 @@ class ExpandConfigurationBuilder implements ExpandConfigurationBuilderInterface
     public function buildExpandConfigurations($expandDefinition)
     {
         $expandConfigurationCollection = array();
-        $expandDefinitionParts         = explode(Constants::REQUEST_EXPAND_DELIMITER, $expandDefinition);
+        $expandDefinitionParts = explode(Constants::EXPAND_REQUEST_DELIMITER, $expandDefinition);
         foreach ($expandDefinitionParts as $currentDefinition) {
-            $currentDefinitionParts = explode(Constants::REQUEST_EXPAND_SPLIT_CHAR, $currentDefinition);
+            $currentDefinitionParts = explode(Constants::EXPAND_REQUEST_SPLIT_CHAR, $currentDefinition);
             if (count($currentDefinitionParts) < 3) {
                 throw new InvalidExpandBuilderInputException(
                     sprintf(

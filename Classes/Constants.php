@@ -71,15 +71,15 @@ WELCOME;
     /**
      * Request query key for expand statements
      */
-    const REQUEST_EXPAND_KEY = '$expand';
+    const EXPAND_KEYWORD = '$expand';
 
     /**
      * Request query delimiter for expand statements
      */
-    const REQUEST_EXPAND_DELIMITER = '/-/';
+    const EXPAND_REQUEST_DELIMITER = '/-/';
 
     /**
      * Request query character to split expand statement's parts
      */
-    const REQUEST_EXPAND_SPLIT_CHAR = '/';
+    const EXPAND_REQUEST_SPLIT_CHAR = '/';
 } 
