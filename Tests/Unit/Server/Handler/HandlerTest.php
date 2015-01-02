@@ -258,6 +258,40 @@ class HandlerTest extends AbstractCase
     /**
      * @test
      */
+    public function readWithExpandIdTest()
+    {
+        // Query '$expand=person-contacts-email'
+        $queryString = vsprintf('%s=person%scontacts%s%s', [
+            Constants::REQUEST_EXPAND_KEY,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::DATA_ID_KEY,
+        ]);
+        parse_str($queryString, $query);
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $handlerResult = $this->fixture->read($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertEquals(200, $handlerResult->getStatusCode());
+        $this->assertNotNull($handlerResult->getData());
+
+        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertEquals(4, $handlerResult->getData()->count());
+
+        /** @var DocumentInterface $dataInstance */
+        $dataInstance = $handlerResult->getData()->current();
+        $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
+        $handlerResult->getData()->next();
+        $handlerResult->getData()->next();
+        $dataInstance = $handlerResult->getData()->current();
+        $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
+    }
+
+    /**
+     * @test
+     */
     public function readWithMoreThanOneExpandsTest()
     {
         $queryString = vsprintf('%s=person%scontacts%semail%sbook%sbook%sisbn_10', [
