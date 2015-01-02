@@ -215,13 +215,15 @@ class Handler implements HandlerInterface
     {
         $query = $requestInfo->getRequest()->getQuery();
 
+        // Extract the Expand configuration from the query
         $expandConfiguration = null;
         if (isset($query[Constants::REQUEST_EXPAND_KEY]) && $query[Constants::REQUEST_EXPAND_KEY]) {
             $expandConfiguration = $this->expandConfigurationBuilder->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
             unset($query[Constants::REQUEST_EXPAND_KEY]);
         }
 
-        if ($requestInfo->getDataIdentifier()) { // Load Document instance
+        // If a Data identifier load and return the Document instance
+        if ($requestInfo->getDataIdentifier()) {
             $document = $this->getDataForRequest($requestInfo);
             if ($document) {
                 if ($expandConfiguration) {
