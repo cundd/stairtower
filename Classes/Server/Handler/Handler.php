@@ -18,6 +18,7 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Handler implementation
@@ -191,6 +192,9 @@ class Handler implements HandlerInterface
             );
         }
 
+        if ($data) {
+            DebugUtility::pl('Database creation parameters are currently not supported');
+        }
         $databaseIdentifier = $requestInfo->getDatabaseIdentifier();
         $database           = $this->coordinator->createDatabase($databaseIdentifier);
         if ($database) {
@@ -209,9 +213,22 @@ class Handler implements HandlerInterface
      */
     public function read(RequestInfo $requestInfo)
     {
+        $query = $requestInfo->getRequest()->getQuery();
+
+        $expandConfiguration = null;
+        if (isset($query[Constants::REQUEST_EXPAND_KEY]) && $query[Constants::REQUEST_EXPAND_KEY]) {
+            $expandConfiguration = $this->expandConfigurationBuilder->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
+            unset($query[Constants::REQUEST_EXPAND_KEY]);
+        }
+
         if ($requestInfo->getDataIdentifier()) { // Load Document instance
             $document = $this->getDataForRequest($requestInfo);
             if ($document) {
+                if ($expandConfiguration) {
+                    $collection = $this->expandObjectsInCollection(array($document), $expandConfiguration);
+                    $document   = $collection[0];
+                }
+
                 return new HandlerResult(
                     200,
                     $document
@@ -239,35 +256,27 @@ class Handler implements HandlerInterface
             );
         }
 
-        $query = $requestInfo->getRequest()->getQuery();
-        if (!$query) {
-            return new HandlerResult(200, $database);
-        }
 
-        $expandConfiguration = null;
-        if (isset($query[Constants::REQUEST_EXPAND_KEY]) && $query[Constants::REQUEST_EXPAND_KEY]) {
-            $expandConfiguration = $this->expandConfigurationBuilder->buildExpandConfigurations($query[Constants::REQUEST_EXPAND_KEY]);
-            unset($query[Constants::REQUEST_EXPAND_KEY]);
-        }
-
-        $statusCode = 200;
+        // If there is a filter defined
         if ($query) {
-            $filter       = $this->filterBuilder->buildFilter($query);
-            $filterResult = $filter->filterCollection($database);
-            $statusCode   = $filterResult->count() > 0 ? 200 : 404;
-            if (!$expandConfiguration) {
+            $filter            = $this->filterBuilder->buildFilter($query);
+            $filterResult      = $filter->filterCollection($database);
+            $filterResultCount = $filterResult->count();
+            $statusCode        = $filterResultCount > 0 ? 200 : 404;
+            if (!$expandConfiguration || $filterResultCount === 0) {
                 return new HandlerResult($statusCode, $filterResult);
             }
-            $collection   = $filterResult->toFixedArray();
-        } else {
-            $collection = $database->toFixedArray();
+
+            $collection = $this->expandObjectsInCollection($filterResult->toFixedArray(), $expandConfiguration);
+            return new HandlerResult($statusCode, $collection);
         }
 
+        // If there is no filter but an Expand configuration
         if ($expandConfiguration) {
-            $collection = $this->expandObjectsInCollection($collection, $expandConfiguration);
+            $collection = $this->expandObjectsInCollection($database->toFixedArray(), $expandConfiguration);
+            return new HandlerResult(200, $collection);
         }
-
-        return new HandlerResult($statusCode, $collection);
+        return new HandlerResult(200, $database);
     }
 
     /**
@@ -407,14 +416,20 @@ class Handler implements HandlerInterface
     }
 
     /**
-     * @param \SplFixedArray                 $collection
-     * @param ExpandConfigurationInterface[] $expandConfigurationCollection
+     * Expand the objects in the given collection according to the given Expand configurations
+     *
+     * @param \SplFixedArray|DocumentInterface[] $collection
+     * @param ExpandConfigurationInterface[]     $expandConfigurationCollection
      * @return \SplFixedArray
      */
     protected function expandObjectsInCollection($collection, $expandConfigurationCollection)
     {
-        $expandedObjects = new \SplFixedArray($collection->getSize());
-        $collectionCount = $collection->getSize();
+        if (is_array($collection)) {
+            $collectionCount = count($collection);
+        } else {
+            $collectionCount = $collection->getSize();
+        }
+        $expandedObjects = new \SplFixedArray($collectionCount);
         $i               = 0;
         while ($i < $collectionCount) {
             $item = clone $collection[$i];

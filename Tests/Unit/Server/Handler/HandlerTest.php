@@ -225,7 +225,44 @@ class HandlerTest extends AbstractCase
     /**
      * @test
      */
-    public function readWithExpandTest()
+    public function readWithEmptyResultSearchTest()
+    {
+        parse_str('firstName=Some-thing-not-existing', $query);
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
+        $handlerResult = $this->fixture->read($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertEquals(404, $handlerResult->getStatusCode());
+        $this->assertNotNull($handlerResult->getData());
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Filter\\FilterResultInterface',
+            $handlerResult->getData()
+        );
+        $this->assertEquals(0, $handlerResult->getData()->count());
+
+
+        parse_str('some-thing-not-existing=Daniel', $query);
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
+        $handlerResult = $this->fixture->read($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertEquals(404, $handlerResult->getStatusCode());
+        $this->assertNotNull($handlerResult->getData());
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Filter\\FilterResultInterface',
+            $handlerResult->getData()
+        );
+        $this->assertEquals(0, $handlerResult->getData()->count());
+    }
+
+    /**
+     * @test
+     */
+    public function readDatabaseWithExpandTest()
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%semail', [
@@ -258,7 +295,7 @@ class HandlerTest extends AbstractCase
     /**
      * @test
      */
-    public function readWithExpandIdTest()
+    public function readDatabaseWithExpandIdTest()
     {
         // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%s%s', [
@@ -292,7 +329,7 @@ class HandlerTest extends AbstractCase
     /**
      * @test
      */
-    public function readWithMoreThanOneExpandsTest()
+    public function readDatabaseWithMoreThanOneExpandsTest()
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
         $queryString = vsprintf('%s=person%scontacts%semail%sbook%sbook%sisbn_10', [
@@ -324,6 +361,105 @@ class HandlerTest extends AbstractCase
         $handlerResult->getData()->next();
         $handlerResult->getData()->next();
         $dataInstance = $handlerResult->getData()->current();
+        $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
+        $this->assertEquals('0345253426', $dataInstance->valueForKeyPath('book.isbn_10'));
+        $this->assertEquals('The Hobbit', $dataInstance->valueForKeyPath('book.title'));
+    }
+
+    /**
+     * @test
+     */
+    public function readDocumentWithExpandTest()
+    {
+        // Query '$expand=person/contacts/email'
+        $queryString = vsprintf('%s=person%scontacts%semail', [
+            Constants::REQUEST_EXPAND_KEY,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+        ]);
+        parse_str($queryString, $query);
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
+            $query));
+        $handlerResult = $this->fixture->read($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertEquals(200, $handlerResult->getStatusCode());
+        $this->assertNotNull($handlerResult->getData());
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+            $handlerResult->getData()
+        );
+
+        /** @var DocumentInterface $dataInstance */
+        $dataInstance = $handlerResult->getData();
+        $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
+    }
+
+    /**
+     * @test
+     */
+    public function readDocumentWithExpandIdTest()
+    {
+        // Query '$expand=person/contacts/email'
+        $queryString = vsprintf('%s=person%scontacts%s%s', [
+            Constants::REQUEST_EXPAND_KEY,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::DATA_ID_KEY,
+        ]);
+        parse_str($queryString, $query);
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
+            $query));
+        $handlerResult = $this->fixture->read($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertEquals(200, $handlerResult->getStatusCode());
+        $this->assertNotNull($handlerResult->getData());
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+            $handlerResult->getData()
+        );
+
+        /** @var DocumentInterface $dataInstance */
+        $dataInstance = $handlerResult->getData();
+        $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
+    }
+
+    /**
+     * @test
+     */
+    public function readDocumentWithMoreThanOneExpandsTest()
+    {
+        // Query '$expand=person/contacts/email/-/book/book/isbn_10'
+        $queryString = vsprintf('%s=person%scontacts%semail%sbook%sbook%sisbn_10', [
+            Constants::REQUEST_EXPAND_KEY,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_DELIMITER,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+        ]);
+        parse_str($queryString, $query);
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
+            $query));
+        $handlerResult = $this->fixture->read($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertEquals(200, $handlerResult->getStatusCode());
+        $this->assertNotNull($handlerResult->getData());
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+            $handlerResult->getData()
+        );
+
+        /** @var DocumentInterface $dataInstance */
+        $dataInstance = $handlerResult->getData();
         $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
         $this->assertEquals('0345253426', $dataInstance->valueForKeyPath('book.isbn_10'));
         $this->assertEquals('The Hobbit', $dataInstance->valueForKeyPath('book.title'));
@@ -382,6 +518,55 @@ class HandlerTest extends AbstractCase
         $dataInstance = $handlerResult->getData()->current();
         $this->assertEquals('The Hobbit', $dataInstance->valueForKeyPath('title'));
         $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
+    }
+
+    /**
+     * @test
+     */
+    public function readWithEmptyResultSearchAndExpandTest()
+    {
+        // Query 'firstName=Some-thing-not-existing&$expand=person/contacts/email'
+        $queryString = vsprintf('firstName=Some-thing-not-existing&%s=person%scontacts%semail', [
+            Constants::REQUEST_EXPAND_KEY,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+        ]);
+        parse_str($queryString, $query);
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
+        $handlerResult = $this->fixture->read($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertEquals(404, $handlerResult->getStatusCode());
+        $this->assertNotNull($handlerResult->getData());
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Filter\\FilterResultInterface',
+            $handlerResult->getData()
+        );
+        $this->assertEquals(0, $handlerResult->getData()->count());
+
+
+        // Query 'some-thing-not-existing=Daniel&$expand=person/contacts/email'
+        $queryString = vsprintf('some-thing-not-existing=Daniel&%s=person%scontacts%semail', [
+            Constants::REQUEST_EXPAND_KEY,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+            Constants::REQUEST_EXPAND_SPLIT_CHAR,
+        ]);
+        parse_str($queryString, $query);
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
+        $handlerResult = $this->fixture->read($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertEquals(404, $handlerResult->getStatusCode());
+        $this->assertNotNull($handlerResult->getData());
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Filter\\FilterResultInterface',
+            $handlerResult->getData()
+        );
+        $this->assertEquals(0, $handlerResult->getData()->count());
     }
 
     /**
