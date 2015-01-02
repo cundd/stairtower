@@ -31,7 +31,7 @@ $expand=property-database-foreign
 Example:
 
 ```
-$expand=person/contacts/email/-/book/book/isbn_10
+$expand=person/contacts/email
 ```
 
 
@@ -70,3 +70,33 @@ $expand=person/contacts/email&title=The Hobbit
 ```
 
 More about [filtering](http://stairtower.cundd.net/Docs/Search/).
+
+
+Expand as
+---------
+
+It is possible to define a different property to be filled with the expanded Document(s). This prevents the original `property` from being overwritten.
+
+Such Expand statements are slightly different:
+
+- Document(s) are retrieved from a Database.
+- Expand (the keyword `$expand`)
+- the Document(s)
+- with the Document
+- from Database (`database`)
+- where the foreign property (`foreign`)
+- matches the value of the local property (`property`)
+- as property key `as`.
+
+Schema:
+
+```
+$expand=property-database-foreign-as
+```
+
+
+Example:
+
+```
+$expand=person/contacts/email/contact
+```

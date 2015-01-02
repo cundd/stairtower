@@ -35,4 +35,13 @@ interface ExpandConfigurationInterface
      * @return string
      */
     public function getLocalKey();
+
+    /**
+     * Returns the "as" property key
+     *
+     * If defined this property key will be filled with the foreign data
+     *
+     * @return string
+     */
+    public function getAsKey();
 }

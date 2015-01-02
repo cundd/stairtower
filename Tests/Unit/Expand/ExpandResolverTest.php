@@ -74,6 +74,20 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
     /**
      * @test
      */
+    public function expandDocumentWithAsPropertyTest()
+    {
+        $document      = new Document([
+            'person' => 'spm@cundd.net'
+        ]);
+        $configuration = new ExpandConfiguration('person', 'people-small', 'email', 'person-data');
+        $this->fixture->expandDocument($document, $configuration);
+        $this->assertEquals('spm@cundd.net', $document->valueForKeyPath('person'));
+        $this->assertEquals('spm@cundd.net', $document->valueForKeyPath('person-data.email'));
+    }
+
+    /**
+     * @test
+     */
     public function expandDocumentWithNotExistingSearchValueTest()
     {
         $document      = new Document([

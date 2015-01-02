@@ -29,7 +29,7 @@ class ExpandConfigurationBuilder implements ExpandConfigurationBuilderInterface
         $expandConfigurationCollection = array();
         $expandDefinitionParts         = explode(Constants::REQUEST_EXPAND_DELIMITER, $expandDefinition);
         foreach ($expandDefinitionParts as $currentDefinition) {
-            $currentDefinitionParts = explode(Constants::REQUEST_EXPAND_SPLIT_CHAR, $currentDefinition, 3);
+            $currentDefinitionParts = explode(Constants::REQUEST_EXPAND_SPLIT_CHAR, $currentDefinition);
             if (count($currentDefinitionParts) < 3) {
                 throw new InvalidExpandBuilderInputException(
                     sprintf(
@@ -39,10 +39,12 @@ class ExpandConfigurationBuilder implements ExpandConfigurationBuilderInterface
                     1420047248
                 );
             }
+
             $expandConfigurationCollection[] = new ExpandConfiguration(
                 $currentDefinitionParts[0],
                 $currentDefinitionParts[1],
-                $currentDefinitionParts[2]
+                $currentDefinitionParts[2],
+                isset($currentDefinitionParts[3]) ? $currentDefinitionParts[3] : ''
             );
         }
         return $expandConfigurationCollection;

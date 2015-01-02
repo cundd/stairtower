@@ -41,13 +41,21 @@ class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
     protected $localKey = '';
 
     /**
+     * The "as" property key
+     *
+     * @var string
+     */
+    protected $asKey = null;
+
+    /**
      * Creates a new configuration
      *
      * @param string $localKey
      * @param string $databaseIdentifier
      * @param string $foreignKey
+     * @param string $asKey
      */
-    function __construct($localKey, $databaseIdentifier, $foreignKey = Constants::DATA_ID_KEY)
+    function __construct($localKey, $databaseIdentifier, $foreignKey = Constants::DATA_ID_KEY, $asKey = null)
     {
         if (!$localKey) {
             throw new InvalidConfigurationException('Local property key must not be empty', 1419938512);
@@ -62,6 +70,7 @@ class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
         $this->localKey           = $localKey;
         $this->databaseIdentifier = $databaseIdentifier;
         $this->foreignKey         = $foreignKey;
+        $this->asKey = $asKey;
     }
 
 
@@ -94,4 +103,18 @@ class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
     {
         return $this->localKey;
     }
+
+    /**
+     * Returns the "as" property key
+     *
+     * If defined this property key will be filled with the foreign data
+     *
+     * @return string
+     */
+    public function getAsKey()
+    {
+        return $this->asKey;
+    }
+
+
 }

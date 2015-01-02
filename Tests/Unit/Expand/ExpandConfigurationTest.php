@@ -9,7 +9,6 @@
 namespace Cundd\PersistentObjectStore\Expand;
 
 use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Expand\Exception\InvalidConfigurationException;
 
 /**
  * ExpandConfiguration test
@@ -25,6 +24,18 @@ class ExpandConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         $fixture = new ExpandConfiguration('person', 'person-small');
         $this->assertEquals(Constants::DATA_ID_KEY, $fixture->getForeignKey());
+    }
+
+    /**
+     * @test
+     */
+    public function expandConfigurationCanHaveAsKeyTest()
+    {
+        $fixture = new ExpandConfiguration('person', 'person-small');
+        $this->assertTrue(!$fixture->getAsKey());
+
+        $fixture = new ExpandConfiguration('person', 'person-small', Constants::DATA_ID_KEY, 'person-data');
+        $this->assertEquals('person-data', $fixture->getAsKey());
     }
 
     /**

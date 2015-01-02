@@ -105,7 +105,8 @@ class ExpandResolver implements ExpandResolverInterface
             }
         }
 
-        ObjectUtility::setValueForKeyPathOfObject($foreignValue, $localKey, $document);
+        $propertyToSet = $configuration->getAsKey() ?: $localKey;
+        ObjectUtility::setValueForKeyPathOfObject($foreignValue, $propertyToSet, $document);
         return !!$foreignValue;
     }
 }
