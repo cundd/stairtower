@@ -8,7 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Filter;
 
-use Cundd\PersistentObjectStore\ArrayableInterface;
+use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Core\IndexArray;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
@@ -27,7 +27,7 @@ use SplFixedArray;
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-class FilterResult extends IndexArray implements FilterResultInterface, ArrayableInterface, Immutable
+class FilterResult extends IndexArray implements FilterResultInterface, Immutable
 {
     /**
      * Collection to filter
@@ -97,6 +97,13 @@ class FilterResult extends IndexArray implements FilterResultInterface, Arrayabl
     public function current()
     {
         $this->initFilteredCollection();
+        if ($this->currentIndex >= $this->length) {
+            if ($this->length === 0) {
+                throw new IndexOutOfRangeException('Filter has an empty result', 1420043991);
+            }
+            throw new IndexOutOfRangeException(sprintf('Current Filter Result index %d is out of range',
+                $this->currentIndex), 1420043992);
+        }
         return parent::current();
     }
 

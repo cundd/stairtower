@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 use Cundd\PersistentObjectStore\ArrayableInterface;
+use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Index\IndexableInterface;
 
 
@@ -27,12 +28,12 @@ interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, 
     public function getIdentifier();
 
     /**
-     * Filters the database using the given comparisons
+     * Filters the database using the given comparison
      *
-     * @param array $comparisons
+     * @param ComparisonInterface $comparison
      * @return \Cundd\PersistentObjectStore\Filter\FilterResultInterface
      */
-    public function filter($comparisons);
+    public function filter($comparison);
 
     /**
      * Returns the object with the given identifier

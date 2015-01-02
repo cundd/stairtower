@@ -151,7 +151,6 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
             return null;
         }
         return $this->elements[$this->currentIndex];
-//		return current($this->elements);
     }
 
     /**

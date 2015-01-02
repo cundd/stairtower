@@ -2,17 +2,20 @@
 /**
  * Created by PhpStorm.
  * User: daniel
- * Date: 15.08.14
- * Time: 20:32
+ * Date: 30.12.14
+ * Time: 11:59
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess\Exception;
 
+use Cundd\PersistentObjectStore\RuntimeException;
+
 /**
- * Exception thrown on read errors
+ * Exception thrown on Data Access problems
  *
  * @package Cundd\PersistentObjectStore\DataAccess\Exception
  */
-class ReaderException extends DataAccessException
+class DataAccessException extends RuntimeException
 {
-} 
+
+}
