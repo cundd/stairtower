@@ -366,6 +366,9 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         // Start the server
         $serverBinPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('basePath') . 'bin/server';
         $phpBinPath    = defined('PHP_BINARY') ? PHP_BINARY : PHP_BINDIR . '/php';
+        if (defined('HHVM_VERSION')) {
+            $phpBinPath = (false !== ($hhvm = getenv('PHP_BINARY')) ? $hhvm : PHP_BINARY) . ' --php';
+        }
         $phpIniFile    = php_ini_loaded_file();
         $commandParts  = array(
             $phpBinPath,
@@ -378,7 +381,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         $commandParts[] = '> /dev/null &'; // Run the server in the background
 
 
-        // printf('Run %s' . PHP_EOL, implode(' ', $commandParts));
+        //printf('Run %s' . PHP_EOL, implode(' ', $commandParts));
         exec(implode(' ', $commandParts), $output, $returnValue);
 
 
