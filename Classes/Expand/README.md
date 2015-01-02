@@ -3,6 +3,10 @@ Expand
 
 The Expand module allows a Model's property to be filled with connected data - read from the same or another Database. In SQL one would speak about JOINs.
 
+
+Simple Expand
+-------------
+
 An Expand statement can be described as follows:
 
 - Document(s) are retrieved from a Database.
@@ -13,14 +17,56 @@ An Expand statement can be described as follows:
 - where the foreign property (`foreign`)
 - matches the value of the local property (`property`).
 
-As query string:
+Below are some example query strings utilizing the Expand module
+
+### Expand a single property
+
+Schema:
 
 ```
 $expand=property-database-foreign
 ```
 
+
+Example:
+
+```
+$expand=person/contacts/email/-/book/book/isbn_10
+```
+
+
+### Expand more than one properties
+
+Schema:
+
 ```
 $expand=property1-database1-foreign1/property2-database2-foreign2
 ```
 
-Learn more about [filtering Documents](http://stairtower.cundd.net/Docs/Search/).
+
+Example:
+
+```
+$expand=person/contacts/email/-/book/book/isbn_10
+```
+
+### Expand a filtered set
+
+Schema:
+
+```
+filter-property=filter-value&$expand=property-database-foreign
+
+$expand=property-database-foreign&filter-property=filter-value
+```
+
+
+Example:
+
+```
+title=The Hobbit&$expand=person/contacts/email
+
+$expand=person/contacts/email&title=The Hobbit
+```
+
+More about [filtering](http://stairtower.cundd.net/Docs/Search/).

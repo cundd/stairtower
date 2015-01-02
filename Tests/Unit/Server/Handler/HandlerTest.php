@@ -227,7 +227,7 @@ class HandlerTest extends AbstractCase
      */
     public function readWithExpandTest()
     {
-        // Query '$expand=person-contacts-email'
+        // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%semail', [
             Constants::REQUEST_EXPAND_KEY,
             Constants::REQUEST_EXPAND_SPLIT_CHAR,
@@ -260,7 +260,7 @@ class HandlerTest extends AbstractCase
      */
     public function readWithExpandIdTest()
     {
-        // Query '$expand=person-contacts-email'
+        // Query '$expand=person/contacts/email'
         $queryString = vsprintf('%s=person%scontacts%s%s', [
             Constants::REQUEST_EXPAND_KEY,
             Constants::REQUEST_EXPAND_SPLIT_CHAR,
@@ -294,6 +294,7 @@ class HandlerTest extends AbstractCase
      */
     public function readWithMoreThanOneExpandsTest()
     {
+        // Query '$expand=person/contacts/email/-/book/book/isbn_10'
         $queryString = vsprintf('%s=person%scontacts%semail%sbook%sbook%sisbn_10', [
             Constants::REQUEST_EXPAND_KEY,
             Constants::REQUEST_EXPAND_SPLIT_CHAR,
@@ -333,7 +334,7 @@ class HandlerTest extends AbstractCase
      */
     public function readWithSearchAndExpandTest()
     {
-        // Query 'title=The Hobbit&$expand=person-contacts-email'
+        // Query 'title=The Hobbit&$expand=person/contacts/email'
         $queryString = vsprintf('title=The Hobbit&%s=person%scontacts%semail', [
             Constants::REQUEST_EXPAND_KEY,
             Constants::REQUEST_EXPAND_SPLIT_CHAR,
@@ -358,7 +359,7 @@ class HandlerTest extends AbstractCase
         $this->assertEquals('info@cundd.net', $dataInstance->valueForKeyPath('person.email'));
 
 
-        // Query '$expand=person-contacts-email&title=The Hobbit'
+        // Query '$expand=person/contacts/email&title=The Hobbit'
         $queryString = vsprintf('%s=person%scontacts%semail&title=The Hobbit', [
             Constants::REQUEST_EXPAND_KEY,
             Constants::REQUEST_EXPAND_SPLIT_CHAR,
