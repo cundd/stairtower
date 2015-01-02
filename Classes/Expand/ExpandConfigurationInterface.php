@@ -16,7 +16,7 @@ namespace Cundd\PersistentObjectStore\Expand;
 interface ExpandConfigurationInterface
 {
     /**
-     * Returns the identifier of the (foreign) database
+     * Returns the identifier of the (foreign) Database
      *
      * @return string
      */
@@ -44,4 +44,11 @@ interface ExpandConfigurationInterface
      * @return string
      */
     public function getAsKey();
+
+    /**
+     * Returns if the property will have more than one connected Document
+     *
+     * @return bool
+     */
+    public function getExpandToMany();
 }

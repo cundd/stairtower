@@ -96,8 +96,12 @@ class ExpandResolver implements ExpandResolverInterface
             //$foreignValue = $foreignValue->valid() ? $foreignValue->current() : null;
         }
 
-        // Retrieve the first value
-        if ($foreignValue instanceof \SplFixedArray) {
+        // Check if many objects are expected
+        if ($configuration->getExpandToMany()) {
+            if (!$foreignValue instanceof \Traversable) {
+                $foreignValue = array($foreignValue);
+            }
+        } elseif ($foreignValue instanceof \SplFixedArray) { // Retrieve the first value
             if ($foreignValue->getSize() > 0) {
                 $foreignValue = $foreignValue[0];
             } else {

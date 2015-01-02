@@ -48,15 +48,28 @@ class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
     protected $asKey = null;
 
     /**
+     * Defines if the property will have more than one connected Document
+     *
+     * @var bool
+     */
+    protected $expandToMany = false;
+
+    /**
      * Creates a new configuration
      *
      * @param string $localKey
      * @param string $databaseIdentifier
      * @param string $foreignKey
      * @param string $asKey
+     * @param bool   $expandToMany
      */
-    function __construct($localKey, $databaseIdentifier, $foreignKey = Constants::DATA_ID_KEY, $asKey = null)
-    {
+    function __construct(
+        $localKey,
+        $databaseIdentifier,
+        $foreignKey = Constants::DATA_ID_KEY,
+        $asKey = null,
+        $expandToMany = false
+    ) {
         if (!$localKey) {
             throw new InvalidConfigurationException('Local property key must not be empty', 1419938512);
         }
@@ -71,6 +84,7 @@ class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
         $this->databaseIdentifier = $databaseIdentifier;
         $this->foreignKey         = $foreignKey;
         $this->asKey = $asKey;
+        $this->expandToMany = $expandToMany ? true : false;
     }
 
 
@@ -116,5 +130,13 @@ class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
         return $this->asKey;
     }
 
-
+    /**
+     * Returns if the property will have more than one connected Document
+     *
+     * @return bool
+     */
+    public function getExpandToMany()
+    {
+        return $this->expandToMany;
+    }
 }

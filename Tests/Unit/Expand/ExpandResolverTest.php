@@ -53,6 +53,13 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
 
         $coordinator->expects($this->any())
             ->method('getDatabase')
+            //->will(
+            //    $this->returnCallback(function ($databaseIdentifier) {
+            //        if ($databaseIdentifier === 'people-small') {
+            //            return $this->getSmallPeopleDatabase();
+            //        }
+            //    })
+            //);
             ->will($this->returnValue($this->getSmallPeopleDatabase()));
 
         $this->fixture->setCoordinator($coordinator);
@@ -88,7 +95,62 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
     /**
      * @test
      */
+    public function expandDocumentToManyValidTest()
+    {
+        $document      = new Document([
+            'eyeColor' => 'brown'
+        ]);
+        $configuration = new ExpandConfiguration('eyeColor', 'people-small', 'eyeColor', '', true);
+        $this->fixture->expandDocument($document, $configuration);
+        $this->assertNotNull($document->valueForKeyPath('eyeColor'));
+        $this->assertTrue((is_array($document->valueForKeyPath('eyeColor')) || $document->valueForKeyPath('eyeColor') instanceof \Traversable));
+
+        $this->assertEquals('brown', $document->valueForKeyPath('eyeColor.0.eyeColor'));
+        $this->assertEquals('spm@cundd.net', $document->valueForKeyPath('eyeColor.0.email'));
+
+        $this->assertEquals('brown', $document->valueForKeyPath('eyeColor.1.eyeColor'));
+        $this->assertEquals('claysheppard@stelaecor.com', $document->valueForKeyPath('eyeColor.1.email'));
+    }
+
+    /**
+     * @test
+     */
+    public function expandDocumentToManyWithAsPropertyTest()
+    {
+        $document      = new Document([
+            'eyeColor' => 'brown'
+        ]);
+        $configuration = new ExpandConfiguration('eyeColor', 'people-small', 'eyeColor', 'persons', true);
+        $this->fixture->expandDocument($document, $configuration);
+        $this->assertNotNull($document->valueForKeyPath('persons'));
+        $this->assertTrue((is_array($document->valueForKeyPath('persons')) || $document->valueForKeyPath('persons') instanceof \Traversable));
+
+        $this->assertEquals('brown', $document->valueForKeyPath('eyeColor'));
+
+        $this->assertEquals('brown', $document->valueForKeyPath('persons.0.eyeColor'));
+        $this->assertEquals('spm@cundd.net', $document->valueForKeyPath('persons.0.email'));
+
+        $this->assertEquals('brown', $document->valueForKeyPath('persons.1.eyeColor'));
+        $this->assertEquals('claysheppard@stelaecor.com', $document->valueForKeyPath('persons.1.email'));
+    }
+
+    /**
+     * @test
+     */
     public function expandDocumentWithNotExistingSearchValueTest()
+    {
+        $document      = new Document([
+            'person' => time() . 'not-existing-email@cundd.net'
+        ]);
+        $configuration = new ExpandConfiguration('person', 'people-small', 'email');
+        $this->fixture->expandDocument($document, $configuration);
+        $this->assertNull($document->valueForKeyPath('person'));
+    }
+
+    /**
+     * @test
+     */
+    public function expandDocumentToManyWithNotExistingSearchValueTest()
     {
         $document      = new Document([
             'person' => time() . 'not-existing-email@cundd.net'

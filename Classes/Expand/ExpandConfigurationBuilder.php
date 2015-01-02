@@ -39,12 +39,20 @@ class ExpandConfigurationBuilder implements ExpandConfigurationBuilderInterface
                     1420047248
                 );
             }
+            list($localKey, $databaseIdentifier, $foreignKey) = $currentDefinitionParts;
+            $asKey = isset($currentDefinitionParts[3]) ? $currentDefinitionParts[3] : '';
 
+            $expandToMany = false;
+            if (substr($localKey, -1) === Constants::EXPAND_REQUEST_TO_MANY) {
+                $localKey     = substr($localKey, 0, -1);
+                $expandToMany = true;
+            }
             $expandConfigurationCollection[] = new ExpandConfiguration(
-                $currentDefinitionParts[0],
-                $currentDefinitionParts[1],
-                $currentDefinitionParts[2],
-                isset($currentDefinitionParts[3]) ? $currentDefinitionParts[3] : ''
+                $localKey,
+                $databaseIdentifier,
+                $foreignKey,
+                $asKey,
+                $expandToMany
             );
         }
         return $expandConfigurationCollection;

@@ -82,4 +82,9 @@ WELCOME;
      * Request query character to split expand statement's parts
      */
     const EXPAND_REQUEST_SPLIT_CHAR = '/';
+
+    /**
+     * Request query character to mark one-to-many relations
+     */
+    const EXPAND_REQUEST_TO_MANY = '*';
 } 

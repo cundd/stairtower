@@ -100,3 +100,22 @@ Example:
 ```
 $expand=person/contacts/email/contact
 ```
+
+
+Expand to many
+--------------
+
+Per default Documents are only resolved as a one-to-one relationship. To avoid cases where a Document has a collection of expanded Documents and others have a single connected Document, one-to-many relationships have to be configured explicitly. This is achieved through adding an asterisk ("*") to the local property key.
+
+Schema:
+
+```
+$expand=property*/database/foreign/as
+```
+
+
+Example:
+
+```
+$expand=person*/contacts/email/contact
+```

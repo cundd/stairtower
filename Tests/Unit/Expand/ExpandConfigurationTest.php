@@ -20,6 +20,15 @@ class ExpandConfigurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function expandConfigurationShouldReturnFalseAsDefaultExpandToMany()
+    {
+        $fixture = new ExpandConfiguration('person', 'person-small');
+        $this->assertFalse($fixture->getExpandToMany());
+    }
+
+    /**
+     * @test
+     */
     public function expandConfigurationShouldReturnIdAsDefaultForeignFieldTest()
     {
         $fixture = new ExpandConfiguration('person', 'person-small');
