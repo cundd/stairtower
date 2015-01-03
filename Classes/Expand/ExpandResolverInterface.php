@@ -26,4 +26,14 @@ interface ExpandResolverInterface
      * @throws Exception\ExpandException
      */
     public function expandDocument($document, $configuration);
+
+    /**
+     * Expand the given Documents according to the given configuration
+     *
+     * @param DocumentInterface[]|\Traversable $documentCollection
+     * @param ExpandConfigurationInterface     $configuration
+     * @return boolean Returns if the Documents have been expanded
+     * @throws Exception\ExpandException
+     */
+    public function expandDocumentCollection($documentCollection, $configuration);
 }

@@ -16,6 +16,7 @@ use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Index\IndexableInterface;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+use SplFixedArray;
 
 /**
  * Class that will fetch the Documents and set the property according to a Expand configuration
@@ -69,15 +70,14 @@ class ExpandResolver implements ExpandResolverInterface
         }
 
         // Get the local value
-        $localKey = $configuration->getLocalKey();
+        $localKey   = $configuration->getLocalKey();
+        $foreignKey = $configuration->getForeignKey();
         if (is_array($document)) {
             $localValue = ObjectUtility::valueForKeyPathOfObject($localKey, $document, self::NO_VALUE);
         } else {
-            //$localValue = ObjectUtility::valueForKeyPathOfObject($localKey, $document->getData(), self::NO_VALUE);
             $localValue = $document->valueForKeyPath($localKey);
         }
 
-        $foreignKey = $configuration->getForeignKey();
 
         // If a local value is found, look for the best search method for the foreign key and local value
         if ($localValue === null || $localValue === self::NO_VALUE) {
@@ -101,7 +101,7 @@ class ExpandResolver implements ExpandResolverInterface
             if (!$foreignValue instanceof \Traversable) {
                 $foreignValue = array($foreignValue);
             }
-        } elseif ($foreignValue instanceof \SplFixedArray) { // Retrieve the first value
+        } elseif ($foreignValue instanceof SplFixedArray) { // Retrieve the first value
             if ($foreignValue->getSize() > 0) {
                 $foreignValue = $foreignValue[0];
             } else {
@@ -112,5 +112,34 @@ class ExpandResolver implements ExpandResolverInterface
         $propertyToSet = $configuration->getAsKey() ?: $localKey;
         ObjectUtility::setValueForKeyPathOfObject($foreignValue, $propertyToSet, $document);
         return !!$foreignValue;
+    }
+
+    /**
+     * Expand the given Documents according to the given configuration
+     *
+     * @param DocumentInterface[]|\Traversable $documentCollection
+     * @param ExpandConfigurationInterface     $configuration
+     * @return boolean Returns if the Documents have been expanded
+     * @throws Exception\ExpandException
+     */
+    public function expandDocumentCollection($documentCollection, $configuration)
+    {
+        $fixedCollection = null;
+        if (is_array($documentCollection)) {
+            $fixedCollection = SplFixedArray::fromArray($documentCollection);
+        } elseif ($documentCollection instanceof SplFixedArray) {
+            $fixedCollection = $documentCollection;
+        } elseif ($documentCollection instanceof \Traversable) {
+            $fixedCollection = iterator_to_array($documentCollection);
+        }
+        $fixedCollectionCount = $fixedCollection->count();
+        $success              = true;
+
+        // Loop through the Documents and expand each one
+        $i = 0;
+        do {
+            $success *= $this->expandDocument($fixedCollection[$i], $configuration);
+        } while (++$i < $fixedCollectionCount);
+        return !!$success;
     }
 }
