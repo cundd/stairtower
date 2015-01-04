@@ -31,27 +31,12 @@ use SplFixedArray;
 class ExpandResolver implements ExpandResolverInterface
 {
     /**
-     * Constant to use if a key path could not be resolved
-     */
-    const NO_VALUE = '--no-value-for-this-key-cundd-stairtower';
-
-    /**
      * Document Access Coordinator
      *
      * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
      * @Inject
      */
     protected $coordinator;
-
-    /**
-     * Returns the Document Access Coordinator
-     *
-     * @return \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
-     */
-    public function getCoordinator()
-    {
-        return $this->coordinator;
-    }
 
     /**
      * Expand the given Document according to the given configuration
@@ -79,9 +64,8 @@ class ExpandResolver implements ExpandResolverInterface
 
         // Get the local value
         if (is_array($document)) {
-            $localValue = ObjectUtility::valueForKeyPathOfObject($localKey, $document, self::NO_VALUE);
+            $localValue = ObjectUtility::valueForKeyPathOfObject($localKey, $document);
         } else {
-            //$localValue = ObjectUtility::valueForKeyPathOfObject($localKey, $document->getData(), self::NO_VALUE);
             $localValue = $document->valueForKeyPath($localKey);
         }
 
@@ -120,19 +104,11 @@ class ExpandResolver implements ExpandResolverInterface
             $localValuesAreScalar
         );
 
-        if ($localValuesAreScalar) {
-
-        }
-        //$localValueCollection = SplFixedArray::fromArray(array_unique($localValueCollection->toArray()));
-
-
         // Loop through the Documents and expand each one
         $i = 0;
         do {
             $currentDocument = $fixedCollection[$i];
             $localValue      = $localValueCollection[$i];
-
-            //DebugUtility::var_dump($foreignValueCollection->count());
 
             // If $foreignValueCollection is false or the local value is null the foreign value has to be null
             if ($foreignValueCollection === false || $localValue === null) {
@@ -191,25 +167,25 @@ class ExpandResolver implements ExpandResolverInterface
             );
         }
 
+        $i          = 0;
+        $localKey   = $configuration->getLocalKey();
+        $foreignKey = $configuration->getForeignKey();
+
         // Get all the local values
         $returnDictionary = true;
         $didSetAValue     = false;
-        $i                    = 0;
-        $localKey             = $configuration->getLocalKey();
-        $foreignKey           = $configuration->getForeignKey();
         $fixedCollectionCount = $fixedCollection->count();
         $localValueCollection = new SplFixedArray($fixedCollectionCount);
         do {
             $currentDocument = $fixedCollection[$i];
             if (is_array($currentDocument)) {
-                $localValue = ObjectUtility::valueForKeyPathOfObject($localKey, $currentDocument,
-                    self::NO_VALUE);
+                $localValue = ObjectUtility::valueForKeyPathOfObject($localKey, $currentDocument);
             } else {
                 $localValue = $currentDocument->valueForKeyPath($localKey);
             }
 
-            // Don't add null or the NO_VALUE to the collection
-            if ($localValue === null || $localValue === self::NO_VALUE) {
+            // Don't add null to the collection
+            if ($localValue === null) {
                 continue;
             }
 
@@ -278,7 +254,6 @@ class ExpandResolver implements ExpandResolverInterface
                     1420290151
                 );
             }
-            //$filterResultAsDictionary[$currentDocument->valueForKeyPath($key)] = $currentDocument;
             $dictionary[$currentDocument->valueForKeyPath($key)][] = $currentDocument;
         } while (++$i < $fixedFilterResultCount);
         return $dictionary;
@@ -295,7 +270,7 @@ class ExpandResolver implements ExpandResolverInterface
         $foreignKey = $configuration->getForeignKey();
 
         // If a local value is found, look for the best search method for the foreign key and local value
-        if ($localValue === null || $localValue === self::NO_VALUE) {
+        if ($localValue === null) {
             $foreignValue = null;
         } elseif (is_scalar($localValue) && $collection instanceof ArrayObject) {
             $foreignValue = $collection->offsetExists($localValue) ? $collection[$localValue] : null;
