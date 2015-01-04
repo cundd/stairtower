@@ -134,6 +134,17 @@ abstract class GeneralUtility
     }
 
     /**
+     * Returns the internal type or class name of the given value
+     *
+     * @param mixed $value
+     * @return string
+     */
+    public static function getType($value)
+    {
+        return is_object($value) ? get_class($value) : gettype($value);
+    }
+
+    /**
      * Removes the directory recursive
      *
      * @param string $dir

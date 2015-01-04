@@ -282,5 +282,34 @@ class GeneralUtilityTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('my life', GeneralUtility::toString($object));
 
     }
+
+    /**
+     * @test
+     */
+    public function getTypeTest()
+    {
+        $this->assertSame('string', GeneralUtility::getType('Jesus saved my life'));
+        $this->assertSame('array', GeneralUtility::getType(array('Jesus', 'saved', 'my', 'life')));
+        $this->assertSame('integer', GeneralUtility::getType(1));
+        $this->assertSame('integer', GeneralUtility::getType(0));
+        $this->assertSame('boolean', GeneralUtility::getType(true));
+        $this->assertSame('boolean', GeneralUtility::getType(false));
+        $this->assertSame('NULL', GeneralUtility::getType(null));
+        $this->assertSame('double', GeneralUtility::getType(1.0));
+        $this->assertSame('double', GeneralUtility::getType(-1.0));
+        $this->assertSame('double', GeneralUtility::getType(sqrt(-1.0)));
+
+        $tempFile = tmpfile();
+        $this->assertContains('resource', GeneralUtility::getType($tempFile));
+        fclose($tempFile);
+
+        $dataInstance = new Document(array('my' => 'life'));
+        $this->assertSame('Cundd\\PersistentObjectStore\\Domain\\Model\\Document',
+            GeneralUtility::getType($dataInstance));
+
+        $object = new DummyObjectThatCanBeConvertedToString('my life');
+        $this->assertSame('Cundd\\PersistentObjectStore\\Utility\\DummyObjectThatCanBeConvertedToString',
+            GeneralUtility::getType($object));
+    }
 }
  
