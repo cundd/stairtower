@@ -8,13 +8,17 @@
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
+use Cundd\PersistentObjectStore\ArrayableInterface;
+use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
+use Cundd\PersistentObjectStore\Index\IndexableInterface;
+
 
 /**
  * Interface for Database implementations
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-interface DatabaseInterface extends DatabaseStateInterface, \Iterator, \Countable, \SeekableIterator
+interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, IndexableInterface, \Iterator, \Countable, \SeekableIterator
 {
     /**
      * Returns the database identifier
@@ -24,12 +28,12 @@ interface DatabaseInterface extends DatabaseStateInterface, \Iterator, \Countabl
     public function getIdentifier();
 
     /**
-     * Filters the database using the given comparisons
+     * Filters the database using the given comparison
      *
-     * @param array $comparisons
+     * @param ComparisonInterface $comparison
      * @return \Cundd\PersistentObjectStore\Filter\FilterResultInterface
      */
-    public function filter($comparisons);
+    public function filter($comparison);
 
     /**
      * Returns the object with the given identifier

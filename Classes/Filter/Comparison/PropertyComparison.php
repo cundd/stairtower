@@ -75,12 +75,9 @@ class PropertyComparison implements PropertyComparisonInterface
     public function perform($testValue)
     {
         if ($testValue instanceof KeyValueCodingInterface) {
-//			$testValue = $testValue->getData();
             $propertyValue = $testValue->valueForKeyPath($this->property);
-//			$propertyValue = $testValue->valueForKeyPath($this->getProperty());
         } else {
             $propertyValue = ObjectUtility::valueForKeyPathOfObject($this->property, $testValue);
-//			$propertyValue = ObjectUtility::valueForKeyPathOfObject($this->getProperty(), $testValue);
         }
         $operator = $this->getOperator();
         switch ($operator) {
@@ -281,8 +278,10 @@ class PropertyComparison implements PropertyComparisonInterface
             }
             return (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform($testValue) : $expression2);
         }
-        throw new InvalidComparisonException(sprintf('Can not perform logical comparison with operator %s', $operator),
-            1410704637);
+        throw new InvalidComparisonException(
+            sprintf('Can not perform logical comparison with operator %s', $operator),
+            1410704637
+        );
     }
 
 

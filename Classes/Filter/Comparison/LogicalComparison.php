@@ -20,18 +20,28 @@ use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
 class LogicalComparison implements LogicalComparisonInterface
 {
     /**
-     * Collection of constraints
-     *
-     * @var array
-     */
-    protected $constraints = array();
-
-    /**
      * Type of the comparison from the comparison value against the given test data's property
      *
      * @var string One of the ComparisonInterface::TYPE constants
      */
     protected $operator;
+
+    /**
+     * If strict is true the perform method will throw an InvalidComparisonException if one of the constraints is not an
+     * instance of ComparisonInterface
+     *
+     * This may be useful when building complex nested filters
+     *
+     * @var bool
+     */
+    protected $strict = false;
+
+    /**
+     * Collection of constraints
+     *
+     * @var array
+     */
+    protected $constraints = array();
 
     /**
      * Creates a new comparison
@@ -61,11 +71,14 @@ class LogicalComparison implements LogicalComparisonInterface
      */
     public function perform($testValue)
     {
+        $strict = $this->isStrict();
         $operator = $this->getOperator();
         $isOr     = $operator === ComparisonInterface::TYPE_OR;
         if ($operator !== ComparisonInterface::TYPE_AND && $operator !== ComparisonInterface::TYPE_OR) {
-            throw new InvalidComparisonException(sprintf('Can not perform logical comparison with operator %s',
-                $operator), 1410704637);
+            throw new InvalidComparisonException(
+                sprintf('Can not perform logical comparison with operator %s', $operator),
+                1410704637
+            );
         }
 
         $constraints = $this->getConstraints();
@@ -75,13 +88,25 @@ class LogicalComparison implements LogicalComparisonInterface
 
 
         foreach ($constraints as $constraint) {
+            if ($strict && !($constraint instanceof ComparisonInterface)) {
+                throw new InvalidComparisonException(sprintf(
+                    'Current constraint is no Comparison Interface instance but %s',
+                    is_object($constraint) ? get_class($constraint) : gettype($constraint)
+                ), 1418037096);
+            }
+
+            $constraintResult = !!($constraint instanceof ComparisonInterface ? $constraint->perform($testValue) : $constraint);
+            //if ($operator === ComparisonInterface::TYPE_AND) {
+            //    DebugUtility::var_dump($constraint, $this, $constraint->perform($testValue));
+            //}
+
             // If the operator is OR and one constraint is TRUE return TRUE
-            if ($isOr && ($constraint instanceof ComparisonInterface ? $constraint->perform($testValue) : $constraint)) {
+            if ($isOr && $constraintResult) {
                 return true;
             }
 
             // If the operator is AND and one constraint is FALSE return FALSE
-            if (!$isOr && !($constraint instanceof ComparisonInterface ? $constraint->perform($testValue) : $constraint)) {
+            if (!$isOr && !$constraintResult) {
                 return false;
             }
         }
@@ -115,29 +140,28 @@ class LogicalComparison implements LogicalComparisonInterface
         return $this->constraints;
     }
 
-//	/**
-//	 * Performs the given logical comparison
-//	 *
-//	 * @param mixed  $testValue
-//	 * @param string $operator
-//	 * @throws InvalidComparisonException if the given operator is neither ComparisonInterface::TYPE_AND nor ComparisonInterface::TYPE_OR
-//	 * @return bool
-//	 */
-//	protected function performLogical($testValue, $operator) {
-//		$expression1 = $this->property;
-//		$expression2 = $this->value;
-//
-//		$result1 = (bool)($expression1 instanceof PropertyComparisonInterface ? $expression1->perform($testValue) : $expression1);
-//
-//		if ($operator === PropertyComparisonInterface::TYPE_AND) {
-//			$result2 = (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform($testValue) : $expression2);
-//			return $result1 && $result2;
-//		} else if ($operator === PropertyComparisonInterface::TYPE_OR) {
-//			if ($result1) {
-//				return $result1;
-//			}
-//			return (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform($testValue) : $expression2);
-//		}
-//		throw new InvalidComparisonException(sprintf('Can not perform logical comparison with operator %s', $operator), 1410704637);
-//	}
+
+    /**
+     * If strict is true the perform method will throw an InvalidComparisonException if one of the constraints is not an
+     * instance of ComparisonInterface
+     *
+     * @return boolean
+     */
+    public function isStrict()
+    {
+        return $this->strict;
+    }
+
+    /**
+     * If strict is true the perform method will throw an InvalidComparisonException if one of the constraints is not an
+     * instance of ComparisonInterface
+     *
+     * @param boolean $strict
+     * @return $this
+     */
+    public function setStrict($strict)
+    {
+        $this->strict = $strict;
+        return $this;
+    }
 }

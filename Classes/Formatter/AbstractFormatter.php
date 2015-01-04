@@ -45,7 +45,19 @@ abstract class AbstractFormatter implements FormatterInterface
         if ($data instanceof ArrayableInterface) {
             $data = $data->toFixedArray();
         }
-        if (is_array($data) || $data instanceof \Iterator) {
+        if ($data instanceof \SplFixedArray) {
+            $dataCount = $data->count();
+            $foundData = array();
+            for ($i = 0; $i < $dataCount; $i++) {
+                $dataObject = $data[$i];
+                if ($dataObject instanceof DocumentInterface) {
+                    $foundData[$i] = $dataObject->getData();
+                } else {
+                    $foundData[$i] = $dataObject;
+                }
+            }
+            return $foundData;
+        } elseif (is_array($data) || $data instanceof \Iterator) {
             $foundData = array();
             foreach ($data as $key => $dataObject) {
                 if ($dataObject instanceof DocumentInterface) {

@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Configuration;
 
 use Cundd\PersistentObjectStore\RuntimeException;
+use Cundd\PersistentObjectStore\Server\ServerInterface;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 use Monolog\Logger;
 
@@ -60,7 +61,8 @@ class ConfigurationManager implements ConfigurationManagerInterface
             'logPath'       => $varPath . 'Log/',
             'tempPath'      => $varPath . 'Temp/',
             'rescuePath'    => $varPath . 'Rescue/',
-            'logLevel' => Logger::INFO,
+            'logLevel'   => Logger::INFO,
+            'serverMode' => ServerInterface::SERVER_MODE_NOT_RUNNING
         );
     }
 

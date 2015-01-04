@@ -8,14 +8,11 @@
 
 namespace Cundd\PersistentObjectStore\DataAccess\Exception;
 
-
-use Cundd\PersistentObjectStore\RuntimeException;
-
 /**
  * Exception thrown on read errors
  *
  * @package Cundd\PersistentObjectStore\DataAccess\Exception
  */
-class ReaderException extends RuntimeException
+class ReaderException extends DataAccessException
 {
 } 

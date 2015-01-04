@@ -11,7 +11,6 @@ namespace Cundd\PersistentObjectStore;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Memory\Manager;
 use DI\ContainerBuilder;
-use Doctrine\Common\Cache\FilesystemCache;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 
@@ -32,7 +31,9 @@ class AbstractCase extends \PHPUnit_Framework_TestCase
      * @var bool
      */
     static protected $didSetupXhprof = false;
+
     protected $fixture;
+
     /**
      * Dependency injection container
      *

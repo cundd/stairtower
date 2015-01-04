@@ -10,6 +10,8 @@ namespace Cundd\PersistentObjectStore\Memory;
 
 
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseStateInterface;
 use Cundd\PersistentObjectStore\Memory\Exception\MemoryException;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
@@ -44,15 +46,17 @@ class Helper
         $size          = abs($size);
         $currentMemory = memory_get_usage(true);
         $freedMemory   = 0;
-        $databases     = Manager::getIdentifiersByTag(Coordinator::MEMORY_MANAGER_TAG, true);
-        foreach ($databases as $identifier) {
-            Manager::free($identifier);
+        $databases = Manager::getObjectsByTag(Coordinator::MEMORY_MANAGER_TAG, true);
+        foreach ($databases as $identifier => $database) {
+            /** @var DatabaseInterface $database */
+            if ($database->getState() === DatabaseStateInterface::STATE_CLEAN) {
+                Manager::free($identifier);
+                $freedMemory += ($currentMemory - memory_get_usage(true));
+                $currentMemory = memory_get_usage(true);
 
-            $freedMemory += ($currentMemory - memory_get_usage(true));
-            $currentMemory = memory_get_usage(true);
-
-            if ($freedMemory >= $size) {
-                return true;
+                if ($freedMemory >= $size) {
+                    return true;
+                }
             }
 //			DebugUtility::var_dump(gc_enabled(), array_keys(get_defined_vars()), GeneralUtility::formatBytes($currentMemory), GeneralUtility::formatBytes($freedMemory));
         }

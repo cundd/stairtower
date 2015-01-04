@@ -120,7 +120,7 @@ abstract class AbstractServer implements ServerInterface
      *
      * @var int
      */
-    protected $mode = ServerInterface::SERVER_MODE_NORMAL;
+    protected $mode = ServerInterface::SERVER_MODE_NOT_RUNNING;
 
     /**
      * Collects and returns the current server statistics
@@ -138,6 +138,12 @@ abstract class AbstractServer implements ServerInterface
 
         $detailedStatistics = $statistics->jsonSerialize() + [
                 'eventLoopImplementation' => get_class($this->getEventLoop()),
+                'os' => array(
+                    'vendor'  => php_uname('s'),
+                    'version' => php_uname('r'),
+                    'machine' => php_uname('m'),
+                    'info'    => php_uname('v'),
+                ),
             ];
         return $detailedStatistics;
     }
@@ -423,6 +429,7 @@ abstract class AbstractServer implements ServerInterface
             throw new InvalidServerChangeException('Can not change the mode when server is running', 1414835788);
         }
         $this->mode = $mode;
+        ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('serverMode', $mode);
         return $this;
     }
 

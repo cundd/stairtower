@@ -9,9 +9,10 @@
 namespace Cundd\PersistentObjectStore\Filter;
 
 use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
+use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 
 /**
@@ -22,70 +23,24 @@ use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
 class Filter implements FilterInterface
 {
     /**
-     * Collection of comparisons
+     * Comparison to use for this filter
      *
-     * @var \SplObjectStorage
+     * This may be a nested Logical Comparison
+     *
+     * @var ComparisonInterface
      */
-    protected $comparisons;
+    protected $comparison;
 
     /**
      * Creates a new filter
      *
-     * @param \SplObjectStorage|array $comparisons The comparisons
+     * @param \SplObjectStorage|ComparisonInterface[]|ComparisonInterface $comparison The comparison to filter by as a single Comparison instance
      */
-    public function __construct($comparisons = null)
+    public function __construct($comparison = null)
     {
-        if (!$comparisons) {
-            $this->comparisons = new \SplObjectStorage();
-        } else {
-            $this->initWithComparisons($comparisons);
+        if ($comparison) {
+            $this->comparison = $comparison;
         }
-    }
-
-    /**
-     * Initialize the filter with the given comparisons
-     *
-     * @param $comparisons
-     * @return \SplObjectStorage
-     */
-    public function initWithComparisons($comparisons)
-    {
-        $tempComparisons = new \SplObjectStorage();
-        foreach ($comparisons as $comparison) {
-            $tempComparisons->attach($comparison);
-        }
-        $tempComparisons->rewind();
-        $this->comparisons = $tempComparisons;
-    }
-
-
-    /**
-     * Adds the given comparison
-     *
-     * Multiple comparisons will be added as "or"
-     *
-     * @param PropertyComparisonInterface $comparison
-     * @return $this
-     */
-    public function addComparison($comparison)
-    {
-        $this->comparisons->attach($comparison);
-    }
-
-    /**
-     * Removes the given comparison
-     *
-     * @param PropertyComparisonInterface $comparison
-     * @throws Exception\InvalidComparisonException if the given comparison is not in the list
-     * @return $this
-     */
-    public function removeComparison($comparison)
-    {
-        if (!$this->comparisons->contains($comparison)) {
-            throw new InvalidComparisonException('Can not remove given comparison because it is not in the list',
-                1409600320);
-        }
-        $this->comparisons->detach($comparison);
     }
 
     /**
@@ -97,7 +52,11 @@ class Filter implements FilterInterface
      */
     public function filterCollection($collection)
     {
+        if (is_array($collection)) {
+            $collection = \SplFixedArray::fromArray(array_values($collection));
+        }
         if (!is_object($collection)) {
+            DebugUtility::var_dump($collection);
             throw new InvalidCollectionException('No object given', 1410628879);
         }
         if (!($collection instanceof \Iterator)) {
@@ -109,47 +68,45 @@ class Filter implements FilterInterface
     }
 
     /**
-     * Returns if this collection item matches the comparisons
+     * Returns if this collection item matches the comparison
      *
      * @param mixed $item
      * @return bool
      */
     public function checkItem($item)
     {
-        $comparisonCollection = $this->getComparisons();
-        $comparisonCollection->rewind();
-
-        while ($comparisonCollection->valid()) {
-            /** @var PropertyComparisonInterface $comparison */
-            $comparison = $comparisonCollection->current();
-            if (!$comparison->perform($item)) {
-                return false;
-            }
-            $comparisonCollection->next();
+        $comparison = $this->getComparison();
+        if (!$comparison) {
+            throw new InvalidComparisonException('No comparison defined', 1420037779);
         }
-        return true;
+        if (!$comparison instanceof ComparisonInterface) {
+            throw new InvalidComparisonException(
+                sprintf('Given comparison is of type %s',
+                    is_object($comparison) ? get_class($comparison) : gettype($comparison)),
+                1420038127
+            );
+        }
+        return $this->comparison->perform($item);
     }
 
     /**
-     * Returns the comparisons
+     * Returns the comparison
      *
-     * @return \SplObjectStorage(ComparisonInterface)
+     * @return ComparisonInterface
      */
-    public function getComparisons()
+    public function getComparison()
     {
-        return $this->comparisons;
+        return $this->comparison;
     }
 
     /**
-     * Sets the comparisons
+     * Sets the comparison
      *
-     * The comparisons will be added as "or"
-     *
-     * @param \SplObjectStorage(ComparisonInterface) $comparisons
+     * @param ComparisonInterface $comparison
      * @return $this
      */
-    public function setComparisons(\SplObjectStorage $comparisons)
+    public function setComparison($comparison)
     {
-        $this->comparisons = $comparisons;
+        $this->comparison = $comparison;
     }
 }

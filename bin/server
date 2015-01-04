@@ -79,6 +79,8 @@ if (isset($options['test'])) {
     if (is_numeric($options['test'])) {
         $server->setAutoShutdownTime(intval($options['test']));
     }
+} else {
+    $server->setMode(\Cundd\PersistentObjectStore\Server\ServerInterface::SERVER_MODE_NORMAL);
 }
 
 

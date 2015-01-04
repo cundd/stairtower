@@ -25,14 +25,14 @@ class JsonFormatter extends AbstractFormatter
     protected $serializer;
 
     /**
-     * Formats the given input model(s)
+     * Formats the given input
      *
-     * @param DocumentInterface|DocumentInterface[] $inputModel
+     * @param DocumentInterface|DocumentInterface[]|\SplFixedArray $input
      * @return string
      */
-    public function format($inputModel)
+    public function format($input)
     {
-        return $this->serializer->serialize($this->prepareData($inputModel));
+        return $this->serializer->serialize($this->prepareData($input));
     }
 
     /**
