@@ -87,10 +87,19 @@ class RequestInfoFactory
         if ($handlerIdentifier === false) {
             $handlerIdentifier = $path;
         }
-
         $handlerIdentifier = substr($handlerIdentifier, 1);
-        $handlerName       = sprintf('Cundd\\PersistentObjectStore\\Server\\Handler\\%sHandler',
-            ucfirst($handlerIdentifier));
+
+        // Generate the Application name
+        $applicationName = str_replace(' ', '\\', ucwords(str_replace('_', ' ', $handlerIdentifier))) . '\\Application';
+        if (class_exists($applicationName)) {
+            return $applicationName;
+        }
+
+        // Generate the Handler name
+        $handlerName = sprintf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\%sHandler',
+            ucfirst($handlerIdentifier)
+        );
         if (class_exists($handlerName)) {
             return $handlerName;
         }

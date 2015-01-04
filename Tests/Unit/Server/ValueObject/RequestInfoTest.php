@@ -15,6 +15,10 @@ class SpecialHandler extends Handler
 {
 }
 
+class SpecialApplication
+{
+}
+
 /**
  * Tests for creating RequestInfo objects
  *
@@ -22,6 +26,13 @@ class SpecialHandler extends Handler
  */
 class RequestInfoTest extends \PHPUnit_Framework_TestCase
 {
+    protected function setUp()
+    {
+        parent::setUp();
+        class_alias('Cundd\\PersistentObjectStore\\Server\\ValueObject\\SpecialApplication',
+            'Cundd\\Special\\Application');
+    }
+
 
     /**
      * @test
@@ -743,6 +754,42 @@ class RequestInfoTest extends \PHPUnit_Framework_TestCase
             RequestInfoFactory::getHandlerClassForRequest(new Request('POST', '/_special/')));
         $this->assertEquals('Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new Request('POST', '/_special/something')));
+
+
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('GET', '/_cundd_special')));
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('GET', '/_cundd_special/')));
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('GET', '/_cundd_special/something')));
+
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('HEAD', '/_cundd_special')));
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('HEAD', '/_cundd_special/')));
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('HEAD', '/_cundd_special/something')));
+
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('PUT', '/_cundd_special')));
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('PUT', '/_cundd_special/')));
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('PUT', '/_cundd_special/something')));
+
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('DELETE', '/_cundd_special')));
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('DELETE', '/_cundd_special/')));
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('DELETE', '/_cundd_special/something')));
+
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('POST', '/_cundd_special')));
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('POST', '/_cundd_special/')));
+        $this->assertEquals('Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(new Request('POST', '/_cundd_special/something')));
     }
 }
  
