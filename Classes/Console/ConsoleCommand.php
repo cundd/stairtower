@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Console;
 
 
+use Cundd\PersistentObjectStore\Constants;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,26 +21,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class ConsoleCommand extends Command
 {
-    const MESSAGE_WELCOME = <<<WELCOME
-
-
-                        /\
-                       /  \
-                      /____\
-      __________      |    |
-    /__________/\     |[]_ |
-   /__________/()\    |   -|_
-  /__________/    \   |    |
-  | [] [] [] | [] |  _|    |
-  |   ___    |    |   |–_  |
-  |   |_| [] | [] |   |  –_|
-
-         STAIRTOWER
-   PERSISTENT OBJECT STORE
-    a home for your data
-
-WELCOME;
-
     /**
      * Document Access Coordinator
      *
@@ -86,7 +67,7 @@ WELCOME;
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->write(self::MESSAGE_WELCOME);
+        $output->write(Constants::MESSAGE_CLI_WELCOME);
         $output->write('> ');
         while ($line = fgets(STDIN, 1024 * 5)) {
             $line = trim($line);

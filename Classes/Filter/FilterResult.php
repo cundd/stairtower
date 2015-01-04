@@ -77,11 +77,23 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
             return clone $originalCollection;
         }
 
+        $i     = 0;
+        $count = $originalCollection->count();
+        if ($count === 0) {
+            return new SplFixedArray();
+        }
         $collection = new SplFixedArray($originalCollection->count());
-        $i          = 0;
-        foreach ($originalCollection as $item) {
-            $collection[$i] = clone $item;
-            $i++;
+
+        // Separate handling to loop over SplFixedArray
+        if ($originalCollection instanceof SplFixedArray) {
+            do {
+                $collection[$i] = clone $originalCollection[$i];
+            } while (++$i < $count);
+        } else {
+            foreach ($originalCollection as $item) {
+                $collection[$i] = clone $item;
+                $i++;
+            }
         }
         $collection->rewind();
         return $collection;

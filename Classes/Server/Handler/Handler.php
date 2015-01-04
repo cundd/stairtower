@@ -19,6 +19,7 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterExceptio
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use SplFixedArray;
 
 /**
  * Handler implementation
@@ -420,9 +421,9 @@ class Handler implements HandlerInterface
     /**
      * Expand the objects in the given collection according to the given Expand configurations
      *
-     * @param \SplFixedArray|DocumentInterface[] $collection
+     * @param SplFixedArray|DocumentInterface[]  $collection
      * @param ExpandConfigurationInterface[]     $expandConfigurationCollection
-     * @return \SplFixedArray
+     * @return SplFixedArray
      */
     protected function expandObjectsInCollection($collection, $expandConfigurationCollection)
     {
@@ -431,17 +432,29 @@ class Handler implements HandlerInterface
         } else {
             $collectionCount = $collection->getSize();
         }
-        $expandedObjects = new \SplFixedArray($collectionCount);
-        $i               = 0;
-        while ($i < $collectionCount) {
-            $item = clone $collection[$i];
+
+        if ($collectionCount === 0) {
+            return new SplFixedArray(0);
+        }
+
+        if ($collectionCount < 2) {
+            $item = clone $collection[0];
             foreach ($expandConfigurationCollection as $expandConfiguration) {
                 $this->expandResolver->expandDocument($item, $expandConfiguration);
             }
+            return SplFixedArray::fromArray(array($item));
+        }
 
-            $expandedObjects[$i] = $item;
+        $clonedObjectCollection = new SplFixedArray($collectionCount);
+        $i                      = 0;
+        while ($i < $collectionCount) {
+            $clonedObjectCollection[$i] = clone $collection[$i];
             $i++;
         }
-        return $expandedObjects;
+
+        foreach ($expandConfigurationCollection as $expandConfiguration) {
+            $this->expandResolver->expandDocumentCollection($clonedObjectCollection, $expandConfiguration);
+        }
+        return $clonedObjectCollection;
     }
 }

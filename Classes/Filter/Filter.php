@@ -12,6 +12,7 @@ use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 
 /**
@@ -51,7 +52,11 @@ class Filter implements FilterInterface
      */
     public function filterCollection($collection)
     {
+        if (is_array($collection)) {
+            $collection = \SplFixedArray::fromArray(array_values($collection));
+        }
         if (!is_object($collection)) {
+            DebugUtility::var_dump($collection);
             throw new InvalidCollectionException('No object given', 1410628879);
         }
         if (!($collection instanceof \Iterator)) {
