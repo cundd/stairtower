@@ -79,6 +79,7 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
                 'age'      => rand(0, 102),
             ])
         ];
+
         while (++$i < 1000) {
             $documentCollection[$i] = new Document([
                 'person'   => sprintf('mail%s@%s', time(), $domains[array_rand($domains)]),
@@ -86,6 +87,7 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
                 'age'      => rand(0, 102),
             ]);
         }
+
         return $documentCollection;
     }
 
@@ -129,6 +131,7 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
         $this->assertNotNull($document->valueForKeyPath('eyeColor'));
         $this->assertTrue((is_array($document->valueForKeyPath('eyeColor')) || $document->valueForKeyPath('eyeColor') instanceof \Traversable));
 
+        $this->assertEquals(34, count($document->valueForKeyPath('eyeColor')));
         $this->assertEquals('brown', $document->valueForKeyPath('eyeColor.0.eyeColor'));
         $this->assertEquals('spm@cundd.net', $document->valueForKeyPath('eyeColor.0.email'));
 
@@ -150,6 +153,8 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
         $this->assertTrue((is_array($document->valueForKeyPath('persons')) || $document->valueForKeyPath('persons') instanceof \Traversable));
 
         $this->assertEquals('brown', $document->valueForKeyPath('eyeColor'));
+
+        $this->assertEquals(34, count($document->valueForKeyPath('persons')));
 
         $this->assertEquals('brown', $document->valueForKeyPath('persons.0.eyeColor'));
         $this->assertEquals('spm@cundd.net', $document->valueForKeyPath('persons.0.email'));
@@ -237,6 +242,23 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
 
         /** @var DocumentInterface $documentFromCollection */
         $documentFromCollection = $documentCollection[0];
+        $this->assertEquals(1, count($documentFromCollection->valueForKeyPath('person')));
+        $this->assertEquals('spm@cundd.net', $documentFromCollection->valueForKeyPath('person.email'));
+    }
+
+    /**
+     * @test
+     */
+    public function expandDocumentCollectionWithDuplicateDocumentValidTest()
+    {
+        $documentCollection = $this->getExampleDocumentCollection();
+        array_unshift($documentCollection, $documentCollection[0]);
+        $configuration = new ExpandConfiguration('person', 'people-small', 'email');
+        $this->fixture->expandDocumentCollection($documentCollection, $configuration);
+
+        /** @var DocumentInterface $documentFromCollection */
+        $documentFromCollection = $documentCollection[0];
+        $this->assertEquals(1, count($documentFromCollection->valueForKeyPath('person')));
         $this->assertEquals('spm@cundd.net', $documentFromCollection->valueForKeyPath('person.email'));
     }
 
@@ -251,6 +273,7 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
 
         /** @var DocumentInterface $documentFromCollection */
         $documentFromCollection = $documentCollection[0];
+        $this->assertEquals(1, count($documentFromCollection->valueForKeyPath('person-data')));
         $this->assertEquals('spm@cundd.net', $documentFromCollection->valueForKeyPath('person'));
         $this->assertEquals('spm@cundd.net', $documentFromCollection->valueForKeyPath('person-data.email'));
     }
@@ -268,6 +291,8 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
         $documentFromCollection = $documentCollection[0];
         $this->assertNotNull($documentFromCollection->valueForKeyPath('eyeColor'));
         $this->assertTrue((is_array($documentFromCollection->valueForKeyPath('eyeColor')) || $documentFromCollection->valueForKeyPath('eyeColor') instanceof \Traversable));
+
+        $this->assertEquals(34, count($documentFromCollection->valueForKeyPath('eyeColor')));
 
         $this->assertEquals('brown', $documentFromCollection->valueForKeyPath('eyeColor.0.eyeColor'));
         $this->assertEquals('spm@cundd.net', $documentFromCollection->valueForKeyPath('eyeColor.0.email'));

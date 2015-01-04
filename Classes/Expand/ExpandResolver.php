@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Expand;
 
+use ArrayObject;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\DataAccess\Exception\DataAccessException;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
@@ -18,6 +19,7 @@ use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Filter\Filter;
 use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 use Cundd\PersistentObjectStore\Index\IndexableInterface;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 use SplFixedArray;
 
@@ -114,8 +116,14 @@ class ExpandResolver implements ExpandResolverInterface
         $foreignValueCollection = $this->collectRelatedDocuments(
             $fixedCollection,
             $configuration,
-            $localValueCollection
+            $localValueCollection,
+            $localValuesAreScalar
         );
+
+        if ($localValuesAreScalar) {
+
+        }
+        //$localValueCollection = SplFixedArray::fromArray(array_unique($localValueCollection->toArray()));
 
 
         // Loop through the Documents and expand each one
@@ -124,8 +132,14 @@ class ExpandResolver implements ExpandResolverInterface
             $currentDocument = $fixedCollection[$i];
             $localValue      = $localValueCollection[$i];
 
-            $foreignValue = $this->getValueFromCollection($foreignValueCollection, $configuration, $localValue);
+            //DebugUtility::var_dump($foreignValueCollection->count());
 
+            // If $foreignValueCollection is false or the local value is null the foreign value has to be null
+            if ($foreignValueCollection === false || $localValue === null) {
+                $foreignValue = null;
+            } else {
+                $foreignValue = $this->getValueFromCollection($foreignValueCollection, $configuration, $localValue);
+            }
             ObjectUtility::setValueForKeyPathOfObject($foreignValue, $propertyToSet, $currentDocument);
 
             $success *= (!!$foreignValue);
@@ -136,13 +150,36 @@ class ExpandResolver implements ExpandResolverInterface
     /**
      * Collect the related Documents for the given Documents according to the given configuration
      *
+     * This method has different return types:
+     * 1. ArrayObject: A dictionary is returned with the foreign value as key and an array as value
+     *
+     *  Example:
+     *  ArrayObject(
+     *      'brown' => array(
+     *          ... an array of persons with brown hair
+     *      )
+     *      'green' => array(
+     *          ... an array of persons with brown hair
+     *      )
+     *  )
+     *
+     * 2. FilterResultInterface: A Filter Result with all foreign values
+     *
+     * 3. bool: Returns false if none of the Documents in the collection have a value for the local key from the configuration
+     *
+     *
      * @param SplFixedArray                $fixedCollection
      * @param ExpandConfigurationInterface $configuration
      * @param SplFixedArray                $localValueCollection Reference to be filled with the local values
-     * @return FilterResultInterface
+     * @param bool $localValuesAreScalar Reference to be set to true if all local values are scalar
+     * @return ArrayObject|bool|FilterResultInterface
      */
-    public function collectRelatedDocuments($fixedCollection, $configuration, &$localValueCollection = null)
-    {
+    public function collectRelatedDocuments(
+        $fixedCollection,
+        $configuration,
+        &$localValueCollection = null,
+        &$localValuesAreScalar = true
+    ) {
         // Try to get the Database before checking other values
         try {
             $database = $this->coordinator->getDatabase($configuration->getDatabaseIdentifier());
@@ -155,6 +192,8 @@ class ExpandResolver implements ExpandResolverInterface
         }
 
         // Get all the local values
+        $returnDictionary = true;
+        $didSetAValue     = false;
         $i                    = 0;
         $localKey             = $configuration->getLocalKey();
         $foreignKey           = $configuration->getForeignKey();
@@ -163,24 +202,92 @@ class ExpandResolver implements ExpandResolverInterface
         do {
             $currentDocument = $fixedCollection[$i];
             if (is_array($currentDocument)) {
-                $localValueCollection[$i] = ObjectUtility::valueForKeyPathOfObject($localKey, $currentDocument,
+                $localValue = ObjectUtility::valueForKeyPathOfObject($localKey, $currentDocument,
                     self::NO_VALUE);
             } else {
-                $localValueCollection[$i] = $currentDocument->valueForKeyPath($localKey);
+                $localValue = $currentDocument->valueForKeyPath($localKey);
             }
+
+            // Don't add null or the NO_VALUE to the collection
+            if ($localValue === null || $localValue === self::NO_VALUE) {
+                continue;
+            }
+
+            if (!$didSetAValue) {
+                $didSetAValue = true;
+            }
+
+            // Swap $returnDictionary to false if the local value is no scalar
+            if ($returnDictionary && !is_scalar($localValue)) {
+                $localValuesAreScalar = false;
+                $returnDictionary     = false;
+            }
+
+            $localValueCollection[$i] = $localValue;
+
         } while (++$i < $fixedCollectionCount);
 
+        if (!$didSetAValue) {
+            return false;
+        }
 
         // Get the Documents from the Database that match the values
-        return $database->filter(
-            new PropertyComparison($foreignKey, ComparisonInterface::TYPE_IN, $localValueCollection)
-        );
+        // If the possible values are all of scalar types remove duplicate values
+        if ($localValuesAreScalar) {
+            $possibleValueCollection = SplFixedArray::fromArray(array_unique($localValueCollection->toArray()));
+        } else {
+            $possibleValueCollection = $localValueCollection;
+        }
+
+        $filter       = new Filter(new PropertyComparison(
+            $foreignKey,
+            ComparisonInterface::TYPE_IN,
+            $possibleValueCollection
+        ));
+        $filterResult = $filter->filterCollection($database);
+        if (!$returnDictionary) {
+            return $filterResult;
+        }
+        return $this->transformFilterResultToDictionaryWithKey($filterResult, $foreignKey);
     }
 
     /**
-     * @param DatabaseInterface|FilterResultInterface $collection
-     * @param ExpandConfigurationInterface            $configuration
-     * @param mixed                                   $localValue
+     * Transforms the given Filter Result into a dictionary
+     *
+     * @param FilterResultInterface $filterResult Filter Result to transform
+     * @param string                $key          Property of the Filter Result's Documents that will be used a key for the dictionary
+     * @return ArrayObject
+     */
+    protected function transformFilterResultToDictionaryWithKey($filterResult, $key)
+    {
+        $i                      = 0;
+        $dictionary             = new ArrayObject();
+        $fixedFilterResult      = $filterResult->toFixedArray();
+        $fixedFilterResultCount = $fixedFilterResult->count();
+        if ($fixedFilterResultCount === 0) {
+            return $dictionary;
+        }
+        do {
+            $currentDocument = $fixedFilterResult[$i];
+            if (!$currentDocument instanceof DocumentInterface) {
+                throw new ExpandException(
+                    sprintf(
+                        'Value expected to be a Document %s given',
+                        is_object($currentDocument) ? get_class($currentDocument) : gettype($currentDocument)
+                    ),
+                    1420290151
+                );
+            }
+            //$filterResultAsDictionary[$currentDocument->valueForKeyPath($key)] = $currentDocument;
+            $dictionary[$currentDocument->valueForKeyPath($key)][] = $currentDocument;
+        } while (++$i < $fixedFilterResultCount);
+        return $dictionary;
+    }
+
+    /**
+     * @param DatabaseInterface|FilterResultInterface|array $collection
+     * @param ExpandConfigurationInterface                  $configuration
+     * @param mixed                                         $localValue
      * @return mixed
      */
     protected function getValueFromCollection($collection, $configuration, $localValue)
@@ -190,16 +297,22 @@ class ExpandResolver implements ExpandResolverInterface
         // If a local value is found, look for the best search method for the foreign key and local value
         if ($localValue === null || $localValue === self::NO_VALUE) {
             $foreignValue = null;
-        } elseif ($foreignKey === Constants::DATA_ID_KEY) {
+        } elseif (is_scalar($localValue) && $collection instanceof ArrayObject) {
+            $foreignValue = $collection->offsetExists($localValue) ? $collection[$localValue] : null;
+        } elseif (is_scalar($localValue) && is_array($collection) && isset($collection[$localValue])) {
+            $foreignValue = $collection[$localValue];
+        } elseif ($foreignKey === Constants::DATA_ID_KEY && $collection instanceof DatabaseInterface) {
             $foreignValue = $collection->findByIdentifier($localValue);
         } elseif ($collection instanceof IndexableInterface
             && $collection->hasIndexesForValueOfProperty($localValue, $foreignKey)
         ) {
             $foreignValue = $collection->queryIndexesForValueOfProperty($localValue, $foreignKey);
-        } else {
-            $filter       = new Filter(
-                new PropertyComparison($foreignKey, ComparisonInterface::TYPE_EQUAL_TO, $localValue)
-            );
+        } elseif ($collection) {
+            $filter = new Filter(new PropertyComparison(
+                $foreignKey,
+                ComparisonInterface::TYPE_EQUAL_TO,
+                $localValue
+            ));
             $foreignValue = $filter->filterCollection($collection);
 
             // If expand to many is not defined only the first result has to be queried
@@ -208,11 +321,16 @@ class ExpandResolver implements ExpandResolverInterface
             } else {
                 return $foreignValue->toFixedArray();
             }
+        } elseif (is_array($collection) && empty($collection)) { // If empty array
+            return null;
+        } else {
+            DebugUtility::var_dump($collection);
+            throw new ExpandException('No collection given', 1420290357);
         }
 
         // Check if many objects are expected
         if ($configuration->getExpandToMany()) {
-            if (!$foreignValue instanceof \Traversable) {
+            if (!$foreignValue instanceof \Traversable && !is_array($foreignValue)) {
                 $foreignValue = array($foreignValue);
                 return $foreignValue;
             }
@@ -222,9 +340,10 @@ class ExpandResolver implements ExpandResolverInterface
                 $foreignValue = $foreignValue[0];
                 return $foreignValue;
             } else {
-                $foreignValue = null;
-                return $foreignValue;
+                return null;
             }
+        } elseif (is_array($foreignValue)) {
+            return reset($foreignValue);
         }
         return $foreignValue;
     }
