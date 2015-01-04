@@ -57,7 +57,6 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         $document2HostName   = 'web01.my-servers.local';
         $documentIdentifier2 = md5($document2HostName);
 
-//		$expectedPath         = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
         $expectedPath = __DIR__ . '/../../var/Data/' . $databaseIdentifier . '.json';
 
         $testDocument1 = array(
@@ -221,8 +220,6 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         $this->assertEmpty($response);
 
 
-//		$this->assertFileExists($expectedPath);
-
         // Delete the database
         $response = $this->_performRestRequest($databaseIdentifier, 'DELETE');
         $this->assertArrayHasKey('message', $response);
@@ -266,7 +263,6 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         $this->assertNotEquals(false, $response);
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
-//		$this->assertFileExists($expectedPath);
 
 
         // Create Documents
@@ -297,12 +293,6 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         // List Documents in that database
         $response = $this->_performRestRequest($databaseIdentifier);
         $this->assertNotEmpty($response);
-//		$responseFirstDocument = $response[0];
-//		$this->assertEquals($testDocument['id'], $responseFirstDocument['id']);
-//		$this->assertEquals($testDocument['name'], $responseFirstDocument['name']);
-//		$this->assertEquals($testDocument['ip'], $responseFirstDocument['ip']);
-//		$this->assertEquals($testDocument['os'], $responseFirstDocument['os']);
-
 
         // Delete the database
         $response = $this->_performRestRequest($databaseIdentifier, 'DELETE');
