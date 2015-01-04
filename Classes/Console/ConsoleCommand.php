@@ -81,23 +81,8 @@ class ConsoleCommand extends Command
             $subCommand   = array_shift($commandParts);
             $this->executeSubCommand($subCommand, $commandParts, $output);
 
-
             $output->write('> ');
-            #readline_add_history($line);
         }
-        #stream_get_line( resource $handle , int $length [, string $ending ] )
-//		$name = $input->getArgument('name');
-//		if ($name) {
-//			$text = 'Hello ' . $name;
-//		} else {
-//			$text = 'Hello';
-//		}
-//
-//		if ($input->getOption('yell')) {
-//			$text = strtoupper($text);
-//		}
-//
-//		$output->writeln($text);
     }
 
 
