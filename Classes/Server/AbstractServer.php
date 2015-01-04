@@ -580,6 +580,4 @@ abstract class AbstractServer implements ServerInterface
      * Create and configure the server objects
      */
     abstract protected function setupServer();
-
-
 }
