@@ -134,7 +134,7 @@ class RestServer extends AbstractServer
      */
     public function getHandlerForRequest(Request $request)
     {
-        return $this->diContainer->get('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface');
+        return $this->diContainer->get(RequestInfoFactory::getHandlerClassForRequest($request));
     }
 
     /**
