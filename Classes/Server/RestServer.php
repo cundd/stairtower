@@ -71,49 +71,41 @@ class RestServer extends AbstractServer
         }
 
         try {
+            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+            // SERVER ACTION
+            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
             $serverAction = RequestInfoFactory::getServerActionForRequest($request);
             if ($serverAction) { // Handle a very special server action
                 $this->handleServerAction($serverAction, $request, $response);
                 return;
             }
+            $handler     = $this->getHandlerForRequest($request);
+            $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
 
 
-            $delayedRequest       = false;
-            $handler              = $this->getHandlerForRequest($request);
-            $requestInfo          = RequestInfoFactory::buildRequestInfoFromRequest($request);
+            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+            // SPECIAL HANDLER ACTION
+            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
             $specialHandlerAction = RequestInfoFactory::getHandlerActionForRequest($request);
-
-            $requestResult = false;
-
             if ($specialHandlerAction) { // Handle a special handler action
                 $requestResult = call_user_func(array($handler, $specialHandlerAction), $requestInfo);
-            } elseif (!$requestInfo->getDatabaseIdentifier()) { // Show the welcome message
-                $requestResult = $handler->noRoute($requestInfo);
-            } else { // Run normal methods
-                $method = $request->getMethod();
-
-                switch ($method) {
-                    case 'POST':
-                    case 'PUT':
-                        $delayedRequest = true;
-                        $this->waitForBodyAndPerformAction($request, $response, $requestInfo);
-                        break;
-
-                    case 'GET':
-                        $requestResult = $handler->read($requestInfo);
-                        break;
-
-                    case 'DELETE':
-                        $requestResult = $handler->delete($requestInfo);
-                        break;
-
-                    default:
-                        $requestResult = new HandlerResult(405,
-                            new InvalidRequestMethodException(sprintf('Request method "%s" not valid', $method)),
-                            1413033763);
-                }
             }
-            if (!$delayedRequest) {
+
+            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+            // NO ROUTE ACTION
+            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+            elseif (!$requestInfo->getDatabaseIdentifier()) { // Show the welcome message
+                $requestResult = $handler->noRoute($requestInfo);
+            }
+
+            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+            // STANDARD ACTION
+            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+            else {
+                $requestResult = $this->handleStandardAction($request, $response);
+            }
+
+            if ($requestResult) {
                 $this->handleResult($requestResult, $request, $response);
             }
         } catch (LogicException $exception) {
@@ -255,6 +247,44 @@ class RestServer extends AbstractServer
         } else {
             throw new \UnexpectedValueException('Handler result is of type ' . gettype($result), 1413210970);
         }
+    }
+
+    /**
+     * Handles the given standard action
+     *
+     * @param \React\Http\Request  $request
+     * @param \React\Http\Response $response
+     * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
+     */
+    public function handleStandardAction($request, $response)
+    {
+        $requestResult = null;
+        $method        = $request->getMethod();
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest($request);
+
+        switch ($method) {
+            case 'POST':
+            case 'PUT':
+                $this->waitForBodyAndPerformAction($request, $response, $requestInfo);
+                break;
+
+            case 'GET':
+                $handler       = $this->getHandlerForRequest($request);
+                $requestResult = $handler->read($requestInfo);
+                break;
+
+            case 'DELETE':
+                $handler       = $this->getHandlerForRequest($request);
+                $requestResult = $handler->delete($requestInfo);
+                break;
+
+            default:
+                $requestResult = new HandlerResult(
+                    405,
+                    new InvalidRequestMethodException(sprintf('Request method "%s" not valid', $method), 1413033763)
+                );
+        }
+        return $requestResult;
     }
 
     /**
