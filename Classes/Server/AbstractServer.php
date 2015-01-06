@@ -86,7 +86,7 @@ abstract class AbstractServer implements ServerInterface
      *
      * @var bool
      */
-    protected $_isRunning = false;
+    protected $isRunningFlag = false;
 
     /**
      * Servers start time
@@ -182,7 +182,7 @@ abstract class AbstractServer implements ServerInterface
      */
     public function setIp($ip)
     {
-        if ($this->_isRunning) {
+        if ($this->isRunningFlag) {
             throw new InvalidServerChangeException('Can not change IP when server is running', 1412956590);
         }
         $this->ip = $ip;
@@ -207,7 +207,7 @@ abstract class AbstractServer implements ServerInterface
      */
     public function setPort($port)
     {
-        if ($this->_isRunning) {
+        if ($this->isRunningFlag) {
             throw new InvalidServerChangeException('Can not change port when server is running', 1412956591);
         }
         $this->port = $port;
@@ -347,7 +347,7 @@ abstract class AbstractServer implements ServerInterface
      */
     public function isRunning()
     {
-        return $this->_isRunning;
+        return $this->isRunningFlag;
     }
 
     /**
@@ -370,9 +370,9 @@ abstract class AbstractServer implements ServerInterface
         $this->prepareEventLoop();
         $this->setupServer();
         $this->startTime  = new DateTime();
-        $this->_isRunning = true;
+        $this->isRunningFlag = true;
         $this->eventLoop->run();
-        $this->_isRunning = false;
+        $this->isRunningFlag = false;
     }
 
     /**
@@ -426,7 +426,7 @@ abstract class AbstractServer implements ServerInterface
      */
     public function setMode($mode)
     {
-        if ($this->_isRunning) {
+        if ($this->isRunningFlag) {
             throw new InvalidServerChangeException('Can not change the mode when server is running', 1414835788);
         }
         $this->mode = $mode;
@@ -474,7 +474,7 @@ abstract class AbstractServer implements ServerInterface
     public function stop()
     {
         $this->getEventLoop()->stop();
-        $this->_isRunning = false;
+        $this->isRunningFlag = false;
     }
 
     /**
@@ -499,7 +499,7 @@ abstract class AbstractServer implements ServerInterface
      */
     public function setEventLoop($eventLoop)
     {
-        if ($this->_isRunning) {
+        if ($this->isRunningFlag) {
             throw new InvalidServerChangeException('Can not change the event loop when server is running', 1412956592);
         }
         $this->eventLoop = $eventLoop;
