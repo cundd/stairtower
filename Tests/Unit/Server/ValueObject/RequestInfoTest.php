@@ -26,9 +26,9 @@ class SpecialApplication
  */
 class RequestInfoTest extends \PHPUnit_Framework_TestCase
 {
-    protected function setUp()
+    public static function setUpBeforeClass()
     {
-        parent::setUp();
+        parent::setUpBeforeClass();
         class_alias('Cundd\\PersistentObjectStore\\Server\\ValueObject\\SpecialApplication',
             'Cundd\\Special\\Application');
     }
