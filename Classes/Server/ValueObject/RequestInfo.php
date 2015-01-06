@@ -56,6 +56,13 @@ class RequestInfo implements Immutable
     protected $specialHandlerAction;
 
     /**
+     * Special controller class name
+     *
+     * @var string
+     */
+    protected $controllerClass;
+
+    /**
      * Create a new RequestInfo object
      *
      * @param Request $request
@@ -63,9 +70,16 @@ class RequestInfo implements Immutable
      * @param string  $databaseIdentifier
      * @param string  $method
      * @param string  $specialHandlerAction
+     * @param string  $controllerClass
      */
-    public function __construct($request, $dataIdentifier, $databaseIdentifier, $method, $specialHandlerAction = null)
-    {
+    public function __construct(
+        $request,
+        $dataIdentifier,
+        $databaseIdentifier,
+        $method,
+        $specialHandlerAction = null,
+        $controllerClass = null
+    ) {
         if ($method) {
             GeneralUtility::assertRequestMethod($method);
         }
@@ -80,6 +94,7 @@ class RequestInfo implements Immutable
         $this->databaseIdentifier   = $databaseIdentifier;
         $this->specialHandlerAction = $specialHandlerAction ?: null;
         $this->request              = $request;
+        $this->controllerClass = $controllerClass ?: null;
     }
 
     /**
@@ -130,6 +145,26 @@ class RequestInfo implements Immutable
     public function getSpecialHandlerAction()
     {
         return $this->specialHandlerAction;
+    }
+
+    /**
+     * Returns the special handler action
+     *
+     * @return string
+     */
+    public function getAction()
+    {
+        return $this->getSpecialHandlerAction();
+    }
+
+    /**
+     * Returns the special controller class name
+     *
+     * @return string
+     */
+    public function getControllerClass()
+    {
+        return $this->controllerClass;
     }
 
     /**

@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
+use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestActionException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use React\Http\Request;
 
@@ -36,12 +37,13 @@ class RequestInfoFactory
         $requestInfoIdentifier = sha1(sprintf('%s-%s-%s', $request->getMethod(), $request->getPath(),
             json_encode($request->getQuery())));
         if (!isset(static::$pathToRequestInfoMap[$requestInfoIdentifier])) {
-            $pathParts          = explode('/', $request->getPath());
-            $pathParts          = array_values(array_filter($pathParts, function ($item) {
+            $pathParts           = explode('/', $request->getPath());
+            $pathParts           = array_values(array_filter($pathParts, function ($item) {
                 return !!$item;
             }));
-            $dataIdentifier     = null;
-            $databaseIdentifier = null;
+            $dataIdentifier      = null;
+            $databaseIdentifier  = null;
+            $controllerClassName = null;
 
             if (count($pathParts) >= 2) {
                 $dataIdentifier = $pathParts[1];
@@ -56,8 +58,16 @@ class RequestInfoFactory
             if ($dataIdentifier && $dataIdentifier[0] === '_') {
                 $dataIdentifier = '';
             }
+
+            $controllerAndActionArray = static::getControllerAndActionForRequest($request);
+            if ($controllerAndActionArray) {
+                list($controllerClassName, $handlerAction) = $controllerAndActionArray;
+
+                $dataIdentifier     = null;
+                $databaseIdentifier = null;
+            }
             static::$pathToRequestInfoMap[$requestInfoIdentifier] = new RequestInfo($request, $dataIdentifier,
-                $databaseIdentifier, $request->getMethod(), $handlerAction);
+                $databaseIdentifier, $request->getMethod(), $handlerAction, $controllerClassName);
         }
         return static::$pathToRequestInfoMap[$requestInfoIdentifier];
     }
@@ -104,6 +114,55 @@ class RequestInfoFactory
             return $handlerName;
         }
         return $default;
+    }
+
+    /**
+     * Get the controller class and action name
+     *
+     * Returns the controller class and action name as array if the path contains a special information identifier. If
+     * no special information identifier is given, or the controller class does not exist false is returned.
+     *
+     * @param Request $request
+     * @return array|boolean
+     */
+    public static function getControllerAndActionForRequest($request)
+    {
+
+        $path = $request->getPath();
+        if (!$path) {
+            return false;
+        }
+        if ($path[0] === '/') {
+            $path = substr($path, 1);
+        }
+        if ($path[0] !== '_') {
+            return false;
+        }
+
+        $pathParts = explode('/', substr($path, 1));
+        if (count($pathParts) < 2) {
+            return false;
+        }
+        list($controllerIdentifier, $actionIdentifier) = $pathParts;
+
+        // Generate the Controller class name
+        $controllerClassName = str_replace(' ', '\\', ucwords(str_replace('_', ' ', $controllerIdentifier)))
+            . 'Controller';
+        if (!class_exists($controllerClassName)) {
+            return false;
+        }
+
+        $method     = $request->getMethod();
+        $actionName = GeneralUtility::underscoreToCamelCase(strtolower($method) . '_' . $actionIdentifier) . 'Action';
+
+        if (!ctype_alnum($actionName)) {
+            throw new InvalidRequestActionException('Action name must be alphanumeric', 1420547305);
+        }
+
+        // Don't check if the action exists here
+        // if (!method_exists($controllerClassName, $actionName)) return false;
+
+        return array($controllerClassName, $actionName);
     }
 
     /**
