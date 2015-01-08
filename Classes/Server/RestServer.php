@@ -242,10 +242,12 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             $controller->willInvokeAction($action);
 
             // Invoke the Controller action
-            $rawResult = call_user_func_array(
-                array($controller, $action),
-                array($requestInfo)
-            );
+            $requestBody = $requestInfo->getBody();
+            if ($requestBody) {
+                $rawResult = call_user_func(array($controller, $action), $requestBody);
+            } else {
+                $rawResult = call_user_func(array($controller, $action));
+            }
 
             // Transform the raw result into a Controller Result if needed
             if ($rawResult instanceof ControllerResultInterface) {
