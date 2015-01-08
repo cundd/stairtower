@@ -129,6 +129,14 @@ interface ServerInterface
     public function getFormatterForRequest(Request $request);
 
     /**
+     * Returns the requested content type
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function getContentTypeForRequest(Request $request);
+
+    /**
      * Returns the handler for the given request
      *
      * @param Request $request

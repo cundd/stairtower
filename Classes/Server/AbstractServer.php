@@ -16,7 +16,6 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
 use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use DateTime;
 use React\EventLoop\Timer\TimerInterface;
@@ -289,6 +288,9 @@ abstract class AbstractServer implements ServerInterface
                 break;
             case 'Cundd\\PersistentObjectStore\\Server\\Exception\\MissingLengthHeaderException':
                 $statusCode = 411;
+                break;
+            case 'Cundd\\PersistentObjectStore\\Server\\Exception\\RequestMethodNotImplementedException':
+                $statusCode = 501;
                 break;
             case 'Cundd\\PersistentObjectStore\\Server\\Exception\\ServerException':
                 $statusCode = 500;

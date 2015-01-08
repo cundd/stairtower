@@ -127,7 +127,6 @@ class RequestInfoFactory
      */
     public static function getControllerAndActionForRequest($request)
     {
-
         $path = $request->getPath();
         if (!$path) {
             return false;
@@ -146,15 +145,22 @@ class RequestInfoFactory
         list($controllerIdentifier, $actionIdentifier) = $pathParts;
 
         // Generate the Controller class name
-        $controllerClassName = str_replace(' ', '\\', ucwords(str_replace('_', ' ', $controllerIdentifier)))
+        $controllerClassName = $controllerIdentifier;
+        $controllerClassName = str_replace(' ', '', ucwords(str_replace('_', ' ', $controllerClassName)));
+        $lastUnderscore      = strrpos($controllerClassName, '-');
+        $controllerClassName = str_replace(' ', '\\', ucwords(str_replace('-', ' ', $controllerClassName)));
+        $controllerClassName = ''
+            . substr($controllerClassName, 0, $lastUnderscore + 1)
+            . 'Controller\\'
+            . ucfirst(substr($controllerClassName, $lastUnderscore + 1))
             . 'Controller';
         if (!class_exists($controllerClassName)) {
             return false;
         }
 
+
         $method     = $request->getMethod();
         $actionName = GeneralUtility::underscoreToCamelCase(strtolower($method) . '_' . $actionIdentifier) . 'Action';
-
         if (!ctype_alnum($actionName)) {
             throw new InvalidRequestActionException('Action name must be alphanumeric', 1420547305);
         }
@@ -234,5 +240,26 @@ class RequestInfoFactory
             return $action;
         }
         return false;
+    }
+
+    /**
+     * Creates a copy of the given Request Info with the given body
+     *
+     * @param RequestInfo $requestInfo
+     * @param mixed       $body
+     * @return RequestInfo
+     */
+    public static function copyWithBody($requestInfo, $body)
+    {
+        return new RequestInfo(
+            $requestInfo->getRequest(),
+            $requestInfo->getDataIdentifier(),
+            $requestInfo->getDatabaseIdentifier(),
+            $requestInfo->getMethod(),
+            $requestInfo->getAction(),
+            $requestInfo->getControllerClass(),
+            $body
+        );
+
     }
 } 

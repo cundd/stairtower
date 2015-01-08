@@ -22,7 +22,7 @@ interface HandlerResultInterface
     public function getStatusCode();
 
     /**
-     * Returns the requests response data
+     * Returns the request's response data
      *
      * @return mixed
      */

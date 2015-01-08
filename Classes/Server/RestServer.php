@@ -11,14 +11,16 @@ namespace Cundd\PersistentObjectStore\Server;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
-use Cundd\PersistentObjectStore\LogicException;
-use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
+use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
+use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestControllerException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
 use Cundd\PersistentObjectStore\Server\Exception\MissingLengthHeaderException;
+use Cundd\PersistentObjectStore\Server\Exception\RequestMethodNotImplementedException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
+use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
@@ -84,11 +86,17 @@ class RestServer extends AbstractServer
 
 
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+            // CONTROLLER ACTION
+            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+            if ($requestInfo->getControllerClass()) {
+                $requestResult = $this->handleControllerAction($request, $response);
+            }
+
+            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
             // SPECIAL HANDLER ACTION
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            $specialHandlerAction = RequestInfoFactory::getHandlerActionForRequest($request);
-            if ($specialHandlerAction) { // Handle a special handler action
-                $requestResult = call_user_func(array($handler, $specialHandlerAction), $requestInfo);
+            elseif ($requestInfo->getAction()) {
+                $requestResult = call_user_func(array($handler, $requestInfo->getAction()), $requestInfo);
             }
 
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
@@ -108,29 +116,13 @@ class RestServer extends AbstractServer
             if ($requestResult) {
                 $this->handleResult($requestResult, $request, $response);
             }
-        } catch (LogicException $exception) {
-            $this->handleError($exception, $request, $response);
-        } catch (RuntimeException $exception) {
-            $this->handleError($exception, $request, $response);
         } catch (\Exception $exception) {
-            $this->writeln('Caught exception #%d: %s', $exception->getCode(), $exception->getMessage());
-            $this->writeln($exception->getTraceAsString());
+            $this->handleError($exception, $request, $response);
         }
     }
 
     /**
-     * Returns the handler for the given request
-     *
-     * @param Request $request
-     * @return HandlerInterface
-     */
-    public function getHandlerForRequest(Request $request)
-    {
-        return $this->diContainer->get(RequestInfoFactory::getHandlerClassForRequest($request));
-    }
-
-    /**
-     * Handles the given standard action
+     * Handles the standard action
      *
      * @param \React\Http\Request  $request
      * @param \React\Http\Response $response
@@ -145,7 +137,7 @@ class RestServer extends AbstractServer
         switch ($method) {
             case 'POST':
             case 'PUT':
-                $this->waitForBodyAndPerformAction($request, $response, $requestInfo);
+            $this->waitForBodyAndPerformHandlerAction($request, $response, $requestInfo);
                 break;
 
             case 'GET':
@@ -168,13 +160,171 @@ class RestServer extends AbstractServer
     }
 
     /**
+     * Handles the given Controller/Action request action
+     *
+     * @param \React\Http\Request  $request
+     * @param \React\Http\Response $response
+     * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
+     */
+    public function handleControllerAction($request, $response)
+    {
+        $self          = $this;
+        $contentLength = 0;
+        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest($request);
+        $controller    = $this->getControllerForRequest($request);
+
+        try {
+            $contentLength = $this->getContentLengthFromRequest($request);
+        } catch (MissingLengthHeaderException $exception) {
+        }
+
+        try {
+            if ($contentLength) {
+                $this->waitForBodyAndPerformCallback(
+                    $request, $response,
+                    function ($request, $requestBody) use ($self, $controller, $requestInfo, $response) {
+                        return $self->invokeControllerActionWithRequestInfo(
+                            $requestInfo, $response, $controller, $requestBody
+                        );
+                    },
+                    true
+                );
+            } else {
+                return $self->invokeControllerActionWithRequestInfo($requestInfo, $response, $controller);
+            }
+        } catch (\Exception $exception) {
+            $this->handleError($exception, $request, $response);
+        }
+        return null;
+    }
+
+    /**
+     * Handles the given Controller/Action request action
+     *
+     * @param RequestInfo $requestInfo
+     * @param Response    $response
+     * @param object      $controller
+     * @param null        $requestBody
+     * @return HandlerResultInterface Returns the Handler Result
+     */
+    public function invokeControllerActionWithRequestInfo($requestInfo, $response, $controller, $requestBody = null)
+    {
+        if (!method_exists($controller, $requestInfo->getAction())) {
+            throw new RequestMethodNotImplementedException(
+                sprintf('Request method %s is not defined', $requestInfo->getAction()),
+                1420551044
+            );
+        }
+
+        $result      = null;
+        $requestInfo = RequestInfoFactory::copyWithBody($requestInfo, $requestBody);
+
+        try {
+            $result = call_user_func_array(
+                array($controller, $requestInfo->getAction()),
+                array($requestInfo)
+            );
+        } catch (\Exception $exception) {
+            $this->writeln('Caught exception #%d: %s', $exception->getCode(), $exception->getMessage());
+            $this->writeln($exception->getTraceAsString());
+            return new ControllerResult(
+                500,
+                sprintf(
+                    'An error occurred while calling controller \'%s\' action \'%s\' %s',
+                    $requestInfo->getControllerClass(),
+                    $requestInfo->getAction(),
+                    $requestInfo->getBody() ? 'with a body' : 'without a body'
+                ),
+                $this->getContentTypeForRequest($requestInfo->getRequest())
+            );
+        }
+
+        if ($result instanceof HandlerResultInterface) {
+            return $result;
+        }
+        return new ControllerResult(200, $result);
+    }
+
+    /**
+     * Handle the given request result
+     *
+     * @param HandlerResultInterface $result
+     * @param Request                $request
+     * @param Response               $response
+     */
+    public function handleResult($result, $request, $response)
+    {
+        if ($result instanceof ControllerResultInterface) {
+            $response->writeHead(
+                $result->getStatusCode(),
+                array('Content-Type' => $result->getContentType() . '; charset=utf-8')
+            );
+            $responseData = $result->getData();
+            if ($responseData) {
+                $response->end($responseData);
+            } else {
+                $response->end();
+            }
+
+        } elseif ($result instanceof HandlerResultInterface) {
+            $formatter = $this->getFormatterForRequest($request);
+            $response->writeHead(
+                $result->getStatusCode(),
+                array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
+            );
+            $responseData = $result->getData();
+            if ($responseData) {
+                $response->end($formatter->format($responseData));
+            } else {
+                $response->end();
+            }
+
+        } elseif ($result === null) {
+            $formatter = $this->getFormatterForRequest($request);
+            $response->writeHead(
+                204,
+                array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
+            );
+            $response->end($formatter->format('No content'));
+        } else {
+            throw new \UnexpectedValueException('Handler result is of type ' . gettype($result), 1413210970);
+        }
+    }
+
+    /**
      * Waits for the total request body and performs the needed action
      *
      * @param Request     $request
      * @param Response    $response
      * @param RequestInfo $requestInfo
      */
-    public function waitForBodyAndPerformAction($request, $response, $requestInfo)
+    public function waitForBodyAndPerformHandlerAction($request, $response, $requestInfo)
+    {
+        $self = $this;
+        $this->waitForBodyAndPerformCallback(
+            $request, $response, function ($request, $requestBodyParsed) use ($requestInfo, $self) {
+            /** @var Request $request */
+            if ($request->getMethod() === 'PUT' && $requestInfo->getDataIdentifier()) {
+                $requestResult = $self->getHandlerForRequest($request)->update($requestInfo,
+                    $requestBodyParsed);
+            } else {
+                $requestResult = $self->getHandlerForRequest($request)->create($requestInfo,
+                    $requestBodyParsed);
+            }
+            return $requestResult;
+        }, false
+        );
+    }
+
+    /**
+     * Waits for the total request body and performs the needed action
+     *
+     * @param Request  $request      Incoming request
+     * @param Response $response     Outgoing response to write the result to
+     * @param Callback $callback     Callback to invoke
+     * @param bool     $allowRawBody If set to true Body Parser exceptions will be ignored
+     */
+    public function waitForBodyAndPerformCallback($request, $response, $callback, $allowRawBody)
     {
         $self = $this;
 
@@ -189,25 +339,35 @@ class RestServer extends AbstractServer
                 &$requestBody,
                 &$receivedData,
                 $contentLength,
-                $requestInfo
+                $callback,
+                $allowRawBody
             ) {
                 try {
                     $requestBody .= $data;
                     $receivedData += strlen($data);
                     if ($receivedData >= $contentLength) {
+
                         $requestBodyParsed = null;
+                        if ($allowRawBody) {
+                            $requestBodyParsed = $requestBody;
+                        }
                         if ($requestBody) {
-                            $requestBodyParsed = $self->getBodyParserForRequest($request)->parse($requestBody,
-                                $request);
+                            try {
+                                $requestBodyParsed = $self->getBodyParserForRequest($request)->parse(
+                                    $requestBody,
+                                    $request
+                                );
+                            } catch (InvalidBodyException $parserException) {
+                                if (!$allowRawBody) {
+                                    throw $parserException;
+                                }
+                            }
                         }
-                        if ($request->getMethod() === 'PUT' && $requestInfo->getDataIdentifier()) {
-                            $requestResult = $self->getHandlerForRequest($request)->update($requestInfo,
-                                $requestBodyParsed);
-                        } else {
-                            $requestResult = $self->getHandlerForRequest($request)->create($requestInfo,
-                                $requestBodyParsed);
+
+                        $requestResult = $callback($request, $requestBodyParsed);
+                        if ($requestResult !== null) {
+                            $self->handleResult($requestResult, $request, $response);
                         }
-                        $self->handleResult($requestResult, $request, $response);
                     }
                 } catch (\Exception $exception) {
                     $this->handleError($exception, $request, $response);
@@ -234,6 +394,17 @@ class RestServer extends AbstractServer
     }
 
     /**
+     * Returns the handler for the given request
+     *
+     * @param Request $request
+     * @return HandlerInterface
+     */
+    public function getHandlerForRequest(Request $request)
+    {
+        return $this->diContainer->get(RequestInfoFactory::getHandlerClassForRequest($request));
+    }
+
+    /**
      * Returns the body parser for the given request
      *
      * @param Request $request
@@ -255,36 +426,18 @@ class RestServer extends AbstractServer
     }
 
     /**
-     * Handle the given request result
+     * Returns the requested content type
      *
-     * @param HandlerResultInterface $result
-     * @param Request                $request
-     * @param Response               $response
+     * @param Request $request
+     * @return string
      */
-    public function handleResult($result, $request, $response)
+    public function getContentTypeForRequest(Request $request)
     {
-        $formatter = $this->getFormatterForRequest($request);
-        if ($result instanceof HandlerResultInterface) {
-            $response->writeHead(
-                $result->getStatusCode(),
-                array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
-            );
-            $responseData = $result->getData();
-            if ($responseData) {
-                $response->end($formatter->format($result->getData()));
-            } else {
-                $response->end();
-            }
-
-        } elseif ($result === null) {
-            $response->writeHead(
-                204,
-                array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
-            );
-            $response->end($formatter->format('No content'));
-        } else {
-            throw new \UnexpectedValueException('Handler result is of type ' . gettype($result), 1413210970);
+        try {
+            return RequestInfoFactory::buildRequestInfoFromRequest($request)->getContentType();
+        } catch (\Exception $exception) {
         }
+        return ContentType::JSON_APPLICATION;
     }
 
     /**
@@ -295,30 +448,47 @@ class RestServer extends AbstractServer
      */
     public function getFormatterForRequest(Request $request)
     {
-        $headers = $request->getHeaders();
-        $accept  = '*/*';
-        if (isset($headers['Accept'])) {
-            $accept = $headers['Accept'];
-        }
-
-        $acceptedTypes = explode(',', $accept);
-        $json          = array_search('application/json', $acceptedTypes);
-        $html          = array_search('text/html', $acceptedTypes);
-        if ($json === false) {
-            $json = 1000;
-        }
-        if ($html === false) {
-            $html = 1000;
-        }
-        if ($json < $html) {
-            $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter';
-        } elseif ($html < $json) {
-            // TODO: implement the XmlFormatter
+        if ($this->getContentTypeForRequest($request) === ContentType::XML_TEXT) {
             $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\XmlFormatter';
         } else {
             $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter';
         }
         return $this->diContainer->get($formatter);
+    }
+
+    /**
+     * Returns the Controller instance for hte given request or false if none will be used
+     *
+     * @param Request $request
+     * @return object
+     */
+    public function getControllerForRequest($request)
+    {
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+        if (!$requestInfo->getControllerClass()) {
+            return false;
+        }
+        $controller = $this->diContainer->get($requestInfo->getControllerClass());
+        if (!$controller) {
+            throw new InvalidRequestControllerException(
+                sprintf(
+                    'Could not get valid controller implementation for class "%s"',
+                    $requestInfo->getControllerClass()
+                ),
+                1420584056
+            );
+        }
+
+        if (method_exists($controller, 'initialize')) {
+            $controller->initialize();
+        }
+        if (method_exists($controller, 'setRequest')) {
+            $controller->setRequest($request);
+        }
+        if (method_exists($controller, 'setRequestInfo')) {
+            $controller->setRequestInfo($requestInfo);
+        }
+        return $controller;
     }
 
     /**

@@ -304,6 +304,17 @@ class DummyServer implements ServerInterface
     }
 
     /**
+     * Returns the requested content type
+     *
+     * @param Request $request
+     * @return string
+     */
+    public function getContentTypeForRequest(Request $request)
+    {
+        return ContentType::JSON_APPLICATION;
+    }
+
+    /**
      * Returns the body parser for the given request
      *
      * @param Request $request

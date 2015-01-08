@@ -43,7 +43,7 @@ class HandlerResult implements HandlerResultInterface, Immutable
 
 
     /**
-     * Returns the requests response data
+     * Returns the request's response data
      *
      * @return mixed
      */

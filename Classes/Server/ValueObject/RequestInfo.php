@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
 use Cundd\PersistentObjectStore\Immutable;
+use Cundd\PersistentObjectStore\Server\ContentType;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use React\Http\Request;
 
@@ -49,6 +50,13 @@ class RequestInfo implements Immutable
     protected $request;
 
     /**
+     * Request body
+     *
+     * @var mixed
+     */
+    protected $body;
+
+    /**
      * A special handler action that is implemented in the handler
      *
      * @var string
@@ -71,6 +79,7 @@ class RequestInfo implements Immutable
      * @param string  $method
      * @param string  $specialHandlerAction
      * @param string  $controllerClass
+     * @param null    $body
      */
     public function __construct(
         $request,
@@ -78,7 +87,8 @@ class RequestInfo implements Immutable
         $databaseIdentifier,
         $method,
         $specialHandlerAction = null,
-        $controllerClass = null
+        $controllerClass = null,
+        $body = null
     ) {
         if ($method) {
             GeneralUtility::assertRequestMethod($method);
@@ -95,7 +105,19 @@ class RequestInfo implements Immutable
         $this->specialHandlerAction = $specialHandlerAction ?: null;
         $this->request              = $request;
         $this->controllerClass = $controllerClass ?: null;
+        $this->body = $body ?: null;
     }
+
+    /**
+     * Returns the request body
+     *
+     * @return mixed
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
 
     /**
      * Returns the original request
@@ -185,6 +207,44 @@ class RequestInfo implements Immutable
     public function isReadRequest()
     {
         return $this->method === 'GET' || $this->method === 'HEAD';
+    }
+
+    /**
+     * Returns the requested content type
+     *
+     * @return string
+     */
+    public function getContentType()
+    {
+        $request = $this->getRequest();
+        if (!$request instanceof Request) {
+            return ContentType::JSON_APPLICATION;
+        }
+        $headers = $this->getRequest()->getHeaders();
+        $accept  = '*/*';
+        if (isset($headers['Accept'])) {
+            $accept = $headers['Accept'];
+        }
+
+        $acceptedTypes = explode(',', $accept);
+        $sorting       = array(
+            ContentType::JSON_APPLICATION => array_search('application/json', $acceptedTypes),
+            ContentType::HTML_TEXT        => array_search('text/html', $acceptedTypes),
+            ContentType::XML_TEXT         => array_search('text/xml', $acceptedTypes),
+        );
+
+        if ($sorting[ContentType::JSON_APPLICATION] === false) {
+            $sorting[ContentType::JSON_APPLICATION] = 1000;
+        }
+        if ($sorting[ContentType::HTML_TEXT] === false) {
+            $sorting[ContentType::HTML_TEXT] = 1010;
+        }
+        if ($sorting[ContentType::XML_TEXT] === false) {
+            $sorting[ContentType::XML_TEXT] = 1020;
+        }
+        $sorting = array_flip($sorting);
+        ksort($sorting);
+        return reset($sorting);
     }
 
 

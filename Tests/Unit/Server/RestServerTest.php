@@ -79,7 +79,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
         // Get the welcome message
         $response = $this->_performRestRequest('');
-        $this->assertNotEquals(false, $response);
+        $this->assertNotEquals(false, $response, 'Get the welcome message');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(Constants::MESSAGE_JSON_WELCOME, $response['message']);
 
@@ -92,14 +92,14 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
         // Create a database
         $response = $this->_performRestRequest($databaseIdentifier, 'PUT');
-        $this->assertNotEquals(false, $response);
+        $this->assertNotEquals(false, $response, 'Create the Database');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
 
 
         // List all Databases
         $response = $this->_performRestRequest('_all_dbs');
-        $this->assertNotEquals(false, $response);
+        $this->assertNotEquals(false, $response, 'List all Databases');
         $this->assertTrue(in_array($this->databaseIdentifier, $response));
 
 
