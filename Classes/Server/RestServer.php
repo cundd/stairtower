@@ -12,6 +12,7 @@ use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
+use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestControllerException;
@@ -183,6 +184,7 @@ class RestServer extends AbstractServer
                 $this->waitForBodyAndPerformCallback(
                     $request, $response,
                     function ($request, $requestBody) use ($self, $controller, $requestInfo, $response) {
+                        $requestInfo = RequestInfoFactory::copyWithBody($requestInfo, $requestBody);
                         return $self->invokeControllerActionWithRequestInfo(
                             $requestInfo, $response, $controller, $requestBody
                         );
@@ -203,11 +205,10 @@ class RestServer extends AbstractServer
      *
      * @param RequestInfo $requestInfo
      * @param Response    $response
-     * @param object      $controller
-     * @param null        $requestBody
+     * @param ControllerInterface $controller
      * @return HandlerResultInterface Returns the Handler Result
      */
-    public function invokeControllerActionWithRequestInfo($requestInfo, $response, $controller, $requestBody = null)
+    public function invokeControllerActionWithRequestInfo($requestInfo, $response, $controller)
     {
         if (!method_exists($controller, $requestInfo->getAction())) {
             throw new RequestMethodNotImplementedException(
@@ -217,13 +218,33 @@ class RestServer extends AbstractServer
         }
 
         $result      = null;
-        $requestInfo = RequestInfoFactory::copyWithBody($requestInfo, $requestBody);
+        $action = $requestInfo->getAction();
 
         try {
-            $result = call_user_func_array(
-                array($controller, $requestInfo->getAction()),
+            // Prepare the Controller for the current request
+            $controller->initialize();
+            $controller->setRequestInfo($requestInfo);
+            $controller->willInvokeAction($action);
+
+            // Invoke the Controller action
+            $rawResult = call_user_func_array(
+                array($controller, $action),
                 array($requestInfo)
             );
+
+            // Transform the raw result into a Controller Result if needed
+            if ($rawResult instanceof ControllerResultInterface) {
+                $result = $rawResult;
+            } elseif ($rawResult instanceof HandlerResultInterface) {
+                $result = new ControllerResult(
+                    $rawResult->getStatusCode(),
+                    $rawResult->getData()
+                );
+            } else {
+                $result = new ControllerResult(200, $rawResult);
+            }
+            $controller->didInvokeAction($action, $result);
+
         } catch (\Exception $exception) {
             $this->writeln('Caught exception #%d: %s', $exception->getCode(), $exception->getMessage());
             $this->writeln($exception->getTraceAsString());
@@ -238,11 +259,7 @@ class RestServer extends AbstractServer
                 $this->getContentTypeForRequest($requestInfo->getRequest())
             );
         }
-
-        if ($result instanceof HandlerResultInterface) {
-            return $result;
-        }
-        return new ControllerResult(200, $result);
+        return $result;
     }
 
     /**
@@ -457,10 +474,10 @@ class RestServer extends AbstractServer
     }
 
     /**
-     * Returns the Controller instance for hte given request or false if none will be used
+     * Returns the Controller instance for the given request or false if none will be used
      *
      * @param Request $request
-     * @return object
+     * @return ControllerInterface
      */
     public function getControllerForRequest($request)
     {
@@ -479,14 +496,11 @@ class RestServer extends AbstractServer
             );
         }
 
-        if (method_exists($controller, 'initialize')) {
-            $controller->initialize();
-        }
-        if (method_exists($controller, 'setRequest')) {
-            $controller->setRequest($request);
-        }
-        if (method_exists($controller, 'setRequestInfo')) {
-            $controller->setRequestInfo($requestInfo);
+        if (!$controller instanceof ControllerInterface) {
+            throw new InvalidRequestControllerException(
+                'Detected controller is not an instance of Cundd\\PersistentObjectStore\\Server\\Controller\\ControllerInterface',
+                1420712698
+            );
         }
         return $controller;
     }
