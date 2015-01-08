@@ -137,6 +137,9 @@ class RequestInfoFactory
         if ($path[0] !== '_') {
             return false;
         }
+        if (strpos($path, '-') === false) {
+            return false;
+        }
 
         $pathParts = explode('/', substr($path, 1));
         if (count($pathParts) < 2) {
