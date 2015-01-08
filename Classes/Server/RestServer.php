@@ -14,6 +14,10 @@ use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
+use Cundd\PersistentObjectStore\Server\Dispatcher\ControllerActionDispatcherInterface;
+use Cundd\PersistentObjectStore\Server\Dispatcher\ServerActionDispatcherInterface;
+use Cundd\PersistentObjectStore\Server\Dispatcher\SpecialHandlerActionDispatcherInterface;
+use Cundd\PersistentObjectStore\Server\Dispatcher\StandardActionDispatcherInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestControllerException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
@@ -38,7 +42,7 @@ use React\Stream\BufferedSink;
  *
  * @package Cundd\PersistentObjectStore
  */
-class RestServer extends AbstractServer
+class RestServer extends AbstractServer implements StandardActionDispatcherInterface, SpecialHandlerActionDispatcherInterface, ServerActionDispatcherInterface, ControllerActionDispatcherInterface
 {
     /**
      * Port number to listen on
@@ -82,7 +86,6 @@ class RestServer extends AbstractServer
                 $this->handleServerAction($serverAction, $request, $response);
                 return;
             }
-            $handler     = $this->getHandlerForRequest($request);
             $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
 
 
@@ -90,28 +93,21 @@ class RestServer extends AbstractServer
             // CONTROLLER ACTION
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
             if ($requestInfo->getControllerClass()) {
-                $requestResult = $this->handleControllerAction($request, $response);
+                $requestResult = $this->dispatchControllerAction($request, $response);
             }
 
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
             // SPECIAL HANDLER ACTION
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
             elseif ($requestInfo->getAction()) {
-                $requestResult = call_user_func(array($handler, $requestInfo->getAction()), $requestInfo);
-            }
-
-            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            // NO ROUTE ACTION
-            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            elseif (!$requestInfo->getDatabaseIdentifier()) {
-                $requestResult = $handler->noRoute($requestInfo);
+                $requestResult = $this->dispatchSpecialHandlerAction($request, $response);
             }
 
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
             // STANDARD ACTION
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
             else {
-                $requestResult = $this->handleStandardAction($request, $response);
+                $requestResult = $this->dispatchStandardAction($request, $response);
             }
 
             if ($requestResult) {
@@ -123,17 +119,22 @@ class RestServer extends AbstractServer
     }
 
     /**
-     * Handles the standard action
+     * Dispatches the standard action
      *
      * @param \React\Http\Request  $request
      * @param \React\Http\Response $response
      * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
      */
-    public function handleStandardAction($request, $response)
+    public function dispatchStandardAction($request, $response)
     {
         $requestResult = null;
         $method        = $request->getMethod();
         $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest($request);
+
+        // The No Route action
+        if (!$requestInfo->getDatabaseIdentifier()) {
+            return $this->getHandlerForRequest($request)->noRoute($requestInfo);
+        }
 
         switch ($method) {
             case 'POST':
@@ -161,13 +162,13 @@ class RestServer extends AbstractServer
     }
 
     /**
-     * Handles the given Controller/Action request action
+     * Dispatches the given Controller/Action request action
      *
      * @param \React\Http\Request  $request
      * @param \React\Http\Response $response
-     * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
+     * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
      */
-    public function handleControllerAction($request, $response)
+    public function dispatchControllerAction($request, $response)
     {
         $self          = $this;
         $contentLength = 0;
@@ -201,12 +202,26 @@ class RestServer extends AbstractServer
     }
 
     /**
+     * Dispatches the given Controller/Action request action
+     *
+     * @param \React\Http\Request  $request
+     * @param \React\Http\Response $response
+     * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
+     */
+    public function dispatchSpecialHandlerAction($request, $response)
+    {
+        $handler     = $this->getHandlerForRequest($request);
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+        return call_user_func(array($handler, $requestInfo->getAction()), $requestInfo);
+    }
+
+    /**
      * Handles the given Controller/Action request action
      *
      * @param RequestInfo $requestInfo
      * @param Response    $response
      * @param ControllerInterface $controller
-     * @return HandlerResultInterface Returns the Handler Result
+     * @return ControllerResultInterface Returns the Handler Result
      */
     public function invokeControllerActionWithRequestInfo($requestInfo, $response, $controller)
     {
@@ -260,6 +275,18 @@ class RestServer extends AbstractServer
             );
         }
         return $result;
+    }
+
+    /**
+     * Dispatches the given server action
+     *
+     * @param string               $serverAction
+     * @param \React\Http\Request  $request
+     * @param \React\Http\Response $response
+     */
+    public function dispatchServerAction($serverAction, $request, $response)
+    {
+        $this->handleServerAction($serverAction, $request, $response);
     }
 
     /**
