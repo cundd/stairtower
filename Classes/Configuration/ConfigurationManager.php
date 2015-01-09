@@ -54,6 +54,8 @@ class ConfigurationManager implements ConfigurationManagerInterface
         $varPath  = $basePath . 'var/';
         return array(
             'basePath'      => $basePath,
+            'binPath'    => $basePath . 'bin/',
+            'phpBinPath' => $this->getPhpBinaryPath(),
             'dataPath'      => $varPath . 'Data/',
             'writeDataPath' => $varPath . 'Data/',
             'lockPath'      => $varPath . 'Lock/',
@@ -78,6 +80,20 @@ class ConfigurationManager implements ConfigurationManagerInterface
             $basePath = (realpath(__DIR__ . '/../../') ?: __DIR__ . '/../..') . '/';
         }
         return $basePath;
+    }
+
+    /**
+     * Returns PHP's binary path
+     *
+     * @return string
+     */
+    public function getPhpBinaryPath()
+    {
+        $phpBinPath = defined('PHP_BINARY') ? PHP_BINARY : PHP_BINDIR . '/php';
+        if (defined('HHVM_VERSION')) {
+            $phpBinPath = (false !== ($hhvm = getenv('PHP_BINARY')) ? $hhvm : PHP_BINARY) . ' --php';
+        }
+        return $phpBinPath;
     }
 
     /**

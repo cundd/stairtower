@@ -354,13 +354,11 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
     protected function _startServer($autoShutdownTime = 7)
     {
         // Start the server
-        $serverBinPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('basePath') . 'bin/server';
-        $phpBinPath    = defined('PHP_BINARY') ? PHP_BINARY : PHP_BINDIR . '/php';
-        if (defined('HHVM_VERSION')) {
-            $phpBinPath = (false !== ($hhvm = getenv('PHP_BINARY')) ? $hhvm : PHP_BINARY) . ' --php';
-        }
-        $phpIniFile    = php_ini_loaded_file();
-        $commandParts  = array(
+        $configurationManager = ConfigurationManager::getSharedInstance();
+        $serverBinPath        = $configurationManager->getConfigurationForKeyPath('binPath') . 'server';
+        $phpBinPath           = $configurationManager->getConfigurationForKeyPath('phpBinPath');
+        $phpIniFile           = php_ini_loaded_file();
+        $commandParts         = array(
             $phpBinPath,
             $phpIniFile ? '-c' . $phpIniFile : '',
             escapeshellcmd(sprintf('"%s"', $serverBinPath)), //

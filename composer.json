@@ -6,8 +6,9 @@
     "require": {
         "react/react": "0.4.*",
 		"mnapoli/php-di": "~4.0",
-        "symfony/console": "2.5.5",
-        "monolog/monolog": "1.11.0"
+        "symfony/console": "2.6",
+        "monolog/monolog": "1.11.0",
+        "symfony/process": "2.6"
     },
 	"require-dev": {
         "doctrine/dbal": "~2.4",
