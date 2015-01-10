@@ -65,6 +65,9 @@ class StartCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        // Disable PHP's time limit
+        set_time_limit(0);
+
         $configurationManager = ConfigurationManager::getSharedInstance();
         $serverBinPath        = $configurationManager->getConfigurationForKeyPath('binPath') . 'server';
         $phpBinPath           = $configurationManager->getConfigurationForKeyPath('phpBinPath');
