@@ -736,6 +736,230 @@ class RequestInfoTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
+
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET',
+            '/_cundd-test-application/my_method/my-database/data-identifier'));
+        $this->assertEquals('GET', $requestInfo->getMethod());
+        $this->assertTrue($requestInfo->isReadRequest());
+        $this->assertFalse($requestInfo->isWriteRequest());
+        $this->assertEquals('Cundd\\Test\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('getMyMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('getMyMethodAction', $requestInfo->getAction());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('HEAD',
+            '/_cundd-test-application/my_method/my-database/data-identifier'));
+        $this->assertEquals('HEAD', $requestInfo->getMethod());
+        $this->assertTrue($requestInfo->isReadRequest());
+        $this->assertFalse($requestInfo->isWriteRequest());
+        $this->assertEquals('Cundd\\Test\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('headMyMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('headMyMethodAction', $requestInfo->getAction());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('POST',
+            '/_cundd-test-application/my_method/my-database/data-identifier'));
+        $this->assertEquals('POST', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('Cundd\\Test\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('postMyMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('postMyMethodAction', $requestInfo->getAction());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('PUT',
+            '/_cundd-test-application/my_method/my-database/data-identifier'));
+        $this->assertEquals('PUT', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('Cundd\\Test\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('putMyMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('putMyMethodAction', $requestInfo->getAction());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('DELETE',
+            '/_cundd-test-application/my_method/my-database/data-identifier'));
+        $this->assertEquals('DELETE', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('Cundd\\Test\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('deleteMyMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('deleteMyMethodAction', $requestInfo->getAction());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET',
+            '/_cundd-test-application/my_undefined_method/my-database/data-identifier'));
+        $this->assertEquals('GET', $requestInfo->getMethod());
+        $this->assertTrue($requestInfo->isReadRequest());
+        $this->assertFalse($requestInfo->isWriteRequest());
+        $this->assertEquals('Cundd\\Test\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('getMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('getMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('HEAD',
+            '/_cundd-test-application/my_undefined_method/my-database/data-identifier'));
+        $this->assertEquals('HEAD', $requestInfo->getMethod());
+        $this->assertTrue($requestInfo->isReadRequest());
+        $this->assertFalse($requestInfo->isWriteRequest());
+        $this->assertEquals('Cundd\\Test\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('headMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('headMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('POST',
+            '/_cundd-test-application/my_undefined_method/my-database/data-identifier'));
+        $this->assertEquals('POST', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('Cundd\\Test\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('postMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('postMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('PUT',
+            '/_cundd-test-application/my_undefined_method/my-database/data-identifier'));
+        $this->assertEquals('PUT', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('Cundd\\Test\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('putMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('putMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('DELETE',
+            '/_cundd-test-application/my_undefined_method/my-database/data-identifier'));
+        $this->assertEquals('DELETE', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('Cundd\\Test\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('deleteMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('deleteMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET',
+            '/_cundd-test_module-application/my_undefined_method/my-database'));
+        $this->assertEquals('GET', $requestInfo->getMethod());
+        $this->assertTrue($requestInfo->isReadRequest());
+        $this->assertFalse($requestInfo->isWriteRequest());
+        $this->assertEquals('getMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('getMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('HEAD',
+            '/_cundd-test_module-application/my_undefined_method/my-database'));
+        $this->assertEquals('HEAD', $requestInfo->getMethod());
+        $this->assertTrue($requestInfo->isReadRequest());
+        $this->assertFalse($requestInfo->isWriteRequest());
+        $this->assertEquals('headMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('headMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('POST',
+            '/_cundd-test_module-application/my_undefined_method/my-database'));
+        $this->assertEquals('POST', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('postMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('postMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('PUT',
+            '/_cundd-test_module-application/my_undefined_method/my-database'));
+        $this->assertEquals('PUT', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('putMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('putMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('DELETE',
+            '/_cundd-test_module-application/my_undefined_method/my-database'));
+        $this->assertEquals('DELETE', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('deleteMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('deleteMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('', $requestInfo->getDataIdentifier());
+
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET',
+            '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'));
+        $this->assertEquals('GET', $requestInfo->getMethod());
+        $this->assertTrue($requestInfo->isReadRequest());
+        $this->assertFalse($requestInfo->isWriteRequest());
+        $this->assertEquals('getMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('getMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('HEAD',
+            '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'));
+        $this->assertEquals('HEAD', $requestInfo->getMethod());
+        $this->assertTrue($requestInfo->isReadRequest());
+        $this->assertFalse($requestInfo->isWriteRequest());
+        $this->assertEquals('headMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('headMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('POST',
+            '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'));
+        $this->assertEquals('POST', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('postMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('postMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('PUT',
+            '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'));
+        $this->assertEquals('PUT', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('putMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('putMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new Request('DELETE',
+            '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'));
+        $this->assertEquals('DELETE', $requestInfo->getMethod());
+        $this->assertFalse($requestInfo->isReadRequest());
+        $this->assertTrue($requestInfo->isWriteRequest());
+        $this->assertEquals('deleteMyUndefinedMethodAction', $requestInfo->getSpecialHandlerAction());
+        $this->assertEquals('deleteMyUndefinedMethodAction', $requestInfo->getAction());
+        $this->assertEquals('Cundd\\TestModule\\Controller\\ApplicationController', $requestInfo->getControllerClass());
+        $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
+        $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
     }
 
     /**
