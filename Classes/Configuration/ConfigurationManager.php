@@ -50,12 +50,13 @@ class ConfigurationManager implements ConfigurationManagerInterface
      */
     public function getDefaults()
     {
-        $basePath = $this->getBasePath();
-        $varPath  = $basePath . 'var/';
+        $basePath         = $this->getBasePath();
+        $varPath          = $basePath . 'var/';
+        $installationPath = $this->getInstallationPath();
         return array(
             'basePath'      => $basePath,
-            'binPath'    => $basePath . 'bin/',
-            'phpBinPath' => $this->getPhpBinaryPath(),
+            'binPath'       => $installationPath . 'bin/',
+            'phpBinPath'    => $this->getPhpBinaryPath(),
             'dataPath'      => $varPath . 'Data/',
             'writeDataPath' => $varPath . 'Data/',
             'lockPath'      => $varPath . 'Lock/',
@@ -63,13 +64,13 @@ class ConfigurationManager implements ConfigurationManagerInterface
             'logPath'       => $varPath . 'Log/',
             'tempPath'      => $varPath . 'Temp/',
             'rescuePath'    => $varPath . 'Rescue/',
-            'logLevel'   => Logger::INFO,
-            'serverMode' => ServerInterface::SERVER_MODE_NOT_RUNNING
+            'logLevel'      => Logger::INFO,
+            'serverMode'    => ServerInterface::SERVER_MODE_NOT_RUNNING
         );
     }
 
     /**
-     * Returns the path to the installation
+     * Returns the path to the base
      *
      * @return string
      */
@@ -77,9 +78,26 @@ class ConfigurationManager implements ConfigurationManagerInterface
     {
         static $basePath;
         if (!$basePath) {
-            $basePath = (realpath(__DIR__ . '/../../') ?: __DIR__ . '/../..') . '/';
+            $basePath = $this->getInstallationPath();
+            if (file_exists($basePath . '../../autoload.php')) {
+                $basePath = (realpath($basePath . '../../../') ?: __DIR__ . '../../..') . '/';
+            }
         }
         return $basePath;
+    }
+
+    /**
+     * Returns the path to the installation
+     *
+     * @return string
+     */
+    public function getInstallationPath()
+    {
+        static $installPath;
+        if (!$installPath) {
+            $installPath = (realpath(__DIR__ . '/../../') ?: __DIR__ . '/../..') . '/';
+        }
+        return $installPath;
     }
 
     /**
