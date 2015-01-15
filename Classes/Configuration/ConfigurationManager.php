@@ -37,7 +37,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
     public function __construct()
     {
         $configurationReader = new ConfigurationReader();
-        $this->configuration = array_merge_recursive($this->getDefaults(),
+        $this->configuration = array_replace_recursive($this->getDefaults(),
             $configurationReader->readConfigurationFiles());
 
         self::$sharedInstance = $this;
@@ -146,4 +146,4 @@ class ConfigurationManager implements ConfigurationManagerInterface
 
     }
 
-} 
+}
