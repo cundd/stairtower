@@ -99,10 +99,6 @@ class StartCommand extends Command
             }
         }
 
-        array_walk($arguments, function (&$argument) {
-            $argument = ProcessUtils::escapeArgument($argument);
-        });
-
         $process = $this->processBuilder
             ->setPrefix(array($phpBinPath, $serverBinPath))
             ->setArguments($arguments)
