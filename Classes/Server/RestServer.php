@@ -67,13 +67,13 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     public function handle($request, $response)
     {
         // If the configured log level is DEBUG log all requests
-        static $logRequests = -1;
-        if ($logRequests === -1) {
-            $logRequests = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logLevel') <= Logger::DEBUG;
+        static $debugLog = -1;
+        if ($debugLog === -1) {
+            $debugLog = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logLevel') <= Logger::DEBUG;
         }
-        if ($logRequests) {
+        if ($debugLog) {
             $this->logger->debug(
-                sprintf('Request %s %s %s', $request->getMethod(), $request->getPath(), $request->getHttpVersion())
+                sprintf('Begin handle request %s %s %s', $request->getMethod(), $request->getPath(), $request->getHttpVersion())
             );
         }
 
@@ -115,6 +115,12 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             }
         } catch (\Exception $exception) {
             $this->handleError($exception, $request, $response);
+        }
+
+        if ($debugLog) {
+            $this->logger->debug(
+                sprintf('End handle request %s %s %s', $request->getMethod(), $request->getPath(), $request->getHttpVersion())
+            );
         }
     }
 
