@@ -36,6 +36,13 @@ class FilterBuilder implements FilterBuilderInterface
     protected $comparisonTypeHelper;
 
     /**
+     * Dictionary of cached filters
+     *
+     * @var FilterInterface[]
+     */
+    protected $cachedFilters = [];
+
+    /**
      * Build a Filter with the given query parts
      *
      * @param string[] $queryParts
@@ -56,8 +63,15 @@ class FilterBuilder implements FilterBuilderInterface
      */
     public function buildFilter($filterDefinition)
     {
+        $cachedFilter = $this->getCachedFilterForFilterDefinition($filterDefinition);
+        if ($cachedFilter) {
+            return $cachedFilter;
+        }
+
         $comparison = $this->getComparisonFromArray($filterDefinition);
-        return new Filter($comparison);
+        $newFilter = new Filter($comparison);
+        $this->setCachedFilterForFilterDefinition($newFilter, $filterDefinition);
+        return $newFilter;
     }
 
     /**
@@ -192,5 +206,36 @@ class FilterBuilder implements FilterBuilderInterface
 
         }
         return $comparison;
+    }
+
+    /**
+     * Checks for a cached Filter for the given filter definition
+     *
+     * @param array $filterDefinition
+     * @return FilterInterface|null Returns the cached Filter or null if none was found
+     */
+    protected function getCachedFilterForFilterDefinition($filterDefinition){
+        $filterKey = json_encode($filterDefinition);
+        if(!$filterKey) {
+            return null;
+        }
+        if (isset($this->cachedFilters[$filterKey]))  {
+            return $this->cachedFilters[$filterKey];
+        }
+        return null;
+    }
+
+    /**
+     * Adds the Filter to the cache for the given filter definition
+     *
+     * @param FilterInterface $filter
+     * @param array $filterDefinition
+     * @return void
+     */
+    protected function setCachedFilterForFilterDefinition($filter, $filterDefinition){
+        $filterKey = json_encode($filterDefinition);
+        if($filterKey) {
+            $this->cachedFilters[$filterKey] = $filter;
+        }
     }
 }
