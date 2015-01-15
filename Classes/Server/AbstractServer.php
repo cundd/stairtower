@@ -17,6 +17,7 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
 use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
+use Cundd\PersistentObjectStore\System\Lock\Factory;
 use DateTime;
 use React\EventLoop\Timer\TimerInterface;
 use React\Http\Response;
@@ -371,7 +372,7 @@ abstract class AbstractServer implements ServerInterface
     {
         $this->prepareEventLoop();
         $this->setupServer();
-        $this->startTime  = new DateTime();
+        $this->startTime = new DateTime();
         $this->isRunningFlag = true;
         $this->eventLoop->run();
         $this->isRunningFlag = false;
@@ -431,8 +432,12 @@ abstract class AbstractServer implements ServerInterface
         if ($this->isRunningFlag) {
             throw new InvalidServerChangeException('Can not change the mode when server is running', 1414835788);
         }
+        if (false === ($mode === self::SERVER_MODE_NORMAL || $mode === self::SERVER_MODE_NOT_RUNNING || $mode === self::SERVER_MODE_TEST)) {
+            throw new ServerException(sprintf('Invalid server mode %s', $mode), 1421096002);
+        }
         $this->mode = $mode;
         ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('serverMode', $mode);
+        Factory::setLockImplementationClass('Cundd\\PersistentObjectStore\\System\\Lock\\TransientLock');
         return $this;
     }
 

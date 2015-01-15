@@ -25,5 +25,9 @@
 		"psr-4": {
 			"Cundd\\PersistentObjectStore\\": "Classes/"
 		}
-	}
+    },
+    "bin": [
+        "bin/console",
+        "bin/server"
+    ]
 }

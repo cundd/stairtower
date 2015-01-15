@@ -63,11 +63,18 @@ class RequestInfoFactory
             if ($controllerAndActionArray) {
                 list($controllerClassName, $handlerAction) = $controllerAndActionArray;
 
-                $dataIdentifier     = null;
-                $databaseIdentifier = null;
+                $databaseIdentifier = isset($pathParts[2]) ? $pathParts[2] : null;
+                $dataIdentifier     = isset($pathParts[3]) ? $pathParts[3] : null;
             }
-            static::$pathToRequestInfoMap[$requestInfoIdentifier] = new RequestInfo($request, $dataIdentifier,
-                $databaseIdentifier, $request->getMethod(), $handlerAction, $controllerClassName);
+            static::$pathToRequestInfoMap[$requestInfoIdentifier] =
+                new RequestInfo(
+                    $request,
+                    $dataIdentifier,
+                    $databaseIdentifier,
+                    $request->getMethod(),
+                    $handlerAction,
+                    $controllerClassName
+                );
         }
         return static::$pathToRequestInfoMap[$requestInfoIdentifier];
     }
