@@ -107,6 +107,17 @@ abstract class GeneralUtility
     }
 
     /**
+     * Transform the camelCase to underscored_string
+     *
+     * @param string $camelCaseString
+     * @return string
+     */
+    public static function camelCaseToUnderscore($camelCaseString)
+    {
+        return strtolower(preg_replace('/(?<=\w)([A-Z])/', '_\\1', $camelCaseString));
+    }
+
+    /**
      * Tries to convert the given value to a string
      *
      * @param mixed $value
