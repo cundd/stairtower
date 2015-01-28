@@ -10,8 +10,38 @@ class Test_Application
 {
 }
 
-class Test_Application_Controller
+class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server\Controller\ControllerInterface
 {
+    public function initialize()
+    {
+    }
+
+    public function setRequestInfo(\Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo $requestInfo)
+    {
+    }
+
+    public function getRequestInfo()
+    {
+    }
+
+    public function unsetRequestInfo()
+    {
+    }
+
+    public function getRequest()
+    {
+    }
+
+    public function willInvokeAction($action)
+    {
+    }
+
+    public function didInvokeAction(
+        $action,
+        \Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface $result
+    ) {
+    }
+
     public function getMyMethodAction()
     {
     }
