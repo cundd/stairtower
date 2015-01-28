@@ -432,7 +432,12 @@ abstract class AbstractServer implements ServerInterface
         if ($this->isRunningFlag) {
             throw new InvalidServerChangeException('Can not change the mode when server is running', 1414835788);
         }
-        if (false === ($mode === self::SERVER_MODE_NORMAL || $mode === self::SERVER_MODE_NOT_RUNNING || $mode === self::SERVER_MODE_TEST)) {
+        if (false === (
+                $mode === self::SERVER_MODE_NORMAL
+                || $mode === self::SERVER_MODE_NOT_RUNNING
+                || $mode === self::SERVER_MODE_TEST
+                || $mode === self::SERVER_MODE_DEVELOPMENT
+            )) {
             throw new ServerException(sprintf('Invalid server mode %s', $mode), 1421096002);
         }
         $this->mode = $mode;

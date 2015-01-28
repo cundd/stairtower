@@ -18,13 +18,14 @@ $longOptions = array(
     "ip::",
     "data-path::",
     'test::',
+    'dev::',
 );
 $options     = getopt('h::', $longOptions);
 
 // Print the help
 if (isset($options['h'])) {
     print(\Cundd\PersistentObjectStore\Constants::MESSAGE_CLI_WELCOME . PHP_EOL);
-    printf('Usage: %s [--port=port] [--ip=ip] [--data-path=path/to/data/folder/]' . PHP_EOL, $argv[0]);
+    printf('Usage: %s [--port=port] [--ip=ip] [--data-path=path/to/data/folder/] [--dev]' . PHP_EOL, $argv[0]);
     exit;
 }
 
@@ -39,7 +40,7 @@ function checkArgument($key, $options)
 {
     if (isset($options[$key])) {
         if ($options[$key] === false) {
-            printf('The option --%s requires a valid path' . PHP_EOL, $key);
+            printf('The option --%s requires a value' . PHP_EOL, $key);
             exit(1);
         }
         return $options[$key];
@@ -81,7 +82,9 @@ if ($port) {
 }
 
 // If the test option is set start the server in test mode
-if (isset($options['test'])) {
+if (isset($options['dev'])) {
+    $server->setMode(\Cundd\PersistentObjectStore\Server\ServerInterface::SERVER_MODE_DEVELOPMENT);
+} elseif (isset($options['test'])) {
     $server->setMode(\Cundd\PersistentObjectStore\Server\ServerInterface::SERVER_MODE_TEST);
     if (is_numeric($options['test'])) {
         $server->setAutoShutdownTime(intval($options['test']));

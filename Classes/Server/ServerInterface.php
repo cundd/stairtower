@@ -41,6 +41,11 @@ interface ServerInterface
     const SERVER_MODE_TEST = 1;
 
     /**
+     * Server is in development mode
+     */
+    const SERVER_MODE_DEVELOPMENT = 2;
+
+    /**
      * Handle the given request
      *
      * @param \React\Http\Request  $request

@@ -13,6 +13,7 @@ use Cundd\PersistentObjectStore\Console\Exception\InvalidArgumentsException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
@@ -51,6 +52,12 @@ class StartCommand extends Command
                 'data-path',
                 InputArgument::OPTIONAL,
                 'Directory path where the data is stored'
+            )
+            ->addOption(
+                'dev',
+                null,
+                InputOption::VALUE_NONE,
+                'Start the server in development mode'
             );
     }
 
@@ -96,12 +103,19 @@ class StartCommand extends Command
                 throw new InvalidArgumentsException('Invalid input for argument "port"', 1420812212);
             }
         }
+        if ($input->getOption('dev')) {
+            $arguments[] = '--dev';
+        }
 
         $process = $this->processBuilder
             ->setPrefix(array($phpBinPath, $serverBinPath))
             ->setArguments($arguments)
             ->setTimeout(null)
             ->getProcess();
+
+        if (OutputInterface::VERBOSITY_VERBOSE <= $output->getVerbosity()) {
+            $output->writeln(sprintf('<info>Start server using command %s</info>', $process->getCommandLine()));
+        }
 
         $exitedSuccessfully = false;
         while (!$exitedSuccessfully) {
