@@ -22,14 +22,12 @@ class ConfigurationReader
      */
     public function readConfigurationFiles()
     {
-        $configuration = array_merge_recursive(
-            $this->readConfigurationFile('/etc/pos')
-        );
+        $configuration = $this->readConfigurationFile('/etc/pos');
         if (isset($_ENV['HOME']) && $_ENV['HOME']) {
-            $configuration = array_merge_recursive($configuration,
+            $configuration = array_replace_recursive($configuration,
                 $this->readConfigurationFile($_ENV['HOME'] . '/.pos/config.json'));
         }
-        $configuration = array_merge_recursive($configuration, $this->readConfigurationFile('.pos-config.json'));
+        $configuration = array_replace_recursive($configuration, $this->readConfigurationFile('.pos-config.json'));
         return $configuration;
     }
 

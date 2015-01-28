@@ -15,8 +15,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Process\ProcessUtils;
-
 
 /**
  * Console command to start the server
@@ -98,10 +96,6 @@ class StartCommand extends Command
                 throw new InvalidArgumentsException('Invalid input for argument "port"', 1420812212);
             }
         }
-
-        array_walk($arguments, function (&$argument) {
-            $argument = ProcessUtils::escapeArgument($argument);
-        });
 
         $process = $this->processBuilder
             ->setPrefix(array($phpBinPath, $serverBinPath))
