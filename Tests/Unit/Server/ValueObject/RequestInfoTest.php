@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
 use Cundd\PersistentObjectStore\Server\Handler\Handler;
+use Cundd\PersistentObjectStore\Utility\ClassLoaderUtility;
 use React\Http\Request;
 
 class SpecialHandler extends Handler
@@ -31,6 +32,7 @@ class RequestInfoTest extends \PHPUnit_Framework_TestCase
         parent::setUpBeforeClass();
         class_alias('Cundd\\PersistentObjectStore\\Server\\ValueObject\\SpecialApplication',
             'Cundd\\Special\\Application');
+        ClassLoaderUtility::clearClassCache();
     }
 
 
@@ -719,7 +721,7 @@ class RequestInfoTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
             RequestInfoFactory::getHandlerClassForRequest(new Request('POST', '/database-identifier/something')));
 
-
+        ClassLoaderUtility::clearClassCache();
         $this->assertEquals('Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new Request('GET', '/_special')));
         $this->assertEquals('Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',

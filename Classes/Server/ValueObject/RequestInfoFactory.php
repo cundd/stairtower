@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
+use Cundd\PersistentObjectStore\Utility\ClassLoaderUtility;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use React\Http\Request;
 
@@ -91,7 +92,8 @@ class RequestInfoFactory
 
         // Generate the Application name
         $applicationName = str_replace(' ', '\\', ucwords(str_replace('_', ' ', $handlerIdentifier))) . '\\Application';
-        if (class_exists($applicationName)) {
+
+        if (ClassLoaderUtility::classExists($applicationName)) {
             return $applicationName;
         }
 
@@ -100,7 +102,7 @@ class RequestInfoFactory
             'Cundd\\PersistentObjectStore\\Server\\Handler\\%sHandler',
             ucfirst($handlerIdentifier)
         );
-        if (class_exists($handlerName)) {
+        if (ClassLoaderUtility::classExists($handlerName)) {
             return $handlerName;
         }
         return $default;
