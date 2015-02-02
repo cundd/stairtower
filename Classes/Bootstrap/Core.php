@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Bootstrap;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
 use DI\ContainerBuilder;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\FilesystemCache;
@@ -44,6 +45,7 @@ class Core
         }
 
         $this->getDiContainer();
+        $this->getSharedEventEmitter();
     }
 
     /**
@@ -64,5 +66,15 @@ class Core
             $this->diContainer = $builder->build();
         }
         return $this->diContainer;
+    }
+
+    /**
+     * Instantiates the shared Event Emitter
+     *
+     * @return SharedEventEmitter
+     */
+    public function getSharedEventEmitter()
+    {
+        return $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Event\\SharedEventEmitter');
     }
 }
