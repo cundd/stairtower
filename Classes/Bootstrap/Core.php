@@ -11,11 +11,10 @@ namespace Cundd\PersistentObjectStore\Bootstrap;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
 use DI\ContainerBuilder;
-use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\FilesystemCache;
 
 /**
- * Class Core
+ * Core bootstrapping class
  *
  * @package Cundd\PersistentObjectStore
  */
