@@ -11,7 +11,7 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 
 use Symfony\Component\Console\Application;
 
-$bootstrap = new \Cundd\PersistentObjectStore\Bootstrap();
+$bootstrap = new \Cundd\PersistentObjectStore\Bootstrap\Core();
 
 /** @var DI\Container $diContainer */
 $diContainer = $bootstrap->getDiContainer();

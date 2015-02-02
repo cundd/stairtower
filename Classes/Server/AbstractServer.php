@@ -523,6 +523,8 @@ abstract class AbstractServer implements ServerInterface
      */
     public function runMaintenance()
     {
+        $this->logger->debug('Run maintenance');
+        $this->logger->info('Run maintenance');
         $this->coordinator->commitDatabases();
         Manager::cleanup();
     }
