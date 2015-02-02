@@ -58,8 +58,6 @@ class Core
             $builder->setDefinitionCache(
                 new FilesystemCache(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath'))
             );
-            var_dump(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath'));
-            //$builder->setDefinitionCache(new ArrayCache());
 
             $this->diContainer = $builder->build();
             $builder->addDefinitions(__DIR__ . '/../Configuration/dependencyInjectionConfiguration.php');
