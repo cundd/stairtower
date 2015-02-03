@@ -14,7 +14,6 @@ use Cundd\PersistentObjectStore\CrashHandler;
 use Cundd\PersistentObjectStore\Server\ServerInterface;
 use DI\Container;
 use Psr\Log\LogLevel;
-use React\EventLoop\Factory;
 
 /**
  * Server bootstrapping
@@ -72,13 +71,14 @@ class Server
             $configurationManager->setConfigurationForKeyPath('writeDataPath', $dataPath);
         }
 
+        // Instantiate the Core
         $bootstrap = new Core();
 
         /** @var Container $diContainer */
         $diContainer = $bootstrap->getDiContainer();
 
         $this->server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\RestServer');
-        $diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $this->server);
+        //$diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $this->server);
 
         if ($ip) {
             $this->server->setIp($ip);
