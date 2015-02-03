@@ -72,7 +72,11 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             $debugLog = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logLevel') <= Logger::DEBUG;
         }
 
+        // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+        // IMMEDIATELY CLOSE IGNORED REQUESTS
+        // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
         if ($this->getIgnoreRequest($request)) {
+            $response->end();
             return;
         }
 
