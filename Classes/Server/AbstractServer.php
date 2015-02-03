@@ -20,6 +20,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
 use DateTime;
 use React\EventLoop\Timer\TimerInterface;
+use React\Http\Request;
 use React\Http\Response;
 
 /**
@@ -594,4 +595,12 @@ abstract class AbstractServer implements ServerInterface
      * Create and configure the server objects
      */
     abstract protected function setupServer();
+
+    /**
+     * Returns if the given request should be ignored
+     *
+     * @param Request $request
+     * @return bool
+     */
+    abstract protected function getIgnoreRequest($request);
 }
