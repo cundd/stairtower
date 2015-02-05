@@ -25,14 +25,15 @@
       <library name="PHARS">
         <CLASSES>
           <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit3.7/phpunit-lts.phar" />
+          <root url="phar://$MODULE_DIR$/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/Tests/Fixtures/includes/ProjectWithXsdExtensionInPhar.phar" />
           <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit.phar" />
         </CLASSES>
         <SOURCES>
           <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit3.7/phpunit-lts.phar" />
+          <root url="phar://$MODULE_DIR$/vendor/symfony/dependency-injection/Symfony/Component/DependencyInjection/Tests/Fixtures/includes/ProjectWithXsdExtensionInPhar.phar" />
           <root url="phar://$MODULE_DIR$/../Resources/phpunit/phpunit.phar" />
         </SOURCES>
       </library>
     </orderEntry>
   </component>
 </module>
-
