@@ -144,12 +144,14 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
         }
 
         do {
-//			DebugUtility::pl($i);
             if (isset($this->rawData[$i]) && $this->rawData[$i] && $this->rawData[$i][Constants::DATA_ID_KEY]) {
                 if (isset($this->objectData[$i])) {
                     $foundObject = $this->objectData[$i];
                 } else {
-                    $foundObject = $this->setObjectDataForIndex($this->convertDataAtIndexToObject($i), $i);
+                    $foundObject = $this->convertDataAtIndexToObject($i);
+                    if ($foundObject !== null) {
+                        $this->setObjectDataForIndex($foundObject, $i);
+                    }
                 }
 
                 if ($foundObject instanceof DocumentInterface && $foundObject->getId() === $identifier) {
@@ -157,20 +159,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
                 }
             }
         } while (++$i < $count);
-
-//		$i = 0;
-//		do {
-////			DebugUtility::pl($i);
-//			if (isset($this->objectData[$i])) {
-//				$foundObject = $this->objectData[$i];
-//			} else {
-//				$foundObject = $this->_setObjectDataForIndex($this->_convertDataAtIndexToObject($i), $i);
-//			}
-//
-//			if ($foundObject instanceof DocumentInterface && $foundObject->getId() === $identifier) {
-//				return $foundObject;
-//			}
-//		} while (++$i < $count);
         return null;
     }
 
@@ -339,7 +327,11 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
     {
         $document = $this->getObjectDataForIndex($index);
         if (!$document) {
-            $document = $this->setObjectDataForIndex($this->convertDataAtIndexToObject($index), $index);
+            $document = $this->convertDataAtIndexToObject($index);
+            if ($document === null) {
+                return false;
+            }
+            $this->setObjectDataForIndex($document, $index);
         }
         return $document;
     }
