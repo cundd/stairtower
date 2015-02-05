@@ -92,6 +92,9 @@ class Reader
         $dataCollection = $serializer->unserialize($fileData);
 //		DebugUtility::printMemorySample();
 
+        if ($dataCollection === null) {
+            return array();
+        }
         return $dataCollection;
     }
 
@@ -113,6 +116,10 @@ class Reader
             $error = new ReaderException("Database with name '$databaseIdentifier' is not readable", 1412509416);
             return false;
         }
+        //if (filesize($path) === 0) {
+        //    $error = new ReaderException("Database with name '$databaseIdentifier' is an empty file", 1412509417);
+        //    return false;
+        //}
         return true;
     }
 
