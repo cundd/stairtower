@@ -25,10 +25,31 @@ class JsonSerializer implements SerializerInterface
     public function serialize($data)
     {
         $serializedData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        if ($serializedData === false) {
+        if ($serializedData === false && json_last_error() !== JSON_ERROR_NONE) {
             throw $this->createExceptionFromLastError();
         }
         return $serializedData;
+    }
+
+    /**
+     * Unserialize the given data
+     *
+     * @param string $string
+     * @throws \Cundd\PersistentObjectStore\Serializer\Exception if the data could not be unserialized
+     * @return mixed
+     */
+    public function unserialize($string)
+    {
+        // Just return NULL if the input is "null", to distinguish NULL and invalid inputs (which decode to NULL)
+        if ($string === '' || $string === 'null') {
+            return null;
+        }
+        $data = json_decode($string, true);
+        if ($data === null) {
+        //if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw $this->createExceptionFromLastError();
+        }
+        return $data;
     }
 
     /**
@@ -62,26 +83,6 @@ class JsonSerializer implements SerializerInterface
             $errorMessage = json_last_error_msg();
         }
         return new Exception($errorMessage, json_last_error());
-    }
-
-    /**
-     * Unserialize the given data
-     *
-     * @param string $string
-     * @throws \Cundd\PersistentObjectStore\Serializer\Exception if the data could not be unserialized
-     * @return mixed
-     */
-    public function unserialize($string)
-    {
-        // Just return NULL if the input is "null", to distinguish NULL and invalid inputs (which decode to NULL)
-        if ($string === 'null') {
-            return null;
-        }
-        $data = json_decode($string, true);
-        if ($data === null) {
-            throw $this->createExceptionFromLastError();
-        }
-        return $data;
     }
 
 } 

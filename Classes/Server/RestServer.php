@@ -71,6 +71,15 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         if ($debugLog === -1) {
             $debugLog = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logLevel') <= Logger::DEBUG;
         }
+
+        // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+        // IMMEDIATELY CLOSE IGNORED REQUESTS
+        // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+        if ($this->getIgnoreRequest($request)) {
+            $response->end();
+            return;
+        }
+
         if ($debugLog) {
             $this->logger->debug(
                 sprintf('Begin handle request %s %s %s', $request->getMethod(), $request->getPath(), $request->getHttpVersion())
@@ -571,6 +580,22 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         $this->writeln(Constants::MESSAGE_CLI_WELCOME . PHP_EOL);
         $this->writeln('Start listening on %s:%s', $this->ip, $this->port);
         $this->logger->info(sprintf('Start listening on %s:%s', $this->ip, $this->port));
+    }
+
+    /**
+     * Returns if the given request should be ignored
+     *
+     * @param Request $request
+     * @return bool
+     */
+    protected function getIgnoreRequest($request) {
+        if ($request instanceof Request) {
+            if ($request->getMethod() === 'GET' && $request->getPath() === '/favicon.ico') {
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 
 }

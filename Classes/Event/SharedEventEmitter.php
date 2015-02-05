@@ -23,6 +23,7 @@ class SharedEventEmitter
      * @var SharedEventEmitter
      */
     protected static $_sharedEventEmitter;
+
     /**
      * Event Emitter instance
      *
@@ -30,10 +31,12 @@ class SharedEventEmitter
      * @Inject
      */
     protected $eventEmitter;
+
     /**
      * Event loop
      *
      * @var \React\EventLoop\LoopInterface
+     * @Inject
      */
     protected $eventLoop;
 

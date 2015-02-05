@@ -286,6 +286,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
 
         $this->updateIndexesForPosition($document, $index);
 
+        $this->state = self::STATE_DIRTY;
         SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_UPDATED, array($document));
     }
 

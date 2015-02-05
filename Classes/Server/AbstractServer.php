@@ -20,6 +20,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
 use DateTime;
 use React\EventLoop\Timer\TimerInterface;
+use React\Http\Request;
 use React\Http\Response;
 
 /**
@@ -432,7 +433,12 @@ abstract class AbstractServer implements ServerInterface
         if ($this->isRunningFlag) {
             throw new InvalidServerChangeException('Can not change the mode when server is running', 1414835788);
         }
-        if (false === ($mode === self::SERVER_MODE_NORMAL || $mode === self::SERVER_MODE_NOT_RUNNING || $mode === self::SERVER_MODE_TEST)) {
+        if (false === (
+                $mode === self::SERVER_MODE_NORMAL
+                || $mode === self::SERVER_MODE_NOT_RUNNING
+                || $mode === self::SERVER_MODE_TEST
+                || $mode === self::SERVER_MODE_DEVELOPMENT
+            )) {
             throw new ServerException(sprintf('Invalid server mode %s', $mode), 1421096002);
         }
         $this->mode = $mode;
@@ -518,6 +524,7 @@ abstract class AbstractServer implements ServerInterface
      */
     public function runMaintenance()
     {
+        $this->logger->debug('Run maintenance');
         $this->coordinator->commitDatabases();
         Manager::cleanup();
     }
@@ -588,4 +595,12 @@ abstract class AbstractServer implements ServerInterface
      * Create and configure the server objects
      */
     abstract protected function setupServer();
+
+    /**
+     * Returns if the given request should be ignored
+     *
+     * @param Request $request
+     * @return bool
+     */
+    abstract protected function getIgnoreRequest($request);
 }
