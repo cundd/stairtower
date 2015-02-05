@@ -79,13 +79,12 @@ class JsonBodyParserTest extends AbstractCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException
      */
     public function parseEmptyBodyTest()
     {
         /** @var Request $dummyRequest */
         $dummyRequest = new JsonBodyParserTest_DummyRequestClass();
-        $this->fixture->parse('', $dummyRequest);
+        $this->assertNull($this->fixture->parse('', $dummyRequest));
     }
 }
  
