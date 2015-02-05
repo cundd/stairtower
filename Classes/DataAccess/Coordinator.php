@@ -192,11 +192,18 @@ class Coordinator implements CoordinatorInterface
      */
     public function commitDatabases()
     {
-        /** @var DatabaseInterface $database */
-        foreach (Manager::getObjectsByTag(self::MEMORY_MANAGER_TAG) as $database) {
-            if ($database->getState() === DatabaseStateInterface::STATE_DIRTY) {
-                $this->commitDatabase($database);
+        $databases = Manager::getObjectsByTag(self::MEMORY_MANAGER_TAG);
+        if ($databases) {
+            $this->logger->debug(sprintf('Number of databases to commit: %d', count($databases)));
+
+            /** @var DatabaseInterface $database */
+            foreach ($databases as $database) {
+                if ($database->getState() === DatabaseStateInterface::STATE_DIRTY) {
+                    $this->commitDatabase($database);
+                }
             }
+        } else {
+            $this->logger->debug('No databases to commit');
         }
     }
 
