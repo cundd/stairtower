@@ -30,6 +30,12 @@ class Writer
     const DATA_ENCODING = 'json';
 
     /**
+     * @var \Psr\Log\LoggerInterface
+     * @inject
+     */
+    protected $logger;
+
+    /**
      * Write the given database to the disk
      *
      * @param DatabaseInterface $database
@@ -52,6 +58,7 @@ class Writer
                 1410291420
             );
         }
+        $this->logger->debug(sprintf('Did write database %s', $databaseIdentifier));
     }
 
     /**
