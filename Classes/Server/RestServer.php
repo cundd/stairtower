@@ -86,7 +86,13 @@ class RestServer extends AbstractServer
             $requestResult = false;
 
             if ($specialHandlerAction) { // Handle a special handler action
-                $requestResult = call_user_func(array($handler, $specialHandlerAction), $requestInfo);
+                if (!method_exists($handler, $specialHandlerAction)) {
+                    throw new InvalidRequestMethodException(
+                        sprintf('Handler %s does not implement method %s', get_class($handler), $specialHandlerAction),
+                        1423170327
+                    );
+                }
+                $requestResult = $handler->$specialHandlerAction($requestInfo);
             } elseif (!$requestInfo->getDatabaseIdentifier()) { // Show the welcome message
                 $requestResult = $handler->noRoute($requestInfo);
             } else { // Run normal methods
