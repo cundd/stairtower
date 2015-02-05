@@ -30,13 +30,20 @@ class Server
     protected $server;
 
     /**
+     * Crash handler
+     *
+     * @var CrashHandler
+     */
+    protected $crashHandler;
+
+
+    /**
      * @param array $arguments
      */
     public function __construct($arguments)
     {
         ini_set('display_errors', true);
 
-        (new CrashHandler())->register();
 
         // Parse the arguments
         $longOptions = array(
@@ -78,7 +85,7 @@ class Server
         $diContainer = $bootstrap->getDiContainer();
 
         $this->server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\RestServer');
-        //$diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $this->server);
+        $diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $this->server);
 
         if ($ip) {
             $this->server->setIp($ip);
@@ -99,7 +106,12 @@ class Server
      */
     public function startServer()
     {
+        $this->crashHandler = new CrashHandler();
+        $this->crashHandler->register();
+
         $this->server->start();
+
+        $this->crashHandler->unregister();
     }
 
     /**

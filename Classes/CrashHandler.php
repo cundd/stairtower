@@ -11,7 +11,6 @@ namespace Cundd\PersistentObjectStore;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
-use Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
 use Cundd\PersistentObjectStore\Memory\Manager;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
@@ -25,17 +24,13 @@ use DateTime;
 class CrashHandler
 {
     public static $sharedCrashHandler;
+
     /**
-     * Defines if the crash handler has been registered
+     * Defines if the crash handler should be called on shutdown
      *
      * @var bool
      */
-    protected static $didRegister = false;
-    /**
-     * @var CoordinatorInterface
-     * @Inject
-     */
-    protected $coordinator;
+    protected static $isRegistered = false;
 
     public function __construct()
     {
@@ -49,7 +44,16 @@ class CrashHandler
     public function register()
     {
         register_shutdown_function(array($this, 'handleCrash'));
-//		register_shutdown_function(array(get_called_class(), 'handleCrash'));
+        static::$isRegistered = true;
+    }
+
+
+    /**
+     * Unregisters the crash handler
+     */
+    public function unregister()
+    {
+        static::$isRegistered = false;
     }
 
     /**
@@ -57,29 +61,33 @@ class CrashHandler
      */
     public function handleCrash()
     {
-        $error = error_get_last();
-        if ($error !== null) {
-            // Construct a helpful crash message
-            $errorNumber  = intval($error['type']);
-            $errorFile    = $error['file'];
-            $errorLine    = $error['line'];
-            $errorMessage = $error['message'];
+        if (static::$isRegistered) {
+            $error = error_get_last();
+            if ($error !== null) {
+                // Construct a helpful crash message
+                $errorNumber  = intval($error['type']);
+                $errorFile    = $error['file'];
+                $errorLine    = $error['line'];
+                $errorMessage = $error['message'];
 
-            $errorReport   = [];
-            $errorReport[] = sprintf('Server crashed with code %d and message "%s" in %s at %s', $errorNumber,
-                $errorMessage, $errorFile, $errorLine);
-            $errorReport[] = sprintf('Date/time: %s', $this->getTimeWithMicroseconds()->format('Y-m-d H:i:s.u'));
-            $errorReport[] = sprintf('Current memory usage: %s', GeneralUtility::formatBytes(memory_get_usage(true)));
-            $errorReport[] = sprintf('Peak memory usage: %s', GeneralUtility::formatBytes(memory_get_peak_usage(true)));
+                $errorReport   = [];
+                $errorReport[] = sprintf('Server crashed with code %d and message "%s" in %s at %s', $errorNumber,
+                    $errorMessage, $errorFile, $errorLine);
+                $errorReport[] = sprintf('Date/time: %s', $this->getTimeWithMicroseconds()->format('Y-m-d H:i:s.u'));
+                $errorReport[] = sprintf('Current memory usage: %s',
+                    GeneralUtility::formatBytes(memory_get_usage(true)));
+                $errorReport[] = sprintf('Peak memory usage: %s',
+                    GeneralUtility::formatBytes(memory_get_peak_usage(true)));
 
-            // Try to rescue data
-            $errorReport[] = $this->rescueData();
+                // Try to rescue data
+                $errorReport[] = $this->rescueData();
 
-            // Output and save the information
-            $errorReport     = implode(PHP_EOL, $errorReport);
-            $errorReportPath = static::getRescueDirectory() . 'CRASH_REPORT.txt';
-            file_put_contents($errorReportPath, $errorReport);
-            print $errorReport;
+                // Output and save the information
+                $errorReport     = implode(PHP_EOL, $errorReport);
+                $errorReportPath = static::getRescueDirectory() . 'CRASH_REPORT.txt';
+                file_put_contents($errorReportPath, $errorReport);
+                print $errorReport;
+            }
         }
     }
 
@@ -104,7 +112,7 @@ class CrashHandler
     public function rescueData()
     {
         $resultMessageParts = array();
-        $data = Manager::getObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
+        $data               = Manager::getObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
         $backupDirectory    = $this->getRescueDirectory();
         if ($data) {
             foreach ($data as $databaseIdentifier => $database) {
