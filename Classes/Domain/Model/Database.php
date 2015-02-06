@@ -85,14 +85,14 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
         GeneralUtility::assertDatabaseIdentifier($identifier);
         $this->identifier = $identifier;
 
+        $this->indexes[] = new IdentifierIndex();
+
         if ($rawData) {
             $this->setRawData($rawData);
         } else {
             $this->rawData    = new SplFixedArray(0);
             $this->objectData = new SplFixedArray(0);
         }
-
-        $this->indexes[] = new IdentifierIndex();
     }
 
     /**
