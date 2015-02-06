@@ -114,9 +114,13 @@ class RestServer extends AbstractServer
                         break;
 
                     default:
-                        $requestResult = new HandlerResult(405,
-                            new InvalidRequestMethodException(sprintf('Request method "%s" not valid', $method)),
-                            1413033763);
+                        $requestResult = new HandlerResult(
+                            405,
+                            new InvalidRequestMethodException(
+                                sprintf('Request method "%s" not valid', $method),
+                                1413033763
+                            )
+                        );
                 }
             }
             if (!$delayedRequest) {
