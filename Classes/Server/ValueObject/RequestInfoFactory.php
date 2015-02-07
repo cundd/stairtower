@@ -61,7 +61,7 @@ class RequestInfoFactory
                 $dataIdentifier,
                 $databaseIdentifier,
                 $request->getMethod(),
-                ($handlerAction === false ? $handlerAction : null)
+                ($handlerAction !== false ? $handlerAction : null)
             );
         }
         return static::$pathToRequestInfoMap[$requestInfoIdentifier];
