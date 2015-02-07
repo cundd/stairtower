@@ -9,16 +9,16 @@
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 
-use Cundd\PersistentObjectStore\AbstractDataBasedCase;
+use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Index\IndexInterface;
 
-class DatabaseTest extends AbstractDataBasedCase
+class DatabaseTest extends AbstractDatabaseBasedCase
 {
     /**
-     * @var \Cundd\PersistentObjectStore\Domain\Model\Database
+     * @var \Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface
      */
     protected $fixture;
 
@@ -42,13 +42,13 @@ class DatabaseTest extends AbstractDataBasedCase
      */
     public function findByIdentifierTest()
     {
-        $person = $this->fixture->findByIdentifier('georgettebenjamin@andryx.com');
+        $person = $this->fixture->findByIdentifier('beasleywatts@geekol.com');
         $this->assertNotNull($person);
 
-        $this->assertSame(31, $person->valueForKeyPath('age'));
-        $this->assertSame('green', $person->valueForKeyPath('eyeColor'));
-        $this->assertSame('Georgette Benjamin', $person->valueForKeyPath('name'));
-        $this->assertSame('female', $person->valueForKeyPath('gender'));
+        $this->assertSame(22, $person->valueForKeyPath('age'));
+        $this->assertSame('blue', $person->valueForKeyPath('eyeColor'));
+        $this->assertSame('Beasley Watts', $person->valueForKeyPath('name'));
+        $this->assertSame('male', $person->valueForKeyPath('gender'));
 
         $this->fixture = $this->coordinator->getDatabase('contacts');
         $person        = $this->fixture->findByIdentifier('paul@mckenzy.net');
@@ -96,7 +96,7 @@ class DatabaseTest extends AbstractDataBasedCase
     {
         $i = 0;
         do {
-            $this->assertTrue($this->fixture->contains('lambhorn@virxo.com'));
+            $this->assertTrue($this->fixture->contains('elnorahall@filodyne.com'));
         } while (++$i < 1000);
 
         $i = 0;
@@ -275,13 +275,14 @@ class DatabaseTest extends AbstractDataBasedCase
      */
     public function objectLiveCycleTest()
     {
-        $database2 = $this->coordinator->getDatabase('people');
+        $database1 = $this->coordinator->getDatabase('people-small');
+        $database2 = $this->coordinator->getDatabase('people-small');
 
         /** @var DocumentInterface $personFromDatabase2 */
         $personFromDatabase2 = $database2->current();
 
         /** @var DocumentInterface $personFromFixture */
-        $personFromFixture = $this->fixture->current();
+        $personFromFixture = $database1->current();
 
         $this->assertEquals($personFromDatabase2, $personFromFixture);
 
@@ -327,8 +328,10 @@ class DatabaseTest extends AbstractDataBasedCase
         $this->assertSame(IndexInterface::NOT_FOUND,
             $this->fixture->queryIndexesForValueOfProperty('not-existing-identifier', Constants::DATA_ID_KEY));
 
-        $documents = $this->fixture->queryIndexesForValueOfProperty('georgettebenjamin@andryx.com',
-            Constants::DATA_ID_KEY);
+        $documents = $this->fixture->queryIndexesForValueOfProperty(
+            'beasleywatts@geekol.com',
+            Constants::DATA_ID_KEY
+        );
         $this->assertNotEmpty($documents);
         $this->assertInternalType('array', $documents);
 
@@ -338,10 +341,10 @@ class DatabaseTest extends AbstractDataBasedCase
         $this->assertNotNull($person);
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\Document', $person);
 
-        $this->assertSame(31, $person->valueForKeyPath('age'));
-        $this->assertSame('green', $person->valueForKeyPath('eyeColor'));
-        $this->assertSame('Georgette Benjamin', $person->valueForKeyPath('name'));
-        $this->assertSame('female', $person->valueForKeyPath('gender'));
+        $this->assertSame(22, $person->valueForKeyPath('age'));
+        $this->assertSame('blue', $person->valueForKeyPath('eyeColor'));
+        $this->assertSame('Beasley Watts', $person->valueForKeyPath('name'));
+        $this->assertSame('male', $person->valueForKeyPath('gender'));
     }
 
     protected function setUp()
@@ -351,7 +354,7 @@ class DatabaseTest extends AbstractDataBasedCase
         $this->setUpXhprof();
 
         $this->coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
-        $this->fixture     = $this->coordinator->getDatabase('people');
+        $this->fixture = $this->getSmallPeopleDatabase();
     }
 
     protected function tearDown()

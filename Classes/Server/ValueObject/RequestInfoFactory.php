@@ -56,8 +56,13 @@ class RequestInfoFactory
             if ($dataIdentifier && $dataIdentifier[0] === '_') {
                 $dataIdentifier = '';
             }
-            static::$pathToRequestInfoMap[$requestInfoIdentifier] = new RequestInfo($request, $dataIdentifier,
-                $databaseIdentifier, $request->getMethod(), $handlerAction);
+            static::$pathToRequestInfoMap[$requestInfoIdentifier] = new RequestInfo(
+                $request,
+                $dataIdentifier,
+                $databaseIdentifier,
+                $request->getMethod(),
+                ($handlerAction === false ? $handlerAction : null)
+            );
         }
         return static::$pathToRequestInfoMap[$requestInfoIdentifier];
     }

@@ -12,6 +12,7 @@ use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
 use Cundd\PersistentObjectStore\Core\IndexArray;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseObjectDataInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
 use Cundd\PersistentObjectStore\Exception\ImmutableException;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
@@ -292,9 +293,9 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
         }
 
         // Get the collection data as SplFixedArray
-        $callMethodGetObjectDataForIndexOrTransformIfNotExists = false;
-        if ($dataCollection instanceof DatabaseRawDataInterface) {
-            $callMethodGetObjectDataForIndexOrTransformIfNotExists = true;
+        $callMethodGetObjectDataForIndex = false;
+        if ($dataCollection instanceof DatabaseObjectDataInterface) {
+            $callMethodGetObjectDataForIndex = true;
         }
 
         $fixedDataCollection = null;
@@ -315,9 +316,9 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
             $item = $fixedDataCollection[$i];
 
             if ($comparison->perform($item)) {
-                if ($callMethodGetObjectDataForIndexOrTransformIfNotExists) {
-                    /** @var DatabaseRawDataInterface $dataCollection */
-                    $item = $dataCollection->getObjectDataForIndexOrTransformIfNotExists($i);
+                if ($callMethodGetObjectDataForIndex) {
+                    /** @var DatabaseObjectDataInterface $dataCollection */
+                    $item = $dataCollection->getObjectDataForIndex($i);
                 }
                 // Todo: Check for null values
                 $resultArray[$matchesIndex] = $item;

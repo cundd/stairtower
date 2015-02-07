@@ -20,6 +20,7 @@ use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Filter;
 use Cundd\PersistentObjectStore\Index\IdentifierIndex;
+use Cundd\PersistentObjectStore\Index\IndexableTrait;
 use Cundd\PersistentObjectStore\Index\IndexInterface;
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
@@ -34,8 +35,10 @@ use SplFixedArray;
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-class Database implements DatabaseInterface, DatabaseRawDataInterface
+class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseObjectDataInterface
 {
+    use IndexableTrait, DatabaseStateTrait;
+
     /**
      * Raw data array
      *
@@ -72,20 +75,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
     protected $index = 0;
 
     /**
-     * Database's current state
-     *
-     * @var string
-     */
-    protected $state = self::STATE_CLEAN;
-
-    /**
-     * Collection of Indexes
-     *
-     * @var IndexInterface[]
-     */
-    protected $indexes = array();
-
-    /**
      * Creates a new database
      *
      * @param string $identifier
@@ -96,14 +85,14 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
         GeneralUtility::assertDatabaseIdentifier($identifier);
         $this->identifier = $identifier;
 
+        $this->indexes[] = new IdentifierIndex();
+
         if ($rawData) {
             $this->setRawData($rawData);
         } else {
             $this->rawData    = new SplFixedArray(0);
             $this->objectData = new SplFixedArray(0);
         }
-
-        $this->indexes[] = new IdentifierIndex();
     }
 
     /**
@@ -254,7 +243,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
         }
 
         $index           = $this->getIndexForIdentifier($document->getId());
-        $oldDataInstance = $this->getObjectDataForIndex($index);
+        $oldDataInstance = $this->getObjectDataForIndexIfSet($index);
         if (!$oldDataInstance) {
             throw new InvalidDataException('No data instance found to replace', 1413711010);
         }
@@ -304,7 +293,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
             );
         }
 
-
         $this->removeObjectDataForIndex($index);
         $this->removeRawDataForIndex($index);
 
@@ -323,9 +311,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
      * @param int $index
      * @return bool|DocumentInterface
      */
-    public function getObjectDataForIndexOrTransformIfNotExists($index)
+    public function getObjectDataForIndex($index)
     {
-        $document = $this->getObjectDataForIndex($index);
+        $document = $this->getObjectDataForIndexIfSet($index);
         if (!$document) {
             $document = $this->convertDataAtIndexToObject($index);
             if ($document === null) {
@@ -355,30 +343,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
         return $this->rawData->count();
     }
 
-    // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
-    // STATE
-    // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
-    /**
-     * Returns the Database's current state
-     *
-     * @return string
-     */
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    /**
-     * Sets the Database's state
-     *
-     * @param string $newState
-     * @return $this
-     */
-    public function setState($newState)
-    {
-        $this->state = $newState;
-        return $this;
-    }
 
     // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
     // RAW DATA
@@ -482,84 +446,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
     // MANAGING INDEXES
     // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
     /**
-     * Queries the registered Indexes for the given value and property
-     *
-     * If one of the associated Indexes returned a lookup result the matching data will be returned.
-     * If one of the associated Indexes returned IndexInterface::NOT_FOUND the NOT_FOUND constant will be returned.
-     * If none of the Indexes could return a valid result IndexInterface::NO_RESULT will be returned.
-     *
-     * @param mixed  $value
-     * @param string $property
-     * @return mixed Returns the found data, IndexInterface::NOT_FOUND or IndexInterface::NO_RESULT
-     */
-    public function queryIndexesForValueOfProperty($value, $property)
-    {
-        if (!$this->indexes) {
-            return IndexInterface::NO_RESULT;
-        }
-
-        // Loop through each of the Indexes
-        $i            = 0;
-        $indexesCount = count($this->indexes);
-        do {
-            $indexInstance = $this->indexes[$i];
-            // If the Index can look up the given value and the Index manages the ID property take the results from it
-            if ($indexInstance->getProperty() === $property && $indexInstance->canLookup($value)) {
-                $indexLookupResult = $indexInstance->lookup($value);
-                if ($indexLookupResult <= IndexInterface::NO_RESULT) {
-                    continue;
-                }
-                if ($indexLookupResult === IndexInterface::NOT_FOUND) {
-                    return IndexInterface::NOT_FOUND;
-                }
-//				DebugUtility::pl('Hit index %s', get_class($indexInstance));
-//				DebugUtility::var_dump($indexLookupResult);
-//                return $this->getObjectDataForIndexOrTransformIfNotExists($indexLookupResult);
-                $resultCollection = array();
-                foreach ($indexLookupResult as $currentIndexLookupResult) {
-                    $resultCollection[] = $this->getObjectDataForIndexOrTransformIfNotExists($currentIndexLookupResult);
-                }
-                return $resultCollection;
-            }
-        } while (++$i < $indexesCount);
-        return IndexInterface::NO_RESULT;
-    }
-
-    /**
-     * Returns if the object has an Index that can handle the given property key and value
-     *
-     * @param mixed  $value
-     * @param string $property
-     * @return bool
-     */
-    public function hasIndexesForValueOfProperty($value, $property)
-    {
-        return count($this->getIndexesForValueOfProperty($value, $property)) > 0;
-    }
-
-    /**
-     * Returns the object's Indexes that can handle the given property key and value
-     *
-     * @param mixed  $value
-     * @param string $property
-     * @return \Cundd\PersistentObjectStore\Index\IndexInterface[]
-     */
-    public function getIndexesForValueOfProperty($value, $property)
-    {
-        $i               = 0;
-        $matchingIndexes = array();
-        $indexesCount    = count($this->indexes);
-        do {
-            $indexInstance = $this->indexes[$i];
-            // If the Index can look up the given value and the Index manages the ID property add it to the result
-            if ($indexInstance->getProperty() === $property && $indexInstance->canLookup($value)) {
-                $matchingIndexes[] = $indexInstance;
-            }
-        } while (++$i < $indexesCount);
-        return $matchingIndexes;
-    }
-
-    /**
      * Adds the given data instance to the Indexes
      *
      * @param DocumentInterface $document
@@ -567,6 +453,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
      */
     protected function addToIndexesAtPosition($document, $position)
     {
+        /** @var IndexInterface $indexInstance */
         foreach ($this->indexes as $indexInstance) {
             $indexInstance->addEntryWithPosition($document, $position);
         }
@@ -580,6 +467,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
      */
     protected function updateIndexesForPosition($document, $position)
     {
+        /** @var IndexInterface $indexInstance */
         foreach ($this->indexes as $indexInstance) {
             $indexInstance->updateEntryForPosition($document, $position);
         }
@@ -600,6 +488,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
      */
     protected function rebuildIndexes()
     {
+        /** @var IndexInterface $indexInstance */
         foreach ($this->indexes as $indexInstance) {
             $indexInstance->indexDatabase($this);
         }
@@ -618,7 +507,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
      */
     public function current()
     {
-        return $this->getObjectDataForIndexOrTransformIfNotExists($this->index);
+        return $this->getObjectDataForIndex($this->index);
     }
 
     /**
@@ -710,7 +599,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
             return new SplFixedArray(0);
         }
         do {
-            $this->getObjectDataForIndexOrTransformIfNotExists($i);
+            $this->getObjectDataForIndex($i);
         } while (++$i < $count);
 
         return $this->objectData;
@@ -750,7 +639,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
         }
     }
 
-
     /**
      * Returns the index for the given identifier or -1 if it does not exist
      *
@@ -764,7 +652,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
         $matchingIndex = -1;
 
         do {
-            $foundObject = $this->getObjectDataForIndex($i);
+            $foundObject = $this->getObjectDataForIndexIfSet($i);
             if ($foundObject instanceof DocumentInterface && $foundObject->getId() === $identifier) {
                 $matchingIndex = $i;
                 break;
@@ -792,7 +680,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
         }
         return $rawData;
     }
-
 
     /**
      * Sets the Document instance at the given index
@@ -838,18 +725,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
             throw new IndexOutOfRangeException('Invalid index ' . $index, 1411316363);
 
         }
-//		if (!isset($this->rawData[$index])) throw new IndexOutOfRangeException('Invalid index ' . $index);
         $rawData    = $this->rawData[$index];
         $rawData    = DocumentUtility::assertDocumentIdentifierOfData($rawData);
         $dataObject = new Document($rawData, $this->identifier);
-
-//		if (isset($rawMetaData['creation_time'])) {
-//			$dataObject->setCreationTime($rawMetaData['creation_time']);
-//		}
-//		if (isset($rawMetaData['modification_time'])) {
-//			$dataObject->setModificationTime($rawMetaData['modification_time']);
-//		}
-
         return $dataObject;
     }
 
@@ -859,7 +737,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
      * @param int $index
      * @return bool|DocumentInterface
      */
-    protected function getObjectDataForIndex($index)
+    protected function getObjectDataForIndexIfSet($index)
     {
         if (isset($this->objectData[$index])) {
             return $this->objectData[$index];
