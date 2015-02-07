@@ -35,7 +35,7 @@ use SplFixedArray;
  *
  * @package Cundd\PersistentObjectStore\Domain\Model
  */
-class Database implements DatabaseInterface, DatabaseRawDataInterface
+class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseObjectDataInterface
 {
     use IndexableTrait, DatabaseStateTrait;
 
@@ -311,7 +311,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
      * @param int $index
      * @return bool|DocumentInterface
      */
-    public function getObjectDataForIndexOrTransformIfNotExists($index)
+    public function getObjectDataForIndex($index)
     {
         $document = $this->getObjectDataForIndexIfSet($index);
         if (!$document) {
@@ -507,7 +507,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
      */
     public function current()
     {
-        return $this->getObjectDataForIndexOrTransformIfNotExists($this->index);
+        return $this->getObjectDataForIndex($this->index);
     }
 
     /**
@@ -599,7 +599,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface
             return new SplFixedArray(0);
         }
         do {
-            $this->getObjectDataForIndexOrTransformIfNotExists($i);
+            $this->getObjectDataForIndex($i);
         } while (++$i < $count);
 
         return $this->objectData;

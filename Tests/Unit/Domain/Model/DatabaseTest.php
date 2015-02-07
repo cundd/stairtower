@@ -18,7 +18,7 @@ use Cundd\PersistentObjectStore\Index\IndexInterface;
 class DatabaseTest extends AbstractDatabaseBasedCase
 {
     /**
-     * @var \Cundd\PersistentObjectStore\Domain\Model\Database
+     * @var \Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface
      */
     protected $fixture;
 

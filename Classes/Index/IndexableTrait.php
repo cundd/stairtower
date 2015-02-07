@@ -42,6 +42,7 @@ trait IndexableTrait
         // Loop through each of the Indexes
         $i            = 0;
         $indexesCount = count($this->indexes);
+
         do {
             $indexInstance = $this->indexes[$i];
             // If the Index can look up the given value and the Index manages the ID property take the results from it
@@ -55,7 +56,7 @@ trait IndexableTrait
                 }
                 $resultCollection = array();
                 foreach ($indexLookupResult as $currentIndexLookupResult) {
-                    $resultCollection[] = $this->getObjectDataForIndexOrTransformIfNotExists($currentIndexLookupResult);
+                    $resultCollection[] = $this->getObjectDataForIndex($currentIndexLookupResult);
                 }
                 return $resultCollection;
             }
@@ -96,4 +97,12 @@ trait IndexableTrait
         } while (++$i < $indexesCount);
         return $matchingIndexes;
     }
+
+    /**
+     * Returns the Document instance at the given index or sets it if it is not already set
+     *
+     * @param int $index
+     * @return bool|object
+     */
+    abstract public function getObjectDataForIndex($index);
 }
