@@ -49,15 +49,10 @@ class RemoveCommand extends AbstractDataCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-//		$databaseIdentifier = $input->getArgument('database');
-//		$objectIdentifier = $input->getArgument('identifier');
-//		$database = $this->coordinator->getDatabase($databaseIdentifier);
-//		$document = $database->findByIdentifier($objectIdentifier);
-//		if (!$document) {
-//			throw new InvalidDataException(sprintf('Object with ID "%s" not found in database %s', $objectIdentifier, $databaseIdentifier));
-//		}
-
         $document = $this->findDataInstanceFromInput($input);
+        if ($document === null) {
+            return;
+        }
         $database = $this->findDatabaseInstanceFromInput($input);
         $database->remove($document);
         $objectIdentifier = $document->getId();

@@ -34,7 +34,7 @@ class Filter implements FilterInterface
     /**
      * Creates a new filter
      *
-     * @param \SplObjectStorage|ComparisonInterface[]|ComparisonInterface $comparison The comparison to filter by as a single Comparison instance
+     * @param ComparisonInterface $comparison The comparison to filter by as a single Comparison instance
      */
     public function __construct($comparison = null)
     {
@@ -62,8 +62,6 @@ class Filter implements FilterInterface
         if (!($collection instanceof \Iterator)) {
             throw new InvalidCollectionException('Can not iterate over the given object', 1409603143);
         }
-
-//		return new FilterResult(new \IteratorIterator($collection), $this);
         return new FilterResult($collection, $this);
     }
 

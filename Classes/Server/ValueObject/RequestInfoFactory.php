@@ -72,7 +72,7 @@ class RequestInfoFactory
                     $dataIdentifier,
                     $databaseIdentifier,
                     $request->getMethod(),
-                    $handlerAction,
+                    ($handlerAction === false ? $handlerAction : null),
                     $controllerClassName
                 );
         }

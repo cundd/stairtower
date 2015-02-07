@@ -14,12 +14,15 @@ use Cundd\PersistentObjectStore\DataAccess\Exception\DataAccessException;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Expand\Exception\ExpandException;
+use Cundd\PersistentObjectStore\Expand\Exception\InvalidExpandBuilderInputException;
+use Cundd\PersistentObjectStore\Expand\Exception\InvalidExpandInputException;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Filter\Filter;
 use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 use Cundd\PersistentObjectStore\Index\IndexableInterface;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 use SplFixedArray;
 
@@ -90,7 +93,10 @@ class ExpandResolver implements ExpandResolverInterface
         } elseif ($documentCollection instanceof SplFixedArray) {
             $fixedCollection = $documentCollection;
         } elseif ($documentCollection instanceof \Traversable) {
-            $fixedCollection = iterator_to_array($documentCollection);
+            $fixedCollection = SplFixedArray::fromArray(iterator_to_array($documentCollection));
+        } else {
+            throw new InvalidExpandInputException('Given document collection is of unsupported type ' . GeneralUtility::getType($documentCollection),
+                1423208941);
         }
 
         $success                = true;

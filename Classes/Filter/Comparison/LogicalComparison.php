@@ -86,7 +86,6 @@ class LogicalComparison implements LogicalComparisonInterface
             throw new InvalidComparisonException('No constraints given', 1410710918);
         }
 
-
         foreach ($constraints as $constraint) {
             if ($strict && !($constraint instanceof ComparisonInterface)) {
                 throw new InvalidComparisonException(sprintf(
@@ -94,11 +93,7 @@ class LogicalComparison implements LogicalComparisonInterface
                     is_object($constraint) ? get_class($constraint) : gettype($constraint)
                 ), 1418037096);
             }
-
             $constraintResult = !!($constraint instanceof ComparisonInterface ? $constraint->perform($testValue) : $constraint);
-            //if ($operator === ComparisonInterface::TYPE_AND) {
-            //    DebugUtility::var_dump($constraint, $this, $constraint->perform($testValue));
-            //}
 
             // If the operator is OR and one constraint is TRUE return TRUE
             if ($isOr && $constraintResult) {
@@ -110,7 +105,6 @@ class LogicalComparison implements LogicalComparisonInterface
                 return false;
             }
         }
-
 
         if ($isOr) { // If the operator is OR and none matched so far, return FALSE
             return false;
