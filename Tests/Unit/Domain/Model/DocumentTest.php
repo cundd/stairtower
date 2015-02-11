@@ -156,6 +156,71 @@ class DocumentTest extends AbstractCase
         $this->assertEquals('Abercrombie', $this->fixture->valueForKeyPath('person.lastname'));
     }
 
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     */
+    public function invalidInputDataStringTest()
+    {
+        new Document('blur');
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     */
+    public function invalidInputDataFloatTest()
+    {
+        new Document(0.1);
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     */
+    public function invalidInputDataIntTest()
+    {
+        new Document(1);
+    }
+
+    /**
+     * @test
+     */
+    public function ignoreFalseInputDataTest()
+    {
+        $this->assertEmpty((new Document(false))->getData());
+        $this->assertEmpty((new Document(null))->getData());
+        $this->assertEmpty((new Document(array()))->getData());
+        $this->assertEmpty((new Document(''))->getData());
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     */
+    public function setInvalidDataStringTest()
+    {
+        $this->fixture->setData('blur');
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     */
+    public function setInvalidDataFloatTest()
+    {
+        $this->fixture->setData(0.1);
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     */
+    public function setInvalidDataIntTest()
+    {
+        $this->fixture->setData(10);
+    }
+
     protected function setUp()
     {
         $this->checkPersonFile();

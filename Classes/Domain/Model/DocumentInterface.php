@@ -55,7 +55,7 @@ interface DocumentInterface extends KeyValueCodingInterface
     /**
      * Returns the underlying data
      *
-     * @return mixed
+     * @return array
      */
     public function getData();
 
