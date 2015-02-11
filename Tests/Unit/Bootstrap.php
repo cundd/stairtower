@@ -14,7 +14,11 @@ if (file_exists($XHPROF_ROOT)) {
     require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_runs.php';
 }
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../../../../../vendor/autoload.php')) {
+    require_once __DIR__ . '/../../../../../vendor/autoload.php';
+} else {
+    require_once __DIR__ . '/../../vendor/autoload.php';
+}
 require_once __DIR__ . '/AbstractCase.php';
 require_once __DIR__ . '/AbstractDataBasedCase.php';
 require_once __DIR__ . '/AbstractDatabaseBasedCase.php';
