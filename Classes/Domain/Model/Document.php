@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
 use Cundd\PersistentObjectStore\LogicException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
@@ -30,6 +31,7 @@ class Document implements DocumentInterface, JsonSerializable
     public function __construct($data = array(), $databaseIdentifier = '')
     {
         if ($data) {
+            $this->assertDataType($data);
             $this->data = $data;
         }
         if ($databaseIdentifier) {
@@ -37,7 +39,6 @@ class Document implements DocumentInterface, JsonSerializable
             $this->databaseIdentifier = $databaseIdentifier;
         }
     }
-
 
     /**
      * Returns the global unique identifier
@@ -48,6 +49,7 @@ class Document implements DocumentInterface, JsonSerializable
     {
         return $this->getDatabaseIdentifier() . '-' . $this->getId();
     }
+
 
     /**
      * Returns the associated database
@@ -170,7 +172,7 @@ class Document implements DocumentInterface, JsonSerializable
     /**
      * Returns the underlying data
      *
-     * @return mixed
+     * @return array
      */
     public function getData()
     {
@@ -180,10 +182,11 @@ class Document implements DocumentInterface, JsonSerializable
     /**
      * Returns the underlying data
      *
-     * @param mixed $data
+     * @param array $data
      */
     public function setData($data)
     {
+        $this->assertDataType($data);
         $this->data = $data;
     }
 
@@ -205,5 +208,20 @@ class Document implements DocumentInterface, JsonSerializable
             'modificationTime' => $this->getModificationTime(),
         );
         return $objectData;
+    }
+
+    /**
+     * Assert if the data type is array
+     *
+     * @param array $data
+     */
+    protected function assertDataType($data)
+    {
+        if (!is_array($data)) {
+            throw new InvalidDataException(
+                sprintf('Given data is not of type array but %s', GeneralUtility::getType($data)),
+                1423687533
+            );
+        }
     }
 }
