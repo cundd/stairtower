@@ -87,7 +87,7 @@ abstract class AbstractDocumentController extends AbstractController implements 
             return null;
         }
         try {
-            return clone $coordinator->getDatabase($databaseIdentifier);
+            return $coordinator->getDatabase($databaseIdentifier);
         } catch (ReaderException $exception) {
             return null;
         }
