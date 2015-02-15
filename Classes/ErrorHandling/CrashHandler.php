@@ -6,7 +6,7 @@
  * Time: 17:41
  */
 
-namespace Cundd\PersistentObjectStore;
+namespace Cundd\PersistentObjectStore\ErrorHandling;
 
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
@@ -22,7 +22,7 @@ use DateTime;
  *
  * @package Cundd\PersistentObjectStore
  */
-class CrashHandler
+class CrashHandler implements HandlerInterface
 {
     public static $sharedCrashHandler;
     /**
@@ -48,39 +48,58 @@ class CrashHandler
      */
     public function register()
     {
-        register_shutdown_function(array($this, 'handleCrash'));
-//		register_shutdown_function(array(get_called_class(), 'handleCrash'));
+        register_shutdown_function(array($this, 'shutdown'));
     }
 
     /**
      * Tries to handle a crashed system
      */
-    public function handleCrash()
+    public function shutdown()
     {
         $error = error_get_last();
         if ($error !== null) {
-            // Construct a helpful crash message
-            $errorNumber  = intval($error['type']);
-            $errorFile    = $error['file'];
-            $errorLine    = $error['line'];
-            $errorMessage = $error['message'];
+            $errno   = intval($error['type']);
+            $errstr  = $error['message'];
+            $errfile = $error['file'];
+            $errline = $error['line'];
 
-            $errorReport   = [];
-            $errorReport[] = sprintf('Server crashed with code %d and message "%s" in %s at %s', $errorNumber,
-                $errorMessage, $errorFile, $errorLine);
-            $errorReport[] = sprintf('Date/time: %s', $this->getTimeWithMicroseconds()->format('Y-m-d H:i:s.u'));
-            $errorReport[] = sprintf('Current memory usage: %s', GeneralUtility::formatBytes(memory_get_usage(true)));
-            $errorReport[] = sprintf('Peak memory usage: %s', GeneralUtility::formatBytes(memory_get_peak_usage(true)));
-
-            // Try to rescue data
-            $errorReport[] = $this->rescueData();
-
-            // Output and save the information
-            $errorReport     = implode(PHP_EOL, $errorReport);
-            $errorReportPath = static::getRescueDirectory() . 'CRASH_REPORT.txt';
-            file_put_contents($errorReportPath, $errorReport);
-            print $errorReport;
+            $this->handle($errno, $errstr, $errfile, $errline);
         }
+    }
+
+    /**
+     * Perform the actions to handle the problem
+     *
+     * @param int    $errno
+     * @param string $errstr
+     * @param string $errfile
+     * @param int    $errline
+     * @param array  $errcontext
+     * @return bool
+     */
+    public function handle($errno, $errstr, $errfile = '', $errline = 0, $errcontext = array())
+    {
+        // Construct a helpful crash message
+        $errorReport   = [];
+        $errorReport[] = sprintf(
+            'Server crashed with code %d and message "%s" in %s at %s',
+            $errno,
+            $errstr,
+            $errfile,
+            $errline
+        );
+        $errorReport[] = sprintf('Date/time: %s', $this->getTimeWithMicroseconds()->format('Y-m-d H:i:s.u'));
+        $errorReport[] = sprintf('Current memory usage: %s', GeneralUtility::formatBytes(memory_get_usage(true)));
+        $errorReport[] = sprintf('Peak memory usage: %s', GeneralUtility::formatBytes(memory_get_peak_usage(true)));
+
+        // Try to rescue data
+        $errorReport[] = $this->rescueData();
+
+        // Output and save the information
+        $errorReport     = implode(PHP_EOL, $errorReport);
+        $errorReportPath = static::getRescueDirectory() . 'CRASH_REPORT.txt';
+        file_put_contents($errorReportPath, $errorReport);
+        print $errorReport;
     }
 
     /**

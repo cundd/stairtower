@@ -53,7 +53,7 @@ $eventLoop = \React\EventLoop\Factory::create();
 $diContainer->set('React\\EventLoop\\LoopInterface', $eventLoop);
 $diContainer->get('Cundd\\PersistentObjectStore\\Event\\SharedEventEmitter')->setEventLoop($eventLoop);
 
-$diContainer->get('Cundd\\PersistentObjectStore\\CrashHandler')->register();
+$diContainer->get('Cundd\\PersistentObjectStore\\ErrorHandling\\CrashHandler')->register();
 
 /** @var \Cundd\PersistentObjectStore\Server\RestServer $server */
 $server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\RestServer');
