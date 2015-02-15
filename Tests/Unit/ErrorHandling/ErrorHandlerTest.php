@@ -8,8 +8,16 @@
 
 namespace Cundd\PersistentObjectStore\ErrorHandling;
 
-use Cundd\PersistentObjectStore\Domain\Model\Document;
+class TestClass_ForErrorHandler
+{
 
+}
+
+/**
+ * Test for ErrorHandler
+ *
+ * @package Cundd\PersistentObjectStore\ErrorHandling
+ */
 class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -47,7 +55,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function documentToStringTest()
     {
-        $object = new Document();
+        $object = new TestClass_ForErrorHandler();
         return (string)$object;
     }
 }
