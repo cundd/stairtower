@@ -203,7 +203,7 @@ class Coordinator implements CoordinatorInterface
     {
         $databases = Manager::getObjectsByTag(self::MEMORY_MANAGER_TAG);
         if ($databases) {
-            $this->logger->debug(sprintf('Number of databases to commit: %d', count($databases)));
+            $this->logger->debug(sprintf('Number of open databases: %d', count($databases)));
 
             /** @var DatabaseInterface $database */
             foreach ($databases as $database) {
