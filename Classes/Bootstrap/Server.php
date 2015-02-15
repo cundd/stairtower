@@ -10,7 +10,8 @@ namespace Cundd\PersistentObjectStore\Bootstrap;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\CrashHandler;
+use Cundd\PersistentObjectStore\ErrorHandling\CrashHandler;
+use Cundd\PersistentObjectStore\ErrorHandling\ErrorHandler;
 use Cundd\PersistentObjectStore\Server\ServerInterface;
 use DI\Container;
 use Psr\Log\LogLevel;
@@ -36,6 +37,12 @@ class Server
      */
     protected $crashHandler;
 
+    /**
+     * Error handler
+     *
+     * @var ErrorHandler
+     */
+    protected $errorHandler;
 
     /**
      * @param array $arguments
@@ -106,12 +113,23 @@ class Server
      */
     public function startServer()
     {
-        $this->crashHandler = new CrashHandler();
-        $this->crashHandler->register();
+        $this->configureErrorHandling();
 
         $this->server->start();
 
         $this->crashHandler->unregister();
+    }
+
+    /**
+     * Configure the error handling
+     */
+    protected function configureErrorHandling()
+    {
+        $this->crashHandler = new CrashHandler();
+        $this->crashHandler->register();
+
+        $this->errorHandler = new ErrorHandler();
+        $this->errorHandler->register();
     }
 
     /**

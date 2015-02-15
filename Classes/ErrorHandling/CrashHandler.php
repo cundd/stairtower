@@ -11,7 +11,6 @@ namespace Cundd\PersistentObjectStore\ErrorHandling;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
-use Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
 use Cundd\PersistentObjectStore\Memory\Manager;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
