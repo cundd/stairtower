@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\ErrorHandling;
 
-
 use Cundd\PersistentObjectStore\ErrorException;
 
 /**
@@ -25,7 +24,8 @@ class ErrorHandler implements HandlerInterface
      */
     protected $errorMessageSignatures = array(
         // Exception class name => Signature
-        'Cundd\\PersistentObjectStore\\Exception\\StringTransformationException' => 'Object of class %s could not be converted to string'
+        'Object of class %s could not be converted to string'          => 'Cundd\\PersistentObjectStore\\Exception\\StringTransformationException',
+        'Argument %d passed to %s must be an instance of %s, %s given' => 'Cundd\\PersistentObjectStore\\Exception\\InvalidArgumentError',
     );
 
     /**
@@ -50,7 +50,7 @@ class ErrorHandler implements HandlerInterface
     public function handle($errno, $errstr, $errfile = '', $errline = 0, $errcontext = array())
     {
         if (E_RECOVERABLE_ERROR === $errno) {
-            foreach ($this->errorMessageSignatures as $exceptionClassName => $errorMessageSignature) {
+            foreach ($this->errorMessageSignatures as $errorMessageSignature => $exceptionClassName) {
                 $match = sscanf($errstr, $errorMessageSignature);
                 if ($match && isset($match[0]) && $match[0] !== null) {
                     throw new $exceptionClassName($errstr, 0, $errno, $errfile, $errline);
