@@ -66,8 +66,25 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function setRequestInfoTest()
+    {
+        $request     = new Request('GET', '/loaned/');
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+        $this->fixture->setRequestInfo($requestInfo);
+        $this->assertSame($requestInfo, $this->fixture->getRequestInfo());
+        $this->assertSame($request, $this->fixture->getRequest());
+    }
+
+
+    /**
+     * @test
+     */
     public function unsetRequestInfoTest()
     {
+        $request     = new Request('GET', '/loaned/');
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+        $this->fixture->setRequestInfo($requestInfo);
+
         $this->fixture->unsetRequestInfo();
         $this->assertNull($this->fixture->getRequestInfo());
         $this->assertNull($this->fixture->getRequest());
