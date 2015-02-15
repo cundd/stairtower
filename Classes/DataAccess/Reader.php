@@ -52,19 +52,6 @@ class Reader
     }
 
     /**
-     * Fills the database with the given data
-     *
-     * @param Database $database
-     * @param          array <Document> $data
-     * @param          array <Document> $metaData
-     */
-    protected function _fillDatabaseWithData($database, $dataCollection, $metaDataCollection)
-    {
-        $database->setRawData($dataCollection);
-        $database->setState(DatabaseStateInterface::STATE_CLEAN);
-    }
-
-    /**
      * Loads the given raw database
      *
      * @param string $databaseIdentifier
@@ -165,5 +152,18 @@ class Reader
 //		DebugUtility::printMemorySample();
 
         return $dataCollection;
+    }
+
+    /**
+     * Fills the database with the given data
+     *
+     * @param Database $database
+     * @param          array <Document> $data
+     * @param          array <Document> $metaData
+     */
+    protected function _fillDatabaseWithData($database, $dataCollection, $metaDataCollection)
+    {
+        $database->setRawData($dataCollection);
+        $database->setState(DatabaseStateInterface::STATE_CLEAN);
     }
 }

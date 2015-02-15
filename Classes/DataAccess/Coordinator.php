@@ -49,11 +49,19 @@ class Coordinator implements CoordinatorInterface
     protected $logger;
 
     /**
+     * Array of databases
+     *
+     * @var string[]
+     */
+    protected $allDatabaseIdentifiers = null;
+
+    /**
      * Array of databases and their objects
      *
      * @var array[]
      */
     #protected $objectStore = array();
+
 
     /**
      * Returns the database with the given identifier
@@ -93,11 +101,12 @@ class Coordinator implements CoordinatorInterface
         }
 
         $this->dataWriter->createDatabase($databaseIdentifier, $options);
-        $this->eventEmitter->emit(Event::DATABASE_CREATED, array($databaseIdentifier));
-        $this->logger->info(sprintf('Create database "%s"', $databaseIdentifier));
 
         $newDatabase = new Database($databaseIdentifier);
         Manager::registerObject($newDatabase, $databaseIdentifier, array(self::MEMORY_MANAGER_TAG));
+        $this->allDatabaseIdentifiers[$databaseIdentifier] = $databaseIdentifier;
+        $this->logger->info(sprintf('Create database "%s"', $databaseIdentifier));
+        $this->eventEmitter->emit(Event::DATABASE_CREATED, array($databaseIdentifier));
         return $newDatabase;
     }
 
@@ -110,10 +119,10 @@ class Coordinator implements CoordinatorInterface
     public function databaseExists($databaseIdentifier)
     {
         GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
-        if (Manager::hasObject($databaseIdentifier)) {
-            return true;
+        if ($this->allDatabaseIdentifiers === null) {
+            $this->listDatabases();
         }
-        return $this->dataReader->databaseExists($databaseIdentifier);
+        return isset($this->allDatabaseIdentifiers[$databaseIdentifier]);
     }
 
     /**
@@ -136,6 +145,7 @@ class Coordinator implements CoordinatorInterface
         }
 
         $this->dataWriter->dropDatabase($databaseIdentifier);
+        unset($this->allDatabaseIdentifiers[$databaseIdentifier]);
         $this->logger->info(sprintf('Drop database "%s"', $databaseIdentifier));
         $this->eventEmitter->emit(Event::DATABASE_DROPPED, array($databaseIdentifier));
     }
@@ -157,14 +167,13 @@ class Coordinator implements CoordinatorInterface
      */
     public function listDatabases()
     {
-        $persistedDatabases = $this->listPersistedDatabases();
-        $persistedDatabases = array_combine($persistedDatabases, $persistedDatabases);
-
-        $inMemoryDatabases = Manager::getIdentifiersByTag(self::MEMORY_MANAGER_TAG, true);
-        $inMemoryDatabases = array_combine($inMemoryDatabases, $inMemoryDatabases);
-
-        $allDatabases = array_merge($persistedDatabases, $inMemoryDatabases);
-        return array_keys($allDatabases);
+        if ($this->allDatabaseIdentifiers === null) {
+            $this->allDatabaseIdentifiers = array_combine(
+                $this->listPersistedDatabases(),
+                $this->listPersistedDatabases()
+            );
+        }
+        return array_values($this->allDatabaseIdentifiers);
     }
 
     /**
