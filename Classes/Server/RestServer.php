@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
@@ -30,12 +31,14 @@ use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
+use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Monolog\Logger;
 use React\Http\Request;
 use React\Http\Response;
 use React\Http\Server as HttpServer;
 use React\Socket\Server as SocketServer;
 use React\Stream\BufferedSink;
+use ReflectionClass;
 
 /**
  * REST server
@@ -258,7 +261,20 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
 
             // Invoke the Controller action
             $requestBody = $requestInfo->getBody();
-            if ($requestBody) {
+
+            $controllerActionRequiresDocumentArgument = $this->getControllerActionRequiresDocumentArgument(
+                $controller,
+                $action
+            );
+
+            if ($controllerActionRequiresDocumentArgument) {
+                if ($requestBody !== null) {
+                    $documentBody = new Document($requestBody);
+                    $rawResult = $controller->$action($documentBody);
+                } else {
+                    $rawResult = $controller->$action(null);
+                }
+            } elseif ($requestBody !== null) {
                 $rawResult = $controller->$action($requestBody);
             } else {
                 $rawResult = $controller->$action();
@@ -596,6 +612,37 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             return false;
         }
         return true;
+    }
+
+    /**
+     * Returns if the given controller action requires a Document as parameter
+     *
+     * TODO: Move this functionality into a separate class
+     * @param string|object $controller Class name or instance
+     * @param string $actionMethod Method name
+     * @return bool
+     */
+    protected function getControllerActionRequiresDocumentArgument($controller, $actionMethod)
+    {
+        static $controllerActionRequiresDocumentCache = array();
+        $controllerClass = is_string($controller) ? $controller : get_class($controller);
+        $controllerActionIdentifier = $controllerClass . '::' . $actionMethod;
+
+        if (isset($controllerActionRequiresDocumentCache[$controllerActionIdentifier])) {
+            return $controllerActionRequiresDocumentCache[$controllerActionIdentifier];
+        }
+
+        $classReflection = new ReflectionClass($controllerClass);
+        $methodReflection = $classReflection->getMethod($actionMethod);
+        $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = false;
+        foreach ($methodReflection->getParameters() as $parameter) {
+            $argumentClassName = $parameter->getClass() ? trim($parameter->getClass()->getName()) : null;
+            if ($argumentClassName && $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\Document') {
+                $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = true;
+                break;
+            }
+        }
+        return $controllerActionRequiresDocumentCache[$controllerActionIdentifier];
     }
 
 }
