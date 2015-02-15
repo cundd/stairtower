@@ -11,8 +11,6 @@ namespace Cundd\PersistentObjectStore\Server;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
-use Cundd\PersistentObjectStore\LogicException;
-use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
@@ -261,9 +259,9 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             // Invoke the Controller action
             $requestBody = $requestInfo->getBody();
             if ($requestBody) {
-                $rawResult = call_user_func(array($controller, $action), $requestBody);
+                $rawResult = $controller->$action($requestBody);
             } else {
-                $rawResult = call_user_func(array($controller, $action));
+                $rawResult = $controller->$action();
             }
 
             // Transform the raw result into a Controller Result if needed
