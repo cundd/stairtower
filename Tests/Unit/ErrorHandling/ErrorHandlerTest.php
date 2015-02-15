@@ -8,6 +8,8 @@
 
 namespace Cundd\PersistentObjectStore\ErrorHandling;
 
+use stdClass;
+
 class TestClass_ForErrorHandler
 {
 
@@ -45,7 +47,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function stdClassToStringTest()
     {
-        $object = new \stdClass();
+        $object = new stdClass();
         return (string)$object;
     }
 
@@ -57,5 +59,58 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $object = new TestClass_ForErrorHandler();
         return (string)$object;
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
+     */
+    public function expectTestClassGetArrayTest()
+    {
+        $this->expectTestClass(array());
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
+     */
+    public function expectTestClassGetNullTest()
+    {
+        $this->expectTestClass(null);
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
+     */
+    public function expectTestClassGetStdClassTest()
+    {
+        $this->expectTestClass(new stdClass());
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
+     */
+    public function expectArrayGetNullTest()
+    {
+        $this->expectArray(null);
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
+     */
+    public function expectArrayGetStdClassTest()
+    {
+        $this->expectArray(new stdClass());
+    }
+
+    protected function expectTestClass(TestClass_ForErrorHandler $object)
+    {
+    }
+
+    protected function expectArray(array $array)
+    {
     }
 }
