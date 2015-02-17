@@ -61,6 +61,14 @@ class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server
     public function headMyMethodAction()
     {
     }
+
+    public function processRequest(
+        \Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo $requestInfo,
+        \React\Http\Response $response
+    ) {
+    }
+
+
 }
 
 class_alias('Test_Application', 'Cundd\\Special\\Application');
