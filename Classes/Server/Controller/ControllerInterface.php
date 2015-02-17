@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Server\Controller;
 
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 use React\Http\Request;
+use React\Http\Response;
 
 /**
  * Interface for Controllers
@@ -73,4 +74,16 @@ interface ControllerInterface
      * @param ControllerResultInterface $result
      */
     public function didInvokeAction($action, ControllerResultInterface $result);
+
+    /**
+     * Process the given request
+     *
+     * The result output is returned by altering the given response.
+     *
+     * @param RequestInfo $requestInfo The request object
+     * @param Response $response The response, modified by this handler
+     *
+     * @return mixed Returns the result of the processing
+     */
+    public function processRequest(RequestInfo $requestInfo, Response $response);
 }

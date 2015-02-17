@@ -8,8 +8,12 @@
 
 namespace Cundd\PersistentObjectStore\Server\Controller;
 
+use Cundd\PersistentObjectStore\Server\Exception\RequestMethodNotImplementedException;
+use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
+use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 use React\Http\Request;
+use React\Http\Response;
 
 /**
  * An abstract Controller implementation
@@ -99,5 +103,69 @@ abstract class AbstractController implements ControllerInterface
      */
     public function didInvokeAction($action, ControllerResultInterface $result)
     {
+    }
+
+    /**
+     * Process the given request
+     *
+     * The result output is returned by altering the given response.
+     *
+     * @param RequestInfo $requestInfo The request object
+     * @param Response $response The response, modified by this handler
+     *
+     * @return mixed Returns the result of the processing
+     */
+    public function processRequest(RequestInfo $requestInfo, Response $response) {
+        if (!method_exists($this, $requestInfo->getAction())) {
+            throw new RequestMethodNotImplementedException(
+                sprintf('Request method %s is not defined', $requestInfo->getAction()),
+                1420551044
+            );
+        }
+
+        $action = $requestInfo->getAction();
+
+        // Prepare the Controller for the current request
+        $this->initialize();
+        $this->setRequestInfo($requestInfo);
+        $this->willInvokeAction($action);
+
+        $argument = $this->prepareArgumentForRequestAndAction($requestInfo, $action, $noArgument);
+
+        // Invoke the Controller action
+        if (!$noArgument) {
+            $rawResult = $this->$action($argument);
+        } else {
+            $rawResult = $this->$action();
+        }
+
+        // Transform the raw result into a Controller Result if needed
+        if ($rawResult instanceof ControllerResultInterface) {
+            $result = $rawResult;
+        } elseif ($rawResult instanceof HandlerResultInterface) {
+            $result = new ControllerResult(
+                $rawResult->getStatusCode(),
+                $rawResult->getData()
+            );
+        } else {
+            $result = new ControllerResult(200, $rawResult);
+        }
+        $this->didInvokeAction($action, $result);
+        $this->unsetRequestInfo();
+
+        return $result;
+    }
+
+    /**
+     * Returns the argument to be passed to the action
+     *
+     * @param RequestInfo $requestInfo Request info object
+     * @param string $action Action name
+     * @param bool $noArgument Reference the will be set to true if no argument should be passed
+     * @return mixed
+     */
+    protected function prepareArgumentForRequestAndAction($requestInfo, $action, &$noArgument = false)
+    {
+        return $requestInfo->getBody();
     }
 }

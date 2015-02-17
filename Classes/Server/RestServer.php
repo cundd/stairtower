@@ -243,55 +243,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      */
     public function invokeControllerActionWithRequestInfo($requestInfo, $response, $controller)
     {
-        if (!method_exists($controller, $requestInfo->getAction())) {
-            throw new RequestMethodNotImplementedException(
-                sprintf('Request method %s is not defined', $requestInfo->getAction()),
-                1420551044
-            );
-        }
-
-        $result      = null;
-        $action = $requestInfo->getAction();
-
         try {
-            // Prepare the Controller for the current request
-            $controller->initialize();
-            $controller->setRequestInfo($requestInfo);
-            $controller->willInvokeAction($action);
-
-            // Invoke the Controller action
-            $requestBody = $requestInfo->getBody();
-
-            $controllerActionRequiresDocumentArgument = $this->getControllerActionRequiresDocumentArgument(
-                $controller,
-                $action
-            );
-
-            if ($controllerActionRequiresDocumentArgument) {
-                if ($requestBody !== null) {
-                    $documentBody = new Document($requestBody);
-                    $rawResult = $controller->$action($documentBody);
-                } else {
-                    $rawResult = $controller->$action(null);
-                }
-            } elseif ($requestBody !== null) {
-                $rawResult = $controller->$action($requestBody);
-            } else {
-                $rawResult = $controller->$action();
-            }
-
-            // Transform the raw result into a Controller Result if needed
-            if ($rawResult instanceof ControllerResultInterface) {
-                $result = $rawResult;
-            } elseif ($rawResult instanceof HandlerResultInterface) {
-                $result = new ControllerResult(
-                    $rawResult->getStatusCode(),
-                    $rawResult->getData()
-                );
-            } else {
-                $result = new ControllerResult(200, $rawResult);
-            }
-            $controller->didInvokeAction($action, $result);
+            $result = $controller->processRequest($requestInfo, $response);
 
         } catch (\Exception $exception) {
             $this->writeln('Caught exception #%d: %s', $exception->getCode(), $exception->getMessage());
@@ -620,7 +573,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      * TODO: Move this functionality into a separate class
      * @param string|object $controller Class name or instance
      * @param string $actionMethod Method name
-     * @return bool
+     * @return int Returns 1 if a Document is required, 2 if it is optional otherwise 0
      */
     protected function getControllerActionRequiresDocumentArgument($controller, $actionMethod)
     {
@@ -634,11 +587,11 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
 
         $classReflection = new ReflectionClass($controllerClass);
         $methodReflection = $classReflection->getMethod($actionMethod);
-        $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = false;
+        $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = 0;
         foreach ($methodReflection->getParameters() as $parameter) {
             $argumentClassName = $parameter->getClass() ? trim($parameter->getClass()->getName()) : null;
             if ($argumentClassName && $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\Document') {
-                $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = true;
+                $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = ($parameter->isOptional() ? 2 : 1);
                 break;
             }
         }
