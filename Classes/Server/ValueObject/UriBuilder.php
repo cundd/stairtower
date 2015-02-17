@@ -15,6 +15,13 @@ use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
+/**
+ * Class to build URIs for controller actions
+ *
+ * TODO: Move the class into a better sub-namespace
+ *
+ * @package Cundd\PersistentObjectStore\Server\ValueObject
+ */
 class UriBuilder implements UriBuilderInterface
 {
     /**
@@ -87,7 +94,7 @@ class UriBuilder implements UriBuilderInterface
      * @param ControllerInterface|string $controller Controller instance or name
      * @return string
      */
-    protected function getControllerNamespaceForController($controller)
+    public function getControllerNamespaceForController($controller)
     {
         if ($controller instanceof ControllerInterface) {
             $controllerClass = get_class($controller);
@@ -98,6 +105,10 @@ class UriBuilder implements UriBuilderInterface
                 sprintf('Invalid controller argument %s', GeneralUtility::getType($controller)),
                 1422472649
             );
+        }
+
+        if (!$controllerClass) {
+            throw new InvalidUriBuilderArgumentException('Could not determine the controller class', 1422472650);
         }
 
         $uriParts = [];

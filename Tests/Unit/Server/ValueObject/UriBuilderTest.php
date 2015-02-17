@@ -192,6 +192,33 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
+     */
+    public function getControllerNamespaceForControllerTests()
+    {
+        $this->assertEquals('_cundd-sa-hello', $this->fixture->getControllerNamespaceForController(
+            'Cundd\\Sa\\Controller\\HelloController'
+        ));
+        $this->assertEquals('_cundd-sa-hello', $this->fixture->getControllerNamespaceForController(
+            $this->makeInstance('Cundd\\Sa\\Controller\\HelloController')
+        ));
+
+        $this->assertEquals('_cundd-stair-application', $this->fixture->getControllerNamespaceForController(
+            'Cundd\\Stair\\Controller\\ApplicationController'
+        ));
+        $this->assertEquals('_cundd-stair-application', $this->fixture->getControllerNamespaceForController(
+            $this->makeInstance('Cundd\\Stair\\Controller\\ApplicationController')
+        ));
+
+        $this->assertEquals('_cundd-stair_way-application', $this->fixture->getControllerNamespaceForController(
+            'Cundd\\StairWay\\Controller\\ApplicationController'
+        ));
+        $this->assertEquals('_cundd-stair_way-application', $this->fixture->getControllerNamespaceForController(
+            $this->makeInstance('Cundd\\StairWay\\Controller\\ApplicationController')
+        ));
+    }
+
+    /**
+     * @test
      * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
      * @expectedExceptionCode 1422475362
      */
@@ -258,6 +285,16 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
     public function invalidDocumentTest()
     {
         $this->fixture->buildUriFor('blur', 'get', 'HelloController', 'database', new \stdClass());
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
+     * @expectedExceptionCode 1422472650
+     */
+    public function noControllerForGetControllerNamespaceForControllerTests()
+    {
+        $this->fixture->getControllerNamespaceForController('');
     }
 
 }

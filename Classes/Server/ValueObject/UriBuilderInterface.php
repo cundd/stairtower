@@ -30,4 +30,12 @@ interface UriBuilderInterface
      * @return string
      */
     public function buildUriFor($actionName, $actionMethod, $controller, $database = null, $document = null);
+
+    /**
+     * Creates the request namespace for the given controller
+     *
+     * @param ControllerInterface|string $controller Controller instance or name
+     * @return string
+     */
+    public function getControllerNamespaceForController($controller);
 }
