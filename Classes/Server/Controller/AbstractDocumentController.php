@@ -11,9 +11,11 @@ namespace Cundd\PersistentObjectStore\Server\Controller;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Server\ServerInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use ReflectionClass;
 
 /**
  * An abstract Document based Controller
@@ -124,5 +126,64 @@ abstract class AbstractDocumentController extends AbstractController implements 
             return clone $document;
         }
         return null;
+    }
+
+    /**
+     * Returns the argument to be passed to the action
+     *
+     * @param RequestInfo $requestInfo Request info object
+     * @param string $action Action name
+     * @param bool $noArgument Reference the will be set to true if no argument should be passed
+     * @return Document|null
+     */
+    protected function prepareArgumentForRequestAndAction($requestInfo, $action, &$noArgument = false)
+    {
+        $requiresDocumentArgument = $this->checkIfActionRequiresDocumentArgument($action);
+        if ($requiresDocumentArgument === 0) {
+            $noArgument = true;
+            return null;
+        }
+
+        $requestBody = $requestInfo->getBody();
+        if ($requiresDocumentArgument > 0) {
+            if ($requestBody !== null) {
+                return new Document($requestBody);
+            } else {
+                return $this->getDocumentForCurrentRequest();
+            }
+        } elseif ($requestBody !== null) {
+            return $requestBody;
+        }
+        return null;
+    }
+
+    /**
+     * Returns if the controller action requires a Document as parameter
+     *
+     * TODO: Move this functionality into a separate class
+     * @param string $actionMethod Method name
+     * @return int Returns 1 if a Document is required, 2 if it is optional otherwise 0
+     */
+    protected function checkIfActionRequiresDocumentArgument($actionMethod)
+    {
+        static $controllerActionRequiresDocumentCache = array();
+        $controllerClass = get_class($this);
+        $controllerActionIdentifier = $controllerClass . '::' . $actionMethod;
+
+        if (isset($controllerActionRequiresDocumentCache[$controllerActionIdentifier])) {
+            return $controllerActionRequiresDocumentCache[$controllerActionIdentifier];
+        }
+
+        $classReflection = new ReflectionClass($controllerClass);
+        $methodReflection = $classReflection->getMethod($actionMethod);
+        $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = 0;
+        foreach ($methodReflection->getParameters() as $parameter) {
+            $argumentClassName = $parameter->getClass() ? trim($parameter->getClass()->getName()) : null;
+            if ($argumentClassName && $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\Document') {
+                $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = ($parameter->isOptional() ? 2 : 1);
+                break;
+            }
+        }
+        return $controllerActionRequiresDocumentCache[$controllerActionIdentifier];
     }
 }
