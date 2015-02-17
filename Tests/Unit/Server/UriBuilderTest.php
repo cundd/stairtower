@@ -6,12 +6,11 @@
  * Time: 20:20
  */
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Domain\Model\Document;
-
 
 /**
  * Tests for creating URIs

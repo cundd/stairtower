@@ -6,7 +6,7 @@
  * Time: 21:07
  */
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\PersistentObjectStore\Server;
 
 
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
@@ -17,8 +17,6 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
  * Class to build URIs for controller actions
- *
- * TODO: Move the class into a better sub-namespace
  *
  * @package Cundd\PersistentObjectStore\Server\ValueObject
  */

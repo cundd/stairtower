@@ -6,7 +6,7 @@
  * Time: 20:58
  */
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
