@@ -14,6 +14,7 @@ $persistentObjectStoreClassBase = 'Cundd\\PersistentObjectStore\\';
 return array(
     $persistentObjectStoreClassBase . 'Formatter\\FormatterInterface'               => DI\object($persistentObjectStoreClassBase . 'Formatter\\Formatter'),
     $persistentObjectStoreClassBase . 'Server\\Handler\\HandlerInterface'           => DI\object($persistentObjectStoreClassBase . 'Server\\Handler\\Handler'),
+    $persistentObjectStoreClassBase . 'Server\\UriBuilderInterface' => DI\object($persistentObjectStoreClassBase . 'Server\\UriBuilder'),
     //$persistentObjectStoreClassBase . 'Server\\BodyParser\\BodyParserInterface' => DI\object($persistentObjectStoreClassBase . 'Server\\BodyParser\\JsonBodyParser'),
     $persistentObjectStoreClassBase . 'DataAccess\\CoordinatorInterface'            => DI\object($persistentObjectStoreClassBase . 'DataAccess\\Coordinator'),
     $persistentObjectStoreClassBase . 'DataAccess\\ObjectFinderInterface'           => DI\object($persistentObjectStoreClassBase . 'DataAccess\\ObjectFinder'),
@@ -37,7 +38,7 @@ return array(
         $logger->pushHandler(new StreamHandler(STDOUT, $logLevel));
         return $logger;
     }),
-    'React\\EventLoop\\LoopInterface' => DI\factory(function() {
+    'React\\EventLoop\\LoopInterface'                               => DI\factory(function () {
         return Factory::create();
     })
 );
