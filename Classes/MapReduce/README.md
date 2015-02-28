@@ -1,0 +1,4 @@
+MapReduce
+=========
+
+The MapReduce module

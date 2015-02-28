@@ -20,6 +20,7 @@ use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Index\IndexableInterface;
 use Cundd\PersistentObjectStore\Index\IndexInterface;
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Iterator;
 use SplFixedArray;
 
@@ -454,18 +455,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      */
     protected function collectionToFixedArray($collection)
     {
-        // Get the collection data as SplFixedArray and return it
-        if ($collection instanceof DatabaseRawDataInterface) {
-            $fixedCollection = $collection->getRawData();
-        } elseif (is_array($collection)) {
-            $fixedCollection = SplFixedArray::fromArray($collection);
-        } elseif ($collection instanceof Iterator) {
-            $collection->rewind();
-            $fixedCollection = SplFixedArray::fromArray(iterator_to_array($collection));
-        } else {
-            $fixedCollection = new SplFixedArray(0);
-        }
-        return $fixedCollection;
+        return GeneralUtility::collectionToFixedArray($collection, true);
     }
 
     /**
