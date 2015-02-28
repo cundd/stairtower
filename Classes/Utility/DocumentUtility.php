@@ -58,7 +58,7 @@ class DocumentUtility
                 return $document[Constants::DATA_ID_KEY];
             }
         } else {
-            $value = $document->getId(Constants::DATA_ID_KEY);
+            $value = $document->getId();
             if ($value) {
                 return $value;
             }
