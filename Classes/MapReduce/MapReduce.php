@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\MapReduce;
 
 
 use Closure;
+use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\MapReduce\Exception\InvalidCallbackException;
@@ -151,6 +152,8 @@ class MapReduce implements MapReduceInterface
                 $itemIdentifier = $item->getId();
             } elseif (is_object($item)) {
                 $itemIdentifier = spl_object_hash($item);
+            } elseif (isset($item[Constants::DATA_ID_KEY])) {
+                $itemIdentifier = $item[Constants::DATA_ID_KEY];
             } else {
                 throw new InvalidValueException(
                     sprintf('Given subject is not of an object but of type %s', GeneralUtility::getType($item)),
