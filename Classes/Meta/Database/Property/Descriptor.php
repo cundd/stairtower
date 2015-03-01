@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Meta\Database\Property;
 
 
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\MapReduce\MapReduce;
 use Cundd\PersistentObjectStore\MapReduce\MapReduceInterface;
@@ -42,7 +43,11 @@ class Descriptor implements DescriptorInterface
                 'Cundd\\PersistentObjectStore\\Domain\\Model\\DatabaseInterface', $subject, 1424896728
             );
         }
-        return $this->getMapReduce()->perform($subject);
+        $collection = $subject;
+        if ($subject instanceof DatabaseRawDataInterface) {
+            $collection = $subject->getRawData();
+        }
+        return $this->getMapReduce()->perform($collection);
     }
 
     /**
@@ -54,10 +59,14 @@ class Descriptor implements DescriptorInterface
     {
         if (!$this->mapReduce) {
             /**
-             * @param DocumentInterface $document
+             * @param DocumentInterface|array $document
              */
             $mapFunction = function ($document) {
-                $allProperties = $document->getData();
+                if (is_array($document)) {
+                    $allProperties = $document;
+                } else {
+                    $allProperties = $document->getData();
+                }
                 foreach ($allProperties as $propertyKey => $propertyValue) {
                     /** @var MapReduce $this */
                     $this->emit(
