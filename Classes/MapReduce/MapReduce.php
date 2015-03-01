@@ -166,8 +166,6 @@ class MapReduce implements MapReduceInterface
                 } elseif (is_object($item)) {
                     $processedObjectsLocal[$itemIdentifier] = true;
                 }
-
-
             }
             $i++;
         }
