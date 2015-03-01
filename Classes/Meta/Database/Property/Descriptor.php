@@ -11,9 +11,6 @@ namespace Cundd\PersistentObjectStore\Meta\Database\Property;
 
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\MapReduce\MapReduce;
-use Cundd\PersistentObjectStore\MapReduce\MapReduceInterface;
 use Cundd\PersistentObjectStore\Meta\DescriptorInterface;
 use Cundd\PersistentObjectStore\Meta\Exception\DescriptorSubjectException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
@@ -26,11 +23,6 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 class Descriptor implements DescriptorInterface
 {
     /**
-     * @var MapReduceInterface
-     */
-    protected $mapReduce;
-
-    /**
      * Returns the description of the subject
      *
      * @param DatabaseInterface $subject
@@ -38,65 +30,46 @@ class Descriptor implements DescriptorInterface
      */
     public function describe($subject)
     {
-        if (!$subject instanceof DatabaseInterface) {
+        if (!$subject instanceof DatabaseRawDataInterface) {
             throw DescriptorSubjectException::descriptorException(
                 'Cundd\\PersistentObjectStore\\Domain\\Model\\DatabaseInterface', $subject, 1424896728
             );
         }
-        $collection = $subject;
-        if ($subject instanceof DatabaseRawDataInterface) {
-            $collection = $subject->getRawData();
+
+        $fixedDataCollection = $subject->getRawData();
+        $dataCollectionCount = $fixedDataCollection->getSize();
+        $propertyMap         = array();
+        $i                   = 0;
+        while ($i < $dataCollectionCount) {
+            $item = $fixedDataCollection[$i];
+            if (is_array($item)) {
+                //$propertyMap = array_merge($propertyMap, array_flip(array_keys($item)));
+                //$propertyMap = array_merge($propertyMap, array_keys($item));
+
+
+                //while(list($property, $value) = each($item)) {
+                //    if (!isset($propertyMap[$property])) {
+                //        $propertyMap[$property] = GeneralUtility::getType($value);
+                //    }
+                //}
+
+                foreach ($item as $property => $value) {
+                    if (!isset($propertyMap[$property])) {
+                        $propertyMap[$property] = [
+                            GeneralUtility::getType($value) => 1
+                        ];
+                    }
+                    $propertyMap[$property][GeneralUtility::getType($value)]++;
+
+                }
+            }
+            $i++;
         }
-        return $this->getMapReduce()->perform($collection);
-    }
 
-    /**
-     * Returns the MapReduce instance
-     *
-     * @return MapReduceInterface
-     */
-    protected function getMapReduce()
-    {
-        if (!$this->mapReduce) {
-            /**
-             * @param DocumentInterface|array $document
-             */
-            $mapFunction = function ($document) {
-                if (is_array($document)) {
-                    $allProperties = $document;
-                } else {
-                    $allProperties = $document->getData();
-                }
-                foreach ($allProperties as $propertyKey => $propertyValue) {
-                    /** @var MapReduce $this */
-                    $this->emit(
-                        $propertyKey,
-                        array(
-                            'type'  => GeneralUtility::getType($propertyValue),
-                            'count' => 1
-                        )
-                    );
-                }
-            };
-
-            /**
-             * @param string $key
-             * @param mixed  $values
-             * @return number
-             */
-            $reduceFunction = function ($key, $values) {
-                $types = array();
-                $count = 0;
-
-                foreach ($values as $valueBlock) {
-                    $types[] = $valueBlock['type'];
-                    $count += $valueBlock['count'];
-                }
-                return new Description($key, $types, $count);
-            };
-
-            $this->mapReduce = new MapReduce($mapFunction, $reduceFunction);
+        $descriptionCollection = array();
+        foreach ($propertyMap as $propertyKey => $types) {
+            $descriptionCollection[] = new Description($propertyKey, array_keys($types), array_sum($types));
         }
-        return $this->mapReduce;
+        return $descriptionCollection;
     }
 }
