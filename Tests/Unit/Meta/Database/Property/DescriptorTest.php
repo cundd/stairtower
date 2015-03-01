@@ -48,7 +48,7 @@ class DescriptorTest extends AbstractDatabaseBasedCase
     public function describeDatabaseTest()
     {
         $database = $this->getSmallPeopleDatabase();
-        //$database = $this->coordinator->getDatabase('people');
+        $database = $this->coordinator->getDatabase('people');
 
         $result = $this->fixture->describe($database);
         $this->assertInternalType('array', $result);
