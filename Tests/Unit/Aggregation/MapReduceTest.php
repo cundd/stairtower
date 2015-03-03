@@ -6,7 +6,7 @@
  * Time: 14:41
  */
 
-namespace Cundd\PersistentObjectStore\MapReduce;
+namespace Cundd\PersistentObjectStore\Aggregation;
 
 
 use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
@@ -14,7 +14,7 @@ use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Meta\Database\Property\Description;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use \stdClass;
+use stdClass;
 
 /**
  * Tests for MapReduce
@@ -24,7 +24,7 @@ use \stdClass;
 class MapReduceTest extends AbstractDatabaseBasedCase
 {
     /**
-     * @var \Cundd\PersistentObjectStore\MapReduce\MapReduceInterface
+     * @var \Cundd\PersistentObjectStore\Aggregation\MapReduceInterface
      */
     protected $fixture;
 
@@ -52,11 +52,22 @@ class MapReduceTest extends AbstractDatabaseBasedCase
         $this->coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
     }
 
+    /**
+     * @test
+     */
+    public function emptyTest()
+    {
+        $database = $this->getSmallPeopleDatabase();
+        $database = $this->coordinator->getDatabase('people');
+        $result   = $this->fixture->perform($database);
+        $this->assertInternalType('array', $result);
+        $this->assertEmpty($result);
+    }
 
     /**
      * @test
      */
-    public function test()
+    public function simpleTest()
     {
         /**
          * @param DocumentInterface $document
@@ -78,9 +89,11 @@ class MapReduceTest extends AbstractDatabaseBasedCase
             return array_sum($values);
         };
 
-
         $this->fixture = new MapReduce($mapFunction, $reduceFunction);
-        $result        = $this->fixture->perform($this->getSmallPeopleDatabase());
+
+        $database = $this->getSmallPeopleDatabase();
+        //$database = $this->coordinator->getDatabase('people');
+        $result = $this->fixture->perform($database);
 
         $this->assertInternalType('array', $result);
         $this->assertEquals(21, count($result));
@@ -93,6 +106,7 @@ class MapReduceTest extends AbstractDatabaseBasedCase
         }
         $this->assertEquals(Constants::DATA_ID_KEY, $key);
     }
+
 
     /**
      * @test
@@ -125,16 +139,31 @@ class MapReduceTest extends AbstractDatabaseBasedCase
             $types = array();
             $count = 0;
 
+            //$start = microtime(true);
+            //$valueBlock = current($values);
+            //do {
+            //    if (!isset($types[$valueBlock['type']])) {
+            //        $types[$valueBlock['type']] = true;
+            //    }
+            //    $count += $valueBlock['count'];
+            //} while ($valueBlock = next($values));
             foreach ($values as $valueBlock) {
-                $types[] = $valueBlock['type'];
+                $types[$valueBlock['type']] = true;
                 $count += $valueBlock['count'];
             }
+            //$end = microtime(true);
+            //printf('ReduceFnc %d: %0.6f' . PHP_EOL, $count, $end - $start);
+
+            $types = array_keys($types);
             return new Description($key, $types, $count);
         };
 
 
         $this->fixture = new MapReduce($mapFunction, $reduceFunction);
-        $result        = $this->fixture->perform($this->getSmallPeopleDatabase());
+
+        //$database = $this->getSmallPeopleDatabase();
+        $database = $this->coordinator->getDatabase('people');
+        $result   = $this->fixture->perform($database);
 
         $this->assertInternalType('array', $result);
         $this->assertEquals(21, count($result));
@@ -172,7 +201,6 @@ class MapReduceTest extends AbstractDatabaseBasedCase
             return $values;
         };
 
-
         $this->fixture = new MapReduce($mapFunction, $reduceFunction);
 
         $result = $this->fixture->perform($this->getSmallPeopleDatabase());
@@ -186,7 +214,6 @@ class MapReduceTest extends AbstractDatabaseBasedCase
         $this->assertEmpty($result);
         $this->assertTrue($mapInvocationCounter === $mapInvocationCounterFirstRun);
     }
-
 
     /**
      * @test
@@ -210,7 +237,6 @@ class MapReduceTest extends AbstractDatabaseBasedCase
             return $values;
         };
 
-
         $this->fixture = new MapReduce($mapFunction, $reduceFunction);
 
         $result = $this->fixture->perform($this->getSmallPeopleDatabase());
@@ -222,16 +248,6 @@ class MapReduceTest extends AbstractDatabaseBasedCase
         $this->assertInternalType('array', $result);
         $this->assertEmpty($result);
         $this->assertTrue($mapInvocationCounter != $mapInvocationCounterFirstRun);
-    }
-
-    /**
-     * @test
-     */
-    public function emptyTest()
-    {
-        $result = $this->fixture->perform($this->getSmallPeopleDatabase());
-        $this->assertInternalType('array', $result);
-        $this->assertEmpty($result);
     }
 
     /**
@@ -254,7 +270,7 @@ class MapReduceTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\MapReduce\Exception\InvalidEmitKeyException
+     * @expectedException \Cundd\PersistentObjectStore\Aggregation\Exception\InvalidEmitKeyException
      */
     public function invalidEmitKeyArrayTest()
     {
@@ -272,7 +288,7 @@ class MapReduceTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\MapReduce\Exception\InvalidEmitKeyException
+     * @expectedException \Cundd\PersistentObjectStore\Aggregation\Exception\InvalidEmitKeyException
      */
     public function invalidEmitKeyObjectTest()
     {
@@ -290,7 +306,7 @@ class MapReduceTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\MapReduce\Exception\InvalidEmitKeyException
+     * @expectedException \Cundd\PersistentObjectStore\Aggregation\Exception\InvalidEmitKeyException
      */
     public function invalidEmitKeyEmptyTest()
     {

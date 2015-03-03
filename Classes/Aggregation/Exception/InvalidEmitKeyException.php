@@ -6,16 +6,16 @@
  * Time: 13:30
  */
 
-namespace Cundd\PersistentObjectStore\MapReduce\Exception;
+namespace Cundd\PersistentObjectStore\Aggregation\Exception;
 
 
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**
- * Exception thrown for an invalid value is detected
+ * Exception thrown for an invalid key when calling emit
  *
  * @package Cundd\PersistentObjectStore\MapReduce\Exception
  */
-class InvalidValueException extends RuntimeException
+class InvalidEmitKeyException extends RuntimeException
 {
 }

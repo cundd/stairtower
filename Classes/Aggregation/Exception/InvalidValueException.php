@@ -6,16 +6,16 @@
  * Time: 13:30
  */
 
-namespace Cundd\PersistentObjectStore\MapReduce\Exception;
+namespace Cundd\PersistentObjectStore\Aggregation\Exception;
 
 
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**
- * Exception thrown for an invalid callback
+ * Exception thrown for an invalid value is detected
  *
  * @package Cundd\PersistentObjectStore\MapReduce\Exception
  */
-class InvalidCallbackException extends RuntimeException
+class InvalidValueException extends RuntimeException
 {
 }
