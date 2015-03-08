@@ -71,16 +71,7 @@ class AggregatorTest extends AbstractDatabaseBasedCase
             }
         };
 
-        /**
-         * @param string $key
-         * @param mixed  $values
-         * @return number
-         */
-        $reduceFunction = function ($key, $values) {
-            return array_sum($values);
-        };
-
-        $this->fixture = new Aggregator($aggregateFunction, $reduceFunction);
+        $this->fixture = new Aggregator($aggregateFunction);
 
         //$database = $this->getSmallPeopleDatabase();
         $database = $this->coordinator->getDatabase('people');
