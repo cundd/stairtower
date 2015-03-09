@@ -9,9 +9,8 @@ php:
 
 matrix:
   allow_failures:
-    - php:
-      - 7
-      - hhvm
+    - php: hhvm
+    - php: 7
 
 sudo: false
 
