@@ -602,6 +602,50 @@ class RequestInfoTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD',
             '/database-identifier/_count/')));
 
+
+        $this->assertEquals('getDescribeAction',
+            RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/_describe')));
+        $this->assertEquals('getDescribeAction',
+            RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/_describe/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('POST', '/_describe')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('POST', '/_describe/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('PUT', '/_describe')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('PUT', '/_describe/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('DELETE', '/_describe')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('DELETE', '/_describe/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD', '/_describe')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD', '/_describe/')));
+
+
+        $this->assertEquals('getDescribeAction',
+            RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/database-identifier/_describe')));
+        $this->assertEquals('getDescribeAction',
+            RequestInfoFactory::getHandlerActionForRequest(new Request('GET', '/database-identifier/_describe/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('POST',
+            '/database-identifier/_describe')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('POST',
+            '/database-identifier/_describe/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('PUT',
+            '/database-identifier/_describe')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('PUT',
+            '/database-identifier/_describe/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('DELETE',
+            '/database-identifier/_describe')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('DELETE',
+            '/database-identifier/_describe/')));
+
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD',
+            '/database-identifier/_describe')));
+        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new Request('HEAD',
+            '/database-identifier/_describe/')));
+
     }
 
 

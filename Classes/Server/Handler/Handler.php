@@ -61,6 +61,14 @@ class Handler implements HandlerInterface
     protected $expandConfigurationBuilder;
 
     /**
+     * Property descriptor instance
+     *
+     * @var \Cundd\PersistentObjectStore\Meta\Database\Property\Descriptor
+     * @Inject
+     */
+    protected $propertyDescriptor;
+
+    /**
      * Expand Resolver instance
      *
      * @var \Cundd\PersistentObjectStore\Expand\ExpandResolverInterface
@@ -167,9 +175,6 @@ class Handler implements HandlerInterface
             return null;
         }
         $databaseIdentifier = $requestInfo->getDatabaseIdentifier();
-//		if (!$this->coordinator->databaseExists($databaseIdentifier)) {
-//			return NULL;
-//		}
         try {
             return $this->coordinator->getDatabase($databaseIdentifier);
         } catch (ReaderException $exception) {
@@ -416,6 +421,32 @@ class Handler implements HandlerInterface
             ));
         }
         return new HandlerResult(200, array('count' => $count));
+    }
+
+    /**
+     * Returns the description of a database
+     *
+     * @param RequestInfo $requestInfo
+     * @return HandlerResultInterface
+     */
+    public function getDescribeAction(RequestInfo $requestInfo)
+    {
+        if (!$requestInfo->getDatabaseIdentifier()) {
+            return new HandlerResult(400, 'Missing database identifier');
+        }
+        $database = $this->getDatabaseForRequestInfo($requestInfo);
+        if (!$database) {
+            return new HandlerResult(
+                404,
+                sprintf(
+                    'Database with identifier "%s" not found',
+                    $requestInfo->getDatabaseIdentifier()
+                )
+            );
+        }
+        $propertyDescription = $this->propertyDescriptor->describe($database);
+
+        return new HandlerResult(200, $propertyDescription);
     }
 
     /**

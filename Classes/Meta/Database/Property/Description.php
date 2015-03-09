@@ -10,13 +10,14 @@ namespace Cundd\PersistentObjectStore\Meta\Database\Property;
 
 
 use Cundd\PersistentObjectStore\Immutable;
+use JsonSerializable;
 
 /**
  * Description for a property
  *
  * @package Cundd\PersistentObjectStore\Meta\Database
  */
-class Description implements Immutable
+class Description implements Immutable, JsonSerializable
 {
     const TYPE_BOOLEAN = 'boolean';
     const TYPE_INTEGER = 'integer';
@@ -85,4 +86,23 @@ class Description implements Immutable
     {
         return $this->count;
     }
+
+    /**
+     * (PHP 5 &gt;= 5.4.0)<br/>
+     * Specify data which should be serialized to JSON
+     *
+     * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     *       which is a value of any type other than a resource.
+     */
+    function jsonSerialize()
+    {
+        return array(
+            'key'   => $this->getKey(),
+            'count' => $this->getCount(),
+            'types' => $this->getTypes(),
+        );
+    }
+
+
 }
