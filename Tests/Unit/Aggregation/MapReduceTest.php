@@ -58,7 +58,6 @@ class MapReduceTest extends AbstractDatabaseBasedCase
     public function emptyTest()
     {
         $database = $this->getSmallPeopleDatabase();
-        $database = $this->coordinator->getDatabase('people');
         $result   = $this->fixture->perform($database);
         $this->assertInternalType('array', $result);
         $this->assertEmpty($result);
@@ -92,7 +91,6 @@ class MapReduceTest extends AbstractDatabaseBasedCase
         $this->fixture = new MapReduce($mapFunction, $reduceFunction);
 
         $database = $this->getSmallPeopleDatabase();
-        //$database = $this->coordinator->getDatabase('people');
         $result = $this->fixture->perform($database);
 
         $this->assertInternalType('array', $result);
@@ -138,22 +136,10 @@ class MapReduceTest extends AbstractDatabaseBasedCase
         $reduceFunction = function ($key, $values) {
             $types = array();
             $count = 0;
-
-            //$start = microtime(true);
-            //$valueBlock = current($values);
-            //do {
-            //    if (!isset($types[$valueBlock['type']])) {
-            //        $types[$valueBlock['type']] = true;
-            //    }
-            //    $count += $valueBlock['count'];
-            //} while ($valueBlock = next($values));
             foreach ($values as $valueBlock) {
                 $types[$valueBlock['type']] = true;
                 $count += $valueBlock['count'];
             }
-            //$end = microtime(true);
-            //printf('ReduceFnc %d: %0.6f' . PHP_EOL, $count, $end - $start);
-
             $types = array_keys($types);
             return new Description($key, $types, $count);
         };

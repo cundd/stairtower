@@ -46,12 +46,7 @@ class Aggregator extends AbstractAggregator implements AggregatorInterface
     public function perform($collection)
     {
         $this->prepareResultContainer();
-        //$this->performAggregation($collection);
-        $start = microtime(true);
         $this->performAggregation($collection);
-        $end = microtime(true);
-        printf('Map: %0.6f' . PHP_EOL, $end - $start);
-
         return $this->results;
     }
 

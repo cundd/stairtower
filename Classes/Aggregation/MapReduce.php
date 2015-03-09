@@ -87,16 +87,8 @@ class MapReduce extends AbstractAggregator implements MapReduceInterface
      */
     public function perform($collection)
     {
-        //$start = microtime(true);
         $this->performAggregation($collection);
-        //$end = microtime(true);
-        //printf('Map: %0.6f' . PHP_EOL, $end - $start);
-
-
-        //$start = microtime(true);
         $this->performReduce($this->mapResult);
-        //$end = microtime(true);
-        //printf('Reduce: %0.6f' . PHP_EOL, $end - $start);
         return $this->reduceResult;
     }
 
