@@ -22,6 +22,3 @@ before_script:
 
 script:
   phpunit --bootstrap ./Tests/Unit/Bootstrap.php ./Tests/Unit
-
-#git:
-#  depth: 5
