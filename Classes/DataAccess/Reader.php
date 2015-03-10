@@ -44,9 +44,9 @@ class Reader
     {
         $memoryUsage        = memory_get_usage(true);
         $database           = new Database($databaseIdentifier);
-        $dataCollection     = $this->_loadDataCollection($databaseIdentifier);
-        $metaDataCollection = $this->_loadMetaDataCollection($databaseIdentifier);
-        $this->_fillDatabaseWithData($database, $dataCollection, $metaDataCollection);
+        $dataCollection = $this->loadDataCollection($databaseIdentifier);
+        $metaDataCollection = $this->loadMetaDataCollection($databaseIdentifier);
+        $this->fillDatabaseWithData($database, $dataCollection, $metaDataCollection);
         $memoryUsage = memory_get_usage(true) - $memoryUsage;
         return $database;
     }
@@ -58,7 +58,7 @@ class Reader
      * @return array
      * @throws ReaderException if the database could not be found
      */
-    protected function _loadDataCollection($databaseIdentifier)
+    protected function loadDataCollection($databaseIdentifier)
     {
         $path  = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.json';
         $error = null;
@@ -69,15 +69,12 @@ class Reader
 
         $this->memoryHelper->checkMemoryForJsonFile($path);
 
-//		DebugUtility::printMemorySample();
         $lock = Factory::createLock($databaseIdentifier);
         $lock->lockWithTimeout(20000);
         $fileData = file_get_contents($path);
         $lock->unlock();
-//		DebugUtility::printMemorySample();
         $serializer     = new JsonSerializer();
         $dataCollection = $serializer->unserialize($fileData);
-//		DebugUtility::printMemorySample();
 
         return $dataCollection;
     }
@@ -128,7 +125,7 @@ class Reader
      * @param string $databaseIdentifier
      * @return array
      */
-    protected function _loadMetaDataCollection($databaseIdentifier)
+    protected function loadMetaDataCollection($databaseIdentifier)
     {
         $path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.meta.json';
         if (!file_exists($path)) {
@@ -139,10 +136,8 @@ class Reader
         $lock->lock();
         $fileData = file_get_contents($path);
         $lock->unlock();
-//		DebugUtility::printMemorySample();
         $serializer     = new JsonSerializer();
         $dataCollection = $serializer->unserialize($fileData);
-//		DebugUtility::printMemorySample();
 
         return $dataCollection;
     }
@@ -154,7 +149,7 @@ class Reader
      * @param          array <Document> $data
      * @param          array <Document> $metaData
      */
-    protected function _fillDatabaseWithData($database, $dataCollection, $metaDataCollection)
+    protected function fillDatabaseWithData($database, $dataCollection, $metaDataCollection)
     {
         $database->setRawData($dataCollection);
         $database->setState(DatabaseStateInterface::STATE_CLEAN);

@@ -14,7 +14,6 @@ use Cundd\PersistentObjectStore\DataAccess\Exception\DataAccessException;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Expand\Exception\ExpandException;
-use Cundd\PersistentObjectStore\Expand\Exception\InvalidExpandBuilderInputException;
 use Cundd\PersistentObjectStore\Expand\Exception\InvalidExpandInputException;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;

@@ -11,7 +11,6 @@ namespace Cundd\PersistentObjectStore\Meta\Exception;
 
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use Exception;
 
 /**
  * Exception thrown for invalid Descriptor subjects implementations
@@ -30,7 +29,9 @@ class DescriptorSubjectException extends RuntimeException
      */
     public static function descriptorException($expected, $actual, $code)
     {
-        return new static(sprintf('Given subject is not of type %s but %s', $expected,
-            GeneralUtility::getType($actual)), $code);
+        return new static(
+            sprintf('Given subject is not of type %s but %s', $expected, GeneralUtility::getType($actual)),
+            $code
+        );
     }
 }
