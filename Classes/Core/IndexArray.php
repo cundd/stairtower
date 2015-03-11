@@ -336,5 +336,4 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
         $this->elements[$this->length] = $value;
         $this->length++;
     }
-
-} 
+}

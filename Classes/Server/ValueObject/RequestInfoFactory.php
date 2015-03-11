@@ -123,7 +123,6 @@ class RequestInfoFactory
             $request,
             self::getHandlerClassForRequest($request)
         );
-
     }
 
     /**
@@ -181,4 +180,4 @@ class RequestInfoFactory
         }
         return false;
     }
-} 
+}

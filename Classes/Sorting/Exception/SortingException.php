@@ -32,7 +32,6 @@
 
 namespace Cundd\PersistentObjectStore\Sorting\Exception;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**

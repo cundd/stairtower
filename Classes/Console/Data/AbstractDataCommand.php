@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Console\Data;
 
-
 use Cundd\PersistentObjectStore\Console\AbstractCommand;
 use Cundd\PersistentObjectStore\Console\Exception\CommandException;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
@@ -99,4 +98,4 @@ class AbstractDataCommand extends AbstractCommand
         }
         return $document;
     }
-} 
+}

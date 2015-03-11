@@ -61,5 +61,4 @@ abstract class AbstractIndex implements IndexInterface
         $this->property = $key;
         return $this;
     }
-
-} 
+}

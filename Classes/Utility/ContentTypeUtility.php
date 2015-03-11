@@ -57,4 +57,4 @@ class ContentTypeUtility
     {
         return isset(static::$suffixToContentTypeMap[$suffix]) ? static::$suffixToContentTypeMap[$suffix] : false;
     }
-} 
+}

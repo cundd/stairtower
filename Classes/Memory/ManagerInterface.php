@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Memory;
 
-
 use Cundd\PersistentObjectStore\Memory\Exception\ManagerException;
 
 interface ManagerInterface

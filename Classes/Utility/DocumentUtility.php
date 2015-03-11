@@ -98,5 +98,4 @@ class DocumentUtility
         }
         return $data;
     }
-
 }

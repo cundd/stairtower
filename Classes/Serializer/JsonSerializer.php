@@ -83,5 +83,4 @@ class JsonSerializer implements SerializerInterface
         }
         return $data;
     }
-
-} 
+}

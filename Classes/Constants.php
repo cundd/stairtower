@@ -87,4 +87,4 @@ WELCOME;
      * Request query character to mark one-to-many relations
      */
     const EXPAND_REQUEST_TO_MANY = '*';
-} 
+}

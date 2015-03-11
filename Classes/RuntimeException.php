@@ -15,4 +15,4 @@ namespace Cundd\PersistentObjectStore;
  */
 class RuntimeException extends \RuntimeException
 {
-} 
+}

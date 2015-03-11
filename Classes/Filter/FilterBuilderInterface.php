@@ -34,4 +34,4 @@ interface FilterBuilderInterface
      * @return Filter
      */
     public function buildFilter($filterDefinition);
-} 
+}

@@ -15,4 +15,4 @@ namespace Cundd\PersistentObjectStore\DataAccess\Exception;
  */
 class WriterException extends DataAccessException
 {
-} 
+}

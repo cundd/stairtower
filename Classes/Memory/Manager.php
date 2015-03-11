@@ -220,4 +220,4 @@ abstract class Manager implements ManagerInterface
         self::$managedObjects = array();
         self::cleanup();
     }
-} 
+}

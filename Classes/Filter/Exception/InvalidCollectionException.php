@@ -8,9 +8,8 @@
 
 namespace Cundd\PersistentObjectStore\Filter\Exception;
 
-
 use Cundd\PersistentObjectStore\Exception\InvalidCollectionException as InvalidCollectionExceptionBase;
 
 class InvalidCollectionException extends InvalidCollectionExceptionBase
 {
-} 
+}

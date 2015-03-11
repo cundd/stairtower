@@ -8,9 +8,8 @@
 
 namespace Cundd\PersistentObjectStore\Exception;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
 
 class InvalidCollectionException extends RuntimeException
 {
-} 
+}

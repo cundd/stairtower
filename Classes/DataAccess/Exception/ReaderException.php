@@ -15,4 +15,4 @@ namespace Cundd\PersistentObjectStore\DataAccess\Exception;
  */
 class ReaderException extends DataAccessException
 {
-} 
+}

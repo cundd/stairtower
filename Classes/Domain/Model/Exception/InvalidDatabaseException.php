@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Domain\Model\Exception;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**
@@ -20,4 +19,4 @@ use Cundd\PersistentObjectStore\RuntimeException;
  */
 class InvalidDatabaseException extends RuntimeException
 {
-} 
+}

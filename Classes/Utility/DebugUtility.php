@@ -65,9 +65,9 @@ class DebugUtility
             echo "<span class='rest-debug-path' style='font-size:9px'><a href='file:$file'>see $file($line)</a></span>";
             echo "</pre>";
         } elseif ($colorOutput) {
-                echo "\033[0;35m" . "$file($line)" . "\033[0m";
-            } else {
-                echo "($file:$line)";
+            echo "\033[0;35m" . "$file($line)" . "\033[0m";
+        } else {
+            echo "($file:$line)";
         }
 
         if ($htmlOutput) {
@@ -143,10 +143,10 @@ class DebugUtility
             echo "<span class='rest-debug-path' style='font-size:9px'><a href='file:$file'>see $file($line)</a></span>";
             echo "</pre>";
         } elseif ($colorOutput) {
-                echo "\033[0;35m" . "$file($line)" . "\033[0m";
-            } else {
-                echo "($file:$line)";
-            }
+            echo "\033[0;35m" . "$file($line)" . "\033[0m";
+        } else {
+            echo "($file:$line)";
+        }
 
 
         if ($htmlOutput) {
@@ -174,5 +174,4 @@ class DebugUtility
         static::$backtraceOffset--;
         return $result;
     }
-
 }

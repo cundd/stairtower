@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Console\Data;
 
-
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -70,4 +69,4 @@ class AddCommand extends AbstractDataCommand
                 $objectIdentifier, $database->getIdentifier()));
         }
     }
-} 
+}

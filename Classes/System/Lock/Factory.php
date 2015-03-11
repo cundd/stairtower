@@ -43,4 +43,4 @@ class Factory
     {
         static::$lockImplementationClass = $className;
     }
-} 
+}

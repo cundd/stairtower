@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore;
 
-
 interface KeyValueCodingInterface
 {
     /**
@@ -36,4 +35,4 @@ interface KeyValueCodingInterface
      * @return mixed
      */
     public function valueForKeyPath($keyPath);
-} 
+}

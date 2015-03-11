@@ -14,7 +14,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
-
 /**
  * Specialized version of the JsonSerializer to transform JSON data to and from Document instances
  *
@@ -65,4 +64,4 @@ class DataInstanceSerializer extends JsonSerializer
         }
         return new Document($data, $databaseIdentifier);
     }
-} 
+}

@@ -68,5 +68,4 @@ class FileLock extends AbstractLock
     {
         return file_exists($this->getLockPath());
     }
-
-} 
+}

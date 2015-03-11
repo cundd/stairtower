@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Serializer;
 
-
 interface SerializerInterface
 {
     /**
@@ -28,4 +27,4 @@ interface SerializerInterface
      * @return mixed
      */
     public function unserialize($string);
-} 
+}

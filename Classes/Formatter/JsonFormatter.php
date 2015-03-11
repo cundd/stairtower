@@ -10,7 +10,6 @@ namespace Cundd\PersistentObjectStore\Formatter;
 
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
-
 /**
  * Class JsonFormatter
  *
@@ -44,5 +43,4 @@ class JsonFormatter extends AbstractFormatter
     {
         return 'json';
     }
-
-} 
+}

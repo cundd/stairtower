@@ -23,4 +23,4 @@ interface DatabaseObjectDataInterface
      * @internal
      */
     public function getObjectDataForIndex($index);
-} 
+}

@@ -8,9 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Filter\Comparison;
 
-
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
-
 
 /**
  * Nested logical comparison

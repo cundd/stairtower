@@ -723,7 +723,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
             );
             DebugUtility::var_dump($this->rawData);
             throw new IndexOutOfRangeException('Invalid index ' . $index, 1411316363);
-
         }
         $rawData    = $this->rawData[$index];
         $rawData    = DocumentUtility::assertDocumentIdentifierOfData($rawData);

@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Server\BodyParser;
 
-
 use Cundd\PersistentObjectStore\Serializer\Exception;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
@@ -41,5 +40,4 @@ class JsonBodyParser implements BodyParserInterface
                 $request->getPath(), $request->getMethod()), 1413214227, $exception);
         }
     }
-
-} 
+}

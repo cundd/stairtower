@@ -12,7 +12,6 @@ use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use React\Http\Request;
 
-
 /**
  * Object that holds information about a parsed request
  *
@@ -151,6 +150,4 @@ class RequestInfo implements Immutable
     {
         return $this->method === 'GET' || $this->method === 'HEAD';
     }
-
-
 }

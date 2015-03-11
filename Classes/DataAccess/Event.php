@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 
-
 interface Event
 {
     const DATABASE_CREATED = 'database.created';

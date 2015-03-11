@@ -12,7 +12,6 @@ use Cundd\PersistentObjectStore\ArrayableInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Index\IndexableInterface;
 
-
 /**
  * Interface for Database implementations
  *
@@ -84,5 +83,4 @@ interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, 
      * @return boolean
      */
     public function contains($document);
-
-} 
+}

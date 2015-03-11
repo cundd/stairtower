@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Sorting;
 
-
 use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\KeyValueCodingInterface;
 use Cundd\PersistentObjectStore\Sorting\Exception\SortingException;

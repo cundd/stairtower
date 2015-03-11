@@ -15,4 +15,4 @@ namespace Cundd\PersistentObjectStore\Index\Exception;
  */
 class DuplicateEntryException extends InvalidEntryException
 {
-} 
+}

@@ -8,9 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Console;
 
-
 use Symfony\Component\Console\Command\Command;
-
 
 /**
  * Abstract command
@@ -42,5 +40,4 @@ abstract class AbstractCommand extends Command
      * @Inject
      */
     protected $formatter;
-
 }

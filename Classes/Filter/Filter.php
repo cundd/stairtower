@@ -14,7 +14,6 @@ use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
-
 /**
  * Filter implementation
  *

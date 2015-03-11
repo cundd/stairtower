@@ -118,7 +118,7 @@ abstract class AbstractLock implements LockInterface
         return $this->name;
     }
 
-    function __destruct()
+    public function __destruct()
     {
         $this->unlockInternal();
     }

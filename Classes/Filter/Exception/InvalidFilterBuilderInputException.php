@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Filter\Exception;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**
@@ -18,4 +17,4 @@ use Cundd\PersistentObjectStore\RuntimeException;
  */
 class InvalidFilterBuilderInputException extends RuntimeException
 {
-} 
+}

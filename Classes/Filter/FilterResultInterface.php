@@ -18,5 +18,4 @@ use Cundd\PersistentObjectStore\Result\ResultInterface;
  */
 interface FilterResultInterface extends ResultInterface, ArrayableInterface
 {
-
 }

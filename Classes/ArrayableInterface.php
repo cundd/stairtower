@@ -30,4 +30,4 @@ interface ArrayableInterface
      * @return SplFixedArray
      */
     public function toFixedArray();
-} 
+}

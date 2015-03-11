@@ -15,4 +15,4 @@ namespace Cundd\PersistentObjectStore\Server\Exception;
  */
 class InvalidRequestException extends ServerException
 {
-} 
+}

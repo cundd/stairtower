@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\ErrorHandling;
 
-
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
 use Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface;
@@ -176,4 +175,4 @@ class CrashHandler implements HandlerInterface
         }
         return $backupDirectory;
     }
-} 
+}

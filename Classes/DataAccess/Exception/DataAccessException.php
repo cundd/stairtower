@@ -17,5 +17,4 @@ use Cundd\PersistentObjectStore\RuntimeException;
  */
 class DataAccessException extends RuntimeException
 {
-
 }

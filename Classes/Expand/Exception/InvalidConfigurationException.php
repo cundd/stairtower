@@ -15,5 +15,4 @@ namespace Cundd\PersistentObjectStore\Expand\Exception;
  */
 class InvalidConfigurationException extends ExpandException
 {
-
 }

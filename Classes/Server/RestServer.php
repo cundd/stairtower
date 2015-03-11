@@ -255,7 +255,6 @@ class RestServer extends AbstractServer
             } else {
                 $response->end();
             }
-
         } elseif ($result === null) {
             $response->writeHead(
                 204,
@@ -333,5 +332,4 @@ class RestServer extends AbstractServer
         $this->writeln('Start listening on %s:%s', $this->ip, $this->port);
         $this->logger->info(sprintf('Start listening on %s:%s', $this->ip, $this->port));
     }
-
 }

@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Memory;
 
-
 use Cundd\PersistentObjectStore\DataAccess\Coordinator;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseStateInterface;
@@ -110,7 +109,7 @@ class Helper
 //		DebugUtility::pl('Available memory: %s', GeneralUtility::formatBytes($availableMemory));
 //		DebugUtility::pl('We will need about %s', GeneralUtility::formatBytes($guessedMemory));
         if ($guessedMemory > $availableMemory) {
-//			DebugUtility::pl('Please free %s bytes', GeneralUtility::formatBytes($guessedMemory - $availableMemory));
+            //			DebugUtility::pl('Please free %s bytes', GeneralUtility::formatBytes($guessedMemory - $availableMemory));
             if (!$this->freeMemory($guessedMemory - $availableMemory)) {
                 DebugUtility::pl('Required estimated memory amount of %s not available',
                     GeneralUtility::formatBytes($guessedMemory - $availableMemory));
@@ -122,4 +121,4 @@ class Helper
             }
         }
     }
-} 
+}

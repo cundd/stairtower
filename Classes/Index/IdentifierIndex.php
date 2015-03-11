@@ -146,6 +146,4 @@ class IdentifierIndex extends Key
     {
         return Constants::DATA_ID_KEY;
     }
-
-
 }

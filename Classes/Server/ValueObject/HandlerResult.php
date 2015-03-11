@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
-
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 
@@ -61,6 +60,4 @@ class HandlerResult implements HandlerResultInterface, Immutable
     {
         return $this->statusCode;
     }
-
-
-} 
+}

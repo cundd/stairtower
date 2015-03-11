@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Aggregation;
 
-
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Iterator;
 

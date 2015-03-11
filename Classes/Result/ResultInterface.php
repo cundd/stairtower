@@ -15,5 +15,4 @@ namespace Cundd\PersistentObjectStore\Result;
  */
 interface ResultInterface extends \Iterator, \Countable
 {
-
 }

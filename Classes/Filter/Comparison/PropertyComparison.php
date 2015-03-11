@@ -13,7 +13,6 @@ use Cundd\PersistentObjectStore\KeyValueCodingInterface;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
-
 /**
  * Property comparison implementation
  *
@@ -283,6 +282,4 @@ class PropertyComparison implements PropertyComparisonInterface
             1410704637
         );
     }
-
-
-} 
+}

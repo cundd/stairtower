@@ -231,6 +231,6 @@ class Coordinator implements CoordinatorInterface
      */
     protected function performQueryOnDatabase($queryParts, $database)
     {
-//		if (isset($queryParts['select']))
+        //		if (isset($queryParts['select']))
     }
 }

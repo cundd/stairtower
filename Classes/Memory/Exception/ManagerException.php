@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Memory\Exception;
 
-
 /**
  * Exception thrown if a problem in the Memory Manager is detected
  *
@@ -16,4 +15,4 @@ namespace Cundd\PersistentObjectStore\Memory\Exception;
  */
 class ManagerException extends MemoryException
 {
-} 
+}

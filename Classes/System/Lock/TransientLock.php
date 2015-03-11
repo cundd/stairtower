@@ -55,5 +55,4 @@ class TransientLock extends AbstractLock
     {
         return isset(self::$locks[$this->getName()]);
     }
-
-} 
+}

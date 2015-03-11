@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Meta\Exception;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 

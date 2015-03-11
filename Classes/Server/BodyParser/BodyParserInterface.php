@@ -23,4 +23,4 @@ interface BodyParserInterface
      * @return mixed
      */
     public function parse($data, $request);
-} 
+}

@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Console\Exception;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**

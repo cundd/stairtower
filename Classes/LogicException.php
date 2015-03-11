@@ -15,4 +15,4 @@ namespace Cundd\PersistentObjectStore;
  */
 class LogicException extends \LogicException
 {
-} 
+}

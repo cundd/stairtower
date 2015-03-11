@@ -201,4 +201,4 @@ abstract class GeneralUtility
         }
         return $fixedCollection;
     }
-} 
+}

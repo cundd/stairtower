@@ -15,4 +15,4 @@ namespace Cundd\PersistentObjectStore;
  */
 class ErrorException extends \ErrorException
 {
-} 
+}

@@ -42,4 +42,4 @@ interface DatabaseRawDataInterface
      * @throws IndexOutOfRangeException if the current index is out of range
      */
     public function currentRaw();
-} 
+}

@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Core\ArrayException;
 
-
 /**
  * Exception thrown if an index doesn't exist in the array
  *
@@ -16,4 +15,4 @@ namespace Cundd\PersistentObjectStore\Core\ArrayException;
  */
 class IndexOutOfRangeException extends InvalidIndexException
 {
-} 
+}

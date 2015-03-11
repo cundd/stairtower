@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Aggregation;
 
-
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Iterator;
 use Traversable;
@@ -32,7 +31,7 @@ class Aggregator extends AbstractAggregator implements AggregatorInterface
      *
      * @param $aggregationCallback
      */
-    function __construct($aggregationCallback)
+    public function __construct($aggregationCallback)
     {
         $this->aggregationCallback = $this->prepareCallback($aggregationCallback);
     }

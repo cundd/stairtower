@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Filter\Exception;
 
-
 use Cundd\PersistentObjectStore\LogicException;
 
 /**
@@ -18,4 +17,4 @@ use Cundd\PersistentObjectStore\LogicException;
  */
 class InvalidOperatorException extends LogicException
 {
-} 
+}

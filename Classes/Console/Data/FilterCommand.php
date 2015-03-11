@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Console\Data;
 
-
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Filter\FilterResult;
@@ -65,4 +64,4 @@ class FilterCommand extends AbstractDataCommand
                 $input->getArgument('database')));
         }
     }
-} 
+}

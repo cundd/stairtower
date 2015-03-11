@@ -93,4 +93,4 @@ interface IndexInterface
      * @return string
      */
     public function getProperty();
-} 
+}

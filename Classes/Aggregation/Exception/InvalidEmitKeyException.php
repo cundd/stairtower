@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Aggregation\Exception;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**

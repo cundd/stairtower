@@ -17,7 +17,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Iterator;
 
-
 /**
  * Abstract aggregator
  *

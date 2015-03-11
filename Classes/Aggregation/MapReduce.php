@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Aggregation;
 
-
 use Closure;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Aggregation\Exception\InvalidEmitKeyException;
@@ -71,7 +70,7 @@ class MapReduce extends AbstractAggregator implements MapReduceInterface
      * @param Closure $aggregationCallback
      * @param Closure $reduceCallback
      */
-    function __construct($aggregationCallback, $reduceCallback)
+    public function __construct($aggregationCallback, $reduceCallback)
     {
         $this->aggregationCallback = $this->prepareCallback($aggregationCallback);
         $this->reduceCallback = $this->prepareCallback($reduceCallback);
@@ -131,6 +130,4 @@ class MapReduce extends AbstractAggregator implements MapReduceInterface
         }
         $this->reduceResult = $reduceResultLocal;
     }
-
-
 }

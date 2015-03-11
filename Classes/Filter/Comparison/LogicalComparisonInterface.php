@@ -21,4 +21,4 @@ interface LogicalComparisonInterface extends ComparisonInterface
      * @return array|\Iterator
      */
     public function getConstraints();
-} 
+}

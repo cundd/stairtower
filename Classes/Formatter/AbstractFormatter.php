@@ -72,4 +72,4 @@ abstract class AbstractFormatter implements FormatterInterface
         }
         return $data;
     }
-} 
+}

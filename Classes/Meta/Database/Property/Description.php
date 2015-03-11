@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Meta\Database\Property;
 
-
 use Cundd\PersistentObjectStore\Immutable;
 use JsonSerializable;
 
@@ -50,7 +49,7 @@ class Description implements Immutable, JsonSerializable
      */
     protected $count = 0;
 
-    function __construct($key, $types, $count)
+    public function __construct($key, $types, $count)
     {
         $this->key   = $key;
         $this->types = $types;
@@ -95,7 +94,7 @@ class Description implements Immutable, JsonSerializable
      * @return mixed data which can be serialized by <b>json_encode</b>,
      *       which is a value of any type other than a resource.
      */
-    function jsonSerialize()
+    public function jsonSerialize()
     {
         return array(
             'key'   => $this->getKey(),
@@ -103,6 +102,4 @@ class Description implements Immutable, JsonSerializable
             'types' => $this->getTypes(),
         );
     }
-
-
 }

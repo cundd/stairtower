@@ -15,4 +15,4 @@ namespace Cundd\PersistentObjectStore\Server\Exception;
  */
 class MissingLengthHeaderException extends InvalidRequestException
 {
-} 
+}

@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Sorting;
 
-
 /**
  * SPL fixed array sort result implementation
  *

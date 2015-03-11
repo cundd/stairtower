@@ -205,7 +205,6 @@ class ExpandResolver implements ExpandResolverInterface
             }
 
             $localValueCollection[$i] = $localValue;
-
         } while (++$i < $fixedCollectionCount);
 
         if (!$didSetAValue) {

@@ -230,7 +230,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      */
     public function valid()
     {
-//		DebugUtility::var_dump('valid', parent::valid(), parent::valid(), parent::valid());
+        //		DebugUtility::var_dump('valid', parent::valid(), parent::valid(), parent::valid());
         $this->initFilteredCollection();
         return parent::valid();
     }
@@ -397,7 +397,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
     public function offsetSet($offset, $value)
     {
         throw new ImmutableException('Can not modify this immutable', 1410628420);
-
     }
 
     /**
@@ -468,4 +467,4 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
     {
         return $collection;
     }
-} 
+}

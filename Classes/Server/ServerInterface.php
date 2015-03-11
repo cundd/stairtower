@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Server;
 
-
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;

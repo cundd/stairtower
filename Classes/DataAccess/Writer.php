@@ -8,14 +8,12 @@
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 
-
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Exception\WriterException;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
-
 
 /**
  * Class to write data to it's source
@@ -250,4 +248,4 @@ class Writer
     {
         return ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath');
     }
-} 
+}

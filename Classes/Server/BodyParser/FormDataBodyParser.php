@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Server\BodyParser;
 
-
 use React\Http\Request;
 
 /**
@@ -29,5 +28,4 @@ class FormDataBodyParser implements BodyParserInterface
         parse_str($data, $parsedData);
         return $parsedData;
     }
-
-} 
+}

@@ -8,9 +8,8 @@
 
 namespace Cundd\PersistentObjectStore\Memory\Exception;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
 
 class MemoryException extends RuntimeException
 {
-} 
+}

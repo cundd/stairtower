@@ -8,9 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Event;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
-
 
 /**
  * Shared Event Emitter to dispatch events

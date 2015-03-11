@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Expand\Exception;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**
@@ -18,5 +17,4 @@ use Cundd\PersistentObjectStore\RuntimeException;
  */
 class ExpandException extends RuntimeException
 {
-
 }

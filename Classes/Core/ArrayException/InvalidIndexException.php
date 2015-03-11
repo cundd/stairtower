@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Core\ArrayException;
 
-
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**
@@ -18,4 +17,4 @@ use Cundd\PersistentObjectStore\RuntimeException;
  */
 class InvalidIndexException extends RuntimeException
 {
-} 
+}

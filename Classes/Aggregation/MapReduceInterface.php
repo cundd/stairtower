@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Aggregation;
 
-
 /**
  * Interface for MapReduce implementation
  *

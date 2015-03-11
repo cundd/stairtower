@@ -63,7 +63,7 @@ class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
      * @param string $asKey
      * @param bool   $expandToMany
      */
-    function __construct(
+    public function __construct(
         $localKey,
         $databaseIdentifier,
         $foreignKey = Constants::DATA_ID_KEY,

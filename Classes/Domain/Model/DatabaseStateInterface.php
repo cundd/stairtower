@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
-
 /**
  * Interface for Database implementations
  *
@@ -40,4 +39,4 @@ interface DatabaseStateInterface
      * @return $this
      */
     public function setState($newState);
-} 
+}

@@ -127,7 +127,5 @@ class ConfigurationManager implements ConfigurationManagerInterface
      */
     protected function getEventToClassMap()
     {
-
     }
-
-} 
+}

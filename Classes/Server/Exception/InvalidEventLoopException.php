@@ -16,4 +16,4 @@ use Cundd\PersistentObjectStore\LogicException;
  */
 class InvalidEventLoopException extends LogicException
 {
-} 
+}

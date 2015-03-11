@@ -60,4 +60,4 @@ class ListCommand extends AbstractCommand
             $output->writeln('<info>No databases found</info>');
         }
     }
-} 
+}

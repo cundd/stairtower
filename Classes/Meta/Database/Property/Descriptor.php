@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Meta\Database\Property;
 
-
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
 use Cundd\PersistentObjectStore\Meta\DescriptorInterface;
@@ -60,7 +59,6 @@ class Descriptor implements DescriptorInterface
                         ];
                     }
                     $propertyMap[$property][GeneralUtility::getType($value)]++;
-
                 }
             }
             $i++;

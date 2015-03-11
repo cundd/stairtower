@@ -8,7 +8,6 @@
 
 namespace Cundd\PersistentObjectStore\Sorting;
 
-
 use Cundd\PersistentObjectStore\Result\ResultInterface;
 
 /**

@@ -57,4 +57,4 @@ class ListCommand extends AbstractCommand
             $output->writeln($description);
         }
     }
-} 
+}
