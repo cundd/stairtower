@@ -8,9 +8,14 @@
 
 namespace Cundd\PersistentObjectStore\Utility;
 
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException;
+use Cundd\PersistentObjectStore\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
+use Iterator;
+use SplFixedArray;
 
 /**
  * Interface GeneralUtilityInterface
@@ -162,5 +167,38 @@ abstract class GeneralUtility
             }
         }
         return (bool)($success * rmdir($dir));
+    }
+
+    /**
+     * Transforms the given collection into a SplFixedArray
+     *
+     * @param DatabaseInterface|DatabaseRawDataInterface|Iterator|array $collection Collection to transform
+     * @param bool                                                      $preferRaw  Defines if raw database values should be used
+     * @param bool                                                      $graceful   Defines if an exception should be thrown if the collection could not be transformed
+     * @return SplFixedArray
+     */
+    public static function collectionToFixedArray($collection, $preferRaw = false, $graceful = true)
+    {
+        if ($preferRaw && $collection instanceof DatabaseRawDataInterface) {
+            $fixedCollection = $collection->getRawData();
+        } elseif ($collection instanceof DatabaseInterface) {
+            $fixedCollection = $collection->toFixedArray();
+        } elseif (is_array($collection)) {
+            $fixedCollection = SplFixedArray::fromArray($collection);
+        } elseif ($collection instanceof Iterator) {
+            $collection->rewind();
+            $fixedCollection = SplFixedArray::fromArray(iterator_to_array($collection));
+        } elseif ($graceful) {
+            $fixedCollection = new SplFixedArray(0);
+        } else {
+            throw new InvalidCollectionException(
+                sprintf(
+                    'Could not transform given value of type %s into a fixed array',
+                    GeneralUtility::getType($collection)
+                ),
+                1425127655
+            );
+        }
+        return $fixedCollection;
     }
 } 

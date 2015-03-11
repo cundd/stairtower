@@ -81,4 +81,12 @@ interface HandlerInterface
      * @return HandlerResultInterface
      */
     public function getCountAction(RequestInfo $requestInfo);
+
+    /**
+     * Returns the description of a database
+     *
+     * @param RequestInfo $requestInfo
+     * @return HandlerResultInterface
+     */
+    public function getDescribeAction(RequestInfo $requestInfo);
 }

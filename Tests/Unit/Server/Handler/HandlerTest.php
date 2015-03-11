@@ -365,7 +365,7 @@ class HandlerTest extends AbstractCase
         Manager::freeAll();
 
         $diContainer = $this->getDiContainer();
-        $server      = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\DummyServer');
+        $server = $this->getMock('Cundd\\PersistentObjectStore\\Server\\ServerInterface');
         $diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $server);
 
         $coordinator = $diContainer->get('Cundd\\PersistentObjectStore\\DataAccess\\CoordinatorInterface');
