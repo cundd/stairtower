@@ -50,6 +50,7 @@ class Server
     public function __construct($arguments)
     {
         ini_set('display_errors', true);
+        set_time_limit(0);
 
 
         // Parse the arguments
