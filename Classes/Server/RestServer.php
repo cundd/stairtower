@@ -10,7 +10,6 @@ namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
@@ -23,7 +22,6 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestControllerException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
 use Cundd\PersistentObjectStore\Server\Exception\MissingLengthHeaderException;
-use Cundd\PersistentObjectStore\Server\Exception\RequestMethodNotImplementedException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
@@ -31,7 +29,6 @@ use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Monolog\Logger;
 use React\Http\Request;
 use React\Http\Response;
@@ -290,7 +287,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 array('Content-Type' => $result->getContentType() . '; charset=utf-8')
             );
             $responseData = $result->getData();
-            if ($responseData) {
+            if ($responseData !== null) {
                 $response->end($responseData);
             } else {
                 $response->end();
@@ -303,7 +300,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
             );
             $responseData = $result->getData();
-            if ($responseData) {
+            if ($responseData !== null) {
                 $response->end($formatter->format($responseData));
             } else {
                 $response->end();
