@@ -180,6 +180,36 @@ class RequestInfo implements Immutable
     }
 
     /**
+     * Returns the name part of the action
+     *
+     * @return string
+     */
+    public function getActionName()
+    {
+        $action = $this->getAction();
+        if (!$action) {
+            return null;
+        }
+        $actionPrefix = substr($action, 0, 3);
+        $nameOffset   = 0;
+        switch ($actionPrefix) {
+            case 'get':
+            case 'put':
+                $nameOffset = 3;
+                break;
+
+            case 'del' && substr($action, 0, 6) === 'delete':
+                $nameOffset = 6;
+                break;
+
+            case 'pos' && substr($action, 0, 4) === 'post':
+                $nameOffset = 4;
+                break;
+        }
+        return lcfirst(substr($action, $nameOffset, -6));
+    }
+
+    /**
      * Returns the special controller class name
      *
      * @return string

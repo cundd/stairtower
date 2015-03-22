@@ -12,6 +12,7 @@ use Cundd\PersistentObjectStore\Server\Exception\RequestMethodNotImplementedExce
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use Cundd\PersistentObjectStore\View\ViewControllerInterface;
 use React\Http\Request;
 use React\Http\Response;
 
@@ -93,6 +94,14 @@ abstract class AbstractController implements ControllerInterface
      */
     public function willInvokeAction($action)
     {
+        if ($this instanceof ViewControllerInterface) {
+            $templatePath = $this->getTemplatePath($action);
+            $this->getView()->setTemplatePath($templatePath);
+            $this->getView()->assignMultiple(array(
+                'appNamespace' => $this->getUriBuilder()->getControllerNamespaceForController($this),
+                'action'       => $this->getRequestInfo()->getActionName(),
+            ));
+        }
     }
 
     /**
