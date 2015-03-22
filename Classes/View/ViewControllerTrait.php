@@ -24,6 +24,13 @@ trait ViewControllerTrait {
     protected $view;
 
     /**
+     * Path pattern for templates
+     *
+     * @var string
+     */
+    protected $templatePathPattern = '%sResources/Private/Template/%s.twig';
+
+    /**
      * Class name of the View implementation
      *
      * @var string
@@ -69,8 +76,10 @@ trait ViewControllerTrait {
     public function getTemplatePath($action)
     {
         $basePath           = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('basePath');
+
+        // Strip 'Action'
         $templateIdentifier = substr($action, 0, -6);
-        $templatePath       = sprintf('%sResources/Private/Template/%s.twig', $basePath, $templateIdentifier);
+        $templatePath       = sprintf($this->templatePathPattern, $basePath, $templateIdentifier);
 
         return $templatePath;
     }
