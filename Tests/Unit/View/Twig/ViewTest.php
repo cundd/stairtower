@@ -25,7 +25,11 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
     protected function setUp()
     {
         parent::setUp();
-        $this->fixture = new View();
+        if (class_exists('Twig_Environment')) {
+            $this->fixture = new View();
+        }
+
+
     }
 
     protected function tearDown()
@@ -39,6 +43,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
      */
     public function simpleTest()
     {
+        if (!$this->fixture) $this->markTestSkipped('View engine not available');
         $this->fixture->setTemplatePath(__DIR__ . '/../../../Resources/Templates/simple.twig');
         $this->assertEquals('<h1>This is a very simple template</h1>', $this->fixture->render());
     }
@@ -48,6 +53,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
      */
     public function variablesTest()
     {
+        if (!$this->fixture) $this->markTestSkipped('View engine not available');
         $this->fixture->setTemplatePath(__DIR__ . '/../../../Resources/Templates/variables.twig');
         $this->fixture->assign('view', 'view');
         $this->assertEquals('<h1>This is a view template with variables</h1>', $this->fixture->render());
@@ -58,6 +64,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
      */
     public function missingVariableTest()
     {
+        if (!$this->fixture) $this->markTestSkipped('View engine not available');
         $this->fixture->setTemplatePath(__DIR__ . '/../../../Resources/Templates/missing-variable.twig');
         $this->fixture->assign('view', 'view');
         $this->assertEquals('<h1>This is a view template with a "" variables</h1>', $this->fixture->render());
