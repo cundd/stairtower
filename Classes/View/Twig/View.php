@@ -44,6 +44,7 @@ class View extends AbstractView
     {
         $development = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('serverMode') === ServerInterface::SERVER_MODE_DEVELOPMENT;
         $this->getLoader()->setDisableCache($development);
+
         return $this->getEngine()->render(basename($this->templatePath), $this->data);
     }
 
@@ -82,10 +83,11 @@ class View extends AbstractView
     public function setTemplatePath($templatePath)
     {
         parent::setTemplatePath($templatePath);
+        $templateDirectoryPath = dirname($templatePath);
 
         $loader = $this->getLoader();
-        if ($loader instanceof Twig_Loader_Filesystem) {
-            $loader->addPath(dirname($templatePath));
+        if ($loader instanceof Twig_Loader_Filesystem && !in_array($templateDirectoryPath, $loader->getPaths())) {
+            $loader->addPath($templateDirectoryPath);
         }
 
         return $this;
