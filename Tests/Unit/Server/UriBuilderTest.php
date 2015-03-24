@@ -261,9 +261,19 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
      * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
      * @expectedExceptionCode 1422472522
      */
-    public function invalidActionMethodTest()
+    public function invalidActionMethodTypeTest()
     {
         $this->fixture->buildUriFor('blur', new \stdClass(), 'HelloController', 'database', 'document-id');
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
+     * @expectedExceptionCode 1427228089
+     */
+    public function invalidActionMethodTest()
+    {
+        $this->fixture->buildUriFor('blur', 'test', 'HelloController', 'database', 'document-id');
     }
 
     /**

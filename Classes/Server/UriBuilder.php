@@ -12,6 +12,7 @@ namespace Cundd\PersistentObjectStore\Server;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
+use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
@@ -25,11 +26,11 @@ class UriBuilder implements UriBuilderInterface
     /**
      * Build the URI with the given arguments
      *
-     * @param string                     $actionName
-     * @param string                     $actionMethod
-     * @param ControllerInterface|string $controller Controller instance or name
-     * @param DatabaseInterface|string   $database   Database instance or identifier
-     * @param DocumentInterface|string   $document   Document instance or identifier
+     * @param string                     $actionName   Name of action (e.g. 'list', 'show')
+     * @param string                     $actionMethod Method (e.g. 'GET', 'POST')
+     * @param ControllerInterface|string $controller   Controller instance or name
+     * @param DatabaseInterface|string   $database     Database instance or identifier
+     * @param DocumentInterface|string   $document     Document instance or identifier
      * @return string
      */
     public function buildUriFor($actionName, $actionMethod, $controller, $database = null, $document = null)
@@ -49,6 +50,12 @@ class UriBuilder implements UriBuilderInterface
                 1422472522
             );
         }
+        try {
+            GeneralUtility::assertRequestMethod(strtoupper($actionMethod));
+        } catch (InvalidRequestMethodException $exception) {
+            throw new InvalidUriBuilderArgumentException(sprintf('Invalid action method ', $actionMethod), 1427228089);
+        }
+
         $actionIdentifier = strtolower($actionMethod) . ucfirst($actionName);
         $uriParts         = [];
 
@@ -138,6 +145,7 @@ class UriBuilder implements UriBuilderInterface
             $uriParts[] = $part;
 
         }
+
         return '_' . implode('-', $uriParts);
     }
 
