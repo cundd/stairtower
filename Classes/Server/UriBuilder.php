@@ -87,10 +87,7 @@ class UriBuilder implements UriBuilderInterface
             }
         }
 
-        return implode(
-            '/',
-            $uriParts
-        );
+        return '/' . implode('/', $uriParts);
     }
 
     /**
