@@ -53,6 +53,8 @@ trait ViewControllerTrait {
         if (!$this->view) {
             $viewClass = $this->viewClass;
             $this->view = new $viewClass();
+
+           $this->initializeViewAdditions();
         }
         return $this->view;
     }
@@ -82,6 +84,21 @@ trait ViewControllerTrait {
         $templatePath       = sprintf($this->templatePathPattern, $basePath, $templateIdentifier);
 
         return $templatePath;
+    }
+
+    /**
+     * Initialize the additional filters of expandable views
+     */
+    protected function initializeViewAdditions()
+    {
+        if ($this->view instanceof ExpandableViewInterface) {
+            $this->view->addFunction('action', function($actionName, $actionMethod = 'GET', $controller = null, $database = null, $document = null) {
+                if ($controller === null) {
+                    $controller = $this;
+                }
+                return $this->getUriBuilder()->buildUriFor($actionName, $actionMethod, $controller, $database, $document);
+            });
+        }
     }
 
 }
