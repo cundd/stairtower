@@ -26,6 +26,7 @@ use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
+use Cundd\PersistentObjectStore\Server\ValueObject\NullResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
@@ -122,7 +123,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 $requestResult = $this->dispatchStandardAction($request, $response);
             }
 
-            if ($requestResult) {
+            if ($requestResult !== null) {
                 $this->handleResult($requestResult, $request, $response);
             }
         } catch (\Exception $exception) {
@@ -267,6 +268,9 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             );
         }
 
+        if ($result === null) {
+            return new NullResult();
+        }
         return $result;
     }
 
