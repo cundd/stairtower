@@ -12,6 +12,8 @@ use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use React\Http\Request;
+use React\Http\Response;
+use React_ConnectionStub;
 
 /**
  * Tests for the abstract Controller implementation
@@ -115,5 +117,97 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     {
         $result = new ControllerResult(200);
         $this->fixture->didInvokeAction('test', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function processRequestTest()
+    {
+
+        /** @var ControllerInterface $controller */
+        $controller = $this->getMockBuilder('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController')
+            ->setMethods(array('getHelloAction'))
+            ->getMock();
+        $controller
+            ->expects($this->any())
+            ->method('getHelloAction')
+            ->will($this->returnValue(true));
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+            new Request('GET', '/_cundd-test-application/hello')
+        );
+        $response = new Response(new React_ConnectionStub());
+
+        /** @var \Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult $result */
+        $result = $controller->processRequest($requestInfo, $response);
+        $this->assertNotNull($result);
+        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\ValueObject\\ControllerResult', $result);
+        $this->assertSame(true, $result->getData());
+    }
+
+    /**
+     * @test
+     */
+    public function processRequestWithLongerActionNameTest()
+    {
+        /** @var ControllerInterface $controller */
+        $controller = $this->getMockBuilder('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController')
+            ->setMethods(array('getHelloWorldAction'))
+            ->getMock();
+        $controller
+            ->expects($this->any())
+            ->method('getHelloWorldAction')
+            ->will($this->returnValue(true));
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+            new Request('GET', '/_cundd-test-application/hello_world')
+        );
+        $response = new Response(new React_ConnectionStub());
+
+        /** @var \Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult $result */
+        $result = $controller->processRequest($requestInfo, $response);
+        $this->assertNotNull($result);
+        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\ValueObject\\ControllerResult', $result);
+        $this->assertSame(true, $result->getData());
+    }
+
+    /**
+     * @test
+     */
+    public function processRequestWithMultipleArgumentsTest()
+    {
+        /** @var ControllerInterface $controller */
+        $controller = $this->getMockBuilder('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController')
+            ->setMethods(array('getHelloWorldAction'))
+            ->getMock();
+        $controller
+            ->expects($this->any())
+            ->method('getHelloWorldAction')
+            ->will($this->returnValue(true));
+
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+            new Request('GET', '/_cundd-test-application/hello_world/another_argument')
+        );
+        $response = new Response(new React_ConnectionStub());
+
+        /** @var \Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult $result */
+        $result = $controller->processRequest($requestInfo, $response);
+        $this->assertNotNull($result);
+        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\ValueObject\\ControllerResult', $result);
+        $this->assertSame(true, $result->getData());
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\RequestMethodNotImplementedException
+     */
+    public function processRequestNotImplementedMethodTest()
+    {
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+            new Request('GET', '/_cundd-test-application/my_method')
+        );
+        $response = new Response(new React_ConnectionStub());
+        $this->fixture->processRequest($requestInfo, $response);
     }
 }
