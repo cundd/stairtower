@@ -12,7 +12,6 @@ namespace Cundd\PersistentObjectStore\Server;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
@@ -26,10 +25,10 @@ class UriBuilder implements UriBuilderInterface
     /**
      * Build the URI with the given arguments
      *
-     * @param string                     $action   Name of action (e.g. 'list', 'show')
-     * @param ControllerInterface|string $controller   Controller instance or name
-     * @param DatabaseInterface|string   $database     Database instance or identifier
-     * @param DocumentInterface|string   $document     Document instance or identifier
+     * @param string                     $action     Name of action (e.g. 'list', 'show')
+     * @param ControllerInterface|string $controller Controller instance or name
+     * @param DatabaseInterface|string   $database   Database instance or identifier
+     * @param DocumentInterface|string   $document   Document instance or identifier
      * @return string
      */
     public function buildUriFor($action, $controller, $database = null, $document = null)
@@ -86,20 +85,7 @@ class UriBuilder implements UriBuilderInterface
      */
     public function getControllerNamespaceForController($controller)
     {
-        if ($controller instanceof ControllerInterface) {
-            $controllerClass = get_class($controller);
-        } elseif (is_scalar($controller)) {
-            $controllerClass = (string)$controller;
-        } else {
-            throw new InvalidUriBuilderArgumentException(
-                sprintf('Invalid controller argument %s', GeneralUtility::getType($controller)),
-                1422472649
-            );
-        }
-
-        if (!$controllerClass) {
-            throw new InvalidUriBuilderArgumentException('Could not determine the controller class', 1422472650);
-        }
+        $controllerClass = $this->getControllerClass($controller);
 
         $uriParts = [];
         if (strpos($controllerClass, '\\') !== false) {
@@ -131,7 +117,46 @@ class UriBuilder implements UriBuilderInterface
 
         }
 
-        return '_' . implode('-', $uriParts);
+        return '_' . implode(self::CONTROLLER_NAME_SEPARATOR, $uriParts);
+    }
+
+    /**
+     * Returns the last part of the controller's class name
+     *
+     * @param ControllerInterface|string $controller Controller instance or name
+     * @return string
+     */
+    public function getControllerNameForController($controller)
+    {
+        $controllerNamespace = $this->getControllerNamespaceForController($controller);
+
+        return substr(strrchr($controllerNamespace, self::CONTROLLER_NAME_SEPARATOR), 1);
+    }
+
+    /**
+     * Returns the controller's class name or throw an exception
+     *
+     * @param ControllerInterface|string $controller Controller instance or name
+     * @return string
+     */
+    protected function getControllerClass($controller)
+    {
+        if ($controller instanceof ControllerInterface) {
+            $controllerClass = get_class($controller);
+        } elseif (is_scalar($controller)) {
+            $controllerClass = (string)$controller;
+        } else {
+            throw new InvalidUriBuilderArgumentException(
+                sprintf('Invalid controller argument %s', GeneralUtility::getType($controller)),
+                1422472649
+            );
+        }
+
+        if (!$controllerClass) {
+            throw new InvalidUriBuilderArgumentException('Could not determine the controller class', 1422472650);
+        }
+
+        return $controllerClass;
     }
 
 }

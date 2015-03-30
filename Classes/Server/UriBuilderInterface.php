@@ -20,6 +20,11 @@ use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 interface UriBuilderInterface
 {
     /**
+     * String to separate controller class name parts in an URL
+     */
+    const CONTROLLER_NAME_SEPARATOR = '-';
+
+    /**
      * Build the URI with the given arguments
      *
      * @param string                     $action   Name of action (e.g. 'list', 'show')
