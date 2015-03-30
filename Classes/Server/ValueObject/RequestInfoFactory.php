@@ -19,6 +19,8 @@ use React\Http\Request;
  */
 class RequestInfoFactory
 {
+    const DEFAULT_ACTION = 'index';
+
     /**
      * Map of paths to their RequestInfo objects
      *
@@ -154,6 +156,11 @@ class RequestInfoFactory
         }
         list($controllerIdentifier, $actionIdentifier) = $pathParts;
 
+        // If no action identifier is found use the index action
+        if (!trim($actionIdentifier)) {
+            $actionIdentifier = self::DEFAULT_ACTION;
+        }
+
         // Generate the Controller class name
         $controllerClassName = $controllerIdentifier;
         $controllerClassName = str_replace(' ', '', ucwords(str_replace('_', ' ', $controllerClassName)));
@@ -167,7 +174,6 @@ class RequestInfoFactory
         if (!class_exists($controllerClassName)) {
             return false;
         }
-
 
         $method     = $request->getMethod();
         $actionName = GeneralUtility::underscoreToCamelCase(strtolower($method) . '_' . $actionIdentifier) . 'Action';
