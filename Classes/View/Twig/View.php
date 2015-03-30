@@ -89,8 +89,13 @@ class View extends AbstractView implements ExpandableViewInterface
         $templateDirectoryPath = dirname($templatePath);
 
         $loader = $this->getLoader();
-        if ($loader instanceof Twig_Loader_Filesystem && !in_array($templateDirectoryPath, $loader->getPaths())) {
-            $loader->addPath($templateDirectoryPath);
+        if ($loader instanceof Twig_Loader_Filesystem){
+            if (!in_array($templateDirectoryPath, $loader->getPaths())) {
+                $loader->addPath($templateDirectoryPath);
+            }
+            if (!in_array(dirname($templateDirectoryPath), $loader->getPaths())) {
+                $loader->addPath(dirname($templateDirectoryPath));
+            }
         }
 
         return $this;
@@ -107,7 +112,8 @@ class View extends AbstractView implements ExpandableViewInterface
             $loaderPaths = [];
             if ($this->templatePath && dirname($this->templatePath)) {
                 $loaderPaths = [
-                    dirname($this->templatePath)
+                    dirname($this->templatePath),
+                    dirname(dirname($this->templatePath))
                 ];
             }
             $this->loader = new Filesystem($loaderPaths);

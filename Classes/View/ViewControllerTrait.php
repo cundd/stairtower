@@ -17,7 +17,8 @@ use Cundd\PersistentObjectStore\Server\UriBuilderInterface;
  *
  * @package Cundd\PersistentObjectStore\View
  */
-trait ViewControllerTrait {
+trait ViewControllerTrait
+{
     /**
      * @var \Cundd\PersistentObjectStore\View\ViewInterface
      */
@@ -28,7 +29,7 @@ trait ViewControllerTrait {
      *
      * @var string
      */
-    protected $templatePathPattern = '%sResources/Private/Template/%s.twig';
+    protected $templatePathPattern = '%sResources/Private/Template/%s/%s.twig';
 
     /**
      * Class name of the View implementation
@@ -51,11 +52,12 @@ trait ViewControllerTrait {
     public function getView()
     {
         if (!$this->view) {
-            $viewClass = $this->viewClass;
+            $viewClass  = $this->viewClass;
             $this->view = new $viewClass();
 
-           $this->initializeViewAdditions();
+            $this->initializeViewAdditions();
         }
+
         return $this->view;
     }
 
@@ -77,11 +79,13 @@ trait ViewControllerTrait {
      */
     public function getTemplatePath($action)
     {
-        $basePath           = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('basePath');
+        $basePath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('basePath');
 
         // Strip 'Action'
-        $templateIdentifier = substr($action, 0, -6);
-        $templatePath       = sprintf($this->templatePathPattern, $basePath, $templateIdentifier);
+        $templateIdentifier  = substr($action, 0, -6);
+        $controllerNamespace = $this->getUriBuilder()->getControllerNamespaceForController($this);
+        $controllerName      = substr(strrchr($controllerNamespace, UriBuilderInterface::CONTROLLER_NAME_SEPARATOR), 1);
+        $templatePath = sprintf($this->templatePathPattern, $basePath, $controllerName, $templateIdentifier);
 
         return $templatePath;
     }
@@ -92,12 +96,14 @@ trait ViewControllerTrait {
     protected function initializeViewAdditions()
     {
         if ($this->view instanceof ExpandableViewInterface) {
-            $this->view->addFunction('action', function($actionName, $controller = null, $database = null, $document = null) {
-                if ($controller === null) {
-                    $controller = $this;
-                }
-                return $this->getUriBuilder()->buildUriFor($actionName, $controller, $database, $document);
-            });
+            $this->view->addFunction('action',
+                function ($actionName, $controller = null, $database = null, $document = null) {
+                    if ($controller === null) {
+                        $controller = $this;
+                    }
+
+                    return $this->getUriBuilder()->buildUriFor($actionName, $controller, $database, $document);
+                });
         }
     }
 
