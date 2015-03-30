@@ -53,138 +53,117 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
         $document->setValueForKey('0b5e3637477c', Constants::DATA_ID_KEY);
         $database = $this->getSmallPeopleDatabase();
 
-        $this->assertEquals('/_cundd-sa-hello/getBlur', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-sa-hello/blur', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Sa\\Controller\\HelloController'
         ));
-        $this->assertEquals('/_cundd-sa-hello/getBlur/database', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-sa-hello/blur/database', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Sa\\Controller\\HelloController',
             'database'
         ));
-        $this->assertEquals('/_cundd-sa-hello/getBlur/people-small', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-sa-hello/blur/people-small', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Sa\\Controller\\HelloController',
             $database
         ));
-        $this->assertEquals('/_cundd-sa-hello/getBlur/database/document-id', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-sa-hello/blur/database/document-id', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Sa\\Controller\\HelloController',
             'database',
             'document-id'
         ));
-        $this->assertEquals('/_cundd-sa-hello/getBlur/database/0b5e3637477c', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-sa-hello/blur/database/0b5e3637477c', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Sa\\Controller\\HelloController',
             'database',
             $document
         ));
-        $this->assertEquals('/_cundd-sa-hello/getBlur/people-small/0b5e3637477c', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-sa-hello/blur/people-small/0b5e3637477c', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Sa\\Controller\\HelloController',
             $database,
             $document
         ));
-        $this->assertEquals('/_cundd-sa-hello/getBlur', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-sa-hello/blur', $this->fixture->buildUriFor(
             'blur',
-            'get',
             $this->makeInstance('Cundd\\Sa\\Controller\\HelloController')
         ));
 
 
-        $this->assertEquals('/_cundd-stair-application/getBlur', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair-application/blur', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Stair\\Controller\\ApplicationController'
         ));
-        $this->assertEquals('/_cundd-stair-application/getBlur/database', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair-application/blur/database', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Stair\\Controller\\ApplicationController',
             'database'
         ));
-        $this->assertEquals('/_cundd-stair-application/getBlur/people-small', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair-application/blur/people-small', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Stair\\Controller\\ApplicationController',
             $database
         ));
-        $this->assertEquals('/_cundd-stair-application/getBlur/database/document-id', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair-application/blur/database/document-id', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Stair\\Controller\\ApplicationController',
             'database',
             'document-id'
         ));
-        $this->assertEquals('/_cundd-stair-application/getBlur/database/0b5e3637477c', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair-application/blur/database/0b5e3637477c', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Stair\\Controller\\ApplicationController',
             'database',
             $document
         ));
-        $this->assertEquals('/_cundd-stair-application/getBlur/people-small/0b5e3637477c', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair-application/blur/people-small/0b5e3637477c', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\Stair\\Controller\\ApplicationController',
             $database,
             $document
         ));
-        $this->assertEquals('/_cundd-stair-application/getBlur', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair-application/blur', $this->fixture->buildUriFor(
             'blur',
-            'get',
             $this->makeInstance('Cundd\\Stair\\Controller\\ApplicationController')
         ));
 
 
-        $this->assertEquals('/_cundd-stair_way-application/getBlur', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair_way-application/blur', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\StairWay\\Controller\\ApplicationController'
         ));
-        $this->assertEquals('/_cundd-stair_way-application/getBlur/database', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair_way-application/blur/database', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\StairWay\\Controller\\ApplicationController',
             'database'
         ));
-        $this->assertEquals('/_cundd-stair_way-application/getBlur/people-small', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair_way-application/blur/people-small', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\StairWay\\Controller\\ApplicationController',
             $database
         ));
-        $this->assertEquals('/_cundd-stair_way-application/getBlur/database/document-id', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair_way-application/blur/database/document-id', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\StairWay\\Controller\\ApplicationController',
             'database',
             'document-id'
         ));
-        $this->assertEquals('/_cundd-stair_way-application/getBlur/database/0b5e3637477c', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair_way-application/blur/database/0b5e3637477c', $this->fixture->buildUriFor(
             'blur',
-            'get',
             'Cundd\\StairWay\\Controller\\ApplicationController',
             'database',
             $document
         ));
-        $this->assertEquals('/_cundd-stair_way-application/getBlur/people-small/0b5e3637477c',
+        $this->assertEquals('/_cundd-stair_way-application/blur/people-small/0b5e3637477c',
             $this->fixture->buildUriFor(
                 'blur',
-                'get',
                 'Cundd\\StairWay\\Controller\\ApplicationController',
                 $database,
                 $document
             ));
-        $this->assertEquals('/_cundd-stair_way-application/getBlur', $this->fixture->buildUriFor(
+        $this->assertEquals('/_cundd-stair_way-application/blur', $this->fixture->buildUriFor(
             'blur',
-            'get',
             $this->makeInstance('Cundd\\StairWay\\Controller\\ApplicationController')
         ));
     }
@@ -223,17 +202,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
      */
     public function noActionNameTest()
     {
-        $this->fixture->buildUriFor('', 'get', 'HelloController', 'database', 'document-id');
-    }
-
-    /**
-     * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
-     * @expectedExceptionCode 1422475365
-     */
-    public function noActionMethodTest()
-    {
-        $this->fixture->buildUriFor('blur', '', 'HelloController', 'database', 'document-id');
+        $this->fixture->buildUriFor('', 'HelloController', 'database', 'document-id');
     }
 
     /**
@@ -243,7 +212,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
      */
     public function noControllerTest()
     {
-        $this->fixture->buildUriFor('blur', 'get', '', 'database', 'document-id');
+        $this->fixture->buildUriFor('blur', '', 'database', 'document-id');
     }
 
     /**
@@ -253,27 +222,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
      */
     public function invalidActionNameTest()
     {
-        $this->fixture->buildUriFor(new \stdClass(), 'get', 'HelloController', 'database', 'document-id');
-    }
-
-    /**
-     * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
-     * @expectedExceptionCode 1422472522
-     */
-    public function invalidActionMethodTypeTest()
-    {
-        $this->fixture->buildUriFor('blur', new \stdClass(), 'HelloController', 'database', 'document-id');
-    }
-
-    /**
-     * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
-     * @expectedExceptionCode 1427228089
-     */
-    public function invalidActionMethodTest()
-    {
-        $this->fixture->buildUriFor('blur', 'test', 'HelloController', 'database', 'document-id');
+        $this->fixture->buildUriFor(new \stdClass(), 'HelloController', 'database', 'document-id');
     }
 
     /**
@@ -283,7 +232,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
      */
     public function invalidDatabaseTest()
     {
-        $this->fixture->buildUriFor('blur', 'get', 'HelloController', new \stdClass(), 'document-id');
+        $this->fixture->buildUriFor('blur', 'HelloController', new \stdClass(), 'document-id');
     }
 
     /**
@@ -293,7 +242,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
      */
     public function invalidDocumentTest()
     {
-        $this->fixture->buildUriFor('blur', 'get', 'HelloController', 'database', new \stdClass());
+        $this->fixture->buildUriFor('blur', 'HelloController', 'database', new \stdClass());
     }
 
     /**

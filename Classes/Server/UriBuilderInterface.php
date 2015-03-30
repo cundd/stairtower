@@ -22,14 +22,13 @@ interface UriBuilderInterface
     /**
      * Build the URI with the given arguments
      *
-     * @param string                     $actionName
-     * @param string                     $actionMethod
-     * @param ControllerInterface|string $controller Controller instance or name
-     * @param DatabaseInterface|string   $database   Database instance or identifier
-     * @param DocumentInterface|string   $document   Document instance or identifier
+     * @param string                     $action   Name of action (e.g. 'list', 'show')
+     * @param ControllerInterface|string $controller   Controller instance or name
+     * @param DatabaseInterface|string   $database     Database instance or identifier
+     * @param DocumentInterface|string   $document     Document instance or identifier
      * @return string
      */
-    public function buildUriFor($actionName, $actionMethod, $controller, $database = null, $document = null);
+    public function buildUriFor($action, $controller, $database = null, $document = null);
 
     /**
      * Creates the request namespace for the given controller

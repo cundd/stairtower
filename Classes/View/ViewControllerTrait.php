@@ -92,11 +92,11 @@ trait ViewControllerTrait {
     protected function initializeViewAdditions()
     {
         if ($this->view instanceof ExpandableViewInterface) {
-            $this->view->addFunction('action', function($actionName, $actionMethod = 'GET', $controller = null, $database = null, $document = null) {
+            $this->view->addFunction('action', function($actionName, $controller = null, $database = null, $document = null) {
                 if ($controller === null) {
                     $controller = $this;
                 }
-                return $this->getUriBuilder()->buildUriFor($actionName, $actionMethod, $controller, $database, $document);
+                return $this->getUriBuilder()->buildUriFor($actionName, $controller, $database, $document);
             });
         }
     }

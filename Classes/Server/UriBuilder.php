@@ -26,37 +26,25 @@ class UriBuilder implements UriBuilderInterface
     /**
      * Build the URI with the given arguments
      *
-     * @param string                     $actionName   Name of action (e.g. 'list', 'show')
-     * @param string                     $actionMethod Method (e.g. 'GET', 'POST')
+     * @param string                     $action   Name of action (e.g. 'list', 'show')
      * @param ControllerInterface|string $controller   Controller instance or name
      * @param DatabaseInterface|string   $database     Database instance or identifier
      * @param DocumentInterface|string   $document     Document instance or identifier
      * @return string
      */
-    public function buildUriFor($actionName, $actionMethod, $controller, $database = null, $document = null)
+    public function buildUriFor($action, $controller, $database = null, $document = null)
     {
-        if (!$actionName) {
+        if (!$action) {
             throw new InvalidUriBuilderArgumentException('Action name must not be empty', 1422475362);
-        }
-        if (!$actionMethod) {
-            throw new InvalidUriBuilderArgumentException('Action method must not be empty', 1422475365);
         }
         if (!$controller) {
             throw new InvalidUriBuilderArgumentException('Controller must not be empty', 1422475419);
         }
-        if (!is_string($actionName) || !is_string($actionMethod)) {
-            throw new InvalidUriBuilderArgumentException(
-                sprintf('Invalid action argument %s', (!is_string($actionName)) ? '$actionName' : '$actionMethod'),
-                1422472522
-            );
-        }
-        try {
-            GeneralUtility::assertRequestMethod(strtoupper($actionMethod));
-        } catch (InvalidRequestMethodException $exception) {
-            throw new InvalidUriBuilderArgumentException(sprintf('Invalid action method ', $actionMethod), 1427228089);
+        if (!is_string($action)) {
+            throw new InvalidUriBuilderArgumentException('Invalid action name argument', 1422472522);
         }
 
-        $actionIdentifier = strtolower($actionMethod) . ucfirst($actionName);
+        $actionIdentifier = $action;
         $uriParts         = [];
 
         $uriParts[] = $this->getControllerNamespaceForController($controller);
