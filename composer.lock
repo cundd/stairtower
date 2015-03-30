@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "db7a3569e315c9bc524ea655465a39ed",
+    "hash": "447a7d4aa69b011b920ce62cdf91d656",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -317,25 +317,25 @@
         },
         {
             "name": "mnapoli/php-di",
-            "version": "4.4.6",
+            "version": "4.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mnapoli/PHP-DI.git",
-                "reference": "92f54750b616bef0a8b06b5a0ab6c867d845ce32"
+                "reference": "556e3be63a821bbad0585a34f634080305392252"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mnapoli/PHP-DI/zipball/92f54750b616bef0a8b06b5a0ab6c867d845ce32",
-                "reference": "92f54750b616bef0a8b06b5a0ab6c867d845ce32",
+                "url": "https://api.github.com/repos/mnapoli/PHP-DI/zipball/556e3be63a821bbad0585a34f634080305392252",
+                "reference": "556e3be63a821bbad0585a34f634080305392252",
                 "shasum": ""
             },
             "require": {
                 "container-interop/container-interop": "~1.0",
-                "doctrine/annotations": "~1.2",
-                "doctrine/cache": "~1.0",
+                "doctrine/annotations": "1.*",
+                "doctrine/cache": "1.*",
                 "mnapoli/phpdocreader": "~1.3",
-                "myclabs/php-enum": "~1.1",
-                "ocramius/proxy-manager": "~0.5",
+                "myclabs/php-enum": "1.*",
+                "ocramius/proxy-manager": "~0.3",
                 "php": ">=5.3.3"
             },
             "require-dev": {
@@ -343,8 +343,10 @@
             },
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "DI\\": "src/DI/"
+                "psr-0": {
+                    "DI\\": "src/",
+                    "IntegrationTests\\": "tests/",
+                    "UnitTests\\": "tests/"
                 },
                 "files": [
                     "src/DI/functions.php"
@@ -361,7 +363,7 @@
                 "dependency injection",
                 "di"
             ],
-            "time": "2015-01-10 09:52:23"
+            "time": "2014-10-14 06:13:26"
         },
         {
             "name": "mnapoli/phpdocreader",
@@ -1005,16 +1007,16 @@
         },
         {
             "name": "react/socket-client",
-            "version": "v0.4.2",
+            "version": "v0.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/socket-client.git",
-                "reference": "5b4ccbb9071f81280f20971cccd2abe980d027ca"
+                "reference": "1375dac21b1881cba31c2b38f412dc039566673f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/socket-client/zipball/5b4ccbb9071f81280f20971cccd2abe980d027ca",
-                "reference": "5b4ccbb9071f81280f20971cccd2abe980d027ca",
+                "url": "https://api.github.com/repos/reactphp/socket-client/zipball/1375dac21b1881cba31c2b38f412dc039566673f",
+                "reference": "1375dac21b1881cba31c2b38f412dc039566673f",
                 "shasum": ""
             },
             "require": {
@@ -1043,7 +1045,7 @@
             "keywords": [
                 "Socket"
             ],
-            "time": "2014-10-16 22:23:10"
+            "time": "2015-03-20 15:24:06"
         },
         {
             "name": "react/stream",
@@ -1150,17 +1152,17 @@
         },
         {
             "name": "zendframework/zend-code",
-            "version": "2.3.4",
+            "version": "2.3.7",
             "target-dir": "Zend/Code",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/Component_ZendCode.git",
-                "reference": "a7f71bd4a1130ad9fb4ffa2f10fed7e01dd873fb"
+                "reference": "a1c6c9773d0431f31c94d806c1c7d1964fa11639"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendCode/zipball/a7f71bd4a1130ad9fb4ffa2f10fed7e01dd873fb",
-                "reference": "a7f71bd4a1130ad9fb4ffa2f10fed7e01dd873fb",
+                "url": "https://api.github.com/repos/zendframework/Component_ZendCode/zipball/a1c6c9773d0431f31c94d806c1c7d1964fa11639",
+                "reference": "a1c6c9773d0431f31c94d806c1c7d1964fa11639",
                 "shasum": ""
             },
             "require": {
@@ -1197,21 +1199,21 @@
                 "code",
                 "zf2"
             ],
-            "time": "2015-01-14 16:44:17"
+            "time": "2015-03-12 16:55:53"
         },
         {
             "name": "zendframework/zend-eventmanager",
-            "version": "2.3.4",
+            "version": "2.3.7",
             "target-dir": "Zend/EventManager",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/Component_ZendEventManager.git",
-                "reference": "5992c202f13292415501aed41beba76404197866"
+                "reference": "2f42c89b7a4996d5d75b45ce98fbf3ad4fc28e00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendEventManager/zipball/5992c202f13292415501aed41beba76404197866",
-                "reference": "5992c202f13292415501aed41beba76404197866",
+                "url": "https://api.github.com/repos/zendframework/Component_ZendEventManager/zipball/2f42c89b7a4996d5d75b45ce98fbf3ad4fc28e00",
+                "reference": "2f42c89b7a4996d5d75b45ce98fbf3ad4fc28e00",
                 "shasum": ""
             },
             "require": {
@@ -1239,21 +1241,21 @@
                 "eventmanager",
                 "zf2"
             ],
-            "time": "2015-01-14 16:44:17"
+            "time": "2015-03-12 16:55:53"
         },
         {
             "name": "zendframework/zend-stdlib",
-            "version": "2.3.4",
+            "version": "2.3.7",
             "target-dir": "Zend/Stdlib",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/Component_ZendStdlib.git",
-                "reference": "280e4ee6a8fea96b3de00a39174758b4002a7358"
+                "reference": "3f6e2416183d4879a983680e1165f14164b262f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendStdlib/zipball/280e4ee6a8fea96b3de00a39174758b4002a7358",
-                "reference": "280e4ee6a8fea96b3de00a39174758b4002a7358",
+                "url": "https://api.github.com/repos/zendframework/Component_ZendStdlib/zipball/3f6e2416183d4879a983680e1165f14164b262f4",
+                "reference": "3f6e2416183d4879a983680e1165f14164b262f4",
                 "shasum": ""
             },
             "require": {
@@ -1292,7 +1294,7 @@
                 "stdlib",
                 "zf2"
             ],
-            "time": "2015-01-14 16:44:17"
+            "time": "2015-03-12 16:55:53"
         }
     ],
     "packages-dev": [

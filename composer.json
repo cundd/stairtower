@@ -5,7 +5,7 @@
   "version": "0.0.1-dev",
   "require": {
     "react/react": "0.4.*",
-    "mnapoli/php-di": "~4.0",
+    "mnapoli/php-di": "4.4",
     "symfony/console": "2.5.5",
     "monolog/monolog": "1.13.0"
   },
