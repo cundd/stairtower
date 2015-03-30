@@ -77,12 +77,14 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
         if ($this->getIgnoreRequest($request)) {
             $response->end();
+
             return;
         }
 
         if ($debugLog) {
             $this->logger->debug(
-                sprintf('Begin handle request %s %s %s', $request->getMethod(), $request->getPath(), $request->getHttpVersion())
+                sprintf('Begin handle request %s %s %s', $request->getMethod(), $request->getPath(),
+                    $request->getHttpVersion())
             );
         }
 
@@ -93,6 +95,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             $serverAction = RequestInfoFactory::getServerActionForRequest($request);
             if ($serverAction) { // Handle a very special server action
                 $this->handleServerAction($serverAction, $request, $response);
+
                 return;
             }
             $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
@@ -128,7 +131,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
 
         if ($debugLog) {
             $this->logger->debug(
-                sprintf('End handle request %s %s %s', $request->getMethod(), $request->getPath(), $request->getHttpVersion())
+                sprintf('End handle request %s %s %s', $request->getMethod(), $request->getPath(),
+                    $request->getHttpVersion())
             );
         }
     }
@@ -154,7 +158,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         switch ($method) {
             case 'POST':
             case 'PUT':
-            $this->waitForBodyAndPerformHandlerAction($request, $response, $requestInfo);
+                $this->waitForBodyAndPerformHandlerAction($request, $response, $requestInfo);
                 break;
 
             case 'GET':
@@ -173,6 +177,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                     new InvalidRequestMethodException(sprintf('Request method "%s" not valid', $method), 1413033763)
                 );
         }
+
         return $requestResult;
     }
 
@@ -201,6 +206,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                     $request, $response,
                     function ($request, $requestBody) use ($self, $controller, $requestInfo, $response) {
                         $requestInfo = RequestInfoFactory::copyWithBody($requestInfo, $requestBody);
+
                         return $self->invokeControllerActionWithRequestInfo(
                             $requestInfo, $response, $controller, $requestBody
                         );
@@ -213,6 +219,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         } catch (\Exception $exception) {
             $this->handleError($exception, $request, $response);
         }
+
         return null;
     }
 
@@ -227,14 +234,15 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     {
         $handler     = $this->getHandlerForRequest($request);
         $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+
         return call_user_func(array($handler, $requestInfo->getAction()), $requestInfo);
     }
 
     /**
      * Handles the given Controller/Action request action
      *
-     * @param RequestInfo $requestInfo
-     * @param Response    $response
+     * @param RequestInfo         $requestInfo
+     * @param Response            $response
      * @param ControllerInterface $controller
      * @return ControllerResultInterface Returns the Handler Result
      */
@@ -246,6 +254,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         } catch (\Exception $exception) {
             $this->writeln('Caught exception #%d: %s', $exception->getCode(), $exception->getMessage());
             $this->writeln($exception->getTraceAsString());
+
             return new ControllerResult(
                 500,
                 sprintf(
@@ -257,6 +266,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 $this->getContentTypeForRequest($requestInfo->getRequest())
             );
         }
+
         return $result;
     }
 
@@ -329,17 +339,21 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     {
         $self = $this;
         $this->waitForBodyAndPerformCallback(
-            $request, $response, function ($request, $requestBodyParsed) use ($requestInfo, $self) {
-            /** @var Request $request */
-            if ($request->getMethod() === 'PUT' && $requestInfo->getDataIdentifier()) {
-                $requestResult = $self->getHandlerForRequest($request)->update($requestInfo,
-                    $requestBodyParsed);
-            } else {
-                $requestResult = $self->getHandlerForRequest($request)->create($requestInfo,
-                    $requestBodyParsed);
-            }
-            return $requestResult;
-        }, false
+            $request,
+            $response,
+            function ($request, $requestBodyParsed) use ($requestInfo, $self) {
+                /** @var Request $request */
+                if ($request->getMethod() === 'PUT' && $requestInfo->getDataIdentifier()) {
+                    $requestResult = $self->getHandlerForRequest($request)->update($requestInfo,
+                        $requestBodyParsed);
+                } else {
+                    $requestResult = $self->getHandlerForRequest($request)->create($requestInfo,
+                        $requestBodyParsed);
+                }
+
+                return $requestResult;
+            },
+            false
         );
     }
 
@@ -449,6 +463,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 $bodyParser = 'Cundd\\PersistentObjectStore\\Server\\BodyParser\\FormDataBodyParser';
             }
         }
+
         return $this->diContainer->get($bodyParser);
     }
 
@@ -464,6 +479,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             return RequestInfoFactory::buildRequestInfoFromRequest($request)->getContentType();
         } catch (\Exception $exception) {
         }
+
         return ContentType::JSON_APPLICATION;
     }
 
@@ -480,6 +496,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         } else {
             $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter';
         }
+
         return $this->diContainer->get($formatter);
     }
 
@@ -512,6 +529,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 1420712698
             );
         }
+
         return $controller;
     }
 
@@ -554,13 +572,16 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      * @param Request $request
      * @return bool
      */
-    protected function getIgnoreRequest($request) {
+    protected function getIgnoreRequest($request)
+    {
         if ($request instanceof Request) {
             if ($request->getMethod() === 'GET' && $request->getPath() === '/favicon.ico') {
                 return true;
             }
+
             return false;
         }
+
         return true;
     }
 
@@ -568,22 +589,23 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      * Returns if the given controller action requires a Document as parameter
      *
      * TODO: Move this functionality into a separate class
-     * @param string|object $controller Class name or instance
-     * @param string $actionMethod Method name
+     *
+     * @param string|object $controller   Class name or instance
+     * @param string        $actionMethod Method name
      * @return int Returns 1 if a Document is required, 2 if it is optional otherwise 0
      */
     protected function getControllerActionRequiresDocumentArgument($controller, $actionMethod)
     {
         static $controllerActionRequiresDocumentCache = array();
-        $controllerClass = is_string($controller) ? $controller : get_class($controller);
+        $controllerClass            = is_string($controller) ? $controller : get_class($controller);
         $controllerActionIdentifier = $controllerClass . '::' . $actionMethod;
 
         if (isset($controllerActionRequiresDocumentCache[$controllerActionIdentifier])) {
             return $controllerActionRequiresDocumentCache[$controllerActionIdentifier];
         }
 
-        $classReflection = new ReflectionClass($controllerClass);
-        $methodReflection = $classReflection->getMethod($actionMethod);
+        $classReflection                                                    = new ReflectionClass($controllerClass);
+        $methodReflection                                                   = $classReflection->getMethod($actionMethod);
         $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = 0;
         foreach ($methodReflection->getParameters() as $parameter) {
             $argumentClassName = $parameter->getClass() ? trim($parameter->getClass()->getName()) : null;
@@ -592,6 +614,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 break;
             }
         }
+
         return $controllerActionRequiresDocumentCache[$controllerActionIdentifier];
     }
 
