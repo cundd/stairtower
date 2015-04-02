@@ -123,7 +123,12 @@ class Cookie implements Immutable
             $definitions['Path'] = $this->path;
         }
         if ($this->expires !== null) {
-            $definitions['Expires'] = $this->expires instanceof \DateTime ? $this->expires->format('r') : $this->expires;
+            //Thu, 02 Apr 2015 22:00:00 GMT
+            if ($this->expires instanceof \DateTime) {
+                $definitions['Expires'] = $this->expires->format('D, d M Y H:i:s e');
+            } else {
+                $definitions['Expires'] = $this->expires;
+            }
         }
         if ($this->domain !== null) {
             $definitions['Domain'] = $this->domain;

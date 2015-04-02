@@ -27,8 +27,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function fullCookieTest()
     {
         $this->assertSame(
-            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Domain=.example.com; Secure; HttpOnly',
-            (string) new Cookie('user', 'daniel', new \DateTime('tomorrow'), '/home', '.example.com', true, true)
+            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
+            (string) new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true)
         );
     }
 
@@ -38,8 +38,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function cookieWithoutHttpOnlyTest()
     {
         $this->assertSame(
-            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Domain=.example.com; Secure',
-            (string) new Cookie('user', 'daniel', new \DateTime('tomorrow'), '/home', '.example.com', true)
+            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure',
+            (string) new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true)
         );
     }
 
@@ -49,8 +49,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function cookieWithoutSecureTest()
     {
         $this->assertSame(
-            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Domain=.example.com; HttpOnly',
-            (string) new Cookie('user', 'daniel', new \DateTime('tomorrow'), '/home', '.example.com', false, true)
+            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; HttpOnly',
+            (string) new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', false, true)
         );
     }
 
@@ -60,8 +60,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function cookieWithoutDomainTest()
     {
         $this->assertSame(
-            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Secure; HttpOnly',
-            (string) new Cookie('user', 'daniel', new \DateTime('tomorrow'), '/home', null, true, true)
+            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Secure; HttpOnly',
+            (string) new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', null, true, true)
         );
     }
 
@@ -71,8 +71,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function cookieWithoutPathTest()
     {
         $this->assertSame(
-            'user=daniel; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Domain=.example.com; Secure; HttpOnly',
-            (string) new Cookie('user', 'daniel', new \DateTime('tomorrow'), null, '.example.com', true, true)
+            'user=daniel; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
+            (string) new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), null, '.example.com', true, true)
         );
     }
 
@@ -93,8 +93,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function cookieWithoutValueTest()
     {
         $this->assertSame(
-            'user=; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Domain=.example.com; Secure; HttpOnly',
-            (string) new Cookie('user', null, new \DateTime('tomorrow'), '/home', '.example.com', true, true)
+            'user=; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
+            (string) new Cookie('user', null, new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true)
         );
     }
 
@@ -104,13 +104,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function cookieWithoutNameTest()
     {
-        new Cookie(null, 'daniel', new \DateTime('tomorrow'), '/home', '.example.com', true, true);
+        new Cookie(null, 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true);
     }
-
-
-
-
-
 
     /**
      * @test
@@ -118,8 +113,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function fullCookieToHeaderTest()
     {
         $this->assertSame(
-            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Domain=.example.com; Secure; HttpOnly',
-            (new Cookie('user', 'daniel', new \DateTime('tomorrow'), '/home', '.example.com', true, true))->toHeader()
+            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
+            (new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true))->toHeader()
         );
     }
 
@@ -129,8 +124,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function cookieWithoutHttpOnlyToHeaderTest()
     {
         $this->assertSame(
-            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Domain=.example.com; Secure',
-            (new Cookie('user', 'daniel', new \DateTime('tomorrow'), '/home', '.example.com', true))->toHeader()
+            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure',
+            (new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true))->toHeader()
         );
     }
 
@@ -140,8 +135,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function cookieWithoutSecureToHeaderTest()
     {
         $this->assertSame(
-            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Domain=.example.com; HttpOnly',
-            (new Cookie('user', 'daniel', new \DateTime('tomorrow'), '/home', '.example.com', false, true))->toHeader()
+            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; HttpOnly',
+            (new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', false, true))->toHeader()
         );
     }
 
@@ -151,8 +146,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function cookieWithoutDomainToHeaderTest()
     {
         $this->assertSame(
-            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Secure; HttpOnly',
-            (new Cookie('user', 'daniel', new \DateTime('tomorrow'), '/home', null, true, true))->toHeader()
+            'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Secure; HttpOnly',
+            (new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', null, true, true))->toHeader()
         );
     }
 
@@ -162,8 +157,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function cookieWithoutPathToHeaderTest()
     {
         $this->assertSame(
-            'user=daniel; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Domain=.example.com; Secure; HttpOnly',
-            (new Cookie('user', 'daniel', new \DateTime('tomorrow'), null, '.example.com', true, true))->toHeader()
+            'user=daniel; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
+            (new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), null, '.example.com', true, true))->toHeader()
         );
     }
 
@@ -184,8 +179,8 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     public function cookieWithoutValueToHeaderTest()
     {
         $this->assertSame(
-            'user=; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 +0000; Domain=.example.com; Secure; HttpOnly',
-            (new Cookie('user', null, new \DateTime('tomorrow'), '/home', '.example.com', true, true))->toHeader()
+            'user=; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
+            (new Cookie('user', null, new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true))->toHeader()
         );
     }
 }
