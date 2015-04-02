@@ -46,7 +46,8 @@ class Filesystem extends BaseFilesystem
      * Returns true if the template is still fresh.
      *
      * @param string    $name The template name
-     * @param timestamp $time The last modification time of the cached template
+     * @param \timestamp $time The last modification time of the cached template
+     * @return bool
      */
     public function isFresh($name, $time)
     {
