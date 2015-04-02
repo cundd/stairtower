@@ -39,7 +39,7 @@ trait ViewControllerTrait
     protected $viewClass = 'Cundd\\PersistentObjectStore\\View\\Twig\\View';
 
     /**
-     * @var UriBuilderInterface
+     * @var \Cundd\PersistentObjectStore\Server\UriBuilderInterface
      * @Inject
      */
     protected $uriBuilder;
