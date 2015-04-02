@@ -54,7 +54,7 @@ class ControllerResult extends HandlerResult implements ControllerResultInterfac
      */
     public function getContentType()
     {
-        return $this->contentType . '; charset=utf-8';
+        return $this->contentType ? $this->contentType . '; charset=utf-8' : '';
     }
 
     /**
@@ -83,6 +83,10 @@ class ControllerResult extends HandlerResult implements ControllerResultInterfac
      */
     public function getHeaders()
     {
+        $contentType = $this->getContentType();
+        if (!$contentType) {
+            return $this->headers;
+        }
         return array_replace(
             $this->headers,
             [

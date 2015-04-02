@@ -43,6 +43,15 @@ class ControllerResultTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(ContentType::JSON_APPLICATION . '; charset=utf-8', $this->fixture->getContentType());
     }
 
+    /**
+     * @test
+     */
+    public function getEmptyContentTypeTest()
+    {
+        $this->fixture = new ControllerResult(200, 'my data', null);
+        $this->assertSame('', $this->fixture->getContentType());
+    }
+
 
     /**
      * @test
@@ -53,6 +62,24 @@ class ControllerResultTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('Content-Type', $this->fixture->getHeaders());
         $this->assertSame(
             ContentType::JSON_APPLICATION . '; charset=utf-8',
+            $this->fixture->getHeaders()['Content-Type']
+        );
+    }
+
+
+    /**
+     * @test
+     */
+    public function getHeadersWithoutSetContentTypeTest()
+    {
+        $this->fixture = new ControllerResult(200, 'my data', null, [
+            'Content-Type' => 'My content type'
+        ]);
+
+        $this->assertInternalType('array', $this->fixture->getHeaders());
+        $this->assertArrayHasKey('Content-Type', $this->fixture->getHeaders());
+        $this->assertSame(
+            'My content type',
             $this->fixture->getHeaders()['Content-Type']
         );
     }
