@@ -11,7 +11,7 @@ namespace Cundd\PersistentObjectStore\Server\Controller;
 use Cundd\PersistentObjectStore\Server\Exception\RequestMethodNotImplementedException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use Cundd\PersistentObjectStore\View\ViewControllerInterface;
 use React\Http\Response;
 

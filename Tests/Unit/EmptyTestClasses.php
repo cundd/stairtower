@@ -11,7 +11,7 @@ use Evenement\EventEmitter;
 use React\Socket\ConnectionInterface;
 use React\Stream\WritableStreamInterface;
 use React\Stream\Util;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 
 class Test_Application
 {

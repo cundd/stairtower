@@ -10,7 +10,7 @@ namespace Cundd\PersistentObjectStore\Server\Controller;
 
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 
 /**
  * Interface for Document Controllers

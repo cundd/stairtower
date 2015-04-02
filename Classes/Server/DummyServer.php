@@ -17,7 +17,7 @@ use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use DateTime;
 use React\Http\Response;

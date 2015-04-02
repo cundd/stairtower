@@ -13,7 +13,7 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use React\Http\Request as BaseRequest;
 
 /**
- * Factory for RequestInfo instances
+ * Factory for Request instances
  *
  * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
@@ -22,14 +22,14 @@ class RequestInfoFactory
     const DEFAULT_ACTION = 'index';
 
     /**
-     * Builds a RequestInfo instance for the given request
+     * Builds a Request instance for the given request
      *
-     * @param BaseRequest|RequestInfo $request
-     * @return RequestInfo
+     * @param BaseRequest|Request $request
+     * @return Request
      */
     public static function buildRequestInfoFromRequest($request)
     {
-        if ($request instanceof RequestInfo) {
+        if ($request instanceof Request) {
             return $request;
         }
 
@@ -63,7 +63,7 @@ class RequestInfoFactory
             $dataIdentifier     = isset($pathParts[3]) ? $pathParts[3] : null;
         }
 
-        return new RequestInfo(
+        return new Request(
             $request,
             $dataIdentifier,
             $databaseIdentifier,
@@ -77,7 +77,7 @@ class RequestInfoFactory
      * Returns the handler class if the path contains a special information identifier, otherwise the Handler interface
      * name
      *
-     * @param RequestInfo $request
+     * @param Request|BaseRequest $request
      * @return string
      */
     public static function getHandlerClassForRequest($request)
@@ -124,7 +124,7 @@ class RequestInfoFactory
      * Returns the controller class and action name as array if the path contains a special information identifier. If
      * no special information identifier is given, or the controller class does not exist false is returned.
      *
-     * @param RequestInfo $request
+     * @param Request $request
      * @return array|boolean
      */
     public static function getControllerAndActionForRequest($request)
@@ -183,7 +183,7 @@ class RequestInfoFactory
     /**
      * Returns the handler action if the path contains a special information identifier, otherwise FALSE
      *
-     * @param RequestInfo $request
+     * @param Request|BaseRequest $request
      * @return string|bool
      */
     public static function getHandlerActionForRequest($request)
@@ -198,7 +198,7 @@ class RequestInfoFactory
     /**
      * Returns an action method name if the path contains a special information identifier, otherwise FALSE
      *
-     * @param RequestInfo $request
+     * @param Request $request
      * @param string  $interface
      * @return string|bool
      */
@@ -231,7 +231,7 @@ class RequestInfoFactory
     /**
      * Returns the special server action if the path contains a special information identifier, otherwise FALSE
      *
-     * @param RequestInfo $request
+     * @param Request|BaseRequest $request
      * @return string|bool
      */
     public static function getServerActionForRequest($request)
@@ -256,13 +256,13 @@ class RequestInfoFactory
     /**
      * Creates a copy of the given Request Info with the given body
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $requestInfo
      * @param mixed       $body
-     * @return RequestInfo
+     * @return Request
      */
     public static function copyWithBody($requestInfo, $body)
     {
-        return new RequestInfo(
+        return new Request(
             $requestInfo->getOriginalRequest(),
             $requestInfo->getDataIdentifier(),
             $requestInfo->getDatabaseIdentifier(),

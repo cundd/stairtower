@@ -20,7 +20,7 @@ use React\Http\Request as BaseRequest;
  *
  * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class RequestInfo implements Immutable, RequestInterface
+class Request implements Immutable, RequestInterface
 {
     /**
      * Identifier for the database
@@ -79,7 +79,7 @@ class RequestInfo implements Immutable, RequestInterface
     protected $controllerClass;
 
     /**
-     * Create a new RequestInfo object
+     * Create a new Request object
      *
      * @param BaseRequest $request
      * @param string      $dataIdentifier

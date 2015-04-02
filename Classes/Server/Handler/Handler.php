@@ -17,7 +17,7 @@ use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use SplFixedArray;
 

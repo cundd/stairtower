@@ -16,7 +16,7 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
 use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
 use DateTime;

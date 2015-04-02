@@ -11,7 +11,7 @@ namespace Cundd\PersistentObjectStore\Server\Dispatcher;
 
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use React\Http\Response;
 
 /**

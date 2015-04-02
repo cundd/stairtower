@@ -7,7 +7,7 @@
  */
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 
 /**
  * Interface for classes that handle the actions from incoming requests

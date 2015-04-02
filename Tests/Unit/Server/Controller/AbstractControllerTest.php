@@ -61,7 +61,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     public function getRequestInfoTest()
     {
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfo',
+            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\Request',
             $this->fixture->getRequest());
     }
 

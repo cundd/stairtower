@@ -28,7 +28,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\DeferredResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\NullResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
 use Monolog\Logger;
