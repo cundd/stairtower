@@ -10,7 +10,7 @@ namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestActionException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use React\Http\Request;
+use React\Http\Request as BaseRequest;
 
 /**
  * Factory for RequestInfo instances
@@ -24,7 +24,7 @@ class RequestInfoFactory
     /**
      * Builds a RequestInfo instance for the given request
      *
-     * @param Request|RequestInfo $request
+     * @param BaseRequest|RequestInfo $request
      * @return RequestInfo
      */
     public static function buildRequestInfoFromRequest($request)
@@ -77,7 +77,7 @@ class RequestInfoFactory
      * Returns the handler class if the path contains a special information identifier, otherwise the Handler interface
      * name
      *
-     * @param RequestInfo|Request $request
+     * @param RequestInfo $request
      * @return string
      */
     public static function getHandlerClassForRequest($request)
@@ -124,7 +124,7 @@ class RequestInfoFactory
      * Returns the controller class and action name as array if the path contains a special information identifier. If
      * no special information identifier is given, or the controller class does not exist false is returned.
      *
-     * @param Request $request
+     * @param RequestInfo $request
      * @return array|boolean
      */
     public static function getControllerAndActionForRequest($request)
@@ -183,7 +183,7 @@ class RequestInfoFactory
     /**
      * Returns the handler action if the path contains a special information identifier, otherwise FALSE
      *
-     * @param Request $request
+     * @param RequestInfo $request
      * @return string|bool
      */
     public static function getHandlerActionForRequest($request)
@@ -198,7 +198,7 @@ class RequestInfoFactory
     /**
      * Returns an action method name if the path contains a special information identifier, otherwise FALSE
      *
-     * @param Request $request
+     * @param RequestInfo $request
      * @param string  $interface
      * @return string|bool
      */
@@ -231,7 +231,7 @@ class RequestInfoFactory
     /**
      * Returns the special server action if the path contains a special information identifier, otherwise FALSE
      *
-     * @param RequestInfo|Request $request
+     * @param RequestInfo $request
      * @return string|bool
      */
     public static function getServerActionForRequest($request)

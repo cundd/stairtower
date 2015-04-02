@@ -8,8 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Server\BodyParser;
 
-
-use React\Http\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 
 /**
  * Body Parser implementation that can parse form data
@@ -20,10 +19,10 @@ class FormDataBodyParser implements BodyParserInterface
 {
     /**
      * @param string  $data
-     * @param Request $request
+     * @param RequestInterface $request
      * @return mixed
      */
-    public function parse($data, $request)
+    public function parse($data, RequestInterface $request)
     {
         $parsedData = array();
         parse_str($data, $parsedData);

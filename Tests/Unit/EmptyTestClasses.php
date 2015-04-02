@@ -11,7 +11,7 @@ use Evenement\EventEmitter;
 use React\Socket\ConnectionInterface;
 use React\Stream\WritableStreamInterface;
 use React\Stream\Util;
-
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 
 class Test_Application
 {
@@ -23,19 +23,15 @@ class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server
     {
     }
 
-    public function setRequestInfo(\Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo $requestInfo)
-    {
-    }
-
-    public function getRequestInfo()
-    {
-    }
-
-    public function unsetRequestInfo()
+    public function setRequest(Request $request)
     {
     }
 
     public function getRequest()
+    {
+    }
+
+    public function unsetRequest()
     {
     }
 
@@ -70,7 +66,7 @@ class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server
     }
 
     public function processRequest(
-        \Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo $requestInfo,
+        Request $request,
         \React\Http\Response $response
     ) {
     }

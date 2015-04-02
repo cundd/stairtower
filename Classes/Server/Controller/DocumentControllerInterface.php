@@ -10,7 +10,7 @@ namespace Cundd\PersistentObjectStore\Server\Controller;
 
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 
 /**
  * Interface for Document Controllers
@@ -20,7 +20,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
 interface DocumentControllerInterface extends ControllerInterface
 {
     /**
-     * Returns the database for the current Request Info
+     * Returns the database for the current Request
      *
      * @return DatabaseInterface|null
      */
@@ -29,13 +29,13 @@ interface DocumentControllerInterface extends ControllerInterface
     /**
      * Returns the database for the given request or null if it is not specified
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return DatabaseInterface|null
      */
-    public function getDatabaseForRequestInfo(RequestInfo $requestInfo);
+    public function getDatabaseForRequest(Request $request);
 
     /**
-     * Returns the Document for the current Request Info
+     * Returns the Document for the current Request
      *
      * @return DocumentInterface|null
      */
@@ -44,8 +44,8 @@ interface DocumentControllerInterface extends ControllerInterface
     /**
      * Returns the Document for the given request or null if it is not specified
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return DocumentInterface|null
      */
-    public function getDocumentForRequest(RequestInfo $requestInfo);
+    public function getDocumentForRequest(Request $request);
 }

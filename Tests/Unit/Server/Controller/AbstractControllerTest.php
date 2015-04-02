@@ -36,12 +36,12 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
         $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
             new Request('GET', '/_cundd-test-application/my_method')
         );
-        $this->fixture->setRequestInfo($requestInfo);
+        $this->fixture->setRequest($requestInfo);
     }
 
     protected function tearDown()
     {
-        $this->fixture->unsetRequestInfo();
+        $this->fixture->unsetRequest();
         unset($this->fixture);
         parent::tearDown();
     }
@@ -62,7 +62,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfo',
-            $this->fixture->getRequestInfo());
+            $this->fixture->getRequest());
     }
 
     /**
@@ -72,8 +72,8 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     {
         $request     = new Request('GET', '/loaned/');
         $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
-        $this->fixture->setRequestInfo($requestInfo);
-        $this->assertSame($requestInfo, $this->fixture->getRequestInfo());
+        $this->fixture->setRequest($requestInfo);
+        $this->assertSame($requestInfo, $this->fixture->getRequest());
     }
 
 
@@ -84,10 +84,10 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     {
         $request     = new Request('GET', '/loaned/');
         $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
-        $this->fixture->setRequestInfo($requestInfo);
+        $this->fixture->setRequest($requestInfo);
 
-        $this->fixture->unsetRequestInfo();
-        $this->assertNull($this->fixture->getRequestInfo());
+        $this->fixture->unsetRequest();
+        $this->assertNull($this->fixture->getRequest());
     }
 
     /**

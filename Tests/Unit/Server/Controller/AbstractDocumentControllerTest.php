@@ -52,7 +52,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
         $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
             new Request('GET', '/people-small/elliottgentry@andershun.com')
         );
-        $this->fixture->setRequestInfo($requestInfo);
+        $this->fixture->setRequest($requestInfo);
     }
 
     protected function tearDown()
@@ -80,7 +80,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
         $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
             new Request('GET', '/people-small/elliottgentry@andershun.com')
         );
-        $database    = $this->fixture->getDatabaseForRequestInfo($requestInfo);
+        $database    = $this->fixture->getDatabaseForRequest($requestInfo);
         $this->assertNotNull($database);
         $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DatabaseInterface', $database);
         $this->assertEquals('people-small', $database->getIdentifier());

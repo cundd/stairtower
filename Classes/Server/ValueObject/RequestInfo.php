@@ -12,7 +12,7 @@ use Cundd\PersistentObjectStore\Exception\UndefinedMethodCallException;
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Server\ContentType;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use React\Http\Request;
+use React\Http\Request as BaseRequest;
 
 
 /**
@@ -20,7 +20,7 @@ use React\Http\Request;
  *
  * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class RequestInfo implements Immutable
+class RequestInfo implements Immutable, RequestInterface
 {
     /**
      * Identifier for the database
@@ -46,9 +46,9 @@ class RequestInfo implements Immutable
     /**
      * Original request
      *
-     * @var Request
+     * @var BaseRequest
      */
-    protected $request;
+    protected $originalRequest;
 
     /**
      * Request body
@@ -65,11 +65,11 @@ class RequestInfo implements Immutable
     protected $cookies;
 
     /**
-     * A special handler action that is implemented in the handler
+     * The controller or special handler action
      *
      * @var string
      */
-    protected $specialHandlerAction;
+    protected $action;
 
     /**
      * Special controller class name
@@ -81,20 +81,20 @@ class RequestInfo implements Immutable
     /**
      * Create a new RequestInfo object
      *
-     * @param Request $request
-     * @param string  $dataIdentifier
-     * @param string  $databaseIdentifier
-     * @param string  $method
-     * @param string  $specialHandlerAction
-     * @param string  $controllerClass
-     * @param null    $body
+     * @param BaseRequest $request
+     * @param string      $dataIdentifier
+     * @param string      $databaseIdentifier
+     * @param string      $method
+     * @param string      $action
+     * @param string      $controllerClass
+     * @param null        $body
      */
     public function __construct(
         $request,
         $dataIdentifier,
         $databaseIdentifier,
         $method,
-        $specialHandlerAction = null,
+        $action = null,
         $controllerClass = null,
         $body = null
     ) {
@@ -107,13 +107,13 @@ class RequestInfo implements Immutable
         if ($databaseIdentifier) {
             GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
         }
-        $this->method               = $method;
-        $this->dataIdentifier       = $dataIdentifier;
-        $this->databaseIdentifier   = $databaseIdentifier;
-        $this->specialHandlerAction = $specialHandlerAction ?: null;
-        $this->request              = $request;
-        $this->controllerClass      = $controllerClass ?: null;
-        $this->body                 = $body ?: null;
+        $this->method             = $method;
+        $this->dataIdentifier     = $dataIdentifier;
+        $this->databaseIdentifier = $databaseIdentifier;
+        $this->action             = $action ?: null;
+        $this->originalRequest    = $request;
+        $this->controllerClass    = $controllerClass ?: null;
+        $this->body               = $body ?: null;
     }
 
     /**
@@ -124,17 +124,6 @@ class RequestInfo implements Immutable
     public function getBody()
     {
         return $this->body;
-    }
-
-
-    /**
-     * Returns the original request
-     *
-     * @return Request
-     */
-    public function getRequest()
-    {
-        return $this->request;
     }
 
     /**
@@ -170,21 +159,22 @@ class RequestInfo implements Immutable
     /**
      * Returns the special handler action
      *
+     * @deprecated
      * @return string
      */
     public function getSpecialHandlerAction()
     {
-        return $this->specialHandlerAction;
+        return $this->getAction();
     }
 
     /**
-     * Returns the special handler action
+     * Returns the controller or special handler action
      *
      * @return string
      */
     public function getAction()
     {
-        return $this->getSpecialHandlerAction();
+        return $this->action;
     }
 
     /**
@@ -255,11 +245,11 @@ class RequestInfo implements Immutable
      */
     public function getContentType()
     {
-        $request = $this->getRequest();
-        if (!$request instanceof Request) {
+        $request = $this->getOriginalRequest();
+        if (!$request instanceof BaseRequest) {
             return ContentType::JSON_APPLICATION;
         }
-        $headers = $this->getRequest()->getHeaders();
+        $headers = $this->getHeaders();
         $accept  = '*/*';
         if (isset($headers['Accept'])) {
             $accept = $headers['Accept'];
@@ -341,7 +331,7 @@ class RequestInfo implements Immutable
      */
     public function getPath()
     {
-        return $this->request->getPath();
+        return $this->originalRequest->getPath();
     }
 
     /**
@@ -351,7 +341,7 @@ class RequestInfo implements Immutable
      */
     public function getQuery()
     {
-        return $this->request->getQuery();
+        return $this->originalRequest->getQuery();
     }
 
     /**
@@ -361,7 +351,7 @@ class RequestInfo implements Immutable
      */
     public function getHttpVersion()
     {
-        return $this->request->getHttpVersion();
+        return $this->originalRequest->getHttpVersion();
     }
 
     /**
@@ -371,17 +361,17 @@ class RequestInfo implements Immutable
      */
     public function getHeaders()
     {
-        return $this->request->getHeaders();
+        return $this->originalRequest->getHeaders();
     }
 
     /**
      * Returns the original request
      *
-     * @return Request
+     * @return BaseRequest
      */
     public function getOriginalRequest()
     {
-        return $this->request;
+        return $this->originalRequest;
     }
 
     /**
@@ -392,7 +382,7 @@ class RequestInfo implements Immutable
      */
     public function on($event, callable $listener)
     {
-        $this->request->on($event, $listener);
+        $this->originalRequest->on($event, $listener);
     }
 
 
@@ -421,7 +411,7 @@ class RequestInfo implements Immutable
         if (method_exists($this, $name)) {
             throw new UndefinedMethodCallException(sprintf('Method %s is not accessible', $name), 1427730222);
         }
-        if (!method_exists($this->request, $name)) {
+        if (!method_exists($this->originalRequest, $name)) {
             throw new UndefinedMethodCallException(
                 sprintf('Method %s not implemented in %s', $name, get_class($this)),
                 1427730223
@@ -429,9 +419,9 @@ class RequestInfo implements Immutable
         }
 
         if (count($arguments) > 0) {
-            return call_user_func_array(array($this->request, $name), $arguments);
+            return call_user_func_array(array($this->originalRequest, $name), $arguments);
         }
 
-        return $this->request->$name();
+        return $this->originalRequest->$name();
     }
 }

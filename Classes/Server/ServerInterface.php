@@ -16,6 +16,7 @@ use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use DateTime;
+use Exception;
 use React\Http\Response;
 
 /**
@@ -47,7 +48,7 @@ interface ServerInterface
     /**
      * Handle the given request
      *
-     * @param \React\Http\Request  $request
+     * @param Request  $request
      * @param \React\Http\Response $response
      */
     public function handle($request, $response);
@@ -64,10 +65,10 @@ interface ServerInterface
     /**
      * Handles the given exception
      *
-     * @param \Exception           $error
-     * @param \React\Http\Request  $request
+     * @param Exception           $error
+     * @param Request  $request
      * @param \React\Http\Response $response
-     * @throws \Exception
+     * @throws Exception
      */
     public function handleError($error, $request, Response $response);
 

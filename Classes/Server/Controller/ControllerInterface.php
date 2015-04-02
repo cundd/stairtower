@@ -8,8 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Server\Controller;
 
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
-use React\Http\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 use React\Http\Response;
 
 /**
@@ -31,17 +30,17 @@ interface ControllerInterface
     /**
      * Sets the Request Info for the current request
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return $this
      */
-    public function setRequestInfo(RequestInfo $requestInfo);
+    public function setRequest(Request $request);
 
     /**
      * Returns the current Request Info instance
      *
-     * @return RequestInfo
+     * @return Request
      */
-    public function getRequestInfo();
+    public function getRequest();
 
     /**
      * Unset the Request Info instance after the request has been processed
@@ -50,7 +49,7 @@ interface ControllerInterface
      *
      * @return void
      */
-    public function unsetRequestInfo();
+    public function unsetRequest();
 
     /**
      * Will be invoked before the actual action method is called but after the Request Info has been set
@@ -73,10 +72,9 @@ interface ControllerInterface
      *
      * The result output is returned by altering the given response.
      *
-     * @param RequestInfo $requestInfo The request object
+     * @param Request  $request
      * @param Response $response The response, modified by this handler
-     *
      * @return mixed Returns the result of the processing
      */
-    public function processRequest(RequestInfo $requestInfo, Response $response);
+    public function processRequest(Request $request, Response $response);
 }

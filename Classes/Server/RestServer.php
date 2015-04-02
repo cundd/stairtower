@@ -62,14 +62,13 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handle the given request
      *
-     * @param Request  $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      */
     public function handle($request, $response)
     {
         // If the configured log level is DEBUG log all requests
         static $debugLog = -1;
-        $debugLog = true;
         if ($debugLog === -1) {
             $debugLog = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logLevel') <= Logger::DEBUG;
         }
@@ -87,8 +86,12 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
 
         if ($debugLog) {
             $this->logger->debug(
-                sprintf('Begin handle request %s %s %s', $request->getMethod(), $request->getPath(),
-                    $request->getHttpVersion())
+                sprintf(
+                    'Begin handle request %s %s %s',
+                    $request->getMethod(),
+                    $request->getPath(),
+                    $request->getHttpVersion()
+                )
             );
         }
 
@@ -102,20 +105,18 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
 
                 return;
             }
-            $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
-
 
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
             // CONTROLLER ACTION
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            if ($requestInfo->getControllerClass()) {
+            if ($request->getControllerClass()) {
                 $requestResult = $this->dispatchControllerAction($request, $response);
             }
 
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
             // SPECIAL HANDLER ACTION
             // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            elseif ($requestInfo->getAction()) {
+            elseif ($request->getAction()) {
                 $requestResult = $this->dispatchSpecialHandlerAction($request, $response);
             }
 
@@ -151,7 +152,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the standard action
      *
-     * @param Request  $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
      */
@@ -159,28 +160,27 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     {
         $requestResult = null;
         $method        = $request->getMethod();
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest($request);
 
         // The No Route action
-        if (!$requestInfo->getDatabaseIdentifier()) {
-            return $this->getHandlerForRequest($request)->noRoute($requestInfo);
+        if (!$request->getDatabaseIdentifier()) {
+            return $this->getHandlerForRequest($request)->noRoute($request);
         }
 
         switch ($method) {
             case 'POST':
             case 'PUT':
-                $this->waitForBodyAndPerformHandlerAction($request, $response, $requestInfo);
+                $this->waitForBodyAndPerformHandlerAction($request, $response, $request);
                 $requestResult = DeferredResult::instance();
                 break;
 
             case 'GET':
                 $handler       = $this->getHandlerForRequest($request);
-                $requestResult = $handler->read($requestInfo);
+                $requestResult = $handler->read($request);
                 break;
 
             case 'DELETE':
                 $handler       = $this->getHandlerForRequest($request);
-                $requestResult = $handler->delete($requestInfo);
+                $requestResult = $handler->delete($request);
                 break;
 
             default:
@@ -196,7 +196,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param Request  $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
      */
@@ -204,7 +204,6 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     {
         $self          = $this;
         $contentLength = 0;
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest($request);
         $controller    = $this->getControllerForRequest($request);
 
         try {
@@ -216,17 +215,17 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             if ($contentLength) {
                 $this->waitForBodyAndPerformCallback(
                     $request, $response,
-                    function ($request, $requestBody) use ($self, $controller, $requestInfo, $response) {
-                        $requestInfo = RequestInfoFactory::copyWithBody($requestInfo, $requestBody);
+                    function ($originalRequest, $requestBody) use ($self, $controller, $request, $response) {
+                        $request = RequestInfoFactory::copyWithBody($request, $requestBody);
 
-                        return $self->invokeControllerActionWithRequestInfo(
-                            $requestInfo, $response, $controller, $requestBody
+                        return $self->invokeControllerActionWithRequest(
+                            $request, $response, $controller, $requestBody
                         );
                     },
                     true
                 );
             } else {
-                return $self->invokeControllerActionWithRequestInfo($requestInfo, $response, $controller);
+                return $self->invokeControllerActionWithRequest($request, $response, $controller);
             }
         } catch (\Exception $exception) {
             $this->handleError($exception, $request, $response);
@@ -238,30 +237,29 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param Request  $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
      */
     public function dispatchSpecialHandlerAction($request, $response)
     {
-        $handler     = $this->getHandlerForRequest($request);
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+        $handler = $this->getHandlerForRequest($request);
 
-        return call_user_func(array($handler, $requestInfo->getAction()), $requestInfo);
+        return call_user_func(array($handler, $request->getAction()), $request);
     }
 
     /**
      * Handles the given Controller/Action request action
      *
-     * @param Request         $requestInfo
+     * @param Request             $request
      * @param Response            $response
      * @param ControllerInterface $controller
      * @return ControllerResultInterface Returns the Handler Result
      */
-    public function invokeControllerActionWithRequestInfo($requestInfo, $response, $controller)
+    public function invokeControllerActionWithRequest($request, $response, $controller)
     {
         try {
-            $result = $controller->processRequest($requestInfo, $response);
+            $result = $controller->processRequest($request, $response);
 
         } catch (\Exception $exception) {
             $this->writeln('Caught exception #%d: %s', $exception->getCode(), $exception->getMessage());
@@ -271,17 +269,18 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 500,
                 sprintf(
                     'An error occurred while calling controller \'%s\' action \'%s\' %s',
-                    $requestInfo->getControllerClass(),
-                    $requestInfo->getAction(),
-                    $requestInfo->getBody() ? 'with a body' : 'without a body'
+                    $request->getControllerClass(),
+                    $request->getAction(),
+                    $request->getBody() ? 'with a body' : 'without a body'
                 ),
-                $this->getContentTypeForRequest($requestInfo->getRequest())
+                $this->getContentTypeForRequest($request)
             );
         }
 
         if ($result === null) {
             return new NullResult();
         }
+
         return $result;
     }
 
@@ -289,7 +288,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      * Dispatches the given server action
      *
      * @param string               $serverAction
-     * @param Request  $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      */
     public function dispatchServerAction($serverAction, $request, $response)
@@ -346,24 +345,29 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Waits for the total request body and performs the needed action
      *
-     * @param Request     $request
-     * @param Response    $response
-     * @param Request $requestInfo
+     * @param Request  $request
+     * @param Response $response
      */
-    public function waitForBodyAndPerformHandlerAction($request, $response, $requestInfo)
+    public function waitForBodyAndPerformHandlerAction($request, $response)
     {
         $self = $this;
         $this->waitForBodyAndPerformCallback(
             $request,
             $response,
-            function ($request, $requestBodyParsed) use ($requestInfo, $self) {
-                /** @var Request $request */
-                if ($request->getMethod() === 'PUT' && $requestInfo->getDataIdentifier()) {
-                    $requestResult = $self->getHandlerForRequest($request)->update($requestInfo,
-                        $requestBodyParsed);
+            function ($originalRequest, $requestBodyParsed) use ($request, $self) {
+                $handler = $self->getHandlerForRequest($request);
+
+                /** @var \React\Http\Request $originalRequest */
+                if ($originalRequest->getMethod() === 'PUT' && $request->getDataIdentifier()) {
+                    $requestResult = $handler->update(
+                        $request,
+                        $requestBodyParsed
+                    );
                 } else {
-                    $requestResult = $self->getHandlerForRequest($request)->create($requestInfo,
-                        $requestBodyParsed);
+                    $requestResult = $handler->create(
+                        $request,
+                        $requestBodyParsed
+                    );
                 }
 
                 return $requestResult;
@@ -408,7 +412,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 $contentLength,
                 $callback,
                 $allowRawBody
-                ,$logger
+                ,
+                $logger
             ) {
                 $logger->alert('rcf');
                 try {
@@ -458,7 +463,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 }
             });
 
-        $request->on('end', function() use ($logger){
+        $request->on('end', function () use ($logger) {
             $this->logger->alert('end of connection', func_get_args());
         });
     }
@@ -615,16 +620,15 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      */
     public function getControllerForRequest($request)
     {
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
-        if (!$requestInfo->getControllerClass()) {
+        if (!$request->getControllerClass()) {
             return false;
         }
-        $controller = $this->diContainer->get($requestInfo->getControllerClass());
+        $controller = $this->diContainer->get($request->getControllerClass());
         if (!$controller) {
             throw new InvalidRequestControllerException(
                 sprintf(
                     'Could not get valid controller implementation for class "%s"',
-                    $requestInfo->getControllerClass()
+                    $request->getControllerClass()
                 ),
                 1420584056
             );
@@ -648,7 +652,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      */
     public function getRequestBodyPromiseForRequest($request)
     {
-        return BufferedSink::createPromise($request);
+        return BufferedSink::createPromise($request->getOriginalRequest());
     }
 
     public function stop()
@@ -679,16 +683,15 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      * @param \React\Http\Request  $request
      * @param \React\Http\Response $response
      */
-    public function prepareAndHandle($request, $response){
-        $this->logger->alert('incoming request', array('request' => $request));
+    public function prepareAndHandle($request, $response)
+    {
+        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
         try {
-            $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
             $this->handle($requestInfo, $response);
 
         } catch (\Exception $exception) {
-            $this->handleError($exception, $request, $response);
+            $this->handleError($exception, $requestInfo, $response);
         }
-        $this->logger->alert('end request', array('request' => $request));
     }
 
     /**

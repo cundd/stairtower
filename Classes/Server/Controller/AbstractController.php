@@ -11,9 +11,8 @@ namespace Cundd\PersistentObjectStore\Server\Controller;
 use Cundd\PersistentObjectStore\Server\Exception\RequestMethodNotImplementedException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 use Cundd\PersistentObjectStore\View\ViewControllerInterface;
-use React\Http\Request;
 use React\Http\Response;
 
 /**
@@ -24,9 +23,9 @@ use React\Http\Response;
 abstract class AbstractController implements ControllerInterface
 {
     /**
-     * @var RequestInfo
+     * @var Request
      */
-    protected $requestInfo;
+    protected $request;
 
     /**
      * Initialize the Controller instance
@@ -42,23 +41,23 @@ abstract class AbstractController implements ControllerInterface
     /**
      * Sets the Request Info for the current request
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return $this
      */
-    public function setRequestInfo(RequestInfo $requestInfo)
+    public function setRequest(Request $request)
     {
-        $this->requestInfo = $requestInfo;
+        $this->request = $request;
         return $this;
     }
 
     /**
      * Returns the current Request Info instance
      *
-     * @return RequestInfo
+     * @return Request
      */
-    public function getRequestInfo()
+    public function getRequest()
     {
-        return $this->requestInfo;
+        return $this->request;
     }
 
     /**
@@ -68,9 +67,9 @@ abstract class AbstractController implements ControllerInterface
      *
      * @return void
      */
-    public function unsetRequestInfo()
+    public function unsetRequest()
     {
-        $this->requestInfo = null;
+        $this->request = null;
     }
 
     /**
@@ -86,7 +85,7 @@ abstract class AbstractController implements ControllerInterface
             $this->getView()->setTemplatePath($templatePath);
             $this->getView()->assignMultiple(array(
                 'appNamespace' => $this->getUriBuilder()->getControllerNamespaceForController($this),
-                'action'       => $this->getRequestInfo()->getActionName(),
+                'action'       => $this->getRequest()->getActionName(),
             ));
         }
     }
@@ -106,27 +105,26 @@ abstract class AbstractController implements ControllerInterface
      *
      * The result output is returned by altering the given response.
      *
-     * @param RequestInfo $requestInfo The request object
+     * @param Request  $request
      * @param Response $response The response, modified by this handler
-     *
      * @return mixed Returns the result of the processing
      */
-    public function processRequest(RequestInfo $requestInfo, Response $response) {
-        if (!method_exists($this, $requestInfo->getAction())) {
+    public function processRequest(Request $request, Response $response) {
+        if (!method_exists($this, $request->getAction())) {
             throw new RequestMethodNotImplementedException(
-                sprintf('Request method %s is not defined', $requestInfo->getAction()),
+                sprintf('Request method %s is not defined', $request->getAction()),
                 1420551044
             );
         }
 
-        $action = $requestInfo->getAction();
+        $action = $request->getAction();
 
         // Prepare the Controller for the current request
         $this->initialize();
-        $this->setRequestInfo($requestInfo);
+        $this->setRequest($request);
         $this->willInvokeAction($action);
 
-        $argument = $this->prepareArgumentForRequestAndAction($requestInfo, $action, $noArgument);
+        $argument = $this->prepareArgumentForRequestAndAction($request, $action, $noArgument);
 
         // Invoke the Controller action
         if (!$noArgument) {
@@ -147,7 +145,7 @@ abstract class AbstractController implements ControllerInterface
             $result = new ControllerResult(200, $rawResult);
         }
         $this->didInvokeAction($action, $result);
-        $this->unsetRequestInfo();
+        $this->unsetRequest();
 
         return $result;
     }
@@ -155,13 +153,13 @@ abstract class AbstractController implements ControllerInterface
     /**
      * Returns the argument to be passed to the action
      *
-     * @param RequestInfo $requestInfo Request info object
+     * @param Request $request Request info object
      * @param string $action Action name
      * @param bool $noArgument Reference the will be set to true if no argument should be passed
      * @return mixed
      */
-    protected function prepareArgumentForRequestAndAction($requestInfo, $action, &$noArgument = false)
+    protected function prepareArgumentForRequestAndAction($request, $action, &$noArgument = false)
     {
-        return $requestInfo->getBody();
+        return $request->getBody();
     }
 }

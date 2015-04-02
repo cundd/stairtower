@@ -16,11 +16,12 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
 use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
 use DateTime;
+use Exception;
 use React\EventLoop\Timer\TimerInterface;
-use React\Http\Request;
 use React\Http\Response;
 
 /**
@@ -140,13 +141,14 @@ abstract class AbstractServer implements ServerInterface
 
         $detailedStatistics = $statistics->jsonSerialize() + [
                 'eventLoopImplementation' => get_class($this->getEventLoop()),
-                'os' => array(
+                'os'                      => array(
                     'vendor'  => php_uname('s'),
                     'version' => php_uname('r'),
                     'machine' => php_uname('m'),
                     'info'    => php_uname('v'),
                 ),
             ];
+
         return $detailedStatistics;
     }
 
@@ -187,6 +189,7 @@ abstract class AbstractServer implements ServerInterface
             throw new InvalidServerChangeException('Can not change IP when server is running', 1412956590);
         }
         $this->ip = $ip;
+
         return $this;
     }
 
@@ -212,6 +215,7 @@ abstract class AbstractServer implements ServerInterface
             throw new InvalidServerChangeException('Can not change port when server is running', 1412956591);
         }
         $this->port = $port;
+
         return $this;
     }
 
@@ -228,28 +232,31 @@ abstract class AbstractServer implements ServerInterface
     /**
      * Handles the given exception
      *
-     * @param \Exception           $error
-     * @param \React\Http\Request  $request
+     * @param Exception           $error
+     * @param Request              $request
      * @param \React\Http\Response $response
-     * @throws \Exception
+     * @throws Exception
      */
     public function handleError($error, $request, Response $response)
     {
         $this->writeln('Caught exception #%d: %s', $error->getCode(), $error->getMessage());
         $this->writeln($error->getTraceAsString());
-        $this->handleResult(new HandlerResult($this->getStatusCodeForException($error), $error->getMessage()), $request,
-            $response);
+        $this->handleResult(
+            new HandlerResult($this->getStatusCodeForException($error), $error->getMessage()),
+            $request,
+            $response
+        );
     }
 
     /**
      * Returns the status code that best describes the given error
      *
-     * @param \Exception $error
+     * @param Exception $error
      * @return int
      */
     public function getStatusCodeForException($error)
     {
-        if (!$error || !($error instanceof \Exception)) {
+        if (!$error || !($error instanceof Exception)) {
             return 500;
         }
         switch (get_class($error)) {
@@ -310,6 +317,7 @@ abstract class AbstractServer implements ServerInterface
             default:
                 $statusCode = 500;
         }
+
         return $statusCode;
     }
 
@@ -317,7 +325,7 @@ abstract class AbstractServer implements ServerInterface
      * Handles the given server action
      *
      * @param string               $serverAction
-     * @param \React\Http\Request  $request
+     * @param Request  $request
      * @param \React\Http\Response $response
      */
     public function handleServerAction($serverAction, $request, $response)
@@ -373,7 +381,7 @@ abstract class AbstractServer implements ServerInterface
     {
         $this->prepareEventLoop();
         $this->setupServer();
-        $this->startTime = new DateTime();
+        $this->startTime     = new DateTime();
         $this->isRunningFlag = true;
         $this->eventLoop->run();
         $this->isRunningFlag = false;
@@ -438,12 +446,14 @@ abstract class AbstractServer implements ServerInterface
                 || $mode === self::SERVER_MODE_NOT_RUNNING
                 || $mode === self::SERVER_MODE_TEST
                 || $mode === self::SERVER_MODE_DEVELOPMENT
-            )) {
+            )
+        ) {
             throw new ServerException(sprintf('Invalid server mode %s', $mode), 1421096002);
         }
         $this->mode = $mode;
         ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('serverMode', $mode);
         Factory::setLockImplementationClass('Cundd\\PersistentObjectStore\\System\\Lock\\TransientLock');
+
         return $this;
     }
 
@@ -466,6 +476,7 @@ abstract class AbstractServer implements ServerInterface
     public function setAutoShutdownTime($autoShutdownTime)
     {
         $this->autoShutdownTime = $autoShutdownTime;
+
         return $this;
     }
 
@@ -501,6 +512,7 @@ abstract class AbstractServer implements ServerInterface
         if (!$this->eventLoop) {
             throw new InvalidEventLoopException('Event loop not set', 1412942824);
         }
+
         return $this->eventLoop;
     }
 
@@ -516,6 +528,7 @@ abstract class AbstractServer implements ServerInterface
             throw new InvalidServerChangeException('Can not change the event loop when server is running', 1412956592);
         }
         $this->eventLoop = $eventLoop;
+
         return $this;
     }
 

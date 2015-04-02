@@ -7,7 +7,7 @@
  */
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 
 /**
  * Interface for classes that handle the actions from incoming requests
@@ -19,66 +19,66 @@ interface HandlerInterface
     /**
      * Invoked if no route is given (e.g. if the request path is empty)
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function noRoute(RequestInfo $requestInfo);
+    public function noRoute(Request $request);
 
     /**
-     * Creates a new Document instance or Database with the given data for the given RequestInfo
+     * Creates a new Document instance or Database with the given data for the given Request
      *
-     * @param RequestInfo $requestInfo
-     * @param mixed       $data
+     * @param Request $request
+     * @param mixed   $data
      * @return HandlerResultInterface
      */
-    public function create(RequestInfo $requestInfo, $data);
+    public function create(Request $request, $data);
 
     /**
-     * Read Document instances for the given RequestInfo
+     * Read Document instances for the given Request
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function read(RequestInfo $requestInfo);
+    public function read(Request $request);
 
     /**
-     * Update a Document instance with the given data for the given RequestInfo
+     * Update a Document instance with the given data for the given Request
      *
-     * @param RequestInfo $requestInfo
-     * @param mixed       $data
+     * @param Request $request
+     * @param mixed   $data
      * @return HandlerResultInterface
      */
-    public function update(RequestInfo $requestInfo, $data);
+    public function update(Request $request, $data);
 
     /**
-     * Deletes a Document instance for the given RequestInfo
+     * Deletes a Document instance for the given Request
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function delete(RequestInfo $requestInfo);
+    public function delete(Request $request);
 
     /**
      * Action to display server statistics
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function getStatsAction(RequestInfo $requestInfo);
+    public function getStatsAction(Request $request);
 
     /**
      * Action to display all databases
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function getAllDbsAction(RequestInfo $requestInfo);
+    public function getAllDbsAction(Request $request);
 
     /**
      * Returns the count of the result set
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function getCountAction(RequestInfo $requestInfo);
+    public function getCountAction(Request $request);
 }

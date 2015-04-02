@@ -11,8 +11,7 @@ namespace Cundd\PersistentObjectStore\Server\Dispatcher;
 
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
-use React\Http\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 use React\Http\Response;
 
 /**
@@ -25,7 +24,7 @@ interface ControllerActionDispatcherInterface
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param \React\Http\Request  $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
      */
@@ -34,12 +33,12 @@ interface ControllerActionDispatcherInterface
     /**
      * Handles the given Controller/Action request action
      *
-     * @param RequestInfo         $requestInfo
+     * @param Request             $request
      * @param Response            $response
      * @param ControllerInterface $controller
      * @return ControllerResultInterface Returns the Handler Result
      */
-    public function invokeControllerActionWithRequestInfo($requestInfo, $response, $controller);
+    public function invokeControllerActionWithRequest($request, $response, $controller);
 
     /**
      * Returns the Controller instance for the given request or false if none will be used

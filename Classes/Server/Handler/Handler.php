@@ -17,7 +17,7 @@ use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use SplFixedArray;
 
@@ -68,8 +68,6 @@ class Handler implements HandlerInterface
      */
     protected $expandResolver;
 
-    // 	 * @var \Evenement\EventEmitterInterface
-
     /**
      * Event Emitter
      *
@@ -81,57 +79,58 @@ class Handler implements HandlerInterface
     /**
      * Invoked if no route is given (e.g. if the request path is empty)
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function noRoute(RequestInfo $requestInfo)
+    public function noRoute(Request $request)
     {
         return new HandlerResult(200, Constants::MESSAGE_JSON_WELCOME);
     }
 
 
     /**
-     * Creates a new Document instance or Database with the given data for the given RequestInfo
+     * Creates a new Document instance or Database with the given data for the given Request
      *
-     * @param RequestInfo $requestInfo
-     * @param mixed       $data
+     * @param Request $request
+     * @param mixed   $data
      * @return HandlerResultInterface
      */
-    public function create(RequestInfo $requestInfo, $data)
+    public function create(Request $request, $data)
     {
-        if ($requestInfo->getMethod() === 'POST') { // Create a Document instance
-            return $this->createDataInstance($requestInfo, $data);
+        if ($request->getMethod() === 'POST') { // Create a Document instance
+            return $this->createDataInstance($request, $data);
         }
 
-        if ($requestInfo->getMethod() === 'PUT') { // Create a Database
-            return $this->createDatabase($requestInfo, $data);
+        if ($request->getMethod() === 'PUT') { // Create a Database
+            return $this->createDatabase($request, $data);
         }
-        return new HandlerResult(400, sprintf('Invalid HTTP method %s', $requestInfo->getMethod()));
+
+        return new HandlerResult(400, sprintf('Invalid HTTP method %s', $request->getMethod()));
     }
 
     /**
      * Creates and returns a new Document instance
      *
-     * @param RequestInfo $requestInfo
-     * @param mixed       $data
+     * @param Request $request
+     * @param mixed   $data
      * @return HandlerResult
      */
-    protected function createDataInstance(RequestInfo $requestInfo, $data)
+    protected function createDataInstance(Request $request, $data)
     {
-        $database = $this->getDatabaseForRequestInfo($requestInfo);
+        $database = $this->getDatabaseForRequest($request);
         if (!$database) {
             return new HandlerResult(
                 404,
                 sprintf(
                     'Database with identifier "%s" not found',
-                    $requestInfo->getDatabaseIdentifier()
+                    $request->getDatabaseIdentifier()
                 )
             );
         }
 
         $document = new Document($data);
 
-        if ($requestInfo->getDataIdentifier()) {
+        if ($request->getDataIdentifier()) {
             throw new InvalidRequestParameterException(
                 'Document identifier in request path is not allowed when creating a Document instance. Use PUT to update',
                 1413278767
@@ -149,6 +148,7 @@ class Handler implements HandlerInterface
 
         $database->add($document);
         $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_CREATED, array($document));
+
         return new HandlerResult(
             201,
             $document
@@ -158,15 +158,15 @@ class Handler implements HandlerInterface
     /**
      * Returns the database for the given request or NULL if it is not specified
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return DatabaseInterface|NULL
      */
-    public function getDatabaseForRequestInfo(RequestInfo $requestInfo)
+    public function getDatabaseForRequest(Request $request)
     {
-        if (!$requestInfo->getDatabaseIdentifier()) {
+        if (!$request->getDatabaseIdentifier()) {
             return null;
         }
-        $databaseIdentifier = $requestInfo->getDatabaseIdentifier();
+        $databaseIdentifier = $request->getDatabaseIdentifier();
 //		if (!$this->coordinator->databaseExists($databaseIdentifier)) {
 //			return NULL;
 //		}
@@ -180,13 +180,13 @@ class Handler implements HandlerInterface
     /**
      * Creates and returns a new Database
      *
-     * @param RequestInfo $requestInfo
-     * @param mixed       $data
+     * @param Request $request
+     * @param mixed   $data
      * @return HandlerResult
      */
-    protected function createDatabase(RequestInfo $requestInfo, $data)
+    protected function createDatabase(Request $request, $data)
     {
-        if ($requestInfo->getDataIdentifier()) {
+        if ($request->getDataIdentifier()) {
             throw new InvalidRequestParameterException(
                 'Document identifier in request path is not allowed when creating a Database',
                 1413278767
@@ -196,10 +196,11 @@ class Handler implements HandlerInterface
         if ($data) {
             DebugUtility::pl('Database creation parameters are currently not supported');
         }
-        $databaseIdentifier = $requestInfo->getDatabaseIdentifier();
+        $databaseIdentifier = $request->getDatabaseIdentifier();
         $database           = $this->coordinator->createDatabase($databaseIdentifier);
         if ($database) {
             $this->eventEmitter->scheduleFutureEmit(Event::DATABASE_CREATED, array($database));
+
             return new HandlerResult(201, sprintf('Database "%s" created', $databaseIdentifier));
         } else {
             return new HandlerResult(400);
@@ -207,14 +208,14 @@ class Handler implements HandlerInterface
     }
 
     /**
-     * Read Document instances for the given RequestInfo
+     * Read Document instances for the given Request
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function read(RequestInfo $requestInfo)
+    public function read(Request $request)
     {
-        $query = $requestInfo->getQuery();
+        $query = $request->getQuery();
 
         // Extract the Expand configuration from the query
         $expandConfiguration = null;
@@ -224,8 +225,8 @@ class Handler implements HandlerInterface
         }
 
         // If a Data identifier load and return the Document instance
-        if ($requestInfo->getDataIdentifier()) {
-            $document = $this->getDataForRequest($requestInfo);
+        if ($request->getDataIdentifier()) {
+            $document = $this->getDataForRequest($request);
             if ($document) {
                 if ($expandConfiguration) {
                     $collection = $this->expandObjectsInCollection(array($document), $expandConfiguration);
@@ -241,20 +242,20 @@ class Handler implements HandlerInterface
                     404,
                     sprintf(
                         'Document instance with identifier "%s" not found in database "%s"',
-                        $requestInfo->getDataIdentifier(),
-                        $requestInfo->getDatabaseIdentifier()
+                        $request->getDataIdentifier(),
+                        $request->getDatabaseIdentifier()
                     )
                 );
             }
         }
 
-        $database = $this->getDatabaseForRequestInfo($requestInfo);
+        $database = $this->getDatabaseForRequest($request);
         if (!$database) {
             return new HandlerResult(
                 404,
                 sprintf(
                     'Database with identifier "%s" not found',
-                    $requestInfo->getDatabaseIdentifier()
+                    $request->getDatabaseIdentifier()
                 )
             );
         }
@@ -271,91 +272,96 @@ class Handler implements HandlerInterface
             }
 
             $collection = $this->expandObjectsInCollection($filterResult->toFixedArray(), $expandConfiguration);
+
             return new HandlerResult($statusCode, $collection);
         }
 
         // If there is no filter but an Expand configuration
         if ($expandConfiguration) {
             $collection = $this->expandObjectsInCollection($database->toFixedArray(), $expandConfiguration);
+
             return new HandlerResult(200, $collection);
         }
+
         return new HandlerResult(200, $database);
     }
 
     /**
      * Returns the Document for the given request or NULL if it is not specified
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return DocumentInterface|NULL
      */
-    public function getDataForRequest(RequestInfo $requestInfo)
+    public function getDataForRequest(Request $request)
     {
-        if (!$requestInfo->getDataIdentifier()) {
+        if (!$request->getDataIdentifier()) {
             return null;
         }
-        $database = $this->getDatabaseForRequestInfo($requestInfo);
-        return $database ? $database->findByIdentifier($requestInfo->getDataIdentifier()) : null;
+        $database = $this->getDatabaseForRequest($request);
+
+        return $database ? $database->findByIdentifier($request->getDataIdentifier()) : null;
     }
 
     /**
-     * Update a Document instance with the given data for the given RequestInfo
+     * Update a Document instance with the given data for the given Request
      *
-     * @param RequestInfo $requestInfo
-     * @param mixed       $data
+     * @param Request $request
+     * @param mixed   $data
      * @return HandlerResultInterface
      */
-    public function update(RequestInfo $requestInfo, $data)
+    public function update(Request $request, $data)
     {
-        if (!$requestInfo->getDataIdentifier()) {
+        if (!$request->getDataIdentifier()) {
             throw new InvalidRequestParameterException('Document identifier is missing', 1413292389);
         }
-        $document = $this->getDataForRequest($requestInfo);
+        $document = $this->getDataForRequest($request);
         if (!$document) {
             return new HandlerResult(404, sprintf(
                 'Document instance with identifier "%s" not found in database "%s"',
-                $requestInfo->getDataIdentifier(),
-                $requestInfo->getDatabaseIdentifier()
+                $request->getDataIdentifier(),
+                $request->getDatabaseIdentifier()
             ));
         }
 
-        $database = $this->getDatabaseForRequestInfo($requestInfo);
+        $database = $this->getDatabaseForRequest($request);
 
-        $data[Constants::DATA_ID_KEY] = $requestInfo->getDataIdentifier();
+        $data[Constants::DATA_ID_KEY] = $request->getDataIdentifier();
         $newDocument                  = new Document($data, $database->getIdentifier());
         $database->update($newDocument);
         $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_UPDATED, array($document));
+
         return new HandlerResult(200, $newDocument);
     }
 
     /**
-     * Deletes a Document instance for the given RequestInfo
+     * Deletes a Document instance for the given Request
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function delete(RequestInfo $requestInfo)
+    public function delete(Request $request)
     {
-        $database = $this->getDatabaseForRequestInfo($requestInfo);
+        $database = $this->getDatabaseForRequest($request);
         if (!$database) {
             throw new InvalidRequestParameterException(
                 sprintf(
                     'Database with identifier "%s" not found',
-                    $requestInfo->getDatabaseIdentifier()
+                    $request->getDatabaseIdentifier()
                 ),
                 1413035859
             );
         }
 
 
-//		if (!$requestInfo->getDataIdentifier()) throw new InvalidRequestParameterException('Document identifier is missing', 1413035855);
-        if ($requestInfo->getDataIdentifier()) {
-            $document = $this->getDataForRequest($requestInfo);
+//		if (!$request->getDataIdentifier()) throw new InvalidRequestParameterException('Document identifier is missing', 1413035855);
+        if ($request->getDataIdentifier()) {
+            $document = $this->getDataForRequest($request);
             if (!$document) {
                 throw new InvalidRequestParameterException(
                     sprintf(
                         'Document with identifier "%s" not found in database "%s"',
-                        $requestInfo->getDataIdentifier(),
-                        $requestInfo->getDatabaseIdentifier()
+                        $request->getDataIdentifier(),
+                        $request->getDatabaseIdentifier()
                     ),
                     1413035855
                 );
@@ -363,34 +369,37 @@ class Handler implements HandlerInterface
             $database->remove($document);
 
             $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_DELETED, array($document));
-            return new HandlerResult(204, sprintf('Document "%s" deleted', $requestInfo->getDataIdentifier()));
+
+            return new HandlerResult(204, sprintf('Document "%s" deleted', $request->getDataIdentifier()));
         }
 
         $databaseIdentifier = $database->getIdentifier();
         $this->coordinator->dropDatabase($databaseIdentifier);
         $this->eventEmitter->scheduleFutureEmit(Event::DATABASE_DELETED, array($database));
+
         return new HandlerResult(204, sprintf('Database "%s" deleted', $databaseIdentifier));
     }
 
     /**
      * Action to display server statistics
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function getStatsAction(RequestInfo $requestInfo)
+    public function getStatsAction(Request $request)
     {
-        $detailedStatistics = $requestInfo->getDataIdentifier() === 'detailed';
+        $detailedStatistics = $request->getDataIdentifier() === 'detailed';
+
         return new HandlerResult(200, $this->server->collectStatistics($detailedStatistics));
     }
 
     /**
      * Action to display all databases
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function getAllDbsAction(RequestInfo $requestInfo)
+    public function getAllDbsAction(Request $request)
     {
         return new HandlerResult(200, $this->coordinator->listDatabases());
     }
@@ -398,13 +407,13 @@ class Handler implements HandlerInterface
     /**
      * Returns the count of the result set
      *
-     * @param RequestInfo $requestInfo
+     * @param Request $request
      * @return HandlerResultInterface
      */
-    public function getCountAction(RequestInfo $requestInfo)
+    public function getCountAction(Request $request)
     {
         $count      = null;
-        $readResult = $this->read($requestInfo);
+        $readResult = $this->read($request);
         $data       = $readResult->getData();
         if ($data instanceof DatabaseInterface || $data instanceof FilterResultInterface) {
             $count = $data->count();
@@ -415,14 +424,15 @@ class Handler implements HandlerInterface
                 (is_object($data) ? get_class($data) : gettype($data))
             ));
         }
+
         return new HandlerResult(200, array('count' => $count));
     }
 
     /**
      * Expand the objects in the given collection according to the given Expand configurations
      *
-     * @param SplFixedArray|DocumentInterface[]  $collection
-     * @param ExpandConfigurationInterface[]     $expandConfigurationCollection
+     * @param SplFixedArray|DocumentInterface[] $collection
+     * @param ExpandConfigurationInterface[]    $expandConfigurationCollection
      * @return SplFixedArray
      */
     protected function expandObjectsInCollection($collection, $expandConfigurationCollection)
@@ -442,6 +452,7 @@ class Handler implements HandlerInterface
             foreach ($expandConfigurationCollection as $expandConfiguration) {
                 $this->expandResolver->expandDocument($item, $expandConfiguration);
             }
+
             return SplFixedArray::fromArray(array($item));
         }
 
@@ -455,6 +466,7 @@ class Handler implements HandlerInterface
         foreach ($expandConfigurationCollection as $expandConfiguration) {
             $this->expandResolver->expandDocumentCollection($clonedObjectCollection, $expandConfiguration);
         }
+
         return $clonedObjectCollection;
     }
 }

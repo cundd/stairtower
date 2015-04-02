@@ -12,7 +12,7 @@ namespace Cundd\PersistentObjectStore\Server\BodyParser;
 use Cundd\PersistentObjectStore\Serializer\Exception;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
-use React\Http\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 
 /**
  * Body Parser implementation that can parse JSON data
@@ -29,10 +29,10 @@ class JsonBodyParser implements BodyParserInterface
 
     /**
      * @param string  $data
-     * @param Request $request
+     * @param RequestInterface $request
      * @return mixed
      */
-    public function parse($data, $request)
+    public function parse($data, RequestInterface $request)
     {
         try {
             return $this->serializer->unserialize($data);
