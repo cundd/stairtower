@@ -27,7 +27,7 @@ class JsonFormatter extends AbstractFormatter
     /**
      * Formats the given input
      *
-     * @param DocumentInterface|DocumentInterface[]|\SplFixedArray $input
+     * @param DocumentInterface|DocumentInterface[]|\SplFixedArray|string $input
      * @return string
      */
     public function format($input)
