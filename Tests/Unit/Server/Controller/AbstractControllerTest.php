@@ -58,7 +58,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function getRequestInfoTest()
+    public function getRequestTest()
     {
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\ValueObject\\Request',
@@ -68,7 +68,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function setRequestInfoTest()
+    public function setRequestTest()
     {
         $request     = new Request('GET', '/loaned/');
         $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
@@ -80,7 +80,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function unsetRequestInfoTest()
+    public function unsetRequestTest()
     {
         $request     = new Request('GET', '/loaned/');
         $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);

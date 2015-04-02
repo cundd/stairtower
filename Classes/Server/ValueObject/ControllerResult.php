@@ -25,17 +25,26 @@ class ControllerResult extends HandlerResult implements ControllerResultInterfac
     protected $contentType;
 
     /**
+     * Headers to send with the response
+     *
+     * @var array
+     */
+    protected $headers = array();
+
+    /**
      * Creates a new result with the given data and status
      *
      * @param integer $statusCode
      * @param mixed   $data
      * @param string  $contentType
+     * @param array   $headers
      */
-    public function __construct($statusCode, $data = null, $contentType = null)
+    public function __construct($statusCode, $data = null, $contentType = null, $headers = array())
     {
         $this->statusCode  = $statusCode;
         $this->data        = $data;
         $this->contentType = $contentType;
+        $this->headers     = (array)$headers;
     }
 
     /**
@@ -45,8 +54,40 @@ class ControllerResult extends HandlerResult implements ControllerResultInterfac
      */
     public function getContentType()
     {
-        return $this->contentType;
+        return $this->contentType . '; charset=utf-8';
     }
 
-
+    /**
+     * Retrieves all message headers.
+     *
+     * The keys represent the header name as it will be sent over the wire, and
+     * each value is an array of strings associated with the header.
+     *
+     *     // Represent the headers as a string
+     *     foreach ($message->getHeaders() as $name => $values) {
+     *         echo $name . ": " . implode(", ", $values);
+     *     }
+     *
+     *     // Emit headers iteratively:
+     *     foreach ($message->getHeaders() as $name => $values) {
+     *         foreach ($values as $value) {
+     *             header(sprintf('%s: %s', $name, $value), false);
+     *         }
+     *     }
+     *
+     * While header names are not case-sensitive, getHeaders() will preserve the
+     * exact case in which headers were originally specified.
+     *
+     * @return array Returns an associative array of the message's headers. Each
+     *     key MUST be a header name, and each value MUST be an array of strings.
+     */
+    public function getHeaders()
+    {
+        return array_replace(
+            $this->headers,
+            [
+                'Content-Type' => $this->getContentType(),
+            ]
+        );
+    }
 }

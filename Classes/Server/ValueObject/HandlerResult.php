@@ -61,6 +61,4 @@ class HandlerResult implements HandlerResultInterface, Immutable
     {
         return $this->statusCode;
     }
-
-
-} 
+}

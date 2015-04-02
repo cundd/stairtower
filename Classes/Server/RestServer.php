@@ -300,7 +300,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         if ($result instanceof ControllerResultInterface) {
             $response->writeHead(
                 $result->getStatusCode(),
-                array('Content-Type' => $result->getContentType() . '; charset=utf-8')
+                $result->getHeaders()
             );
             $responseData = $result->getData();
             if ($responseData !== null) {
