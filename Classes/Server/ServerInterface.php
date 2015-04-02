@@ -48,7 +48,7 @@ interface ServerInterface
     /**
      * Handle the given request
      *
-     * @param Request  $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      */
     public function handle($request, $response);
@@ -65,8 +65,8 @@ interface ServerInterface
     /**
      * Handles the given exception
      *
-     * @param Exception           $error
-     * @param Request  $request
+     * @param Exception            $error
+     * @param Request              $request
      * @param \React\Http\Response $response
      * @throws Exception
      */

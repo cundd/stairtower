@@ -30,6 +30,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\NullResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
 use Monolog\Logger;
 use React\Http\Response;
@@ -74,15 +75,6 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         }
 
         $requestResult = null;
-
-        // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-        // IMMEDIATELY CLOSE IGNORED REQUESTS
-        // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-        if ($this->getIgnoreRequest($request)) {
-            $response->end();
-
-            return;
-        }
 
         if ($debugLog) {
             $this->logger->debug(
@@ -685,24 +677,30 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      */
     public function prepareAndHandle($request, $response)
     {
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
-        try {
-            $this->handle($requestInfo, $response);
+        // Immediately close ignored requests
+        if ($this->getIgnoreRequest($request)) {
+            $response->end();
+        } else {
+            try {
+                $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+                $this->handle($requestInfo, $response);
 
-        } catch (\Exception $exception) {
-            $this->handleError($exception, $requestInfo, $response);
+            } catch (\Exception $error) {
+                $this->writeln('Uncaught exception #%d: %s', $error->getCode(), $error->getMessage());
+                $this->writeln($error->getTraceAsString());
+            }
         }
     }
 
     /**
      * Returns if the given request should be ignored
      *
-     * @param Request $request
+     * @param Request|\React\Http\Request $request
      * @return bool
      */
     protected function getIgnoreRequest($request)
     {
-        if ($request instanceof Request || $request instanceof \React\Http\Request) {
+        if ($request instanceof RequestInterface || $request instanceof \React\Http\Request) {
             if ($request->getMethod() === 'GET' && $request->getPath() === '/favicon.ico') {
                 return true;
             }

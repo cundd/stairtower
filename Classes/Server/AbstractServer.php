@@ -16,7 +16,7 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
 use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\Request as Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
 use DateTime;
@@ -232,7 +232,7 @@ abstract class AbstractServer implements ServerInterface
     /**
      * Handles the given exception
      *
-     * @param Exception           $error
+     * @param Exception            $error
      * @param Request              $request
      * @param \React\Http\Response $response
      * @throws Exception
@@ -325,7 +325,7 @@ abstract class AbstractServer implements ServerInterface
      * Handles the given server action
      *
      * @param string               $serverAction
-     * @param Request  $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      */
     public function handleServerAction($serverAction, $request, $response)
