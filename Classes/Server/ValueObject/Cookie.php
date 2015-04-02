@@ -11,6 +11,7 @@ namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
 use Cundd\PersistentObjectStore\Exception\InvalidArgumentError;
 use Cundd\PersistentObjectStore\Immutable;
+use DateTime;
 
 class Cookie implements Immutable
 {
@@ -32,7 +33,7 @@ class Cookie implements Immutable
     /**
      * Expiration date
      *
-     * @var \DateTime
+     * @var DateTime
      */
     protected $expires;
 
@@ -89,7 +90,7 @@ class Cookie implements Immutable
             throw new InvalidArgumentError('Missing argument cookie "name"', 1428005989);
         }
 
-        if ($expires instanceof \DateTime) {
+        if ($expires instanceof DateTime) {
             $expires = clone $expires;
             $expires->setTimezone(new \DateTimeZone('GMT'));
         }
@@ -123,12 +124,8 @@ class Cookie implements Immutable
             $definitions['Path'] = $this->path;
         }
         if ($this->expires !== null) {
-            //Thu, 02 Apr 2015 22:00:00 GMT
-            if ($this->expires instanceof \DateTime) {
-                $definitions['Expires'] = $this->expires->format('D, d M Y H:i:s e');
-            } else {
-                $definitions['Expires'] = $this->expires;
-            }
+            $definitions['Expires'] = $this->formatDate($this->expires);
+
         }
         if ($this->domain !== null) {
             $definitions['Domain'] = $this->domain;
@@ -152,6 +149,27 @@ class Cookie implements Immutable
     function __toString()
     {
         return $this->toHeader();
+    }
+
+    /**
+     * Formats the given date according to the specification
+     *
+     * @link http://tools.ietf.org/html/rfc2616#section-3.3.1
+     *
+     * @param DateTime|string $date
+     * @return string
+     */
+    protected function formatDate($date)
+    {
+        if ($date instanceof DateTime) {
+            $dateDefinition = $date->format('D, d M Y H:i:s e');
+            if (substr($dateDefinition, -4) === ' UTC') {
+                return substr($dateDefinition, 0, -3) . 'GMT';
+            } else {
+                return $dateDefinition;
+            }
+        }
+        return (string) $date;
     }
 
 
