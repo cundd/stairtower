@@ -22,64 +22,55 @@ class RequestInfoFactory
     const DEFAULT_ACTION = 'index';
 
     /**
-     * Map of paths to their RequestInfo objects
+     * Builds a RequestInfo instance for the given request
      *
-     * @var array
-     */
-    protected static $pathToRequestInfoMap = array();
-
-    /**
-     * Builds a RequestInfo instance for the given path
-     *
-     * @param Request $request
+     * @param Request|RequestInfo $request
      * @return RequestInfo
      */
-    public static function buildRequestInfoFromRequest(Request $request)
+    public static function buildRequestInfoFromRequest($request)
     {
-        $requestInfoIdentifier = sha1(sprintf('%s-%s-%s', $request->getMethod(), $request->getPath(),
-            json_encode($request->getQuery())));
-        if (!isset(static::$pathToRequestInfoMap[$requestInfoIdentifier])) {
-            $pathParts           = explode('/', $request->getPath());
-            $pathParts           = array_values(array_filter($pathParts, function ($item) {
-                return !!$item;
-            }));
-            $dataIdentifier      = null;
-            $databaseIdentifier  = null;
-            $controllerClassName = null;
-
-            if (count($pathParts) >= 2) {
-                $dataIdentifier = $pathParts[1];
-            }
-            if (count($pathParts) >= 1) {
-                $databaseIdentifier = $pathParts[0];
-            }
-            $handlerAction = static::getHandlerActionForRequest($request);
-            if ($databaseIdentifier && $databaseIdentifier[0] === '_') {
-                $databaseIdentifier = '';
-            }
-            if ($dataIdentifier && $dataIdentifier[0] === '_') {
-                $dataIdentifier = '';
-            }
-
-            $controllerAndActionArray = static::getControllerAndActionForRequest($request);
-            if ($controllerAndActionArray) {
-                list($controllerClassName, $handlerAction) = $controllerAndActionArray;
-
-                $databaseIdentifier = isset($pathParts[2]) ? $pathParts[2] : null;
-                $dataIdentifier     = isset($pathParts[3]) ? $pathParts[3] : null;
-            }
-            static::$pathToRequestInfoMap[$requestInfoIdentifier] =
-                new RequestInfo(
-                    $request,
-                    $dataIdentifier,
-                    $databaseIdentifier,
-                    $request->getMethod(),
-                    ($handlerAction !== false ? $handlerAction : null),
-                    $controllerClassName
-                );
+        if ($request instanceof RequestInfo) {
+            return $request;
         }
 
-        return static::$pathToRequestInfoMap[$requestInfoIdentifier];
+        $pathParts           = explode('/', $request->getPath());
+        $pathParts           = array_values(array_filter($pathParts, function ($item) {
+            return !!$item;
+        }));
+        $dataIdentifier      = null;
+        $databaseIdentifier  = null;
+        $controllerClassName = null;
+
+        if (count($pathParts) >= 2) {
+            $dataIdentifier = $pathParts[1];
+        }
+        if (count($pathParts) >= 1) {
+            $databaseIdentifier = $pathParts[0];
+        }
+        $handlerAction = static::getHandlerActionForRequest($request);
+        if ($databaseIdentifier && $databaseIdentifier[0] === '_') {
+            $databaseIdentifier = '';
+        }
+        if ($dataIdentifier && $dataIdentifier[0] === '_') {
+            $dataIdentifier = '';
+        }
+
+        $controllerAndActionArray = static::getControllerAndActionForRequest($request);
+        if ($controllerAndActionArray) {
+            list($controllerClassName, $handlerAction) = $controllerAndActionArray;
+
+            $databaseIdentifier = isset($pathParts[2]) ? $pathParts[2] : null;
+            $dataIdentifier     = isset($pathParts[3]) ? $pathParts[3] : null;
+        }
+
+        return new RequestInfo(
+            $request,
+            $dataIdentifier,
+            $databaseIdentifier,
+            $request->getMethod(),
+            ($handlerAction !== false ? $handlerAction : null),
+            $controllerClassName
+        );
     }
 
     /**
