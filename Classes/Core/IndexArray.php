@@ -329,7 +329,9 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
     }
 
     /**
-     * @see push()
+     * Adds an element to the end of the array
+     *
+     * @param mixed $value
      */
     protected function pushInternal($value)
     {
