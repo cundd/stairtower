@@ -25,13 +25,13 @@ use Cundd\PersistentObjectStore\Server\Exception\MissingLengthHeaderException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
+use Cundd\PersistentObjectStore\Server\ValueObject\DeferredResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\NullResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
 use Monolog\Logger;
-use React\Http\Request;
 use React\Http\Response;
 use React\Http\Server as HttpServer;
 use React\Socket\Server as SocketServer;
@@ -62,16 +62,19 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handle the given request
      *
-     * @param \React\Http\Request  $request
+     * @param Request  $request
      * @param \React\Http\Response $response
      */
     public function handle($request, $response)
     {
         // If the configured log level is DEBUG log all requests
         static $debugLog = -1;
+        $debugLog = true;
         if ($debugLog === -1) {
             $debugLog = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logLevel') <= Logger::DEBUG;
         }
+
+        $requestResult = null;
 
         // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
         // IMMEDIATELY CLOSE IGNORED REQUESTS
@@ -123,7 +126,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 $requestResult = $this->dispatchStandardAction($request, $response);
             }
 
-            if ($requestResult !== null) {
+            if ($requestResult !== null && $requestResult !== DeferredResult::instance()) {
                 $this->handleResult($requestResult, $request, $response);
             }
         } catch (\Exception $exception) {
@@ -131,17 +134,24 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         }
 
         if ($debugLog) {
-            $this->logger->debug(
-                sprintf('End handle request %s %s %s', $request->getMethod(), $request->getPath(),
-                    $request->getHttpVersion())
+            $logMessageFormat = 'End handle request %s %s %s';
+            if ($requestResult === DeferredResult::instance()) {
+                $logMessageFormat = 'Wait to end handle deferred request %s %s %s';
+            }
+            $logMessage = sprintf(
+                $logMessageFormat,
+                $request->getMethod(),
+                $request->getPath(),
+                $request->getHttpVersion()
             );
+            $this->logger->debug($logMessage);
         }
     }
 
     /**
      * Dispatches the standard action
      *
-     * @param \React\Http\Request  $request
+     * @param Request  $request
      * @param \React\Http\Response $response
      * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
      */
@@ -160,6 +170,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             case 'POST':
             case 'PUT':
                 $this->waitForBodyAndPerformHandlerAction($request, $response, $requestInfo);
+                $requestResult = DeferredResult::instance();
                 break;
 
             case 'GET':
@@ -185,7 +196,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param \React\Http\Request  $request
+     * @param Request  $request
      * @param \React\Http\Response $response
      * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
      */
@@ -227,7 +238,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param \React\Http\Request  $request
+     * @param Request  $request
      * @param \React\Http\Response $response
      * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
      */
@@ -242,7 +253,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handles the given Controller/Action request action
      *
-     * @param RequestInfo         $requestInfo
+     * @param Request         $requestInfo
      * @param Response            $response
      * @param ControllerInterface $controller
      * @return ControllerResultInterface Returns the Handler Result
@@ -278,7 +289,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      * Dispatches the given server action
      *
      * @param string               $serverAction
-     * @param \React\Http\Request  $request
+     * @param Request  $request
      * @param \React\Http\Response $response
      */
     public function dispatchServerAction($serverAction, $request, $response)
@@ -337,7 +348,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      *
      * @param Request     $request
      * @param Response    $response
-     * @param RequestInfo $requestInfo
+     * @param Request $requestInfo
      */
     public function waitForBodyAndPerformHandlerAction($request, $response, $requestInfo)
     {
@@ -376,6 +387,17 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         $requestBody   = '';
         $contentLength = $this->getContentLengthFromRequest($request);
         $receivedData  = 0;
+
+        $logger = $this->logger;
+        $logger->alert(sprintf(
+            '< Start deferred request with content-length %d %s %s %s',
+            $contentLength,
+            $request->getMethod(),
+            $request->getPath(),
+            $request->getHttpVersion()
+        ));
+
+
         $request->on('data',
             function ($data) use (
                 $self,
@@ -386,8 +408,12 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 $contentLength,
                 $callback,
                 $allowRawBody
+                ,$logger
             ) {
+                $logger->alert('rcf');
                 try {
+
+
                     $requestBody .= $data;
                     $receivedData += strlen($data);
                     if ($receivedData >= $contentLength) {
@@ -403,11 +429,24 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                                     $request
                                 );
                             } catch (InvalidBodyException $parserException) {
+
+                                $logger->alert(
+                                    '! No matching body parser'
+                                );
+
                                 if (!$allowRawBody) {
                                     throw $parserException;
                                 }
                             }
                         }
+
+                        $logger->alert(sprintf(
+                            '> Handle deferred request %s %s %s',
+                            $request->getMethod(),
+                            $request->getPath(),
+                            $request->getHttpVersion()
+                        ));
+
 
                         $requestResult = $callback($request, $requestBodyParsed);
                         if ($requestResult !== null) {
@@ -418,7 +457,71 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                     $this->handleError($exception, $request, $response);
                 }
             });
+
+        $request->on('end', function() use ($logger){
+            $this->logger->alert('end of connection', func_get_args());
+        });
     }
+
+
+    ///**
+    // * Waits for the total request body and performs the needed action
+    // *
+    // * @param Request  $request      Incoming request
+    // * @param Response $response     Outgoing response to write the result to
+    // * @param Callback $callback     Callback to invoke
+    // * @param bool     $allowRawBody If set to true Body Parser exceptions will be ignored
+    // */
+    //public function waitForBodyAndPerformCallback($request, $response, $callback, $allowRawBody)
+    //{
+    //    $self = $this;
+    //
+    //    $requestBody   = '';
+    //    $contentLength = $this->getContentLengthFromRequest($request);
+    //    $receivedData  = 0;
+    //    $request->on('data',
+    //        function ($data) use (
+    //            $self,
+    //            $request,
+    //            $response,
+    //            &$requestBody,
+    //            &$receivedData,
+    //            $contentLength,
+    //            $callback,
+    //            $allowRawBody
+    //        ) {
+    //            try {
+    //                $requestBody .= $data;
+    //                $receivedData += strlen($data);
+    //                if ($receivedData >= $contentLength) {
+    //
+    //                    $requestBodyParsed = null;
+    //                    if ($allowRawBody) {
+    //                        $requestBodyParsed = $requestBody;
+    //                    }
+    //                    if ($requestBody) {
+    //                        try {
+    //                            $requestBodyParsed = $self->getBodyParserForRequest($request)->parse(
+    //                                $requestBody,
+    //                                $request
+    //                            );
+    //                        } catch (InvalidBodyException $parserException) {
+    //                            if (!$allowRawBody) {
+    //                                throw $parserException;
+    //                            }
+    //                        }
+    //                    }
+    //
+    //                    $requestResult = $callback($request, $requestBodyParsed);
+    //                    if ($requestResult !== null) {
+    //                        $self->handleResult($requestResult, $request, $response);
+    //                    }
+    //                }
+    //            } catch (\Exception $exception) {
+    //                $this->handleError($exception, $request, $response);
+    //            }
+    //        });
+    //}
 
     /**
      * Returns the content length for the given request
@@ -562,12 +665,30 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         $this->socketServer = new SocketServer($this->getEventLoop());
 
         $httpServer = new HttpServer($this->socketServer, $this->getEventLoop());
-        $httpServer->on('request', array($this, 'handle'));
+        $httpServer->on('request', array($this, 'prepareAndHandle'));
         $this->socketServer->listen($this->port, $this->ip);
 
         $this->writeln(Constants::MESSAGE_CLI_WELCOME . PHP_EOL);
         $this->writeln('Start listening on %s:%s', $this->ip, $this->port);
         $this->logger->info(sprintf('Start listening on %s:%s', $this->ip, $this->port));
+    }
+
+    /**
+     * Handle the given request
+     *
+     * @param \React\Http\Request  $request
+     * @param \React\Http\Response $response
+     */
+    public function prepareAndHandle($request, $response){
+        $this->logger->alert('incoming request', array('request' => $request));
+        try {
+            $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+            $this->handle($requestInfo, $response);
+
+        } catch (\Exception $exception) {
+            $this->handleError($exception, $request, $response);
+        }
+        $this->logger->alert('end request', array('request' => $request));
     }
 
     /**
@@ -578,7 +699,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      */
     protected function getIgnoreRequest($request)
     {
-        if ($request instanceof Request) {
+        if ($request instanceof Request || $request instanceof \React\Http\Request) {
             if ($request->getMethod() === 'GET' && $request->getPath() === '/favicon.ico') {
                 return true;
             }

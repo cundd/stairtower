@@ -17,9 +17,9 @@ use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use DateTime;
-use React\Http\Request;
 use React\Http\Response;
 
 /**
@@ -128,6 +128,7 @@ class DummyServer implements ServerInterface
         if (!$this->eventLoop) {
             throw new InvalidEventLoopException('Event loop not set', 1412942824);
         }
+
         return $this->eventLoop;
     }
 
@@ -143,6 +144,7 @@ class DummyServer implements ServerInterface
             throw new InvalidServerChangeException('Can not change the event loop when server is running', 1412956592);
         }
         $this->eventLoop = $eventLoop;
+
         return $this;
     }
 
@@ -233,6 +235,7 @@ class DummyServer implements ServerInterface
             throw new InvalidServerChangeException('Can not change IP when server is running', 1412956590);
         }
         $this->ip = $ip;
+
         return $this;
     }
 
@@ -258,6 +261,7 @@ class DummyServer implements ServerInterface
             throw new InvalidServerChangeException('Can not change port when server is running', 1412956591);
         }
         $this->port = $port;
+
         return $this;
     }
 

@@ -58,6 +58,13 @@ class RequestInfo implements Immutable
     protected $body;
 
     /**
+     * Cookies sent by the client
+     *
+     * @var array
+     */
+    protected $cookies;
+
+    /**
      * A special handler action that is implemented in the handler
      *
      * @var string
@@ -375,6 +382,17 @@ class RequestInfo implements Immutable
     public function getOriginalRequest()
     {
         return $this->request;
+    }
+
+    /**
+     * Add a event listener
+     *
+     * @param string   $event
+     * @param callable $listener
+     */
+    public function on($event, callable $listener)
+    {
+        $this->request->on($event, $listener);
     }
 
 

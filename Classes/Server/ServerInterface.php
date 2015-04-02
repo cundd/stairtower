@@ -12,11 +12,10 @@ namespace Cundd\PersistentObjectStore\Server;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
-use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use DateTime;
-use React\Http\Request;
 use React\Http\Response;
 
 /**
@@ -140,14 +139,6 @@ interface ServerInterface
      * @return string
      */
     public function getContentTypeForRequest(Request $request);
-
-    /**
-     * Returns the handler for the given request
-     *
-     * @param Request $request
-     * @return HandlerInterface
-     */
-    public function getHandlerForRequest(Request $request);
 
     /**
      * Returns the body parser for the given request

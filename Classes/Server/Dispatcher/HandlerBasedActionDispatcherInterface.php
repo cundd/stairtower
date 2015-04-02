@@ -9,7 +9,7 @@
 namespace Cundd\PersistentObjectStore\Server\Dispatcher;
 
 use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
-use React\Http\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfo as Request;
 
 /**
  * Interface for classes that can determine a Handler implementation for the given Request
