@@ -78,6 +78,7 @@ class RequestInfoFactory
                     $controllerClassName
                 );
         }
+
         return static::$pathToRequestInfoMap[$requestInfoIdentifier];
     }
 
@@ -85,7 +86,7 @@ class RequestInfoFactory
      * Returns the handler class if the path contains a special information identifier, otherwise the Handler interface
      * name
      *
-     * @param Request $request
+     * @param RequestInfo|Request $request
      * @return string
      */
     public static function getHandlerClassForRequest($request)
@@ -122,6 +123,7 @@ class RequestInfoFactory
         if (class_exists($handlerName)) {
             return $handlerName;
         }
+
         return $default;
     }
 
@@ -231,13 +233,14 @@ class RequestInfoFactory
                 }
             }
         }
+
         return false;
     }
 
     /**
      * Returns the special server action if the path contains a special information identifier, otherwise FALSE
      *
-     * @param Request $request
+     * @param RequestInfo|Request $request
      * @return string|bool
      */
     public static function getServerActionForRequest($request)
@@ -255,6 +258,7 @@ class RequestInfoFactory
         if (in_array($action, array('shutdown', 'restart',))) {
             return $action;
         }
+
         return false;
     }
 
@@ -268,7 +272,7 @@ class RequestInfoFactory
     public static function copyWithBody($requestInfo, $body)
     {
         return new RequestInfo(
-            $requestInfo->getRequest(),
+            $requestInfo->getOriginalRequest(),
             $requestInfo->getDataIdentifier(),
             $requestInfo->getDatabaseIdentifier(),
             $requestInfo->getMethod(),
@@ -276,6 +280,5 @@ class RequestInfoFactory
             $requestInfo->getControllerClass(),
             $body
         );
-
     }
-} 
+}

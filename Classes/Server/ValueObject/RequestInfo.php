@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
+use Cundd\PersistentObjectStore\Exception\UndefinedMethodCallException;
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Server\ContentType;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
@@ -104,8 +105,8 @@ class RequestInfo implements Immutable
         $this->databaseIdentifier   = $databaseIdentifier;
         $this->specialHandlerAction = $specialHandlerAction ?: null;
         $this->request              = $request;
-        $this->controllerClass = $controllerClass ?: null;
-        $this->body = $body ?: null;
+        $this->controllerClass      = $controllerClass ?: null;
+        $this->body                 = $body ?: null;
     }
 
     /**
@@ -206,6 +207,7 @@ class RequestInfo implements Immutable
                 $nameOffset = 4;
                 break;
         }
+
         return lcfirst(substr($action, $nameOffset, -6));
     }
 
@@ -274,8 +276,144 @@ class RequestInfo implements Immutable
         }
         $sorting = array_flip($sorting);
         ksort($sorting);
+
         return reset($sorting);
     }
 
+    /**
+     * Returns the header value for the given name
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getHeader($name)
+    {
+        $allHeaders = $this->getHeaders();
+        if (isset($allHeaders[$name])) {
+            return $allHeaders[$name];
+        }
 
+        return null;
+    }
+
+    /**
+     * Returns the cookies
+     *
+     * @return mixed
+     */
+    public function getCookies()
+    {
+        if (!$this->cookies) {
+            $cookieString  = $this->getHeader('Cookie');
+            $this->cookies = $this->prepareCookies($cookieString);
+        }
+
+        return $this->cookies;
+    }
+
+    /**
+     * Returns the cookie value for the given name
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function getCookie($name)
+    {
+        $allCookies = $this->getHeaders();
+        if (isset($allCookies[$name])) {
+            return $allCookies[$name];
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the path
+     *
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->request->getPath();
+    }
+
+    /**
+     * Returns the query
+     *
+     * @return array
+     */
+    public function getQuery()
+    {
+        return $this->request->getQuery();
+    }
+
+    /**
+     * Returns the HTTP version
+     *
+     * @return string
+     */
+    public function getHttpVersion()
+    {
+        return $this->request->getHttpVersion();
+    }
+
+    /**
+     * Returns the headers
+     *
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->request->getHeaders();
+    }
+
+    /**
+     * Returns the original request
+     *
+     * @return Request
+     */
+    public function getOriginalRequest()
+    {
+        return $this->request;
+    }
+
+
+    /**
+     * Prepares the given cookies
+     *
+     * @param array|string $cookies
+     * @return array
+     */
+    protected function prepareCookies($cookies)
+    {
+        if (!is_array($cookies)) {
+            $pairs   = explode('; ', $cookies);
+            $cookies = array();
+            foreach ($pairs as $pair) {
+                list($name, $val) = explode('=', $pair, 2);
+                $cookies[trim($name)] = trim(urldecode($val));
+            }
+        }
+
+        return $cookies;
+    }
+
+    function __call($name, $arguments)
+    {
+        if (method_exists($this, $name)) {
+            throw new UndefinedMethodCallException(sprintf('Method %s is not accessible', $name), 1427730222);
+        }
+        if (!method_exists($this->request, $name)) {
+            throw new UndefinedMethodCallException(
+                sprintf('Method %s not implemented in %s', $name, get_class($this)),
+                1427730223
+            );
+        }
+
+        if (count($arguments) > 0) {
+            return call_user_func_array(array($this->request, $name), $arguments);
+        }
+
+        return $this->request->$name();
+    }
 }

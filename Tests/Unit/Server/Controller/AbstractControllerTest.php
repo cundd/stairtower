@@ -74,7 +74,6 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
         $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
         $this->fixture->setRequestInfo($requestInfo);
         $this->assertSame($requestInfo, $this->fixture->getRequestInfo());
-        $this->assertSame($request, $this->fixture->getRequest());
     }
 
 
@@ -89,17 +88,6 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->fixture->unsetRequestInfo();
         $this->assertNull($this->fixture->getRequestInfo());
-        $this->assertNull($this->fixture->getRequest());
-    }
-
-    /**
-     * @test
-     */
-    public function getRequestTest()
-    {
-        $this->assertInstanceOf('React\\Http\\Request', $this->fixture->getRequest());
-        $this->assertEquals('/_cundd-test-application/my_method', $this->fixture->getRequest()->getPath());
-        $this->assertSame($this->fixture->getRequest(), $this->fixture->getRequestInfo()->getRequest());
     }
 
     /**

@@ -74,19 +74,6 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
-     * Returns the current Request
-     *
-     * @return Request
-     */
-    public function getRequest()
-    {
-        if (!$this->requestInfo) {
-            return null;
-        }
-        return $this->requestInfo->getRequest();
-    }
-
-    /**
      * Will be invoked before the actual action method is called but after the Request Info has been set
      *
      * @param string $action

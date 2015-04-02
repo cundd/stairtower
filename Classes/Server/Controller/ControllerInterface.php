@@ -53,13 +53,6 @@ interface ControllerInterface
     public function unsetRequestInfo();
 
     /**
-     * Returns the current Request
-     *
-     * @return Request
-     */
-    public function getRequest();
-
-    /**
      * Will be invoked before the actual action method is called but after the Request Info has been set
      *
      * @param string $action

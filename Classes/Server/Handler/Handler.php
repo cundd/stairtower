@@ -214,7 +214,7 @@ class Handler implements HandlerInterface
      */
     public function read(RequestInfo $requestInfo)
     {
-        $query = $requestInfo->getRequest()->getQuery();
+        $query = $requestInfo->getQuery();
 
         // Extract the Expand configuration from the query
         $expandConfiguration = null;
