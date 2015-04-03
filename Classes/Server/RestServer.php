@@ -579,12 +579,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      */
     public function getContentTypeForRequest(Request $request)
     {
-        try {
-            return RequestInfoFactory::buildRequestInfoFromRequest($request)->getContentType();
-        } catch (\Exception $exception) {
-        }
-
-        return ContentType::JSON_APPLICATION;
+        return $request->getContentType();
     }
 
     /**
