@@ -183,4 +183,26 @@ class CookieTest extends \PHPUnit_Framework_TestCase
             (new Cookie('user', null, new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true))->toHeader()
         );
     }
+
+    /**
+     * @test
+     */
+    public function urlEncodeTest()
+    {
+        $this->assertSame(
+            'user=A+string+that+should+be+encoded.+Including+a+semicolon+%3B; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
+            (string) new Cookie('user', 'A string that should be encoded. Including a semicolon ;', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function doNotUrlEncodeTest()
+    {
+        $this->assertSame(
+            'user=A string that should not be encoded. Including a semicolon ;; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
+            (string) new Cookie('user', 'A string that should not be encoded. Including a semicolon ;', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true, false)
+        );
+    }
 }
