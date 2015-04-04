@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
+use Cundd\PersistentObjectStore\AbstractCase;
 use Cundd\PersistentObjectStore\Server\Handler\Handler;
 use React\Http\Request as BaseRequest;
 
@@ -17,14 +18,26 @@ use React\Http\Request as BaseRequest;
  *
  * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class RequestTest extends \PHPUnit_Framework_TestCase
+class RequestTest extends AbstractCase
 {
+    /**
+     * @var RequestInfoFactory
+     */
+    protected $requestInfoFactory;
+
+
+    protected function setUp()
+    {
+        $this->requestInfoFactory = $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory');
+    }
+
+
     /**
      * @test
      */
     public function buildRequestInfoFromRequestTests()
     {
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/contacts/info@cundd.net'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -35,7 +48,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/contacts/info@cundd.net'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -46,7 +59,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/contacts/info@cundd.net'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -57,7 +70,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/contacts/info@cundd.net'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -68,7 +81,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/contacts/info@cundd.net'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -80,7 +93,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getControllerClass());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET', '/contacts/'));
         $this->assertEquals('GET', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
@@ -90,7 +103,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD', '/contacts/'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
@@ -100,7 +113,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST', '/contacts/'));
         $this->assertEquals('POST', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
@@ -110,7 +123,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT', '/contacts/'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
@@ -120,7 +133,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE', '/contacts/'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
@@ -131,7 +144,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getControllerClass());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET', '/contacts'));
         $this->assertEquals('GET', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
@@ -141,7 +154,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD', '/contacts'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
@@ -151,7 +164,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST', '/contacts'));
         $this->assertEquals('POST', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
@@ -161,7 +174,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT', '/contacts'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
@@ -171,7 +184,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE', '/contacts'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
@@ -182,7 +195,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getControllerClass());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/contacts/my-info-path'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -193,7 +206,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/contacts/my-info-path'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -204,7 +217,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/contacts/my-info-path'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -215,7 +228,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/contacts/my-info-path'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -226,7 +239,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/contacts/my-info-path'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -238,7 +251,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getControllerClass());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/contacts-database/my-info-path'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -249,7 +262,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/contacts-database/my-info-path'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -260,7 +273,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/contacts-database/my-info-path'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -271,7 +284,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/contacts-database/my-info-path'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -282,7 +295,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/contacts-database/my-info-path'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -294,7 +307,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getControllerClass());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/contacts_database/my_info-path'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -305,7 +318,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/contacts_database/my_info-path'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -316,7 +329,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/contacts_database/my_info-path'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -327,7 +340,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/contacts_database/my_info-path'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -338,7 +351,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/contacts_database/my_info-path'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -350,7 +363,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getControllerClass());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/contacts_database/my-super_email@a-smthng.com'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -361,7 +374,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/contacts_database/my-super_email@a-smthng.com'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -372,7 +385,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/contacts_database/my-super_email@a-smthng.com'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -383,7 +396,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/contacts_database/my-super_email@a-smthng.com'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -394,7 +407,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/contacts_database/my-super_email@a-smthng.com'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -406,7 +419,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getControllerClass());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/contacts_database/my-super_email@a-smthng.com/something-more'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -417,7 +430,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/contacts_database/my-super_email@a-smthng.com/something-more'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -428,7 +441,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/contacts_database/my-super_email@a-smthng.com/something-more'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -439,7 +452,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/contacts_database/my-super_email@a-smthng.com/something-more'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -450,7 +463,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/contacts_database/my-super_email@a-smthng.com/something-more'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -467,7 +480,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function buildRequestInfoFromRequestWithControllerTest()
     {
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/_cundd-test-application/my_method'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -478,7 +491,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/_cundd-test-application/my_method'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -489,7 +502,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/_cundd-test-application/my_method'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -500,7 +513,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/_cundd-test-application/my_method'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -511,7 +524,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/_cundd-test-application/my_method'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -523,7 +536,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/_cundd-notexistingtest-application/my_undefined_method'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -534,7 +547,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/_cundd-notexistingtest-application/my_undefined_method'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -545,7 +558,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/_cundd-notexistingtest-application/my_undefined_method'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -556,7 +569,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/_cundd-notexistingtest-application/my_undefined_method'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -567,7 +580,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getAction());
         $this->assertNull($requestInfo->getControllerClass());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/_cundd-notexistingtest-application/my_undefined_method'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -579,7 +592,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($requestInfo->getControllerClass());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/_cundd-test-application/my_undefined_method'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -590,7 +603,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/_cundd-test-application/my_undefined_method'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -601,7 +614,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/_cundd-test-application/my_undefined_method'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -612,7 +625,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/_cundd-test-application/my_undefined_method'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -623,7 +636,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/_cundd-test-application/my_undefined_method'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -635,7 +648,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/_cundd-test_module-application/my_undefined_method'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -646,7 +659,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/_cundd-test_module-application/my_undefined_method'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -657,7 +670,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/_cundd-test_module-application/my_undefined_method'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -668,7 +681,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/_cundd-test_module-application/my_undefined_method'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -679,7 +692,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/_cundd-test_module-application/my_undefined_method'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -691,7 +704,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/_cundd-testModule-application/my_undefined_method'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -702,7 +715,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/_cundd-testModule-application/my_undefined_method'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -713,7 +726,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/_cundd-testModule-application/my_undefined_method'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -724,7 +737,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/_cundd-testModule-application/my_undefined_method'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -735,7 +748,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/_cundd-testModule-application/my_undefined_method'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -747,7 +760,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/_cundd-test-application/my_method/my-database/data-identifier'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -758,7 +771,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/_cundd-test-application/my_method/my-database/data-identifier'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -769,7 +782,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/_cundd-test-application/my_method/my-database/data-identifier'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -780,7 +793,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/_cundd-test-application/my_method/my-database/data-identifier'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -791,7 +804,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/_cundd-test-application/my_method/my-database/data-identifier'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -803,7 +816,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/_cundd-test-application/my_undefined_method/my-database/data-identifier'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -814,7 +827,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/_cundd-test-application/my_undefined_method/my-database/data-identifier'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -825,7 +838,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/_cundd-test-application/my_undefined_method/my-database/data-identifier'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -836,7 +849,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/_cundd-test-application/my_undefined_method/my-database/data-identifier'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -847,7 +860,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/_cundd-test-application/my_undefined_method/my-database/data-identifier'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -859,7 +872,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/_cundd-test_module-application/my_undefined_method/my-database'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -870,7 +883,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/_cundd-test_module-application/my_undefined_method/my-database'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -881,7 +894,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/_cundd-test_module-application/my_undefined_method/my-database'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -892,7 +905,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/_cundd-test_module-application/my_undefined_method/my-database'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -903,7 +916,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/_cundd-test_module-application/my_undefined_method/my-database'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());
@@ -915,7 +928,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'GET',
             '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'));
         $this->assertEquals('GET', $requestInfo->getMethod());
@@ -926,7 +939,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'HEAD',
             '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'));
         $this->assertEquals('HEAD', $requestInfo->getMethod());
@@ -937,7 +950,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'POST',
             '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'));
         $this->assertEquals('POST', $requestInfo->getMethod());
@@ -948,7 +961,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'PUT',
             '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'));
         $this->assertEquals('PUT', $requestInfo->getMethod());
@@ -959,7 +972,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('my-database', $requestInfo->getDatabaseIdentifier());
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(new BaseRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new BaseRequest(
             'DELETE',
             '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'));
         $this->assertEquals('DELETE', $requestInfo->getMethod());

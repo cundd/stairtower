@@ -6,7 +6,7 @@
  * Time: 20:48
  */
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\PersistentObjectStore\Server\Cookie;
 
 /**
  * Test for Cookies

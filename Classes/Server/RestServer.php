@@ -61,6 +61,14 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     protected $socketServer;
 
     /**
+     * Request factory instance to transform React requests into Stairtower requests
+     *
+     * @var \Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory
+     * @Inject
+     */
+    protected $requestFactory;
+
+    /**
      * Handle the given request
      *
      * @param Request              $request
@@ -677,7 +685,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             $response->end();
         } else {
             try {
-                $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+                $requestInfo = $this->requestFactory->buildRequestFromRawRequest($request, true);
                 $this->handle($requestInfo, $response);
 
             } catch (\Exception $error) {

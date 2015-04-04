@@ -25,6 +25,11 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
      */
     protected $fixture;
 
+    /**
+     * @var RequestInfoFactory
+     */
+    protected $requestInfoFactory;
+
     protected function setUp()
     {
         parent::setUp();
@@ -49,7 +54,8 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
             ->method('getCoordinator')
             ->will($this->returnValue($coordinatorStub));
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+        $this->requestInfoFactory = $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory');
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/people-small/elliottgentry@andershun.com')
         );
         $this->fixture->setRequest($requestInfo);
@@ -77,7 +83,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
      */
     public function getDatabaseForRequestInfoTest()
     {
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/people-small/elliottgentry@andershun.com')
         );
         $database    = $this->fixture->getDatabaseForRequest($requestInfo);
@@ -101,7 +107,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
      */
     public function getDocumentForRequestTest()
     {
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/people-small/elliottgentry@andershun.com')
         );
         $document    = $this->fixture->getDocumentForRequest($requestInfo);

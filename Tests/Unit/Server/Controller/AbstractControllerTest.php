@@ -8,6 +8,7 @@
 
 namespace Server\Controller;
 
+use Cundd\PersistentObjectStore\AbstractCase;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
@@ -20,12 +21,17 @@ use React_ConnectionStub;
  *
  * @package Server\Controller
  */
-class AbstractControllerTest extends \PHPUnit_Framework_TestCase
+class AbstractControllerTest extends AbstractCase
 {
     /**
      * @var ControllerInterface
      */
     protected $fixture;
+
+    /**
+     * @var RequestInfoFactory
+     */
+    protected $requestInfoFactory;
 
     protected function setUp()
     {
@@ -33,7 +39,8 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->fixture = $this->getMockForAbstractClass('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController');
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+        $this->requestInfoFactory = $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory');
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/my_method')
         );
         $this->fixture->setRequest($requestInfo);
@@ -71,7 +78,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     public function setRequestTest()
     {
         $request     = new Request('GET', '/loaned/');
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest($request);
         $this->fixture->setRequest($requestInfo);
         $this->assertSame($requestInfo, $this->fixture->getRequest());
     }
@@ -83,7 +90,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
     public function unsetRequestTest()
     {
         $request     = new Request('GET', '/loaned/');
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest($request);
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest($request);
         $this->fixture->setRequest($requestInfo);
 
         $this->fixture->unsetRequest();
@@ -122,7 +129,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
             ->method('getHelloAction')
             ->will($this->returnValue(true));
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/hello')
         );
         $response = new Response(new React_ConnectionStub());
@@ -148,7 +155,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
             ->method('getHelloWorldAction')
             ->will($this->returnValue(true));
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/hello_world')
         );
         $response = new Response(new React_ConnectionStub());
@@ -174,7 +181,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
             ->method('getHelloWorldAction')
             ->will($this->returnValue(true));
 
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/hello_world/another_argument')
         );
         $response = new Response(new React_ConnectionStub());
@@ -192,7 +199,7 @@ class AbstractControllerTest extends \PHPUnit_Framework_TestCase
      */
     public function processRequestNotImplementedMethodTest()
     {
-        $requestInfo = RequestInfoFactory::buildRequestInfoFromRequest(
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/my_method')
         );
         $response = new Response(new React_ConnectionStub());

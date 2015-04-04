@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
+use Cundd\PersistentObjectStore\Server\Cookie\CookieParserInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestActionException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use React\Http\Request as BaseRequest;
@@ -22,12 +23,19 @@ class RequestInfoFactory
     const DEFAULT_ACTION = 'index';
 
     /**
-     * Builds a Request instance for the given request
+     * @var CookieParserInterface
+     * @Inject
+     */
+    protected $cookieParser;
+
+    /**
+     * Builds a Request instance for the given raw request
      *
      * @param BaseRequest|Request $request
+     * @param bool                $parseCookies Define if the cookies should be parsed
      * @return Request
      */
-    public static function buildRequestInfoFromRequest($request)
+    public function buildRequestFromRawRequest($request, $parseCookies = false)
     {
         if ($request instanceof Request) {
             return $request;
@@ -55,12 +63,17 @@ class RequestInfoFactory
             $dataIdentifier = '';
         }
 
-        $controllerAndActionArray = static::getControllerAndActionForRequest($request);
+        $controllerAndActionArray = $this->getControllerAndActionForRequest($request);
         if ($controllerAndActionArray) {
             list($controllerClassName, $handlerAction) = $controllerAndActionArray;
 
             $databaseIdentifier = isset($pathParts[2]) ? $pathParts[2] : null;
             $dataIdentifier     = isset($pathParts[3]) ? $pathParts[3] : null;
+        }
+
+        $cookies = [];
+        if ($parseCookies) {
+            $cookies = $this->cookieParser->parse($request);
         }
 
         return new Request(
@@ -69,8 +82,26 @@ class RequestInfoFactory
             $databaseIdentifier,
             $request->getMethod(),
             ($handlerAction !== false ? $handlerAction : null),
-            $controllerClassName
+            $controllerClassName,
+            null,
+            $cookies
         );
+    }
+
+    /**
+     * Builds a Request instance for the given request
+     *
+     * @param BaseRequest|Request $request
+     * @return Request
+     * @deprecated
+     */
+    public static function buildRequestInfoFromRequest($request)
+    {
+        static $factoryInstance = null;
+        if (!$factoryInstance) {
+            $factoryInstance = new self();
+        }
+        return $factoryInstance->buildRequestFromRawRequest($request);
     }
 
     /**
@@ -127,7 +158,7 @@ class RequestInfoFactory
      * @param Request $request
      * @return array|boolean
      */
-    public static function getControllerAndActionForRequest($request)
+    public function getControllerAndActionForRequest($request)
     {
         $path = $request->getPath();
         if (!$path) {
@@ -269,7 +300,8 @@ class RequestInfoFactory
             $requestInfo->getMethod(),
             $requestInfo->getAction(),
             $requestInfo->getControllerClass(),
-            $body
+            $body,
+            $requestInfo->getCookies()
         );
     }
 }

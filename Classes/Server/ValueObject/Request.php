@@ -11,6 +11,7 @@ namespace Cundd\PersistentObjectStore\Server\ValueObject;
 use Cundd\PersistentObjectStore\Exception\UndefinedMethodCallException;
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Server\ContentType;
+use Cundd\PersistentObjectStore\Server\Cookie\Cookie;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use React\Http\Request as BaseRequest;
 
@@ -60,7 +61,7 @@ class Request implements Immutable, RequestInterface
     /**
      * Cookies sent by the client
      *
-     * @var array
+     * @var Cookie[]
      */
     protected $cookies;
 
@@ -88,6 +89,7 @@ class Request implements Immutable, RequestInterface
      * @param string      $action
      * @param string      $controllerClass
      * @param null        $body
+     * @param array       $cookies
      */
     public function __construct(
         $request,
@@ -96,7 +98,8 @@ class Request implements Immutable, RequestInterface
         $method,
         $action = null,
         $controllerClass = null,
-        $body = null
+        $body = null,
+        $cookies = array()
     ) {
         if ($method) {
             GeneralUtility::assertRequestMethod($method);
@@ -114,6 +117,7 @@ class Request implements Immutable, RequestInterface
         $this->originalRequest    = $request;
         $this->controllerClass    = $controllerClass ?: null;
         $this->body               = $body ?: null;
+        $this->cookies            = $cookies;
     }
 
     /**
@@ -300,11 +304,6 @@ class Request implements Immutable, RequestInterface
      */
     public function getCookies()
     {
-        if (!$this->cookies) {
-            $cookieString  = $this->getHeader('Cookie');
-            $this->cookies = $this->prepareCookies($cookieString);
-        }
-
         return $this->cookies;
     }
 
@@ -316,7 +315,7 @@ class Request implements Immutable, RequestInterface
      */
     public function getCookie($name)
     {
-        $allCookies = $this->getHeaders();
+        $allCookies = $this->getCookies();
         if (isset($allCookies[$name])) {
             return $allCookies[$name];
         }
@@ -383,27 +382,6 @@ class Request implements Immutable, RequestInterface
     public function on($event, callable $listener)
     {
         $this->originalRequest->on($event, $listener);
-    }
-
-
-    /**
-     * Prepares the given cookies
-     *
-     * @param array|string $cookies
-     * @return array
-     */
-    protected function prepareCookies($cookies)
-    {
-        if (!is_array($cookies)) {
-            $pairs   = explode('; ', $cookies);
-            $cookies = array();
-            foreach ($pairs as $pair) {
-                list($name, $val) = explode('=', $pair, 2);
-                $cookies[trim($name)] = trim(urldecode($val));
-            }
-        }
-
-        return $cookies;
     }
 
     function __call($name, $arguments)

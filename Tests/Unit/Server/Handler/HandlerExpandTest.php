@@ -35,6 +35,11 @@ class HandlerExpandTest extends AbstractCase
     protected $database;
 
     /**
+     * @var RequestInfoFactory
+     */
+    protected $requestInfoFactory;
+
+    /**
      * @test
      */
     public function readDatabaseWithExpandTest()
@@ -46,7 +51,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -80,7 +85,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::DATA_ID_KEY,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -116,7 +121,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -153,7 +158,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
             $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
@@ -185,7 +190,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::DATA_ID_KEY,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
             $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
@@ -219,7 +224,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
             $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
@@ -252,7 +257,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -277,7 +282,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -307,7 +312,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -329,7 +334,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -358,7 +363,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -395,7 +400,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -434,7 +439,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -474,7 +479,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
             $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
@@ -508,7 +513,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
             $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
@@ -544,7 +549,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/L1420194884',
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
             $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
@@ -579,7 +584,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -606,7 +611,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -638,7 +643,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -661,7 +666,7 @@ class HandlerExpandTest extends AbstractCase
             Constants::EXPAND_REQUEST_SPLIT_CHAR,
         ]);
         parse_str($queryString, $query);
-        $requestInfo   = RequestInfoFactory::buildRequestInfoFromRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -683,6 +688,9 @@ class HandlerExpandTest extends AbstractCase
         }
 
         $diContainer = $this->getDiContainer();
+
+        $this->requestInfoFactory = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory');
+            
         $server      = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\DummyServer');
         $diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $server);
 
