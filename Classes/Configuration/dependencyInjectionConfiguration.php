@@ -16,6 +16,7 @@ return array(
     $persistentObjectStoreClassBase . 'Server\\Handler\\HandlerInterface'           => DI\object($persistentObjectStoreClassBase . 'Server\\Handler\\Handler'),
     $persistentObjectStoreClassBase . 'Server\\UriBuilderInterface' => DI\object($persistentObjectStoreClassBase . 'Server\\UriBuilder'),
     $persistentObjectStoreClassBase . 'Server\\Cookie\\CookieParserInterface'       => DI\object($persistentObjectStoreClassBase . 'Server\\Cookie\\CookieParser'),
+    $persistentObjectStoreClassBase . 'Server\\Session\\SessionProviderInterface'   => DI\object($persistentObjectStoreClassBase . 'Server\\Session\\SessionProvider'),
     //$persistentObjectStoreClassBase . 'Server\\BodyParser\\BodyParserInterface' => DI\object($persistentObjectStoreClassBase . 'Server\\BodyParser\\JsonBodyParser'),
     $persistentObjectStoreClassBase . 'DataAccess\\CoordinatorInterface'            => DI\object($persistentObjectStoreClassBase . 'DataAccess\\Coordinator'),
     $persistentObjectStoreClassBase . 'DataAccess\\ObjectFinderInterface'           => DI\object($persistentObjectStoreClassBase . 'DataAccess\\ObjectFinder'),

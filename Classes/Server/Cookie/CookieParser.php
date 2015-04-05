@@ -45,6 +45,7 @@ class CookieParser implements CookieParserInterface
                 1428081672
             );
         }
+
         $parsedCookies = $this->concreteCookieParser->parseCookie($cookieString);
         if (!$parsedCookies) {
             return [];
