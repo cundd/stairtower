@@ -180,7 +180,7 @@ class Document implements DocumentInterface, JsonSerializable
     }
 
     /**
-     * Returns the underlying data
+     * Sets the underlying data
      *
      * @param array $data
      */
