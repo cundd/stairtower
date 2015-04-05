@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\Exception\SecurityException;
 use Cundd\PersistentObjectStore\Memory\Manager;
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
@@ -241,11 +242,16 @@ abstract class AbstractServer implements ServerInterface
     {
         $this->writeln('Caught exception #%d: %s', $error->getCode(), $error->getMessage());
         $this->writeln($error->getTraceAsString());
-        $this->handleResult(
-            new HandlerResult($this->getStatusCodeForException($error), $error->getMessage()),
-            $request,
-            $response
-        );
+
+        if ($error instanceof SecurityException) {
+            $response->end();
+        } else {
+            $this->handleResult(
+                new HandlerResult($this->getStatusCodeForException($error), $error->getMessage()),
+                $request,
+                $response
+            );
+        }
     }
 
     /**
