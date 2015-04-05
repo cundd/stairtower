@@ -7,6 +7,8 @@
  * Time: 12:20
  */
 
+use Cundd\PersistentObjectStore\Server\Session\SessionControllerTrait;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 use Evenement\EventEmitter;
 use React\Socket\ConnectionInterface;
 use React\Stream\WritableStreamInterface;
@@ -130,5 +132,39 @@ class React_ConnectionStub extends EventEmitter implements ConnectionInterface
     public function getRemoteAddress()
     {
         return '127.0.0.1';
+    }
+}
+
+/**
+ * Dummy Session Controller
+ *
+ * @package Cundd\PersistentObjectStore\Server\Session
+ */
+class Test_Session_Controller
+{
+    use SessionControllerTrait;
+
+    /**
+     * @var RequestInterface
+     */
+    protected $request;
+
+    /**
+     * @return RequestInterface
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @return $this
+     */
+    public function setRequest($request)
+    {
+        $this->request = $request;
+
+        return $this;
     }
 }
