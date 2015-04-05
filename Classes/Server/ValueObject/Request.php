@@ -300,7 +300,7 @@ class Request implements Immutable, RequestInterface
     /**
      * Returns the cookies
      *
-     * @return mixed
+     * @return Cookie[]
      */
     public function getCookies()
     {
@@ -311,7 +311,7 @@ class Request implements Immutable, RequestInterface
      * Returns the cookie value for the given name
      *
      * @param string $name
-     * @return mixed
+     * @return Cookie
      */
     public function getCookie($name)
     {
