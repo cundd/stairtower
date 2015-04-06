@@ -17,8 +17,6 @@ use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
  */
 interface SessionProviderInterface
 {
-    const SESSION_ID_COOKIE_KEY = 'stairtower_session';
-
     /**
      * Create (start) a new session
      *

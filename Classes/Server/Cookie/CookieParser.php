@@ -35,10 +35,10 @@ class CookieParser implements CookieParserInterface
     public function parse($request)
     {
         if ($request instanceof RequestInterface) {
-            $cookieString = $request->getHeader('Cookie');
+            $cookieString = $request->getHeader(Constants::GET_COOKIE_HEADER_NAME);
         } elseif (method_exists($request, 'getHeaders')) {
             $headers      = $request->getHeaders();
-            $cookieString = isset($headers['Cookie']) ? $headers['Cookie'] : '';
+            $cookieString = isset($headers[Constants::GET_COOKIE_HEADER_NAME]) ? $headers[Constants::GET_COOKIE_HEADER_NAME] : '';
         } else {
             throw new InvalidArgumentError(
                 sprintf('Could not retrieve cookie header from argument of type %s', GeneralUtility::getType($request)),

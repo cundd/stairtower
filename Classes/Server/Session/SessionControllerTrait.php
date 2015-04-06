@@ -8,6 +8,11 @@
 
 namespace Cundd\PersistentObjectStore\Server\Session;
 
+use Cundd\PersistentObjectStore\Server\Controller\MutableControllerResultInterface;
+use Cundd\PersistentObjectStore\Server\Cookie\Constants as CookieConstants;
+use Cundd\PersistentObjectStore\Server\Cookie\Cookie;
+use Cundd\PersistentObjectStore\Server\Session\Constants as SessionConstants;
+use Cundd\PersistentObjectStore\Server\ValueObject\MutableControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 
 /**
@@ -15,7 +20,8 @@ use Cundd\PersistentObjectStore\Server\ValueObject\Request;
  *
  * @package Cundd\PersistentObjectStore\Server\Session
  */
-trait SessionControllerTrait {
+trait SessionControllerTrait
+{
     /**
      * Session provider instance
      *
@@ -35,7 +41,37 @@ trait SessionControllerTrait {
         if (!$session) {
             $session = $this->sessionProvider->create();
         }
+
         return $session;
+    }
+
+    /**
+     * Returns a mutable Controller Result instance
+     *
+     * This method may be used to inject session cookies into the response. The arguments are directly passed to the
+     * result's constructor.
+     *
+     * @param integer $statusCode
+     * @param mixed   $data
+     * @param string  $contentType
+     * @param array   $headers
+     * @return MutableControllerResultInterface
+     */
+    public function buildResponse($statusCode = null, $data = null, $contentType = null, $headers = array())
+    {
+        $response      = new MutableControllerResult($statusCode, $data, $contentType, $headers);
+        $sessionCookie = new Cookie(SessionConstants::SESSION_ID_COOKIE_NAME, $this->getSession()->getIdentifier());
+
+        $response->setHeaders(array_merge(
+            $response->getHeaders(),
+            [CookieConstants::SET_COOKIE_HEADER_NAME => $sessionCookie->toHeader()]
+        ));
+        //$response->addHeader(
+        //    CookieConstants::SET_COOKIE_HEADER_NAME,
+        //    $sessionCookie->toHeader()
+        //);
+
+        return $response;
     }
 
     /**

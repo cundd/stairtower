@@ -76,7 +76,7 @@ class SessionProvider implements SessionProviderInterface
      */
     public function loadForRequest(RequestInterface $request)
     {
-        $cookie = $request->getCookie(self::SESSION_ID_COOKIE_KEY);
+        $cookie = $request->getCookie(Constants::SESSION_ID_COOKIE_NAME);
         if (!$cookie) {
             return null;
         }

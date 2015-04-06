@@ -102,7 +102,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('getCookie')
             ->will(
-                $this->returnValue(new Cookie(SessionProviderInterface::SESSION_ID_COOKIE_KEY, $sessionId))
+                $this->returnValue(new Cookie(Constants::SESSION_ID_COOKIE_NAME, $sessionId))
             );
 
         $loadedSession = $this->fixture->loadForRequest($request);
@@ -123,7 +123,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('getCookie')
             ->will(
-                $this->returnValue(new Cookie(SessionProviderInterface::SESSION_ID_COOKIE_KEY, $sessionId))
+                $this->returnValue(new Cookie(Constants::SESSION_ID_COOKIE_NAME, $sessionId))
             );
 
         $this->assertNull($this->fixture->loadForRequest($request));
