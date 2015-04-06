@@ -153,6 +153,41 @@ class MutableControllerResultTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function addExistingHeaderTest()
+    {
+        $this->assertInternalType('array', $this->fixture->getHeaders());
+        $this->assertArrayNotHasKey('Set-Cookie', $this->fixture->getHeaders());
+
+        $this->fixture->addHeader('Set-Cookie', 'cookie 1');
+        $this->fixture->addHeader('Set-Cookie', 'cookie 2');
+
+        $this->assertInternalType('array', $this->fixture->getHeaders());
+        $this->assertArrayHasKey('Set-Cookie', $this->fixture->getHeaders());
+        $this->assertSame(
+            ['cookie 1', 'cookie 2'],
+            $this->fixture->getHeaders()['Set-Cookie']
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function replaceHeaderTest()
+    {
+        $this->assertInternalType('array', $this->fixture->getHeaders());
+        $this->assertArrayNotHasKey('Set-Cookie', $this->fixture->getHeaders());
+
+        $this->fixture->replaceHeader('Set-Cookie', 'cookie 1');
+        $this->fixture->replaceHeader('Set-Cookie', 'cookie 2');
+
+        $this->assertInternalType('array', $this->fixture->getHeaders());
+        $this->assertArrayHasKey('Set-Cookie', $this->fixture->getHeaders());
+        $this->assertSame('cookie 2', $this->fixture->getHeaders()['Set-Cookie']);
+    }
+
+    /**
+     * @test
+     */
     public function getStatusCodeTest()
     {
         $this->assertSame(200, $this->fixture->getStatusCode());

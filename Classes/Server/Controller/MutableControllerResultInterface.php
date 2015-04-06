@@ -41,6 +41,15 @@ interface MutableControllerResultInterface extends ControllerResultInterface
     public function addHeader($name, $header);
 
     /**
+     * Replace the header with the given name
+     *
+     * @param string $name
+     * @param mixed  $header
+     * @return $this
+     */
+    public function replaceHeader($name, $header);
+
+    /**
      * Sets the status code for the response
      *
      * @param int $statusCode

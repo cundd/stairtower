@@ -68,6 +68,29 @@ class MutableControllerResult extends AbstractControllerResult implements Mutabl
      */
     public function addHeader($name, $header)
     {
+        if (isset($this->headers[$name])) {
+            $existingHeader = $this->headers[$name];
+            if (is_array($existingHeader)) {
+                $this->headers[$name][] = $header;
+            } else {
+                $this->headers[$name] = array($existingHeader, $header);
+            }
+        } else {
+            $this->headers[$name] = $header;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Replace the header with the given name
+     *
+     * @param string $name
+     * @param mixed  $header
+     * @return $this
+     */
+    public function replaceHeader($name, $header)
+    {
         $this->headers[$name] = $header;
 
         return $this;
