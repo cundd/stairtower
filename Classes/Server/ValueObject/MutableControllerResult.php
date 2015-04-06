@@ -8,15 +8,31 @@
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
-use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
+use Cundd\PersistentObjectStore\Server\Controller\MutableControllerResultInterface;
 
 /**
  * Controller result implementation
  *
  * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class MutableControllerResult extends AbstractControllerResult implements ControllerResultInterface
+class MutableControllerResult extends AbstractControllerResult implements MutableControllerResultInterface
 {
+    /**
+     * Creates a new result with the given data and status
+     *
+     * @param integer $statusCode
+     * @param mixed   $data
+     * @param string  $contentType
+     * @param array   $headers
+     */
+    public function __construct($statusCode = null, $data = null, $contentType = null, $headers = array())
+    {
+        $this->statusCode  = $statusCode;
+        $this->data        = $data;
+        $this->contentType = $contentType;
+        $this->headers     = (array)$headers;
+    }
+
     /**
      * Sets the content type of the request
      *

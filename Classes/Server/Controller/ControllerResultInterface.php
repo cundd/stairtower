@@ -10,7 +10,7 @@ namespace Cundd\PersistentObjectStore\Server\Controller;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 
 /**
- * Interface for classes that describe a Handlers response
+ * Interface for classes that describe a Controller response
  *
  * @package Cundd\PersistentObjectStore\Server\Handler
  */
