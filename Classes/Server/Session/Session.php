@@ -11,7 +11,6 @@ namespace Cundd\PersistentObjectStore\Server\Session;
 
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
 use Cundd\PersistentObjectStore\Exception\MissingExtensionException;
-use Cundd\PersistentObjectStore\KeyValueCodingInterface;
 use Cundd\PersistentObjectStore\LogicException;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
@@ -21,7 +20,7 @@ use Cundd\PersistentObjectStore\Utility\ObjectUtility;
  *
  * @package Cundd\PersistentObjectStore\Server\Session
  */
-class Session implements SessionInterface, KeyValueCodingInterface
+class Session implements SessionInterface
 {
     /**
      * Unique session identifier
