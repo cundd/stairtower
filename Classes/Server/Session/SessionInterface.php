@@ -8,12 +8,14 @@
 
 namespace Cundd\PersistentObjectStore\Server\Session;
 
+use Cundd\PersistentObjectStore\KeyValueCodingInterface;
+
 /**
  * Interface for session based classes
  *
  * @package Cundd\PersistentObjectStore\Server\Session
  */
-interface SessionInterface
+interface SessionInterface extends KeyValueCodingInterface
 {
     /**
      * Returns the session identifier
