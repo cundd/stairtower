@@ -16,7 +16,9 @@ use Cundd\PersistentObjectStore\Expand\ExpandConfigurationInterface;
 use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
+use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
+use Cundd\PersistentObjectStore\Server\ValueObject\RawResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use SplFixedArray;
@@ -67,6 +69,14 @@ class Handler implements HandlerInterface
      * @Inject
      */
     protected $expandResolver;
+
+    /**
+     * Asset Loader instance
+     *
+     * @var \Cundd\PersistentObjectStore\Asset\AssetProviderInterface
+     * @Inject
+     */
+    protected $assetLoader;
 
     /**
      * Event Emitter
@@ -391,6 +401,24 @@ class Handler implements HandlerInterface
         $detailedStatistics = $request->getDataIdentifier() === 'detailed';
 
         return new HandlerResult(200, $this->server->collectStatistics($detailedStatistics));
+    }
+
+    /**
+     * Action to deliver assets
+     *
+     * @param Request $request
+     * @return HandlerResultInterface
+     */
+    public function getAssetAction(Request $request)
+    {
+        $uri = $request->getPath();
+        $uri = substr($uri, 8); // Remove "/_asset/"
+        if ($this->assetLoader->hasAssetForUri($uri)) {
+            $asset = $this->assetLoader->getAssetForUri($uri);
+            return new RawResult(200, (string)$asset->getContent());
+        }
+
+        return new HandlerResult(404, sprintf('No resource found for "%s"', $uri));
     }
 
     /**

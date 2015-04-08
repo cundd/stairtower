@@ -42,6 +42,11 @@ class HandlerTest extends AbstractCase
     protected $requestInfoFactory;
 
     /**
+     * @var string
+     */
+    protected $publicResourcesPath = '';
+
+    /**
      * @test
      */
     public function noRouteTest()
@@ -362,12 +367,45 @@ class HandlerTest extends AbstractCase
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
             $handlerResult
         );
+    }
 
+    /**
+     * @test
+     */
+    public function getAssetActionTest()
+    {
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/_asset/book.json'));
+        $handlerResult = $this->fixture->getAssetAction($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertSame(200, $handlerResult->getStatusCode());
+        $this->assertContains('Beltz', $handlerResult->getData());
+
+    }
+
+    /**
+     * @test
+     */
+    public function doNotGetAssetActionTest()
+    {
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/_asset/not-existing.jpg'));
+        $handlerResult = $this->fixture->getAssetAction($requestInfo);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            $handlerResult
+        );
+        $this->assertSame(404, $handlerResult->getStatusCode());
     }
 
     protected function setUp()
     {
         Manager::freeAll();
+
+        $configurationManager = ConfigurationManager::getSharedInstance();
+        $this->publicResourcesPath = $configurationManager->getConfigurationForKeyPath('publicResources');
+        $configurationManager->setConfigurationForKeyPath('publicResources', __DIR__ . '/../../../Resources/');
 
         $diContainer = $this->getDiContainer();
         $server      = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\DummyServer');
@@ -385,5 +423,9 @@ class HandlerTest extends AbstractCase
     protected function tearDown()
     {
         Manager::freeAll();
+        ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath(
+            'publicResources',
+            $this->publicResourcesPath
+        );
     }
 }

@@ -67,6 +67,14 @@ interface HandlerInterface
     public function getStatsAction(Request $request);
 
     /**
+     * Action to deliver assets
+     *
+     * @param Request $request
+     * @return HandlerResultInterface
+     */
+    public function getAssetAction(Request $request);
+
+    /**
      * Action to display all databases
      *
      * @param Request $request
