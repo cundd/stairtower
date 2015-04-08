@@ -31,7 +31,7 @@ class RawResultTest extends \PHPUnit_Framework_TestCase
      */
     public function getStatusCodeTest()
     {
-        $this->assertSame(204, $this->fixture->getStatusCode());
+        $this->assertSame(200, $this->fixture->getStatusCode());
     }
 
     /**
