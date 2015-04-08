@@ -29,7 +29,7 @@ trait ViewControllerTrait
      *
      * @var string
      */
-    protected $templatePathPattern = '%sResources/Private/Template/%s/%s.twig';
+    protected $templatePathPattern = '%sTemplate/%s/%s.twig';
 
     /**
      * Class name of the View implementation
@@ -79,7 +79,7 @@ trait ViewControllerTrait
      */
     public function getTemplatePath($action)
     {
-        $basePath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('basePath');
+        $basePath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('privateResources');
 
         // Strip 'Action'
         $templateIdentifier  = substr($action, 0, -6);

@@ -53,19 +53,22 @@ class ConfigurationManager implements ConfigurationManagerInterface
         $basePath         = $this->getBasePath();
         $varPath          = $basePath . 'var/';
         $installationPath = $this->getInstallationPath();
+
         return array(
-            'basePath'      => $basePath,
-            'binPath'       => $installationPath . 'bin/',
-            'phpBinPath'    => $this->getPhpBinaryPath(),
-            'dataPath'      => $varPath . 'Data/',
-            'writeDataPath' => $varPath . 'Data/',
-            'lockPath'      => $varPath . 'Lock/',
-            'cachePath'     => $varPath . 'Cache/',
-            'logPath'       => $varPath . 'Log/',
-            'tempPath'      => $varPath . 'Temp/',
-            'rescuePath'    => $varPath . 'Rescue/',
-            'logLevel'      => Logger::INFO,
-            'serverMode'    => ServerInterface::SERVER_MODE_NOT_RUNNING
+            'basePath'         => $basePath,
+            'binPath'          => $installationPath . 'bin/',
+            'phpBinPath'       => $this->getPhpBinaryPath(),
+            'publicResources'  => $basePath . 'Resources/Public/',
+            'privateResources' => $basePath . 'Resources/Private/',
+            'dataPath'         => $varPath . 'Data/',
+            'writeDataPath'    => $varPath . 'Data/',
+            'lockPath'         => $varPath . 'Lock/',
+            'cachePath'        => $varPath . 'Cache/',
+            'logPath'          => $varPath . 'Log/',
+            'tempPath'         => $varPath . 'Temp/',
+            'rescuePath'       => $varPath . 'Rescue/',
+            'logLevel'         => Logger::INFO,
+            'serverMode'       => ServerInterface::SERVER_MODE_NOT_RUNNING
         );
     }
 
@@ -83,6 +86,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
                 $basePath = (realpath($basePath . '../../../') ?: __DIR__ . '../../..') . '/';
             }
         }
+
         return $basePath;
     }
 
@@ -97,6 +101,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
         if (!$installPath) {
             $installPath = (realpath(__DIR__ . '/../../') ?: __DIR__ . '/../..') . '/';
         }
+
         return $installPath;
     }
 
@@ -111,6 +116,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
         if (defined('HHVM_VERSION')) {
             $phpBinPath = (false !== ($hhvm = getenv('PHP_BINARY')) ? $hhvm : PHP_BINARY) . ' --php';
         }
+
         return $phpBinPath;
     }
 
@@ -124,6 +130,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
         if (!self::$sharedInstance) {
             new static();
         }
+
         return self::$sharedInstance;
     }
 
@@ -151,6 +158,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
             throw new RuntimeException('Dot notation is currently not supported');
         }
         $this->configuration[$keyPath] = $value;
+
         return $this;
     }
 
