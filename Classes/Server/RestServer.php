@@ -28,6 +28,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\DeferredResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\NullResult;
+use Cundd\PersistentObjectStore\Server\ValueObject\RawResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
@@ -305,7 +306,16 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      */
     public function handleResult($result, $request, $response)
     {
-        if ($result instanceof ControllerResultInterface) {
+        if ($result instanceof RawResultInterface) {
+            $response->writeHead($result->getStatusCode());
+            $responseData = $result->getData();
+            if ($responseData !== null) {
+                $response->end($responseData);
+            } else {
+                $response->end();
+            }
+
+        } elseif ($result instanceof ControllerResultInterface) {
             $response->writeHead(
                 $result->getStatusCode(),
                 $result->getHeaders()
