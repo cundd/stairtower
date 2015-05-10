@@ -47,13 +47,14 @@ class AssetProvider implements AssetProviderInterface
      * Returns the Asset for the given URI
      *
      * @param string $uri
+     * @param bool   $noCache
      * @return AssetInterface|null
      */
-    public function getAssetForUri($uri)
+    public function getAssetForUri($uri, $noCache = false)
     {
         $this->assertUri($uri);
         $memoryManagerKey = self::MEMORY_MANAGER_KEY_PREFIX . $uri;
-        if (Manager::hasObject($memoryManagerKey)) {
+        if (!$noCache && Manager::hasObject($memoryManagerKey)) {
             $assetEntry = Manager::getObject($memoryManagerKey);
 
             return $assetEntry->value;

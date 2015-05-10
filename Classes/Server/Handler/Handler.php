@@ -414,7 +414,11 @@ class Handler implements HandlerInterface
         $uri = $request->getPath();
         $uri = substr($uri, 8); // Remove "/_asset/"
         if ($this->assetLoader->hasAssetForUri($uri)) {
-            $asset = $this->assetLoader->getAssetForUri($uri);
+            $noCache = false;
+            if (is_array($request->getQuery()) && isset($request->getQuery()['noCache'])) {
+                $noCache = true;
+            }
+            $asset = $this->assetLoader->getAssetForUri($uri, $noCache);
             return new RawResult(200, (string)$asset->getContent());
         }
 
