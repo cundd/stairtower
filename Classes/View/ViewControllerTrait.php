@@ -104,6 +104,13 @@ trait ViewControllerTrait
 
                     return $this->getUriBuilder()->buildUriFor($actionName, $controller, $database, $document);
                 });
+            $this->view->addFunction('assetUri',
+                function ($assetUri) {
+                    if ($assetUri[0] !== '/') {
+                        $assetUri = '/' . $assetUri;
+                    }
+                    return '/_asset' . $assetUri;
+                });
         }
     }
 
