@@ -261,21 +261,34 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     {
         try {
             $result = $controller->processRequest($request, $response);
-
         } catch (\Exception $exception) {
             $this->writeln('Caught exception #%d: %s', $exception->getCode(), $exception->getMessage());
             $this->writeln($exception->getTraceAsString());
 
-            return new ControllerResult(
-                500,
-                sprintf(
-                    'An error occurred while calling controller \'%s\' action \'%s\' %s',
-                    $request->getControllerClass(),
-                    $request->getAction(),
-                    $request->getBody() ? 'with a body' : 'without a body'
-                ),
-                $this->getContentTypeForRequest($request)
+            $errorResponseBody = sprintf(
+                'An error occurred while calling controller \'%s\' action \'%s\' %s',
+                $request->getControllerClass(),
+                $request->getAction(),
+                $request->getBody() ? 'with a body' : 'without a body'
             );
+
+            if ($this->getMode() === self::SERVER_MODE_DEVELOPMENT) {
+                $errorResponseBody .= sprintf(
+                    '%s#%d: %s%s%s',
+                    PHP_EOL,
+                    $exception->getCode(),
+                    $exception->getMessage(),
+                    PHP_EOL,
+                    $exception->getTraceAsString()
+                );
+            }
+
+            $contentType = $this->getContentTypeForRequest($request);
+            if ($contentType === ContentType::XML_TEXT || $contentType === ContentType::HTML_TEXT) {
+                $errorResponseBody = nl2br($errorResponseBody);
+            }
+
+            return new ControllerResult(500, $errorResponseBody, $contentType);
         }
 
         if ($result === null) {
