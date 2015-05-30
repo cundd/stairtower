@@ -10,8 +10,6 @@ namespace Cundd\PersistentObjectStore\Bootstrap;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\ErrorHandling\CrashHandler;
-use Cundd\PersistentObjectStore\ErrorHandling\ErrorHandler;
 use Cundd\PersistentObjectStore\Server\ServerInterface;
 use DI\Container;
 use Psr\Log\LogLevel;
@@ -21,38 +19,16 @@ use Psr\Log\LogLevel;
  *
  * @package Cundd\PersistentObjectStore\Bootstrap
  */
-class Server
+class Server extends AbstractBootstrap
 {
     /**
-     * Server instance
+     * Configure the server/router
      *
-     * @var \Cundd\PersistentObjectStore\Server\RestServer
-     */
-    protected $server;
-
-    /**
-     * Crash handler
-     *
-     * @var CrashHandler
-     */
-    protected $crashHandler;
-
-    /**
-     * Error handler
-     *
-     * @var ErrorHandler
-     */
-    protected $errorHandler;
-
-    /**
      * @param array $arguments
+     * @throws \DI\NotFoundException
      */
-    public function __construct($arguments)
+    public function configure($arguments)
     {
-        ini_set('display_errors', true);
-        set_time_limit(0);
-
-
         // Parse the arguments
         $longOptions = array(
             "port::",
@@ -74,7 +50,7 @@ class Server
         $dataPath   = $this->checkArgument('data-path', $options);
         $port       = $this->checkArgument('port', $options);
         $ip         = $this->checkArgument('ip', $options);
-        $serverMode = $this->getServerMode($options);
+        $serverMode = $this->getServerModeFromOptions($options);
 
         $configurationManager = ConfigurationManager::getSharedInstance();
         if ($serverMode === ServerInterface::SERVER_MODE_DEVELOPMENT) {
@@ -110,27 +86,11 @@ class Server
     }
 
     /**
-     * Start the server
+     * Executes the routing or starts the server
      */
-    public function startServer()
+    protected function doExecute()
     {
-        $this->configureErrorHandling();
-
         $this->server->start();
-
-        $this->crashHandler->unregister();
-    }
-
-    /**
-     * Configure the error handling
-     */
-    protected function configureErrorHandling()
-    {
-        $this->crashHandler = new CrashHandler();
-        $this->crashHandler->register();
-
-        $this->errorHandler = new ErrorHandler();
-        $this->errorHandler->register();
     }
 
     /**
@@ -147,8 +107,10 @@ class Server
                 printf('The option --%s requires a value' . PHP_EOL, $key);
                 exit(1);
             }
+
             return $options[$key];
         }
+
         return null;
     }
 
@@ -158,13 +120,14 @@ class Server
      * @param $options
      * @return int
      */
-    protected function getServerMode($options)
+    protected function getServerModeFromOptions($options)
     {
         if (isset($options['dev'])) {
             return ServerInterface::SERVER_MODE_DEVELOPMENT;
         } elseif (isset($options['test'])) {
             return ServerInterface::SERVER_MODE_TEST;
         }
+
         return ServerInterface::SERVER_MODE_NORMAL;
     }
 }

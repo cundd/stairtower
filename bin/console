@@ -35,4 +35,5 @@ $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Cache\\ClearCommand'));
 
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Server\\StartCommand'));
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Server\\RouterStartCommand'));
 $application->run();

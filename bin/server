@@ -11,4 +11,4 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 }
 
 $serverBootstrap = new Cundd\PersistentObjectStore\Bootstrap\Server($argv);
-$serverBootstrap->startServer();
+$serverBootstrap->execute();
