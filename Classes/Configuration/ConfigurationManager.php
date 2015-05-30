@@ -12,6 +12,7 @@ use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Server\ServerInterface;
 use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 use Monolog\Logger;
+use Symfony\Component\Process\PhpExecutableFinder;
 
 /**
  * Configuration Manager class
@@ -112,12 +113,8 @@ class ConfigurationManager implements ConfigurationManagerInterface
      */
     public function getPhpBinaryPath()
     {
-        $phpBinPath = defined('PHP_BINARY') ? PHP_BINARY : PHP_BINDIR . '/php';
-        if (defined('HHVM_VERSION')) {
-            $phpBinPath = (false !== ($hhvm = getenv('PHP_BINARY')) ? $hhvm : PHP_BINARY) . ' --php';
-        }
-
-        return $phpBinPath;
+        $finder = new PhpExecutableFinder();
+        return $finder->find();
     }
 
     /**
