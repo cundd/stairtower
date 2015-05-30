@@ -57,7 +57,7 @@ class Core
         if (!$this->diContainer) {
             $builder = new ContainerBuilder();
             $builder->setDefinitionCache(
-            //new FilesystemCache(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath'))
+                //new \Doctrine\Common\Cache\FilesystemCache(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath'))
                 new \Doctrine\Common\Cache\ArrayCache()
             );
 
