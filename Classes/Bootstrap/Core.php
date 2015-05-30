@@ -11,7 +11,6 @@ namespace Cundd\PersistentObjectStore\Bootstrap;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
 use DI\ContainerBuilder;
-use Doctrine\Common\Cache\FilesystemCache;
 
 /**
  * Core bootstrapping class
@@ -43,6 +42,7 @@ class Core
             date_default_timezone_set($timezone);
         }
 
+        $this->initializeGlobalFileHandles();
         $this->getDiContainer();
         $this->getSharedEventEmitter();
     }
@@ -57,7 +57,7 @@ class Core
         if (!$this->diContainer) {
             $builder = new ContainerBuilder();
             $builder->setDefinitionCache(
-                //new FilesystemCache(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath'))
+            //new FilesystemCache(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath'))
                 new \Doctrine\Common\Cache\ArrayCache()
             );
 
@@ -65,6 +65,7 @@ class Core
             $builder->addDefinitions(__DIR__ . '/../Configuration/dependencyInjectionConfiguration.php');
             $this->diContainer = $builder->build();
         }
+
         return $this->diContainer;
     }
 
@@ -76,5 +77,21 @@ class Core
     public function getSharedEventEmitter()
     {
         return $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Event\\SharedEventEmitter');
+    }
+
+    /**
+     * Initializes the standard IO file handles
+     */
+    protected function initializeGlobalFileHandles()
+    {
+        if (!defined('STDIN')) {
+            define('STDIN', fopen('php://stdin', 'r'));
+        }
+        if (!defined('STDOUT')) {
+            define('STDOUT', fopen('php://stdout', 'w'));
+        }
+        if (!defined('STDERR')) {
+            define('STDERR', fopen('php://stderr', 'w'));
+        }
     }
 }
