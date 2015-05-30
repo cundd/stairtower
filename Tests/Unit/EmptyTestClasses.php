@@ -69,7 +69,7 @@ class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server
 
     public function processRequest(
         Request $request,
-        \React\Http\Response $response
+        WritableStreamInterface $response
     ) {
     }
 

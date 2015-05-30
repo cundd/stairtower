@@ -14,6 +14,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use Cundd\PersistentObjectStore\View\ViewControllerInterface;
 use React\Http\Response;
+use React\Stream\WritableStreamInterface;
 
 /**
  * An abstract Controller implementation
@@ -105,11 +106,11 @@ abstract class AbstractController implements ControllerInterface
      *
      * The result output is returned by altering the given response.
      *
-     * @param Request  $request
-     * @param Response $response The response, modified by this handler
+     * @param Request                          $request
+     * @param WritableStreamInterface|Response $response The response, modified by this handler
      * @return mixed Returns the result of the processing
      */
-    public function processRequest(Request $request, Response $response) {
+    public function processRequest(Request $request, WritableStreamInterface $response) {
         if (!method_exists($this, $request->getAction())) {
             throw new RequestMethodNotImplementedException(
                 sprintf('Request method %s is not defined', $request->getAction()),
