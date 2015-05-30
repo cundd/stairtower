@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Bootstrap;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Server\ServerInterface;
+use Cundd\PersistentObjectStore\Server\ValueObject\SimpleResponse;
 use DI\Container;
 use Psr\Log\LogLevel;
 use React\Http\Request;
@@ -23,6 +24,20 @@ use React\Socket\Connection;
  */
 class Router extends AbstractBootstrap
 {
+    /**
+     * Current response instance
+     *
+     * @var Response
+     */
+    protected $response;
+
+    /**
+     * Connection for the current response
+     *
+     * @var Connection
+     */
+    protected $outputConnection;
+
     /**
      * Current request's arguments
      *
@@ -70,17 +85,9 @@ class Router extends AbstractBootstrap
      */
     protected function doExecute()
     {
-        /**
-         * Handle the given request
-         *
-         * @param \React\Http\Request  $request
-         * @param \React\Http\Response $response
-         */
-        //public function prepareAndHandle($request, $response);
-        $this->server->prepareAndHandle(
-            $this->createRequestInstance(),
-            $this->createResponseInstance()
-        );
+        $request  = $this->createRequestInstance();
+        $response = $this->getResponse();
+        $this->server->prepareAndHandle($request, $response);
     }
 
     /**
@@ -94,9 +101,11 @@ class Router extends AbstractBootstrap
             return array_merge($carry, array_change_key_case($item, CASE_LOWER));
         }, array());
 
+        $requestPath = parse_url($mergedArguments['request_uri'], PHP_URL_PATH);
+
         $request = new Request(
             $mergedArguments['request_method'],
-            $mergedArguments['request_uri'],
+            $requestPath,
             $this->arguments['get'],
             '1.1',
             $this->getAllHeaders()
@@ -108,11 +117,17 @@ class Router extends AbstractBootstrap
     /**
      * Builds a response instance for the current request
      *
-     * @return Response
+     * @return SimpleResponse
      */
-    protected function createResponseInstance()
+    public function getResponse()
     {
-        return new Response(new Connection(STDOUT, $this->server->getEventLoop()));
+        if (!$this->response) {
+            //$this->response = new Response($this->getOutputConnection());
+            //$this->response = new Response(new WriteOnlyConnection());
+            $this->response = new SimpleResponse();
+        }
+
+        return $this->response;
     }
 
     /**
@@ -132,6 +147,7 @@ class Router extends AbstractBootstrap
                 $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
             }
         }
+
         return $headers;
     }
 
