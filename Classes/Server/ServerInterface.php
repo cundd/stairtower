@@ -18,6 +18,7 @@ use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use DateTime;
 use Exception;
 use React\Http\Response;
+use React\Stream\WritableStreamInterface;
 
 /**
  * Interface for server implementations
@@ -65,12 +66,12 @@ interface ServerInterface
     /**
      * Handles the given exception
      *
-     * @param Exception            $error
-     * @param Request              $request
-     * @param \React\Http\Response $response
+     * @param Exception                        $error
+     * @param Request                          $request
+     * @param WritableStreamInterface|Response $response
      * @throws Exception
      */
-    public function handleError($error, $request, Response $response);
+    public function handleError($error, $request, $response);
 
 
     /**

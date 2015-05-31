@@ -24,6 +24,7 @@ use DateTime;
 use Exception;
 use React\EventLoop\Timer\TimerInterface;
 use React\Http\Response;
+use React\Stream\WritableStreamInterface;
 
 /**
  * Abstract server
@@ -233,12 +234,12 @@ abstract class AbstractServer implements ServerInterface
     /**
      * Handles the given exception
      *
-     * @param Exception            $error
-     * @param Request              $request
-     * @param \React\Http\Response $response
+     * @param Exception                        $error
+     * @param Request                          $request
+     * @param WritableStreamInterface|Response $response
      * @throws Exception
      */
-    public function handleError($error, $request, Response $response)
+    public function handleError($error, $request, $response)
     {
         $this->writeln('Caught exception #%d: %s', $error->getCode(), $error->getMessage());
         $this->writeln($error->getTraceAsString());
