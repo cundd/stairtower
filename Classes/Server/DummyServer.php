@@ -20,7 +20,9 @@ use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use DateTime;
+use Exception;
 use React\Http\Response;
+use React\Stream\WritableStreamInterface;
 
 /**
  * A dummy server implementation for testing
@@ -98,12 +100,12 @@ class DummyServer implements ServerInterface
     /**
      * Handles the given exception
      *
-     * @param \Exception           $error
-     * @param \React\Http\Request  $request
-     * @param \React\Http\Response $response
-     * @throws \Exception
+     * @param Exception                        $error
+     * @param Request                          $request
+     * @param WritableStreamInterface|Response $response
+     * @throws Exception
      */
-    public function handleError($error, $request, Response $response)
+    public function handleError($error, $request, $response)
     {
         throw $error;
     }
@@ -402,5 +404,4 @@ class DummyServer implements ServerInterface
     {
         // Do nothing
     }
-
 }
