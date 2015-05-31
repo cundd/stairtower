@@ -22,9 +22,18 @@ class SimpleResponse extends EventEmitter implements WritableStreamInterface
 {
     protected $closed = false;
     protected $writable = true;
-    protected $conn;
     protected $headWritten = false;
     protected $chunkedEncoding = false;
+
+    protected $stream;
+
+    function __construct($stream = null)
+    {
+        if ($stream === null) {
+            $stream = fopen('php://output', 'w');
+        }
+        $this->stream = $stream;
+    }
 
     /**
      * Returns if the response is writable
@@ -147,36 +156,56 @@ class SimpleResponse extends EventEmitter implements WritableStreamInterface
      */
     protected function doWrite($data)
     {
-        $stream = fopen('php://output', 'w');
-        stream_set_blocking($stream, 0);
-        $sent = fwrite($stream, $data);
+        stream_set_blocking($this->stream, 0);
+        $sent = fwrite($this->stream, $data);
 
-        if (0 === $sent && feof($stream)) {
+        if (0 === $sent && feof($this->stream)) {
             throw new \RuntimeException('Tried to write to closed stream.');
         }
+
         return true;
     }
 
     /**
      * Send the headers
      *
-     * @param int $status
+     * @param int   $status
      * @param array $headers
      */
     protected function sendHeader($status, array $headers)
     {
-        $status = (int)$status;
-        $text   = isset(ResponseCodes::$statusTexts[$status]) ? ResponseCodes::$statusTexts[$status] : '';
-        header("HTTP/1.1 $status $text");
+        $headersSent = headers_sent($file, $line);
+        if (!$headersSent) {
+            $status = (int)$status;
+            $text   = isset(ResponseCodes::$statusTexts[$status]) ? ResponseCodes::$statusTexts[$status] : '';
+            header("HTTP/1.1 $status $text");
 
-        foreach ($headers as $name => $value) {
-            $name = str_replace(array("\r", "\n"), '', $name);
+            foreach ($headers as $name => $value) {
+                $name = str_replace(array("\r", "\n"), '', $name);
 
-            foreach ((array)$value as $val) {
-                $val = str_replace(array("\r", "\n"), '', $val);
+                foreach ((array)$value as $val) {
+                    $val = str_replace(array("\r", "\n"), '', $val);
 
-                header("$name: $val");
+                    header("$name: $val");
+                }
             }
+        } else {
+            $this->logError(sprintf(
+                    'Warning: Cannot modify header information - headers already sent by (output started at %s:%d)',
+                    $file,
+                    $line)
+            );
         }
+    }
+
+    /**
+     * Prints the given message to the standard error
+     *
+     * @param string $errorMessage
+     */
+    protected function logError($errorMessage)
+    {
+        // @TODO: Log with monolog
+        fwrite(STDERR, (string)$errorMessage);
     }
 }
