@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
 
+use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use Evenement\EventEmitter;
 use React\Http\ResponseCodes;
 use React\Stream\WritableStreamInterface;
@@ -84,6 +85,12 @@ class SimpleResponse extends EventEmitter implements WritableStreamInterface
      */
     public function write($data)
     {
+        if (!is_string($data)) {
+            throw new \InvalidArgumentException(
+                sprintf('Expected argument one to be of type string, %s given', GeneralUtility::getType($data)),
+                1433963416
+            );
+        }
         if (!$this->headWritten) {
             throw new \Exception('Response head has not yet been written.');
         }
