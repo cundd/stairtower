@@ -34,7 +34,7 @@ return array(
         $logFileDirectory     = $configurationManager->getConfigurationForKeyPath('logPath');
         $logFilePath          = $logFileDirectory . 'log-' . gmdate('Y-m-d') . '.log';
         if (!file_exists($logFileDirectory)) {
-            mkdir($logFileDirectory);
+            mkdir($logFileDirectory, 0770, true);
         }
 
         $logLevel = $configurationManager->getConfigurationForKeyPath('logLevel');
