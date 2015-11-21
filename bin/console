@@ -16,10 +16,6 @@ $bootstrap = new \Cundd\PersistentObjectStore\Bootstrap\Core();
 /** @var DI\Container $diContainer */
 $diContainer = $bootstrap->getDiContainer();
 
-/** @var \Cundd\PersistentObjectStore\Console\ConsoleCommand $consoleCommand */
-$consoleCommand = $diContainer->get('Cundd\\PersistentObjectStore\\Console\\ConsoleCommand');
-
-
 $application = new Application('Stairtower', \Cundd\PersistentObjectStore\Constants::VERSION);
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\ConsoleCommand'));
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Database\\ListCommand'));
