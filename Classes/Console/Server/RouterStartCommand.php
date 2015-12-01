@@ -13,7 +13,6 @@ use Cundd\PersistentObjectStore\Console\Exception\InvalidArgumentsException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
@@ -22,14 +21,8 @@ use Symfony\Component\Process\Process;
  *
  * @package Cundd\PersistentObjectStore\Console
  */
-class RouterStartCommand extends Command
+class RouterStartCommand extends AbstractServerCommand
 {
-    /**
-     * @var \Symfony\Component\Process\ProcessBuilder
-     * @Inject
-     */
-    protected $processBuilder;
-
     /**
      * Configure the command
      */
@@ -37,32 +30,14 @@ class RouterStartCommand extends Command
     {
         $this
             ->setName('server:router-start')
-            ->setDescription('Start PHP\'s built-in server')
-            ->addArgument(
-                'ip',
-                InputArgument::OPTIONAL,
-                'Server IP address'
-            )
-            ->addArgument(
-                'port',
-                InputArgument::OPTIONAL,
-                'Server port'
-            )
+            ->setDescription('Start PHP\'s built-in server');
+
+        parent::configure();
+        $this
             ->addArgument(
                 'document-root',
                 InputArgument::OPTIONAL,
                 'Document root for the server'
-            )
-            ->addArgument(
-                'data-path',
-                InputArgument::OPTIONAL,
-                'Directory path where the data is stored'
-            )
-            ->addOption(
-                'dev',
-                null,
-                InputOption::VALUE_NONE,
-                'Start the server in development mode'
             );
     }
 
@@ -79,7 +54,7 @@ class RouterStartCommand extends Command
         set_time_limit(0);
 
         $configurationManager = ConfigurationManager::getSharedInstance();
-        $phpBinPath           = $configurationManager->getConfigurationForKeyPath('phpBinPath');
+        $phpBinPath = $configurationManager->getConfigurationForKeyPath('phpBinPath');
 
 
         // Prepare the environment variables
@@ -121,7 +96,7 @@ class RouterStartCommand extends Command
         if ($input->hasArgument('port') && $input->getArgument('port')) {
             $port = $input->getArgument('port');
             if (is_numeric($port) && ctype_alnum($port)) {
-                $address .= ':' . $port;
+                $address .= ':'.$port;
             } else {
                 throw new InvalidArgumentsException('Invalid input for argument "port"', 1420812212);
             }
@@ -130,7 +105,7 @@ class RouterStartCommand extends Command
         }
 
 
-        $routerPath = $configurationManager->getConfigurationForKeyPath('binPath') . 'router.php';
+        $routerPath = $configurationManager->getConfigurationForKeyPath('binPath').'router.php';
         $arguments = ['-S', $address, $routerPath];
         $process = $this->processBuilder
             ->setPrefix(array('exec', $phpBinPath))
@@ -140,28 +115,6 @@ class RouterStartCommand extends Command
             ->addEnvironmentVariables($environmentVariables)
             ->getProcess();
 
-        if (OutputInterface::VERBOSITY_VERBOSE <= $output->getVerbosity()) {
-            $output->writeln(sprintf('<info>Start server using command %s</info>', $process->getCommandLine()));
-        }
-
-        $exitedSuccessfully = false;
-        while (!$exitedSuccessfully) {
-            $process->start();
-            $process->wait(function ($type, $buffer) use ($output) {
-                if (Process::ERR === $type) {
-                    $output->writeln(sprintf('<error>%s</error>', $buffer));
-                } else {
-                    $output->writeln($buffer);
-                }
-            });
-
-            $exitedSuccessfully = $process->getExitCode() === 0;
-            if ($exitedSuccessfully) {
-                $output->writeln('<info>Terminated</info>');
-            } else {
-                $output->writeln('<error>Crashed</error>');
-                $output->writeln('<info>Will restart the server</info>');
-            }
-        }
+        $this->startProcessAndWatch($process, $output);
     }
 }
