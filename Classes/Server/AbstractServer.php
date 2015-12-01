@@ -121,6 +121,14 @@ abstract class AbstractServer implements ServerInterface
     protected $autoShutdownTime = 60;
 
     /**
+     * Event Emitter
+     *
+     * @var \Cundd\PersistentObjectStore\Event\SharedEventEmitter
+     * @Inject
+     */
+    protected $eventEmitter;
+
+    /**
      * Mode in which the server is started
      *
      * @var int
@@ -545,6 +553,7 @@ abstract class AbstractServer implements ServerInterface
     public function runMaintenance()
     {
         $this->logger->debug('Run maintenance');
+        $this->eventEmitter->emit(Event::MAINTENANCE);
         $this->coordinator->commitDatabases();
         Manager::cleanup();
     }
