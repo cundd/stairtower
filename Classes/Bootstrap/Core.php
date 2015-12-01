@@ -10,6 +10,7 @@ namespace Cundd\PersistentObjectStore\Bootstrap;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
+use Cundd\PersistentObjectStore\Exception\InvalidArgumentError;
 use DI\ContainerBuilder;
 
 /**
@@ -45,6 +46,7 @@ class Core
         $this->initializeGlobalFileHandles();
         $this->getDiContainer();
         $this->getSharedEventEmitter();
+        $this->callStartupMethods();
     }
 
     /**
@@ -77,6 +79,22 @@ class Core
     public function getSharedEventEmitter()
     {
         return $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Event\\SharedEventEmitter');
+    }
+
+    /**
+     * Call the registered startup methods
+     */
+    private function callStartupMethods()
+    {
+        foreach (ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('startupMethods') as $startupMethod) {
+            $classAndMethod = explode('::', $startupMethod, 2);
+            if (count($classAndMethod) < 2) {
+                throw new InvalidArgumentError('Startup methods must be defined in the format \class\name::method', 1448974563);
+            }
+            $instance = $this->getDiContainer()->get($classAndMethod[0]);
+            $method = $classAndMethod[1];
+            call_user_func([$instance, $method]);
+        }
     }
 
     /**
