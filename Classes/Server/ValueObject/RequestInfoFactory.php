@@ -118,10 +118,8 @@ class RequestInfoFactory
         if (!$path) {
             return $default;
         }
-        if ($path[0] === '/') {
-            $path = substr($path, 1);
-        }
-        if ($path[0] !== '_') {
+        $path = ltrim($path, '/');
+        if (!$path || $path[0] !== '_') {
             return $default;
         }
 
@@ -164,10 +162,8 @@ class RequestInfoFactory
         if (!$path) {
             return false;
         }
-        if ($path[0] === '/') {
-            $path = substr($path, 1);
-        }
-        if ($path[0] !== '_') {
+        $path = ltrim($path, '/');
+        if (!$path || $path[0] !== '_') {
             return false;
         }
         if (strpos($path, '-') === false) {
@@ -269,10 +265,8 @@ class RequestInfoFactory
     {
         $path   = $request->getPath();
         $method = $request->getMethod();
-        if ($path[0] === '/') {
-            $path = substr($path, 1);
-        }
-        if ($path[0] !== '_' || $method !== 'POST') {
+        $path = ltrim($path, '/');
+        if (!$path || $path[0] !== '_' || $method !== 'POST') {
             return false;
         }
         list($action,) = explode('/', substr($path, 1), 2);

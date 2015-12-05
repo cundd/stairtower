@@ -67,6 +67,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function expectTestClassGetArrayTest()
     {
+        $this->markTestSkippedOnPhp7();
         $this->expectTestClass(array());
     }
 
@@ -76,6 +77,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function expectTestClassGetNullTest()
     {
+        $this->markTestSkippedOnPhp7();
         $this->expectTestClass(null);
     }
 
@@ -85,6 +87,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function expectTestClassGetStdClassTest()
     {
+        $this->markTestSkippedOnPhp7();
         $this->expectTestClass(new stdClass());
     }
 
@@ -94,6 +97,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function expectArrayGetNullTest()
     {
+        $this->markTestSkippedOnPhp7();
         $this->expectArray(null);
     }
 
@@ -103,6 +107,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function expectArrayGetStdClassTest()
     {
+        $this->markTestSkippedOnPhp7();
         $this->expectArray(new stdClass());
     }
 
@@ -112,5 +117,12 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
 
     protected function expectArray(array $array)
     {
+    }
+
+    private function markTestSkippedOnPhp7()
+    {
+        if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
+            $this->markTestSkipped('Error handling changed in PHP 7 (http://php.net/manual/en/class.typeerror.php)');
+        }
     }
 }

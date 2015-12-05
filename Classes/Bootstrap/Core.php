@@ -59,7 +59,7 @@ class Core
         if (!$this->diContainer) {
             $builder = new ContainerBuilder();
             $builder->setDefinitionCache(
-                //new \Doctrine\Common\Cache\FilesystemCache(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath'))
+            //new \Doctrine\Common\Cache\FilesystemCache(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath'))
                 new \Doctrine\Common\Cache\ArrayCache()
             );
 
@@ -86,14 +86,17 @@ class Core
      */
     private function callStartupMethods()
     {
-        foreach (ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('startupMethods') as $startupMethod) {
-            $classAndMethod = explode('::', $startupMethod, 2);
-            if (count($classAndMethod) < 2) {
-                throw new InvalidArgumentError('Startup methods must be defined in the format \class\name::method', 1448974563);
+        $startupMethods = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('startupMethods');
+        if ($startupMethods) {
+            foreach ($startupMethods as $startupMethod) {
+                $classAndMethod = explode('::', $startupMethod, 2);
+                if (count($classAndMethod) < 2) {
+                    throw new InvalidArgumentError('Startup methods must be defined in the format \class\name::method', 1448974563);
+                }
+                $instance = $this->getDiContainer()->get($classAndMethod[0]);
+                $method = $classAndMethod[1];
+                call_user_func([$instance, $method]);
             }
-            $instance = $this->getDiContainer()->get($classAndMethod[0]);
-            $method = $classAndMethod[1];
-            call_user_func([$instance, $method]);
         }
     }
 
