@@ -8,6 +8,10 @@ php:
   - hhvm
   - nightly
 
+env:
+  - WITH_TWIG=yes
+  - WITH_TWIG=no
+
 matrix:
   allow_failures:
     - php: hhvm
@@ -20,6 +24,11 @@ before_script:
   - unzip people.json.zip
   - cd ../../
   - composer install --prefer-source
+  - >
+    if [[ "$WITH_TWIG" == "yes" ]]; then
+      composer composer require twig/twig;
+    fi
+
 
 script:
   phpunit --bootstrap ./Tests/Unit/Bootstrap.php ./Tests/Unit

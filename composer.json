@@ -30,5 +30,8 @@
     "bin": [
         "bin/console",
         "bin/server"
-    ]
+    ],
+    "suggest": {
+        "twig/twig": "Provides the standard view implementation for the application framework"
+    }
 }
