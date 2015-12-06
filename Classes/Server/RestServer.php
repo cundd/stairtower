@@ -72,7 +72,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handle the given request
      *
-     * @param Request              $request
+     * @param Request $request
      * @param \React\Http\Response $response
      */
     public function handle($request, $response)
@@ -153,14 +153,14 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the standard action
      *
-     * @param Request              $request
+     * @param Request $request
      * @param \React\Http\Response $response
      * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
      */
     public function dispatchStandardAction($request, $response)
     {
         $requestResult = null;
-        $method        = $request->getMethod();
+        $method = $request->getMethod();
 
         // The No Route action
         if (!$request->getDatabaseIdentifier()) {
@@ -170,17 +170,17 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         switch ($method) {
             case 'POST':
             case 'PUT':
-                $this->waitForBodyAndPerformHandlerAction($request, $response, $request);
+                $this->waitForBodyAndPerformHandlerAction($request, $response);
                 $requestResult = DeferredResult::instance();
                 break;
 
             case 'GET':
-                $handler       = $this->getHandlerForRequest($request);
+                $handler = $this->getHandlerForRequest($request);
                 $requestResult = $handler->read($request);
                 break;
 
             case 'DELETE':
-                $handler       = $this->getHandlerForRequest($request);
+                $handler = $this->getHandlerForRequest($request);
                 $requestResult = $handler->delete($request);
                 break;
 
@@ -197,15 +197,15 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param Request              $request
+     * @param Request $request
      * @param \React\Http\Response $response
      * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
      */
     public function dispatchControllerAction($request, $response)
     {
-        $self          = $this;
+        $self = $this;
         $contentLength = 0;
-        $controller    = $this->getControllerForRequest($request);
+        $controller = $this->getControllerForRequest($request);
 
         try {
             $contentLength = $this->getContentLengthFromRequest($request);
@@ -219,9 +219,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                     function ($originalRequest, $requestBody) use ($self, $controller, $request, $response) {
                         $request = RequestInfoFactory::copyWithBody($request, $requestBody);
 
-                        return $self->invokeControllerActionWithRequest(
-                            $request, $response, $controller, $requestBody
-                        );
+                        return $self->invokeControllerActionWithRequest($request, $response, $controller);
                     },
                     true
                 );
@@ -238,7 +236,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param Request              $request
+     * @param Request $request
      * @param \React\Http\Response $response
      * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
      */
@@ -252,8 +250,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handles the given Controller/Action request action
      *
-     * @param Request             $request
-     * @param Response            $response
+     * @param Request $request
+     * @param Response $response
      * @param ControllerInterface $controller
      * @return ControllerResultInterface Returns the Handler Result
      */
@@ -301,8 +299,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given server action
      *
-     * @param string               $serverAction
-     * @param Request              $request
+     * @param string $serverAction
+     * @param Request $request
      * @param \React\Http\Response $response
      */
     public function dispatchServerAction($serverAction, $request, $response)
@@ -314,8 +312,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      * Handle the given request result
      *
      * @param HandlerResultInterface $result
-     * @param Request                $request
-     * @param Response               $response
+     * @param Request $request
+     * @param Response $response
      */
     public function handleResult($result, $request, $response)
     {
@@ -368,7 +366,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Waits for the total request body and performs the needed action
      *
-     * @param Request  $request
+     * @param Request $request
      * @param Response $response
      */
     public function waitForBodyAndPerformHandlerAction($request, $response)
@@ -402,21 +400,21 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Waits for the total request body and performs the needed action
      *
-     * @param Request  $request      Incoming request
-     * @param Response $response     Outgoing response to write the result to
-     * @param Callback $callback     Callback to invoke
-     * @param bool     $allowRawBody If set to true Body Parser exceptions will be ignored
+     * @param Request $request Incoming request
+     * @param Response $response Outgoing response to write the result to
+     * @param Callback $callback Callback to invoke
+     * @param bool $allowRawBody If set to true Body Parser exceptions will be ignored
      */
     public function waitForBodyAndPerformCallback($request, $response, $callback, $allowRawBody)
     {
         $self = $this;
 
-        $requestBody   = '';
+        $requestBody = '';
         $contentLength = $this->getContentLengthFromRequest($request);
-        $receivedData  = 0;
+        $receivedData = 0;
 
         $logger = $this->logger;
-        $logger->alert(sprintf(
+        $logger->debug(sprintf(
             '< Start deferred request with content-length %d %s %s %s',
             $contentLength,
             $request->getMethod(),
@@ -438,10 +436,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 ,
                 $logger
             ) {
-                $logger->alert('rcf');
+                $logger->debug('Receive data');
                 try {
-
-
                     $requestBody .= $data;
                     $receivedData += strlen($data);
                     if ($receivedData >= $contentLength) {
@@ -457,7 +453,6 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                                     $request
                                 );
                             } catch (InvalidBodyException $parserException) {
-
                                 $logger->alert(
                                     '! No matching body parser'
                                 );
@@ -468,13 +463,12 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                             }
                         }
 
-                        $logger->alert(sprintf(
+                        $logger->debug(sprintf(
                             '> Handle deferred request %s %s %s',
                             $request->getMethod(),
                             $request->getPath(),
                             $request->getHttpVersion()
                         ));
-
 
                         $requestResult = $callback($request, $requestBodyParsed);
                         if ($requestResult !== null) {
@@ -487,69 +481,9 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             });
 
         $request->on('end', function () use ($logger) {
-            $this->logger->alert('end of connection', func_get_args());
+            $this->logger->debug('X End of connection', func_get_args());
         });
     }
-
-
-    ///**
-    // * Waits for the total request body and performs the needed action
-    // *
-    // * @param Request  $request      Incoming request
-    // * @param Response $response     Outgoing response to write the result to
-    // * @param Callback $callback     Callback to invoke
-    // * @param bool     $allowRawBody If set to true Body Parser exceptions will be ignored
-    // */
-    //public function waitForBodyAndPerformCallback($request, $response, $callback, $allowRawBody)
-    //{
-    //    $self = $this;
-    //
-    //    $requestBody   = '';
-    //    $contentLength = $this->getContentLengthFromRequest($request);
-    //    $receivedData  = 0;
-    //    $request->on('data',
-    //        function ($data) use (
-    //            $self,
-    //            $request,
-    //            $response,
-    //            &$requestBody,
-    //            &$receivedData,
-    //            $contentLength,
-    //            $callback,
-    //            $allowRawBody
-    //        ) {
-    //            try {
-    //                $requestBody .= $data;
-    //                $receivedData += strlen($data);
-    //                if ($receivedData >= $contentLength) {
-    //
-    //                    $requestBodyParsed = null;
-    //                    if ($allowRawBody) {
-    //                        $requestBodyParsed = $requestBody;
-    //                    }
-    //                    if ($requestBody) {
-    //                        try {
-    //                            $requestBodyParsed = $self->getBodyParserForRequest($request)->parse(
-    //                                $requestBody,
-    //                                $request
-    //                            );
-    //                        } catch (InvalidBodyException $parserException) {
-    //                            if (!$allowRawBody) {
-    //                                throw $parserException;
-    //                            }
-    //                        }
-    //                    }
-    //
-    //                    $requestResult = $callback($request, $requestBodyParsed);
-    //                    if ($requestResult !== null) {
-    //                        $self->handleResult($requestResult, $request, $response);
-    //                    }
-    //                }
-    //            } catch (\Exception $exception) {
-    //                $this->handleError($exception, $request, $response);
-    //            }
-    //        });
-    //}
 
     /**
      * Returns the content length for the given request
@@ -559,7 +493,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      */
     protected function getContentLengthFromRequest($request)
     {
-        $headers            = $request->getHeaders();
+        $headers = $request->getHeaders();
         $headerNamesToCheck = array('Content-Length', 'Content-length', 'content-length');
         foreach ($headerNamesToCheck as $headerName) {
             if (isset($headers[$headerName])) {
@@ -588,7 +522,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      */
     public function getBodyParserForRequest(Request $request)
     {
-        $header     = $request->getHeaders();
+        $header = $request->getHeaders();
         $bodyParser = 'Cundd\\PersistentObjectStore\\Server\\BodyParser\\JsonBodyParser';
         if (isset($header['Content-Type'])) {
             $contentType = $header['Content-Type'];
@@ -698,7 +632,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handle the given request
      *
-     * @param \React\Http\Request  $request
+     * @param \React\Http\Request $request
      * @param \React\Http\Response $response
      */
     public function prepareAndHandle($request, $response)
@@ -742,22 +676,22 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      *
      * TODO: Move this functionality into a separate class
      *
-     * @param string|object $controller   Class name or instance
-     * @param string        $actionMethod Method name
+     * @param string|object $controller Class name or instance
+     * @param string $actionMethod Method name
      * @return int Returns 1 if a Document is required, 2 if it is optional otherwise 0
      */
     protected function getControllerActionRequiresDocumentArgument($controller, $actionMethod)
     {
         static $controllerActionRequiresDocumentCache = array();
-        $controllerClass            = is_string($controller) ? $controller : get_class($controller);
+        $controllerClass = is_string($controller) ? $controller : get_class($controller);
         $controllerActionIdentifier = $controllerClass . '::' . $actionMethod;
 
         if (isset($controllerActionRequiresDocumentCache[$controllerActionIdentifier])) {
             return $controllerActionRequiresDocumentCache[$controllerActionIdentifier];
         }
 
-        $classReflection                                                    = new ReflectionClass($controllerClass);
-        $methodReflection                                                   = $classReflection->getMethod($actionMethod);
+        $classReflection = new ReflectionClass($controllerClass);
+        $methodReflection = $classReflection->getMethod($actionMethod);
         $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = 0;
         foreach ($methodReflection->getParameters() as $parameter) {
             $argumentClassName = $parameter->getClass() ? trim($parameter->getClass()->getName()) : null;
