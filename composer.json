@@ -10,8 +10,6 @@
         "symfony/process": "2.6"
     },
     "require-dev": {
-        "doctrine/dbal": "~2.4",
-        "phpmd/phpmd": "2.1.3",
         "phpunit/phpunit": "4.6.*"
     },
     "license": "MIT",
