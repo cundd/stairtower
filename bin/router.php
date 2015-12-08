@@ -5,14 +5,7 @@
  * Date: 30.05.15
  * Time: 11:27
  */
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require_once __DIR__ . '/../vendor/autoload.php';
-} elseif (file_exists(__DIR__ . '/../../../autoload.php')) {
-    require_once __DIR__ . '/../../../autoload.php';
-} else {
-    echo 'Can not find composer autoload file. Aborting';
-    exit(1);
-}
+require_once __DIR__.'/_autoload.php';
 
 $argv = array(
     'get' => $_GET,
