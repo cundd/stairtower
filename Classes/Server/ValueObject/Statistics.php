@@ -67,7 +67,7 @@ class Statistics implements Immutable, JsonSerializable
         $this->guid            = $guid;
         $this->memoryPeakUsage = $memoryPeakUsage;
         $this->memoryUsage     = $memoryUsage;
-        $this->startTime       = $startTime;
+        $this->startTime       = $startTime ?: new DateTime();
         $this->version         = $version;
     }
 
