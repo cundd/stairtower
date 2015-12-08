@@ -12,6 +12,7 @@ namespace Cundd\PersistentObjectStore\View\Twig;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Server\ServerInterface;
 use Cundd\PersistentObjectStore\View\AbstractView;
+use Cundd\PersistentObjectStore\View\Exception\InvalidTemplatePathException;
 use Cundd\PersistentObjectStore\View\ExpandableViewInterface;
 use Cundd\PersistentObjectStore\View\Twig\Loader\Filesystem;
 use Twig_Environment;
@@ -45,6 +46,9 @@ class View extends AbstractView implements ExpandableViewInterface
      */
     public function render()
     {
+        if (!$this->templatePath) {
+            throw new InvalidTemplatePathException('Template path not defined', 1449572720);
+        }
         $development = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('serverMode') === ServerInterface::SERVER_MODE_DEVELOPMENT;
         $this->getLoader()->setDisableCache($development);
 

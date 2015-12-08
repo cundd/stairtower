@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\View\Twig;
 
 
+use Cundd\PersistentObjectStore\View\Exception\InvalidTemplatePathException;
 use Cundd\PersistentObjectStore\View\ViewInterface;
 
 /**
@@ -16,7 +17,8 @@ use Cundd\PersistentObjectStore\View\ViewInterface;
  *
  * @package Cundd\PersistentObjectStore\View\Twig
  */
-class ViewTest extends \PHPUnit_Framework_TestCase {
+class ViewTest extends \PHPUnit_Framework_TestCase
+{
     /**
      * @var ViewInterface
      */
@@ -43,8 +45,8 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
      */
     public function simpleTest()
     {
-        if (!$this->fixture) $this->markTestSkipped('View engine not available');
-        $this->fixture->setTemplatePath(__DIR__ . '/../../../Resources/Templates/simple.twig');
+        $this->skipTestsIfTwigIsNotInstalled();
+        $this->fixture->setTemplatePath(__DIR__.'/../../../Resources/Templates/simple.twig');
         $this->assertEquals('<h1>This is a very simple template</h1>', $this->fixture->render());
     }
 
@@ -53,8 +55,8 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
      */
     public function variablesTest()
     {
-        if (!$this->fixture) $this->markTestSkipped('View engine not available');
-        $this->fixture->setTemplatePath(__DIR__ . '/../../../Resources/Templates/variables.twig');
+        $this->skipTestsIfTwigIsNotInstalled();
+        $this->fixture->setTemplatePath(__DIR__.'/../../../Resources/Templates/variables.twig');
         $this->fixture->assign('view', 'view');
         $this->assertEquals('<h1>This is a view template with variables</h1>', $this->fixture->render());
     }
@@ -64,9 +66,26 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
      */
     public function missingVariableTest()
     {
-        if (!$this->fixture) $this->markTestSkipped('View engine not available');
-        $this->fixture->setTemplatePath(__DIR__ . '/../../../Resources/Templates/missing-variable.twig');
+        $this->skipTestsIfTwigIsNotInstalled();
+        $this->fixture->setTemplatePath(__DIR__.'/../../../Resources/Templates/missing-variable.twig');
         $this->fixture->assign('view', 'view');
         $this->assertEquals('<h1>This is a view template with a "" variables</h1>', $this->fixture->render());
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\View\Exception\InvalidTemplatePathException
+     */
+    public function noTemplatePathExceptionTest()
+    {
+        $this->skipTestsIfTwigIsNotInstalled();
+        $this->fixture->render();
+    }
+
+    private function skipTestsIfTwigIsNotInstalled()
+    {
+        if (!$this->fixture) {
+            $this->markTestSkipped('View engine not available');
+        }
     }
 }
