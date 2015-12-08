@@ -72,6 +72,16 @@ trait ViewControllerTrait
     }
 
     /**
+     * Sets the URI Builder instance
+     *
+     * @param UriBuilderInterface $uriBuilder
+     */
+    public function setUriBuilder(UriBuilderInterface $uriBuilder)
+    {
+        $this->uriBuilder = $uriBuilder;
+    }
+
+    /**
      * Returns the template path for the given action
      *
      * @param $action
@@ -84,8 +94,10 @@ trait ViewControllerTrait
         // Strip 'Action'
         $templateIdentifier  = substr($action, 0, -6);
         $controllerNamespace = $this->getUriBuilder()->getControllerNamespaceForController($this);
-        $controllerName      = substr(strrchr($controllerNamespace, UriBuilderInterface::CONTROLLER_NAME_SEPARATOR), 1);
-        $templatePath = sprintf($this->templatePathPattern, $basePath, $controllerName, $templateIdentifier);
+        $controllerName      = ucfirst(
+            substr(strrchr($controllerNamespace, UriBuilderInterface::CONTROLLER_NAME_SEPARATOR), 1)
+        );
+        $templatePath        = sprintf($this->templatePathPattern, $basePath, $controllerName, $templateIdentifier);
 
         return $templatePath;
     }
@@ -96,21 +108,26 @@ trait ViewControllerTrait
     protected function initializeViewAdditions()
     {
         if ($this->view instanceof ExpandableViewInterface) {
-            $this->view->addFunction('action',
+            $this->view->addFunction(
+                'action',
                 function ($actionName, $controller = null, $database = null, $document = null) {
                     if ($controller === null) {
                         $controller = $this;
                     }
 
                     return $this->getUriBuilder()->buildUriFor($actionName, $controller, $database, $document);
-                });
-            $this->view->addFunction('assetUri',
+                }
+            );
+            $this->view->addFunction(
+                'assetUri',
                 function ($assetUri) {
                     if ($assetUri[0] !== '/') {
-                        $assetUri = '/' . $assetUri;
+                        $assetUri = '/'.$assetUri;
                     }
-                    return '/_asset' . $assetUri;
-                });
+
+                    return '/_asset'.$assetUri;
+                }
+            );
         }
     }
 
