@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Server\Controller;
 
 use Cundd\PersistentObjectStore\Server\Session\SessionControllerTrait;
+use Cundd\PersistentObjectStore\View\ViewControllerInterface;
 use Cundd\PersistentObjectStore\View\ViewControllerTrait;
 
 /**
@@ -16,7 +17,7 @@ use Cundd\PersistentObjectStore\View\ViewControllerTrait;
  *
  * @package Cundd\PersistentObjectStore\Server\Controller
  */
-abstract class AbstractFullStackController extends AbstractDocumentController
+abstract class AbstractFullStackController extends AbstractDocumentController implements ViewControllerInterface
 {
     use ViewControllerTrait;
     use SessionControllerTrait;
