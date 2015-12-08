@@ -52,6 +52,14 @@ class ControllerResultTest extends \PHPUnit_Framework_TestCase
         $this->assertSame('', $this->fixture->getContentType());
     }
 
+    /**
+     * @test
+     */
+    public function getDefaultContentTypeTest()
+    {
+        $this->fixture = new ControllerResult(200, 'my data');
+        $this->assertSame(ContentType::HTML_TEXT.'; charset=utf-8', $this->fixture->getContentType());
+    }
 
     /**
      * @test

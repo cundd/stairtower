@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
+use Cundd\PersistentObjectStore\Server\ContentType;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
 
 /**
@@ -39,7 +40,7 @@ abstract class AbstractControllerResult extends AbstractHandlerResult implements
      * @param string  $contentType
      * @param array   $headers
      */
-    public function __construct($statusCode, $data = null, $contentType = null, $headers = array())
+    public function __construct($statusCode, $data = null, $contentType = ContentType::HTML_TEXT, $headers = array())
     {
         $this->statusCode  = $statusCode;
         $this->data        = $data;
