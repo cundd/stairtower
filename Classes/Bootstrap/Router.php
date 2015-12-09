@@ -88,6 +88,11 @@ class Router extends AbstractBootstrap
         $request  = $this->createRequestInstance();
         $response = $this->getResponse();
         $this->server->prepareAndHandle($request, $response);
+
+        $rawPostData = file_get_contents('php://input');
+        if ($rawPostData) {
+            $request->emit('data', [$rawPostData]);
+        }
     }
 
     /**
