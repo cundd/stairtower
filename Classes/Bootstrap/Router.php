@@ -15,7 +15,6 @@ use DI\Container;
 use Psr\Log\LogLevel;
 use React\Http\Request;
 use React\Http\Response;
-use React\Socket\Connection;
 
 /**
  * Router bootstrapping for conventional servers
@@ -30,13 +29,6 @@ class Router extends AbstractBootstrap
      * @var Response
      */
     protected $response;
-
-    /**
-     * Connection for the current response
-     *
-     * @var Connection
-     */
-    protected $outputConnection;
 
     /**
      * Current request's arguments
@@ -88,11 +80,7 @@ class Router extends AbstractBootstrap
         $request  = $this->createRequestInstance();
         $response = $this->getResponse();
         $this->server->prepareAndHandle($request, $response);
-
-        $rawPostData = file_get_contents('php://input');
-        if ($rawPostData) {
-            $request->emit('data', [$rawPostData]);
-        }
+        $this->handleSentData($request);
     }
 
     /**
@@ -127,8 +115,6 @@ class Router extends AbstractBootstrap
     public function getResponse()
     {
         if (!$this->response) {
-            //$this->response = new Response($this->getOutputConnection());
-            //$this->response = new Response(new WriteOnlyConnection());
             $this->response = new SimpleResponse();
         }
 
@@ -171,5 +157,19 @@ class Router extends AbstractBootstrap
         }
 
         return ServerInterface::SERVER_MODE_NORMAL;
+    }
+
+    /**
+     * Handle sent data
+     *
+     * @param Request $request
+     */
+    private function handleSentData($request)
+    {
+        $rawPostData = file_get_contents('php://input');
+        if ($rawPostData) {
+            $request->emit('data', [$rawPostData]);
+            $this->server->runMaintenance();
+        }
     }
 }
