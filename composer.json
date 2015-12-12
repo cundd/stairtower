@@ -6,7 +6,7 @@
         "react/react": "0.4.*",
         "mnapoli/php-di": "~4.0",
         "symfony/console": "2.6",
-        "monolog/monolog": "1.11.0",
+        "monolog/monolog": "1.17",
         "symfony/process": "2.6"
     },
     "require-dev": {
