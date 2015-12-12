@@ -110,12 +110,17 @@ trait ViewControllerTrait
         if ($this->view instanceof ExpandableViewInterface) {
             $this->view->addFunction(
                 'action',
-                function ($actionName, $controller = null, $database = null, $document = null) {
+                function ($action = null, $controller = null, $database = null, $document = null, $actionName = null) {
                     if ($controller === null) {
                         $controller = $this;
                     }
 
-                    return $this->getUriBuilder()->buildUriFor($actionName, $controller, $database, $document);
+                    // TODO: Warn if the @deprecated argument actionName is used
+                    if ($action === null) {
+                        $action = $actionName;
+                    }
+
+                    return $this->getUriBuilder()->buildUriFor($action, $controller, $database, $document);
                 }
             );
             $this->view->addFunction(
