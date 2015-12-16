@@ -105,7 +105,7 @@ abstract class AbstractServerCommand extends Command
      */
     protected function automaticallyRestart()
     {
-        return $this->isDevMode();
+        return !$this->isDevMode();
     }
 
     /**
