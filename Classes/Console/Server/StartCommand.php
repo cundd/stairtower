@@ -78,6 +78,7 @@ class StartCommand extends AbstractServerCommand
         }
         if ($input->getOption('dev')) {
             $arguments[] = '--dev';
+            $this->setDevMode(true);
         }
 
         $process = $this->processBuilder

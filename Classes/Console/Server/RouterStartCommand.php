@@ -69,6 +69,7 @@ class RouterStartCommand extends AbstractServerCommand
         }
         if ($input->getOption('dev')) {
             $environmentVariables['STAIRTOWER_SERVER_MODE'] = 'dev';
+            $this->setDevMode(true);
         }
 
 
@@ -103,7 +104,6 @@ class RouterStartCommand extends AbstractServerCommand
         } else {
             $address .= ':1338';
         }
-
 
         $routerPath = $configurationManager->getConfigurationForKeyPath('binPath').'router.php';
         $arguments = ['-S', $address, $routerPath];

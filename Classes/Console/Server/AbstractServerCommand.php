@@ -28,6 +28,13 @@ abstract class AbstractServerCommand extends Command
     protected $processBuilder;
 
     /**
+     * Defines if the server is started in development mode
+     *
+     * @var bool
+     */
+    private $devMode = false;
+
+    /**
      * Configure the command
      */
     protected function configure()
@@ -66,8 +73,8 @@ abstract class AbstractServerCommand extends Command
             $output->writeln(sprintf('<info>Start server using command %s</info>', $process->getCommandLine()));
         }
 
-        $exitedSuccessfully = false;
-        while (!$exitedSuccessfully) {
+        $automaticallyRestart = $this->automaticallyRestart();
+        do {
             $process->start();
             $process->wait(
                 function ($type, $buffer) use ($output) {
@@ -82,10 +89,42 @@ abstract class AbstractServerCommand extends Command
             $exitedSuccessfully = $process->getExitCode() === 0;
             if ($exitedSuccessfully) {
                 $output->writeln('<info>Terminated</info>');
-            } else {
+            } elseif ($automaticallyRestart) {
                 $output->writeln('<error>Crashed</error>');
                 $output->writeln('<info>Will restart the server</info>');
+            } else {
+                $output->writeln('<error>Crashed</error>');
             }
-        }
+        } while (!$exitedSuccessfully && $automaticallyRestart);
+    }
+
+    /**
+     * Returns if the server should be automatically restarted after crash
+     *
+     * @return bool
+     */
+    protected function automaticallyRestart()
+    {
+        return $this->isDevMode();
+    }
+
+    /**
+     * Returns if the server is started in development mode
+     *
+     * @return boolean
+     */
+    protected function isDevMode()
+    {
+        return $this->devMode;
+    }
+
+    /**
+     * Sets if the server is started in development mode
+     *
+     * @param boolean $devMode
+     */
+    protected function setDevMode($devMode)
+    {
+        $this->devMode = !!$devMode;
     }
 }
