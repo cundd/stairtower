@@ -42,6 +42,9 @@ class UriBuilder implements UriBuilderInterface
         if (!is_string($action)) {
             throw new InvalidUriBuilderArgumentException('Invalid action name argument', 1422472522);
         }
+        if (!ctype_alnum($action)) {
+            throw new InvalidUriBuilderArgumentException('Action name must be alphanumeric', 1451042474);
+        }
 
         $actionIdentifier = $action;
         $uriParts         = [];
