@@ -142,7 +142,6 @@ abstract class AbstractDocumentController extends AbstractController implements 
     protected function prepareArgumentForRequestAndAction($request, $action, &$noArgument = false)
     {
         $requiresDocumentArgument = $this->checkIfActionRequiresDocumentArgument($action);
-        var_dump($requiresDocumentArgument);
         if ($requiresDocumentArgument === 0) {
             $noArgument = true;
 
