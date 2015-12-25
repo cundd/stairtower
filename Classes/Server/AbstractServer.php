@@ -14,9 +14,11 @@ use Cundd\PersistentObjectStore\Exception\SecurityException;
 use Cundd\PersistentObjectStore\Memory\Manager;
 use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
+use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestActionException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
 use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
+use Cundd\PersistentObjectStore\Server\ValueObject\RawResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request as Request;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
@@ -254,6 +256,12 @@ abstract class AbstractServer implements ServerInterface
 
         if ($error instanceof SecurityException) {
             $response->end();
+        } elseif($error instanceof InvalidRequestActionException) {
+            $this->handleResult(
+                new RawResult($this->getStatusCodeForException($error), $error->getMessage()),
+                $request,
+                $response
+            );
         } else {
             $this->handleResult(
                 new HandlerResult($this->getStatusCodeForException($error), $error->getMessage()),
