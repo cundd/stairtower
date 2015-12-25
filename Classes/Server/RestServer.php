@@ -339,7 +339,9 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             }
 
         } elseif ($result instanceof HandlerResultInterface) {
-            $formatter = $this->getFormatterForRequest($request);
+            $formatter = $this->getFormatterForRequest(
+                $request instanceof Request ? $request : $this->requestFactory->buildRequestFromRawRequest($request)
+            );
             $response->writeHead(
                 $result->getStatusCode(),
                 array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
@@ -646,8 +648,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 $this->handle($requestInfo, $response);
 
             } catch (\Exception $error) {
-                $this->writeln('Uncaught exception #%d: %s', $error->getCode(), $error->getMessage());
-                $this->writeln($error->getTraceAsString());
+                $this->handleError($error, $request, $response);
             }
         }
     }
