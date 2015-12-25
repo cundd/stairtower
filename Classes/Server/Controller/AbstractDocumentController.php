@@ -142,6 +142,7 @@ abstract class AbstractDocumentController extends AbstractController implements 
     protected function prepareArgumentForRequestAndAction($request, $action, &$noArgument = false)
     {
         $requiresDocumentArgument = $this->checkIfActionRequiresDocumentArgument($action);
+        var_dump($requiresDocumentArgument);
         if ($requiresDocumentArgument === 0) {
             $noArgument = true;
 
@@ -187,13 +188,15 @@ abstract class AbstractDocumentController extends AbstractController implements 
         $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = 0;
         foreach ($methodReflection->getParameters() as $parameter) {
             $argumentClassName = $parameter->getClass() ? trim($parameter->getClass()->getName()) : null;
-            if ($argumentClassName
-                && (
-                    $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\Document')
-                || is_subclass_of(
-                    $argumentClassName,
+            if (!$argumentClassName) {
+                continue;
+            }
+            if (
+                $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\Document'
+                || $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface'
+                || in_array(
                     'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
-                    true
+                    (array)class_implements($argumentClassName, true)
                 )
             ) {
                 $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = $parameter->isOptional() ? 2 : 1;
