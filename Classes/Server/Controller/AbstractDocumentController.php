@@ -49,7 +49,9 @@ abstract class AbstractDocumentController extends AbstractController implements 
      */
     public function isDevelopmentMode()
     {
-        return ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('serverMode') === ServerInterface::SERVER_MODE_DEVELOPMENT;
+        return ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
+            'serverMode'
+        ) === ServerInterface::SERVER_MODE_DEVELOPMENT;
     }
 
     /**
@@ -132,8 +134,8 @@ abstract class AbstractDocumentController extends AbstractController implements 
     /**
      * Returns the argument to be passed to the action
      *
-     * @param Request $request    Request info object
-     * @param string  $action     Action name
+     * @param Request $request Request info object
+     * @param string  $action Action name
      * @param bool    $noArgument Reference the will be set to true if no argument should be passed
      * @return Document|null
      */
@@ -172,19 +174,29 @@ abstract class AbstractDocumentController extends AbstractController implements 
     {
         static $controllerActionRequiresDocumentCache = array();
         $controllerClass            = get_class($this);
-        $controllerActionIdentifier = $controllerClass . '::' . $actionMethod;
+        $controllerActionIdentifier = $controllerClass.'::'.$actionMethod;
 
         if (isset($controllerActionRequiresDocumentCache[$controllerActionIdentifier])) {
             return $controllerActionRequiresDocumentCache[$controllerActionIdentifier];
         }
 
         $classReflection                                                    = new ReflectionClass($controllerClass);
-        $methodReflection                                                   = $classReflection->getMethod($actionMethod);
+        $methodReflection                                                   = $classReflection->getMethod(
+            $actionMethod
+        );
         $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = 0;
         foreach ($methodReflection->getParameters() as $parameter) {
             $argumentClassName = $parameter->getClass() ? trim($parameter->getClass()->getName()) : null;
-            if ($argumentClassName && $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\Document') {
-                $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = ($parameter->isOptional() ? 2 : 1);
+            if ($argumentClassName
+                && (
+                    $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\Document')
+                || is_subclass_of(
+                    $argumentClassName,
+                    'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+                    true
+                )
+            ) {
+                $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = $parameter->isOptional() ? 2 : 1;
                 break;
             }
         }
