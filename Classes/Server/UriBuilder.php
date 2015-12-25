@@ -52,13 +52,17 @@ class UriBuilder implements UriBuilderInterface
         $uriParts[] = $this->getControllerNamespaceForController($controller);
         $uriParts[] = $actionIdentifier;
 
+
         if ($document && !$database) {
-            throw new InvalidUriBuilderArgumentException(
-                'Argument document requires argument database to be set',
-                1422475362
-            );
-        }
-        if ($database) {
+            if ($document->getDatabaseIdentifier()) {
+                $uriParts[] = $this->getDatabaseUriPart($document->getDatabaseIdentifier());
+            } else {
+                throw new InvalidUriBuilderArgumentException(
+                    'Argument document requires argument database to be set',
+                    1422475362
+                );
+            }
+        } elseif ($database) {
             $uriParts[] = $this->getDatabaseUriPart($database);
         }
         if ($document) {
