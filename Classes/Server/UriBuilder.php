@@ -25,10 +25,10 @@ class UriBuilder implements UriBuilderInterface
     /**
      * Build the URI with the given arguments
      *
-     * @param string                     $action     Name of action (e.g. 'list', 'show')
+     * @param string                     $action Name of action (e.g. 'list', 'show')
      * @param ControllerInterface|string $controller Controller instance or name
-     * @param DatabaseInterface|string   $database   Database instance or identifier
-     * @param DocumentInterface|string   $document   Document instance or identifier
+     * @param DatabaseInterface|string   $database Database instance or identifier
+     * @param DocumentInterface|string   $document Document instance or identifier
      * @return string
      */
     public function buildUriFor($action, $controller, $database = null, $document = null)
@@ -52,32 +52,20 @@ class UriBuilder implements UriBuilderInterface
         $uriParts[] = $this->getControllerNamespaceForController($controller);
         $uriParts[] = $actionIdentifier;
 
+        if ($document && !$database) {
+            throw new InvalidUriBuilderArgumentException(
+                'Argument document requires argument database to be set',
+                1422475362
+            );
+        }
         if ($database) {
-            if ($database instanceof DatabaseInterface) {
-                $uriParts[] = $database->getIdentifier();
-            } elseif (is_scalar($database)) {
-                $uriParts[] = (string)$database;
-            } else {
-                throw new InvalidUriBuilderArgumentException(
-                    sprintf('Invalid database argument %s', GeneralUtility::getType($database)),
-                    1422472579
-                );
-            }
+            $uriParts[] = $this->getDatabaseUriPart($database);
         }
         if ($document) {
-            if ($document instanceof DocumentInterface) {
-                $uriParts[] = $document->getId();
-            } elseif (is_scalar($document)) {
-                $uriParts[] = (string)$document;
-            } else {
-                throw new InvalidUriBuilderArgumentException(
-                    sprintf('Invalid document argument %s', GeneralUtility::getType($document)),
-                    1422472633
-                );
-            }
+            $uriParts[] = $this->getDocumentUriPart($document);
         }
 
-        return '/' . implode('/', $uriParts);
+        return '/'.implode('/', $uriParts);
     }
 
     /**
@@ -120,7 +108,7 @@ class UriBuilder implements UriBuilderInterface
 
         }
 
-        return '_' . implode(self::CONTROLLER_NAME_SEPARATOR, $uriParts);
+        return '_'.implode(self::CONTROLLER_NAME_SEPARATOR, $uriParts);
     }
 
     /**
@@ -160,6 +148,50 @@ class UriBuilder implements UriBuilderInterface
         }
 
         return $controllerClass;
+    }
+
+    /**
+     * @param $database
+     * @return string
+     */
+    protected function getDatabaseUriPart($database)
+    {
+        if ($database instanceof DatabaseInterface) {
+            $part = $database->getIdentifier();
+
+            return $part;
+        } elseif (is_scalar($database)) {
+            $part = (string)$database;
+
+            return $part;
+        } else {
+            throw new InvalidUriBuilderArgumentException(
+                sprintf('Invalid database argument %s', GeneralUtility::getType($database)),
+                1422472579
+            );
+        }
+    }
+
+    /**
+     * @param $document
+     * @return string
+     */
+    protected function getDocumentUriPart($document)
+    {
+        if ($document instanceof DocumentInterface) {
+            $part = $document->getId();
+
+            return $part;
+        } elseif (is_scalar($document)) {
+            $part = (string)$document;
+
+            return $part;
+        } else {
+            throw new InvalidUriBuilderArgumentException(
+                sprintf('Invalid document argument %s', GeneralUtility::getType($document)),
+                1422472633
+            );
+        }
     }
 
 }
