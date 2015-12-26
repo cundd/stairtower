@@ -42,9 +42,7 @@ class RequestInfoFactory
         }
 
         $pathParts           = explode('/', $request->getPath());
-        $pathParts           = array_values(array_filter($pathParts, function ($item) {
-            return !!$item;
-        }));
+        $pathParts           = array_values(array_filter($pathParts));
         $dataIdentifier      = null;
         $databaseIdentifier  = null;
         $controllerClassName = null;
