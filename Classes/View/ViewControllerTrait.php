@@ -125,12 +125,13 @@ trait ViewControllerTrait
             );
             $this->view->addFunction(
                 'assetUri',
-                function ($assetUri) {
-                    if ($assetUri[0] !== '/') {
-                        $assetUri = '/'.$assetUri;
+                function ($assetUri, $noCache = false) {
+                    $uri = '/_asset/'.ltrim($assetUri);
+                    if ($noCache) {
+                        return $uri.'?v='.time();
                     }
 
-                    return '/_asset'.$assetUri;
+                    return $uri;
                 }
             );
         }
