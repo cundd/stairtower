@@ -1,5 +1,9 @@
 #!/bin/sh
 
+#
+# Composer install script used when building the Docker image
+#
+
 EXPECTED_SIGNATURE=$(curl -s https://composer.github.io/installer.sig)
 
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
