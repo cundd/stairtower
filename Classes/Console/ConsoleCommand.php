@@ -37,25 +37,21 @@ class ConsoleCommand extends Command
     protected $exitCommands = array('quit', 'exit', '\\q');
 
     /**
+     * @var array
+     */
+    protected $aliases = array(
+        'll' => 'list',
+        'h'  => 'help',
+    );
+
+    /**
      * Configure the command
      */
     protected function configure()
     {
         $this
             ->setName('console')
-            ->setDescription('Run an interactive session')
-//			->addArgument(
-//				'name',
-//				InputArgument::OPTIONAL,
-//				'Who do you want to greet?'
-//			)
-//			->addOption(
-//				'yell',
-//				null,
-//				InputOption::VALUE_NONE,
-//				'If set, the task will yell in uppercase letters'
-//			)
-        ;
+            ->setDescription('Run an interactive session');
     }
 
     /**
@@ -78,8 +74,8 @@ class ConsoleCommand extends Command
             }
 
             $commandParts = explode(' ', $line);
-            $subCommand   = array_shift($commandParts);
-            $this->executeSubCommand($subCommand, $commandParts, $output);
+            $subCommand = array_shift($commandParts);
+            $this->executeSub($subCommand, $commandParts, $output);
 
             $output->write('> ');
         }
@@ -93,49 +89,114 @@ class ConsoleCommand extends Command
      * @param array           $arguments
      * @param OutputInterface $output
      */
-    public function executeSubCommand($subcommand, $arguments, OutputInterface $output)
+    public function executeSub($subcommand, array $arguments, OutputInterface $output)
     {
+        $subcommandMethod = $this->getSubCommandMethod($subcommand);
         try {
-            switch ($subcommand) {
-                case 'create':
-                    $databaseIdentifier = array_shift($arguments);
-                    $options            = $arguments;
-                    if (!$databaseIdentifier) {
-                        throw new \InvalidArgumentException('Missing database identifier argument', 1412524227);
-                    }
-                    $database = $this->coordinator->createDatabase($databaseIdentifier, $options);
-                    if ($database) {
-                        $output->writeln(sprintf('<info>Created database %s</info>', $databaseIdentifier));
-                    }
-                    break;
-
-                case 'drop':
-                    $databaseIdentifier = array_shift($arguments);
-                    if (!$databaseIdentifier) {
-                        throw new \InvalidArgumentException('Missing database identifier argument', 1412524227);
-                    }
-                    $this->coordinator->dropDatabase($databaseIdentifier);
-                    $output->writeln(sprintf('<info>Dropped database %s</info>', $databaseIdentifier));
-                    break;
-
-                case 'list':
-                case 'll':
-                    $databases = $this->coordinator->listDatabases();
-                    if ($databases) {
-                        $output->writeln('<info>Databases:</info>');
-                        foreach ($databases as $databaseIdentifier) {
-                            $output->writeln($databaseIdentifier);
-                        }
-                    } else {
-                        $output->writeln('<info>No databases found</info>');
-                    }
-                    break;
-
-                default:
-                    throw new \InvalidArgumentException(sprintf('Undefined sub command "%s"', $subcommand), 1412525230);
+            if (!$subcommandMethod) {
+                throw new \InvalidArgumentException(sprintf('Undefined sub command "%s"', $subcommand), 1412525230);
             }
+            $this->$subcommandMethod($output, $arguments);
         } catch (\Exception $exception) {
-            $output->writeln('<error>' . $exception->getMessage() . '</error>');
+            $output->writeln('<error>'.$exception->getMessage().'</error>');
         }
     }
-} 
+
+    /**
+     * Returns a list of available sub commands
+     *
+     * @return string[]
+     */
+    private function getAvailableSubCommands()
+    {
+        return array_filter(
+            get_class_methods(__CLASS__),
+            function ($method) {
+                return substr($method, -7) === 'Command';
+            }
+        );
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param array           $arguments
+     */
+    public function createCommand(OutputInterface $output, array $arguments)
+    {
+        $databaseIdentifier = array_shift($arguments);
+        $options = $arguments;
+        if (!$databaseIdentifier) {
+            throw new \InvalidArgumentException('Missing database identifier argument', 1412524227);
+        }
+        $database = $this->coordinator->createDatabase($databaseIdentifier, $options);
+        if ($database) {
+            $output->writeln(sprintf('<info>Created database %s</info>', $databaseIdentifier));
+        }
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param array           $arguments
+     */
+    public function dropCommand(OutputInterface $output, array $arguments)
+    {
+        $databaseIdentifier = array_shift($arguments);
+        if (!$databaseIdentifier) {
+            throw new \InvalidArgumentException('Missing database identifier argument', 1412524227);
+        }
+        $this->coordinator->dropDatabase($databaseIdentifier);
+        $output->writeln(sprintf('<info>Dropped database %s</info>', $databaseIdentifier));
+    }
+
+    /**
+     * @param OutputInterface $output
+     */
+    public function listCommand(OutputInterface $output)
+    {
+        $databases = $this->coordinator->listDatabases();
+        if ($databases) {
+            $output->writeln('<info>Databases:</info>');
+            foreach ($databases as $databaseIdentifier) {
+                $output->writeln($databaseIdentifier);
+            }
+        } else {
+            $output->writeln('<info>No databases found</info>');
+        }
+    }
+
+    /**
+     * @param OutputInterface $output
+     */
+    public function helpCommand(OutputInterface $output)
+    {
+        $availableSubCommands = $this->getAvailableSubCommands();
+        $output->writeln("<info>Available commands:</info>");
+        foreach ($availableSubCommands as $subCommandMethod) {
+            $subCommand = substr($subCommandMethod, 0, -7);
+            $output->writeln($subCommand);
+        }
+    }
+
+    /**
+     * @param string $subcommand
+     * @return string
+     */
+    private function getSubCommandMethod($subcommand)
+    {
+        $availableSubCommands = $this->getAvailableSubCommands();
+        if (in_array($subcommand.'Command', $availableSubCommands)) {
+            return $subcommand.'Command';
+        }
+
+        if (!isset($this->aliases[$subcommand])) {
+            return '';
+        }
+
+        $aliasCommand = $this->aliases[$subcommand];
+        if (in_array($aliasCommand.'Command', $availableSubCommands)) {
+            return $aliasCommand.'Command';
+        }
+
+        return '';
+    }
+}
