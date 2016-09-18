@@ -58,12 +58,12 @@ class Core
     {
         if (!$this->diContainer) {
             $builder = new ContainerBuilder();
+            $builder->useAnnotations(true);
             $builder->setDefinitionCache(
             //new \Doctrine\Common\Cache\FilesystemCache(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('cachePath'))
                 new \Doctrine\Common\Cache\ArrayCache()
             );
 
-            $this->diContainer = $builder->build();
             $builder->addDefinitions(__DIR__ . '/../Configuration/dependencyInjectionConfiguration.php');
             $this->diContainer = $builder->build();
         }

@@ -458,7 +458,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         }
         $commandParts[] = '> /dev/null &'; // Run the server in the background
 
-        printf('Run %s'.PHP_EOL, implode(' ', $commandParts));
+        // printf('Run %s'.PHP_EOL, implode(' ', $commandParts));
         exec(implode(' ', $commandParts), $output, $returnValue);
 
 

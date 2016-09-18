@@ -3,10 +3,12 @@
     "description": "A document storage entirely written in PHP",
     "homepage": "http://stairtower.cundd.net",
     "require": {
-        "react/react": "0.4.*",
-        "mnapoli/php-di": "~4.0",
-        "symfony/console": "2.6",
+        "doctrine/annotations": "^1.2.7",
+        "doctrine/cache": "^1.6.0",
         "monolog/monolog": "1.17",
+        "php-di/php-di": "^5.4.0",
+        "react/react": "0.4.2",
+        "symfony/console": "2.6",
         "symfony/process": "2.6"
     },
     "require-dev": {
@@ -28,6 +30,7 @@
         "bin/console",
         "bin/server"
     ],
+
     "suggest": {
         "twig/twig": "Provides the standard view implementation for the application framework"
     }
