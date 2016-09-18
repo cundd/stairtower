@@ -12,6 +12,7 @@ EXPOSE 1338
 VOLUME /usr/src/stairtower/var
 
 RUN apt-get update && apt-get install -y git zip
+RUN sh ./Resources/Private/Scripts/lib-event-install.sh
 RUN sh ./Resources/Private/Scripts/composer-install.sh
 RUN composer.phar install --no-dev
 
