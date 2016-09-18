@@ -38,7 +38,8 @@ class FindCommand extends AbstractDataCommand
                 'identifier',
                 InputArgument::REQUIRED,
                 'Document identifier to search for'
-            );
+            )
+            ->setAliases(['data:show']);
     }
 
     /**

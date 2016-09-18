@@ -33,7 +33,8 @@ class ListCommand extends AbstractCommand
                 'identifier',
                 InputArgument::REQUIRED,
                 'Unique name of the database to create'
-            );
+            )
+            ->setAliases(['database:show']);
     }
 
     /**
