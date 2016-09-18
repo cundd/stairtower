@@ -37,19 +37,21 @@ class Server extends AbstractBootstrap
             'test::',
             'dev::',
         );
-        $options     = getopt('h::', $longOptions);
+        $options = getopt('h::', $longOptions);
 
         // Print the help
         if (isset($options['h'])) {
             print(Constants::MESSAGE_CLI_WELCOME . PHP_EOL);
-            printf('Usage: %s [--port=port] [--ip=ip] [--data-path=path/to/data/folder/] [--dev]' . PHP_EOL,
-                $arguments[0]);
+            printf(
+                'Usage: %s [--port=port] [--ip=ip] [--data-path=path/to/data/folder/] [--dev]' . PHP_EOL,
+                $arguments[0]
+            );
             exit;
         }
 
-        $dataPath   = $this->checkArgument('data-path', $options);
-        $port       = $this->checkArgument('port', $options);
-        $ip         = $this->checkArgument('ip', $options);
+        $dataPath = $this->checkArgument('data-path', $options);
+        $port = $this->checkArgument('port', $options);
+        $ip = $this->checkArgument('ip', $options);
         $serverMode = $this->getServerModeFromOptions($options);
 
         $configurationManager = ConfigurationManager::getSharedInstance();
@@ -128,6 +130,15 @@ class Server extends AbstractBootstrap
             return ServerInterface::SERVER_MODE_TEST;
         }
 
-        return ServerInterface::SERVER_MODE_NORMAL;
+        switch (strtolower(getenv(Constants::ENVIRONMENT_KEY_SERVER_MODE))) {
+            case 'dev':
+                return ServerInterface::SERVER_MODE_DEVELOPMENT;
+
+            case 'test':
+                return ServerInterface::SERVER_MODE_DEVELOPMENT;
+
+            default:
+                return ServerInterface::SERVER_MODE_NORMAL;
+        }
     }
 }

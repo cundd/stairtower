@@ -87,4 +87,14 @@ WELCOME;
      * Request query character to mark one-to-many relations
      */
     const EXPAND_REQUEST_TO_MANY = '*';
-} 
+
+    /**
+     * Environment variable name for the server mode
+     */
+    const ENVIRONMENT_KEY_SERVER_MODE = 'STAIRTOWER_SERVER_MODE';
+
+    /**
+     * Environment variable name for the server data path
+     */
+    const ENVIRONMENT_KEY_SERVER_DATA_PATH = 'STAIRTOWER_SERVER_DATA_PATH';
+}

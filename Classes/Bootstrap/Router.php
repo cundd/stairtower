@@ -9,6 +9,7 @@
 namespace Cundd\PersistentObjectStore\Bootstrap;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Server\ServerInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\SimpleResponse;
 use DI\Container;
@@ -46,7 +47,7 @@ class Router extends AbstractBootstrap
     public function configure($arguments)
     {
         $this->arguments = $arguments;
-        $dataPath        = getenv('STAIRTOWER_SERVER_DATA_PATH');
+        $dataPath        = getenv(Constants::ENVIRONMENT_KEY_SERVER_DATA_PATH);
         $serverMode      = $this->getServerModeFromEnv();
 
         $configurationManager = ConfigurationManager::getSharedInstance();
@@ -149,7 +150,7 @@ class Router extends AbstractBootstrap
      */
     protected function getServerModeFromEnv()
     {
-        $serverModeName = getenv('STAIRTOWER_SERVER_MODE');
+        $serverModeName = getenv(Constants::ENVIRONMENT_KEY_SERVER_MODE);
         if ($serverModeName === 'dev') {
             return ServerInterface::SERVER_MODE_DEVELOPMENT;
         } elseif ($serverModeName === 'dev') {
