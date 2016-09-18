@@ -207,8 +207,11 @@ class Coordinator implements CoordinatorInterface
 
             /** @var DatabaseInterface $database */
             foreach ($databases as $database) {
+                $this->logger->debug(sprintf('Check state of database %s', $database->getIdentifier()));
                 if ($database->getState() === DatabaseStateInterface::STATE_DIRTY) {
                     $this->commitDatabase($database);
+                } else {
+                    $this->logger->debug(sprintf('Database %s is in clean state', $database->getIdentifier()));
                 }
             }
         } else {

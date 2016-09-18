@@ -564,6 +564,7 @@ abstract class AbstractServer implements ServerInterface
         $this->eventEmitter->emit(Event::MAINTENANCE);
         $this->coordinator->commitDatabases();
         Manager::cleanup();
+        $this->logger->debug('Finished maintenance');
     }
 
     /**
