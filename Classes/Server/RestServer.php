@@ -318,7 +318,9 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     public function handleResult($result, $request, $response)
     {
         if ($result instanceof RawResultInterface) {
-            $response->writeHead($result->getStatusCode());
+            $response->writeHead($result->getStatusCode(),
+                array('Content-Type' =>  $result->getContentType())
+            );
             $responseData = $result->getData();
             if ($responseData !== null) {
                 $response->end($responseData);

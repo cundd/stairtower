@@ -189,6 +189,7 @@ class RequestInfoFactory
             . 'Controller\\'
             . ucfirst(substr($controllerClassName, $lastUnderscore + 1))
             . 'Controller';
+
         if (!class_exists($controllerClassName)) {
             return false;
         }

@@ -7,6 +7,7 @@
  */
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
+use Cundd\PersistentObjectStore\Asset\AssetInterface;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
@@ -418,8 +419,10 @@ class Handler implements HandlerInterface
             if (is_array($request->getQuery()) && isset($request->getQuery()['noCache'])) {
                 $noCache = true;
             }
+            /** @var AssetInterface $asset */
             $asset = $this->assetLoader->getAssetForUri($uri, $noCache);
-            return new RawResult(200, (string)$asset->getContent());
+
+            return new RawResult(200, (string)$asset->getContent(), (string )$asset->getContentType());
         }
 
         return new HandlerResult(404, sprintf('No resource found for "%s"', $uri));
