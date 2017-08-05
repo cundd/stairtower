@@ -25,13 +25,14 @@ class UriBuilder implements UriBuilderInterface
     /**
      * Build the URI with the given arguments
      *
-     * @param string                     $action Name of action (e.g. 'list', 'show')
+     * @param string                     $action     Name of action (e.g. 'list', 'show')
      * @param ControllerInterface|string $controller Controller instance or name
-     * @param DatabaseInterface|string   $database Database instance or identifier
-     * @param DocumentInterface|string   $document Document instance or identifier
+     * @param DatabaseInterface|string   $database   Database instance or identifier
+     * @param DocumentInterface|string   $document   Document instance or identifier
+     * @param array                      $query
      * @return string
      */
-    public function buildUriFor($action, $controller, $database = null, $document = null)
+    public function buildUriFor($action, $controller, $database = null, $document = null, array $query = [])
     {
         if (!$action) {
             throw new InvalidUriBuilderArgumentException('Action name must not be empty', 1422475362);
@@ -69,7 +70,12 @@ class UriBuilder implements UriBuilderInterface
             $uriParts[] = $this->getDocumentUriPart($document);
         }
 
-        return '/'.implode('/', $uriParts);
+        $uri = '/'.implode('/', $uriParts);
+        if (!empty($query)) {
+            return $uri . '?' . http_build_query($query);
+        }
+
+        return $uri;
     }
 
     /**

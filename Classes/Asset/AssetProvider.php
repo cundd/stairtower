@@ -8,6 +8,7 @@
 
 namespace Cundd\PersistentObjectStore\Asset;
 
+use function Couchbase\defaultDecoder;
 use Cundd\PersistentObjectStore\Asset\Exception\InvalidUriException;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Memory\Manager;
@@ -60,9 +61,9 @@ class AssetProvider implements AssetProviderInterface
             return $assetEntry->value;
         }
 
-        $asset      = $this->loadAssetForUri($uri);
+        $asset = $this->loadAssetForUri($uri);
         $assetEntry = (object)['value' => $asset];
-        Manager::registerObject($assetEntry, self::MEMORY_MANAGER_KEY_PREFIX . $uri, array(self::MEMORY_MANAGER_TAG));
+        Manager::registerObject($assetEntry, self::MEMORY_MANAGER_KEY_PREFIX . $uri, [self::MEMORY_MANAGER_TAG]);
 
         return $asset;
     }
@@ -76,13 +77,39 @@ class AssetProvider implements AssetProviderInterface
     public function loadAssetForUri($uri)
     {
         $basePath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('publicResources');
-        $uri      = str_replace('..', '', $uri);
+        $uri = str_replace('..', '', $uri);
         $fullPath = $basePath . $uri;
         if (file_exists($fullPath)) {
-            return new Asset($uri, file_get_contents($fullPath));
+            return new Asset($uri, file_get_contents($fullPath), $this->getAssetContentType($fullPath));
         }
 
         return null;
+    }
+
+    /**
+     * @param $fullPath
+     * @return string
+     */
+    private function getAssetContentType($fullPath)
+    {
+        $fileInfo = new \finfo(FILEINFO_MIME);
+
+        $mimeType = $fileInfo->file($fullPath);
+        if ('text/plain' !== substr($mimeType, 0, 10)) {
+            return $mimeType;
+        }
+
+        // Try to get a better result
+        switch (strrchr($fullPath, '.')) {
+            case '.css':
+                return 'text/css';
+
+            case '.js':
+                return 'application/javascript';
+
+            default:
+                return $mimeType;
+        }
     }
 
     /**

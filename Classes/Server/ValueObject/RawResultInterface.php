@@ -5,6 +5,7 @@
  * Date: 10.10.14
  * Time: 17:59
  */
+
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
@@ -16,4 +17,10 @@ use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
  */
 interface RawResultInterface extends HandlerResultInterface
 {
+    /**
+     * Returns the content type of the result
+     *
+     * @return string
+     */
+    public function getContentType();
 }

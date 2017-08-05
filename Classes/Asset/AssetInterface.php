@@ -28,4 +28,11 @@ interface AssetInterface
      * @return string
      */
     public function getContent();
+
+    /**
+     * Returns the content type for the asset
+     *
+     * @return string
+     */
+    public function getContentType();
 }

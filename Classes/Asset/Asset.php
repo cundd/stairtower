@@ -25,17 +25,21 @@ class Asset implements AssetInterface
      */
     protected $content;
 
-    function __construct($uri, $content)
+    /**
+     * @var
+     */
+    private $contentType;
+
+    function __construct($uri, $content, $contentType)
     {
-        $this->uri     = $uri;
+        $this->uri = $uri;
         $this->content = $content;
+        $this->contentType = $contentType;
     }
 
 
     /**
-     * Returns the URI
-     *
-     * @return string
+     * @inheritdoc
      */
     public function getUri()
     {
@@ -43,9 +47,15 @@ class Asset implements AssetInterface
     }
 
     /**
-     * Returns the content of the asset
-     *
-     * @return string
+     * @inheritdoc
+     */
+    public function getContentType()
+    {
+        return $this->contentType;
+    }
+
+    /**
+     * @inheritdoc
      */
     public function getContent()
     {
@@ -56,6 +66,4 @@ class Asset implements AssetInterface
     {
         return (string)$this->getContent();
     }
-
-
 }

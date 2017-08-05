@@ -371,9 +371,9 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         //printf('Request %s %d %s' . PHP_EOL, $method, strlen($content), $url);
 
 
-        //if (is_callable('curl_init')) {
-        //    return $this->performRestRequestCurl($url, $method, $headers, $content);
-        //}
+        if (is_callable('curl_init')) {
+            return $this->performRestRequestCurl($url, $method, $headers, $content);
+        }
 
         return $this->performRestRequestFopen($url, $method, $headers, $content);
     }

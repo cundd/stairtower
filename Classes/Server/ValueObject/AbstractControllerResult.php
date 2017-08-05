@@ -42,8 +42,7 @@ abstract class AbstractControllerResult extends AbstractHandlerResult implements
      */
     public function __construct($statusCode, $data = null, $contentType = ContentType::HTML_TEXT, $headers = array())
     {
-        $this->statusCode  = $statusCode;
-        $this->data        = $data;
+        parent::__construct($statusCode, $data);
         $this->contentType = $contentType;
         $this->headers     = (array)$headers;
     }

@@ -16,13 +16,13 @@ namespace Cundd\PersistentObjectStore\Server\ValueObject;
 class RawResultTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var DeferredResult
+     * @var RawResult
      */
     protected $fixture;
 
     protected function setUp()
     {
-        $this->fixture = new RawResult(200, 'my data');
+        $this->fixture = new RawResult(200, 'my data', 'text/plain');
         parent::setUp();
     }
 
@@ -40,5 +40,22 @@ class RawResultTest extends \PHPUnit_Framework_TestCase
     public function getDataTest()
     {
         $this->assertSame('my data', $this->fixture->getData());
+    }
+
+    /**
+     * @test
+     */
+    public function getContentTypeTest()
+    {
+        $this->assertSame('text/plain', $this->fixture->getContentType());
+    }
+
+    /**
+     * @test
+     */
+    public function getContentTypeDefaultTest()
+    {
+        $this->fixture = new RawResult(200, 'my data');
+        $this->assertSame('application/octet-stream', $this->fixture->getContentType());
     }
 }
