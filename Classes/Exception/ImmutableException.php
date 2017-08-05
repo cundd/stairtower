@@ -16,5 +16,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\Exception
  */
-class ImmutableException extends RuntimeException {
+class ImmutableException extends RuntimeException
+{
 }

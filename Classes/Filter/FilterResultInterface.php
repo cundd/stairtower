@@ -7,6 +7,8 @@
  */
 
 namespace Cundd\PersistentObjectStore\Filter;
+
+use Cundd\PersistentObjectStore\ArrayableInterface;
 use Cundd\PersistentObjectStore\Result\ResultInterface;
 
 /**
@@ -14,6 +16,7 @@ use Cundd\PersistentObjectStore\Result\ResultInterface;
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-interface FilterResultInterface extends ResultInterface {
+interface FilterResultInterface extends ResultInterface, ArrayableInterface
+{
 
 }

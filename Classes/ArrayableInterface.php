@@ -15,18 +15,19 @@ use SplFixedArray;
  *
  * @package Cundd\PersistentObjectStore
  */
-interface ArrayableInterface {
-	/**
-	 * Returns the filtered items as array
-	 *
-	 * @return array
-	 */
-	public function toArray();
+interface ArrayableInterface
+{
+    /**
+     * Returns the filtered items as array
+     *
+     * @return array
+     */
+    public function toArray();
 
-	/**
-	 * Returns the filtered items as fixed array
-	 *
-	 * @return SplFixedArray
-	 */
-	public function toFixedArray();
+    /**
+     * Returns the filtered items as fixed array
+     *
+     * @return SplFixedArray
+     */
+    public function toFixedArray();
 } 

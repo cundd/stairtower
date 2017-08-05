@@ -1,0 +1,289 @@
+[
+  {
+    "publishers": ["Beltz"],
+    "identifiers": {
+      "goodreads": ["1835805"],
+      "librarything": ["1279200"]
+    },
+    "weight": "1 pounds",
+    "title": "Der Wilde Wald",
+    "isbn_10": "3407797532",
+    "type": {"key": "/type/edition"},
+    "number_of_pages": 416,
+    "covers": [2201437],
+    "created": {
+      "type": "/type/datetime",
+      "value": "2008-04-30T09:38:13.731961"
+    },
+    "isbn_13": ["9783407797537"],
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2011-04-26T15:36:13.051333"
+    },
+    "latest_revision": 7,
+    "key": "/books/OL9512981M",
+    "authors": [{"key": "/authors/OL671238A"}],
+    "publish_date": "February 1, 1997",
+    "oclc_numbers": ["68501706"],
+    "works": [{"key": "/works/OL3793473W"}],
+    "physical_format": "Hardcover",
+    "physical_dimensions": "7.8 x 5.4 x 1.6 inches",
+    "revision": 7
+  },
+  {
+    "identifiers": {
+      "goodreads": ["18513"],
+      "librarything": ["3203319"]
+    },
+    "covers": [6719384],
+    "latest_revision": 8,
+    "ocaid": "silmarilli00tolk",
+    "contributions": ["Tolkien, Christopher"],
+    "edition_name": "2nd ed., 1st Del Rey Books ed.",
+    "source_records": [
+      "marc:marc_university_of_toronto/uoft.marc:4627717507:604",
+      "ia:silmarilli00tolk"
+    ],
+    "title": "The Silmarillion",
+    "work_titles": ["Silmarillion."],
+    "languages": [{"key": "/languages/eng"}],
+    "publish_country": "nyu",
+    "by_statement": "J.R.R. Tolkien ; edited by Christopher Tolkien.",
+    "type": {"key": "/type/edition"},
+    "revision": 8,
+    "publishers": ["Ballantine Books"],
+    "ia_box_id": ["IA130404"],
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2011-08-12T16:07:06.810599"
+    },
+    "key": "/books/OL22581121M",
+    "authors": [{"key": "/authors/OL26320A"}],
+    "publish_places": ["New York"],
+    "pagination": "xxxi, 442 p. :",
+    "created": {
+      "type": "/type/datetime",
+      "value": "2008-11-16T14:47:17.660795"
+    },
+    "number_of_pages": 442,
+    "isbn_10": "0345325818",
+    "publish_date": "2002",
+    "works": [{"key": "/works/OL27514W"}]
+  },
+  {
+    "number_of_pages": 186,
+    "subtitle": "a story for children.",
+    "series": [
+      "The chronicles of Narnia",
+      "Chronicles of Narnia"
+    ],
+    "covers": [
+      6624426,
+      4935853,
+      4548038
+    ],
+    "ia_loaded_id": ["lionwitchwardroblew00lewi"],
+    "latest_revision": 10,
+    "ocaid": "lionwitchwardrobcs00lewi",
+    "contributions": ["Baynes, Pauline."],
+    "ia_box_id": [
+      "IA125004",
+      "IA119614"
+    ],
+    "genres": ["Juvenile fiction."],
+    "source_records": [
+      "marc:CollingswoodLibraryMarcDump10-27-2008/Collingswood.out:55306146:1226",
+      "ia:lionwitchwardrobcs00lewi"
+    ],
+    "title": "The  lion, the witch and the wardrobe",
+    "languages": [{"key": "/languages/eng"}],
+    "subjects": ["Fantasy -- Juvenile fiction"],
+    "publish_country": "nyu",
+    "by_statement": "C. S. Lewis ;with pictures adapted from Illustrations by Pauline Baynes.",
+    "type": {"key": "/type/edition"},
+    "revision": 10,
+    "publishers": ["Collier"],
+    "description": {
+      "type": "/type/text",
+      "value": "Four English school children find their way through the back of a wardrobe into the magic land of Narnia and assist Aslan, the golden lion, to triumph over the White Witch, who has cursed the land with eternal winter."
+    },
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2011-08-12T03:10:14.651186"
+    },
+    "key": "/books/OL20940394M",
+    "authors": [{"key": "/authors/OL31574A"}],
+    "publish_places": ["New York"],
+    "pagination": "186 p.",
+    "created": {
+      "type": "/type/datetime",
+      "value": "2008-10-31T03:27:42.312405"
+    },
+    "notes": {
+      "type": "/type/text",
+      "value": "Sequel: Prince Caspian, the return to Narnia.\n\nj-145,844\n\nj-152,650"
+    },
+    "identifiers": {
+      "librarything": ["1182675"],
+      "goodreads": ["317500"]
+    },
+    "isbn_10": "0020442203",
+    "publish_date": "1970",
+    "works": [{"key": "/works/OL71175W"}]
+  },
+  {
+    "number_of_pages": 1077,
+    "covers": [7104024],
+    "ia_loaded_id": ["lordofrings00tolk_1"],
+    "lc_classifications": ["PR'6039'O32'L6'1993"],
+    "latest_revision": 9,
+    "ocaid": "lordofrings00tolk_1",
+    "source_records": [
+      "marc:marc_laurentian/openlibrary.mrc:321070512:736",
+      "ia:lordofrings00tolk_1"
+    ],
+    "title": "The Lord of the rings",
+    "languages": [{"key": "/languages/eng"}],
+    "publish_country": "nyu",
+    "by_statement": "by J. R. H. Tolkien ; illustrated by Alan Lee.",
+    "type": {"key": "/type/edition"},
+    "revision": 9,
+    "publishers": ["Houghton Mifflin"],
+    "ia_box_id": ["IA177101"],
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2012-04-18T20:26:46.487109"
+    },
+    "key": "/books/OL21058613M",
+    "authors": [{"key": "/authors/OL26320A"}],
+    "publish_places": ["Boston, MA"],
+    "pagination": "1077 p. :",
+    "created": {
+      "type": "/type/datetime",
+      "value": "2008-10-31T15:17:48.646102"
+    },
+    "notes": {
+      "type": "/type/text",
+      "value": "1"
+    },
+    "identifiers": {
+      "librarything": ["1386651"],
+      "goodreads": ["340381"]
+    },
+    "isbn_10": "0395595118",
+    "publish_date": "1993",
+    "works": [{"key": "/works/OL27448W"}]
+  },
+  {
+    "number_of_pages": 287,
+    "covers": [-1],
+    "latest_revision": 11,
+    "ocaid": "hobbitortherebactolk00tolk",
+    "source_records": [
+      "amazon:0345253426",
+      "ia:hobbitortherebactolk00tolk"
+    ],
+    "title": "The Hobbit",
+    "languages": [{"key": "/languages/eng"}],
+    "subjects": [
+      "Non-Classifiable",
+      "Nonfiction",
+      "Comics & Graphic Novels",
+      "Nonfiction - General",
+      "Humor"
+    ],
+    "oclc_numbers": ["166368470"],
+    "type": {"key": "/type/edition"},
+    "revision": 11,
+    "publishers": ["Ballantine Books"],
+    "ia_box_id": ["IA122124"],
+    "physical_format": "Mass Market Paperback",
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2011-08-12T01:51:11.984396"
+    },
+    "key": "/books/OL10682512M",
+    "authors": [{"key": "/authors/OL26320A"}],
+    "created": {
+      "type": "/type/datetime",
+      "value": "2008-04-30T09:38:13.731961"
+    },
+    "identifiers": {
+      "goodreads": ["17261"],
+      "librarything": ["3206242"]
+    },
+    "isbn_13": ["9780345253422"],
+    "isbn_10": "0345253426",
+    "publish_date": "May 12, 1976",
+    "works": [{"key": "/works/OL262758W"}]
+  },
+  {
+    "identifiers": {
+      "goodreads": ["317519"],
+      "librarything": ["1586826"]
+    },
+    "series": ["Chronicles of Narnia (6)"],
+    "covers": [6533993],
+    "latest_revision": 8,
+    "ocaid": "magiciansnephew00lewi",
+    "contributions": ["Pauline Baynes (Illustrator)"],
+    "first_sentence": {
+      "type": "/type/text",
+      "value": "This is a story about something that happened long ago when your grandfather was a child."
+    },
+    "source_records": [
+      "amazon:0020442300:o-0:2910161465:236463",
+      "amazon:0020442300:1:2648580747:239020",
+      "ia:magiciansnephew00lewi"
+    ],
+    "title": "The Magician's Nephew",
+    "languages": [{"key": "/languages/eng"}],
+    "type": {"key": "/type/edition"},
+    "revision": 8,
+    "publishers": ["MacMillan Publishing Company"],
+    "ia_box_id": ["IA107108"],
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2011-08-12T03:27:01.085865"
+    },
+    "key": "/books/OL7265112M",
+    "authors": [{"key": "/authors/OL31574A"}],
+    "created": {
+      "type": "/type/datetime",
+      "value": "2008-04-29T13:35:46.876380"
+    },
+    "number_of_pages": 186,
+    "isbn_13": ["9780020442301"],
+    "isbn_10": "0020442300",
+    "publish_date": "August 1970",
+    "works": [{"key": "/works/OL71172W"}]
+  },
+  {
+    "publishers": ["Beltz"],
+    "languages": [{"key": "/languages/ger"}],
+    "key": "/books/OL9524755M",
+    "title": "Der Brief f\u00fcr den K\u00f6nig",
+    "identifiers": {
+      "librarything": ["843704"],
+      "goodreads": ["990104"]
+    },
+    "isbn_13": ["9783407796752"],
+    "covers": [2201433],
+    "created": {
+      "type": "/type/datetime",
+      "value": "2008-04-30T09:38:13.731961"
+    },
+    "physical_format": "Hardcover",
+    "isbn_10": "3407796757",
+    "publish_date": "February 1, 1995",
+    "last_modified": {
+      "type": "/type/datetime",
+      "value": "2010-08-12T07:54:00.113466"
+    },
+    "authors": [{"key": "/authors/OL671238A"}],
+    "latest_revision": 6,
+    "works": [{"key": "/works/OL3793472W"}],
+    "type": {"key": "/type/edition"},
+    "revision": 6
+  }
+]

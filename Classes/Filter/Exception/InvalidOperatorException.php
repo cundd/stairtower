@@ -16,5 +16,6 @@ use Cundd\PersistentObjectStore\LogicException;
  *
  * @package Cundd\PersistentObjectStore\Filter\Exception
  */
-class InvalidOperatorException extends LogicException {
+class InvalidOperatorException extends LogicException
+{
 } 

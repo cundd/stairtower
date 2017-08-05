@@ -17,7 +17,6 @@ use Cundd\PersistentObjectStore\Index\Exception\DuplicateEntryException;
 use Cundd\PersistentObjectStore\Index\Exception\InvalidEntryException;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use Cundd\PersistentObjectStore\Utility\DocumentUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 use SplFixedArray;
 
 /**
@@ -127,11 +126,14 @@ class IdentifierIndex extends Key
      */
     public function deleteEntry($document)
     {
+        DebugUtility::var_dump($this->map);
         $key = DocumentUtility::getIdentifierForDocument($document);
         if (!isset($this->map[$key])) {
             throw new InvalidEntryException(sprintf('Entry \'%s\' not found to delete', $key), 1415047176);
         }
         unset($this->map[$key]);
+
+        DebugUtility::var_dump($this->map);
         return $this;
     }
 

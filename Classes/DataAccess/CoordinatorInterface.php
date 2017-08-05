@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\DataAccess;
+
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 
 /**
@@ -14,78 +15,79 @@ use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
  *
  * @package Cundd\PersistentObjectStore\DataAccess
  */
-interface CoordinatorInterface {
-	/**
-	 * Returns the database with the given identifier
-	 *
-	 * @param string $databaseIdentifier
-	 * @return DatabaseInterface
-	 */
-	public function getDatabase($databaseIdentifier);
+interface CoordinatorInterface
+{
+    /**
+     * Returns the database with the given identifier
+     *
+     * @param string $databaseIdentifier
+     * @return DatabaseInterface
+     */
+    public function getDatabase($databaseIdentifier);
 
-	/**
-	 * Creates a new database with the given identifier and options
-	 *
-	 * @param string $databaseIdentifier Unique identifier of the database
-	 * @param array  $options Additional options for the created database
-	 * @return DatabaseInterface
-	 */
-	public function createDatabase($databaseIdentifier, $options = array());
+    /**
+     * Creates a new database with the given identifier and options
+     *
+     * @param string $databaseIdentifier Unique identifier of the database
+     * @param array  $options            Additional options for the created database
+     * @return DatabaseInterface
+     */
+    public function createDatabase($databaseIdentifier, $options = array());
 
-	/**
-	 * Drops the database with the given identifier
-	 *
-	 * @param string $databaseIdentifier Unique identifier of the database
-	 * @return void
-	 */
-	public function dropDatabase($databaseIdentifier);
+    /**
+     * Drops the database with the given identifier
+     *
+     * @param string $databaseIdentifier Unique identifier of the database
+     * @return void
+     */
+    public function dropDatabase($databaseIdentifier);
 
-	/**
-	 * Returns if the database with the given identifier exists
-	 *
-	 * @param string $databaseIdentifier Unique identifier of the database
-	 * @return bool
-	 */
-	public function databaseExists($databaseIdentifier);
+    /**
+     * Returns if the database with the given identifier exists
+     *
+     * @param string $databaseIdentifier Unique identifier of the database
+     * @return bool
+     */
+    public function databaseExists($databaseIdentifier);
 
-	/**
-	 * Returns an array of the identifiers of available databases
-	 *
-	 * @return array
-	 */
-	public function listDatabases();
+    /**
+     * Returns an array of the identifiers of available databases
+     *
+     * @return array
+     */
+    public function listDatabases();
 
-	/**
-	 * Returns an array of the identifiers of databases that are not already persisted
-	 *
-	 * @return array<string>
-	 */
-	public function listInMemoryDatabases();
+    /**
+     * Returns an array of the identifiers of databases that are not already persisted
+     *
+     * @return string[]
+     */
+    public function listInMemoryDatabases();
 
-	/**
-	 * Returns an array of the identifiers of databases that are already persisted
-	 *
-	 * @return array<string>
-	 */
-	public function listPersistedDatabases();
+    /**
+     * Returns an array of the identifiers of databases that are already persisted
+     *
+     * @return string[]
+     */
+    public function listPersistedDatabases();
 
-	/**
-	 * Returns all data matching the given query
-	 *
-	 * @param $query
-	 * @return array
-	 */
-	public function getDataByQuery($query);
+    /**
+     * Returns all data matching the given query
+     *
+     * @param $query
+     * @return array
+     */
+    public function getDataByQuery($query);
 
-	/**
-	 * Commit the database to the file system
-	 *
-	 * @param DatabaseInterface $database
-	 */
-	public function commitDatabase($database);
+    /**
+     * Commit the database to the file system
+     *
+     * @param DatabaseInterface $database
+     */
+    public function commitDatabase($database);
 
-	/**
-	 * Commit all changed databases to the file system
-	 */
-	public function commitDatabases();
+    /**
+     * Commit all changed databases to the file system
+     */
+    public function commitDatabases();
 }

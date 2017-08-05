@@ -14,5 +14,6 @@ namespace Cundd\PersistentObjectStore\Core\ArrayException;
  *
  * @package Cundd\PersistentObjectStore\Core\ArrayException
  */
-class IndexOutOfRangeException extends InvalidIndexException {
+class IndexOutOfRangeException extends InvalidIndexException
+{
 } 

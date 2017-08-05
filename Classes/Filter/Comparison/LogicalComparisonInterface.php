@@ -13,11 +13,12 @@ namespace Cundd\PersistentObjectStore\Filter\Comparison;
  *
  * @package Cundd\PersistentObjectStore\Filter\Comparison
  */
-interface LogicalComparisonInterface extends ComparisonInterface {
-	/**
-	 * Returns the constraints
-	 *
-	 * @return array|\Iterator
-	 */
-	public function getConstraints();
+interface LogicalComparisonInterface extends ComparisonInterface
+{
+    /**
+     * Returns the constraints
+     *
+     * @return array|\Iterator
+     */
+    public function getConstraints();
 } 

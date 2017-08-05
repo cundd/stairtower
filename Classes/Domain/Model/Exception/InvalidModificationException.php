@@ -16,5 +16,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\DataAccess\Exception
  */
-class InvalidModificationException extends RuntimeException {
+class InvalidModificationException extends RuntimeException
+{
 } 

@@ -13,110 +13,111 @@ namespace Cundd\PersistentObjectStore\Filter\Comparison;
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-interface ComparisonInterface {
-	/**
-	 * The '=' comparison operator
-	 *
-	 * @api
-	 */
-	const TYPE_EQUAL_TO = '==';
+interface ComparisonInterface
+{
+    /**
+     * The '=' comparison operator
+     *
+     * @api
+     */
+    const TYPE_EQUAL_TO = '$eq';
 
-	/**
-	 * The '!=' comparison operator
-	 *
-	 * @api
-	 */
-	const TYPE_NOT_EQUAL_TO = '!=';
+    /**
+     * The '!=' comparison operator
+     *
+     * @api
+     */
+    const TYPE_NOT_EQUAL_TO = '$ne';
 
-	/**
-	 * The '<' comparison operator
-	 *
-	 * @api
-	 */
-	const TYPE_LESS_THAN = '<';
+    /**
+     * The '<' comparison operator
+     *
+     * @api
+     */
+    const TYPE_LESS_THAN = '$lt';
 
-	/**
-	 * The '<=' comparison operator
-	 *
-	 * @api
-	 */
-	const TYPE_LESS_THAN_OR_EQUAL_TO = '<=';
+    /**
+     * The '<=' comparison operator
+     *
+     * @api
+     */
+    const TYPE_LESS_THAN_OR_EQUAL_TO = '$lte';
 
-	/**
-	 * The '>' comparison operator
-	 *
-	 * @api
-	 */
-	const TYPE_GREATER_THAN = '>';
+    /**
+     * The '>' comparison operator
+     *
+     * @api
+     */
+    const TYPE_GREATER_THAN = '$gt';
 
-	/**
-	 * The '>=' comparison operator
-	 *
-	 * @api
-	 */
-	const TYPE_GREATER_THAN_OR_EQUAL_TO = '>=';
+    /**
+     * The '>=' comparison operator
+     *
+     * @api
+     */
+    const TYPE_GREATER_THAN_OR_EQUAL_TO = '$gte';
 
-	/**
-	 * The 'like' comparison operator
-	 *
-	 * @api
-	 */
-	const TYPE_LIKE = '><';
+    /**
+     * The 'like' comparison operator
+     *
+     * @api
+     */
+    const TYPE_LIKE = '$lk';
 
-	/**
-	 * The 'contains' comparison operator for collections
-	 *
-	 * @api
-	 */
-	const TYPE_CONTAINS = 8;
+    /**
+     * The 'contains' comparison operator for collections
+     *
+     * @api
+     */
+    const TYPE_CONTAINS = '$con';
 
-	/**
-	 * The 'in' comparison operator
-	 *
-	 * @api
-	 */
-	const TYPE_IN = 9;
+    /**
+     * The 'in' comparison operator
+     *
+     * @api
+     */
+    const TYPE_IN = '$in';
 
-	/**
-	 * The 'is NULL' comparison operator
-	 *
-	 * @api
-	 */
-	const TYPE_IS_NULL = 10;
+    /**
+     * The 'is NULL' comparison operator
+     *
+     * @api
+     */
+    const TYPE_IS_NULL = '$null';
 
-	/**
-	 * The 'is empty' comparison operator for collections
-	 *
-	 * @api
-	 */
-	const TYPE_IS_EMPTY = 11;
+    /**
+     * The 'is empty' comparison operator for collections
+     *
+     * @api
+     */
+    const TYPE_IS_EMPTY = '$em';
 
-	/**
-	 * The 'and' comparison operator for collections
-	 *
-	 * @api
-	 */
-	const TYPE_AND = 'AND';
+    /**
+     * The 'and' comparison operator for collections
+     *
+     * @api
+     */
+    const TYPE_AND = '$and';
 
-	/**
-	 * The 'or' comparison operator for collections
-	 *
-	 * @api
-	 */
-	const TYPE_OR = 'OR';
+    /**
+     * The 'or' comparison operator for collections
+     *
+     * @api
+     */
+    const TYPE_OR = '$or';
 
-	/**
-	 * Performs the comparison against the given test value
-	 *
-	 * @param mixed $testValue
-	 * @return bool
-	 */
-	public function perform($testValue);
+    /**
+     * Performs the comparison against the given test value
+     *
+     * @param mixed $testValue
+     * @return bool
+     */
+    public function perform($testValue);
 
-	/**
-	 * Returns the type of the comparison from the comparison value against the given test data's property
-	 *
-	 * @return string one of the TYPE constants
-	 */
-	public function getOperator();
+    /**
+     * Returns the type of the comparison from the comparison value against the given test data's property
+     *
+     * @return string one of the TYPE constants
+     */
+    public function getOperator();
 }

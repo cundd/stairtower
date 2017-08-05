@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore;
+
 use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
@@ -15,57 +16,62 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
  *
  * @package Cundd\PersistentObjectStore
  */
-class AbstractDataBasedCase extends AbstractCase {
-	/**
-	 * Returns the raw test data
-	 *
-	 * @return array
-	 */
-	public function getAllTestData() {
-		return array_map(function($item) {
-			if (isset($item['email'])) {
-				$item[Constants::DATA_ID_KEY] = $item['email'];
-			}
-			return $item;
-		}, json_decode(file_get_contents(__DIR__ . '/../Resources/contacts.json'), TRUE));
-	}
-
-	/**
-	 * Returns the test data as objects
-	 *
-	 * @return array
-	 */
-	public function getAllTestObjects() {
-		$allTestData = $this->getAllTestData();
-		$allTestObjects = array();
-		foreach ($allTestData as $currentTestData) {
-			$currentObject = new Document($currentTestData, 'contacts');
-			$allTestObjects[] = $currentObject;
+class AbstractDataBasedCase extends AbstractCase
+{
+    /**
+     * Returns the test data as objects
+     *
+     * @return array
+     */
+    public function getAllTestObjects()
+    {
+        $allTestData    = $this->getAllTestData();
+        $allTestObjects = array();
+        foreach ($allTestData as $currentTestData) {
+            $currentObject    = new Document($currentTestData, 'contacts');
+            $allTestObjects[] = $currentObject;
 //			$allTestObjects[$currentObject->getGuid()] = $currentObject;
-		}
-		return $allTestObjects;
-	}
+        }
+        return $allTestObjects;
+    }
 
-	/**
-	 * Returns the number of items in the raw test data
-	 *
-	 * @return array
-	 */
-	public function countAllTestData() {
-		return count($this->getAllTestData());
-	}
+    /**
+     * Returns the raw test data
+     *
+     * @return array
+     */
+    public function getAllTestData()
+    {
+        return array_map(function ($item) {
+            if (isset($item['email'])) {
+                $item[Constants::DATA_ID_KEY] = $item['email'];
+            }
+            return $item;
+        }, json_decode(file_get_contents(__DIR__ . '/../Resources/contacts.json'), true));
+    }
 
-	/**
-	 * @param $database
-	 * @return array
-	 */
-	public function databaseToDataArray($database) {
-		$foundData = array();
+    /**
+     * Returns the number of items in the raw test data
+     *
+     * @return array
+     */
+    public function countAllTestData()
+    {
+        return count($this->getAllTestData());
+    }
 
-		/** @var DocumentInterface $dataObject */
-		foreach ($database as $dataObject) {
-			$foundData[] = $dataObject->getData();
-		}
-		return $foundData;
-	}
+    /**
+     * @param $database
+     * @return array
+     */
+    public function databaseToDataArray($database)
+    {
+        $foundData = array();
+
+        /** @var DocumentInterface $dataObject */
+        foreach ($database as $dataObject) {
+            $foundData[] = $dataObject->getData();
+        }
+        return $foundData;
+    }
 } 

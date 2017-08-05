@@ -44,8 +44,11 @@ class Key extends AbstractIndex
     }
 
     /**
-     * Looks up the given value and returns an array of the positions in the Database, NOT_FOUND if it was not found
-     * or ERROR if a problem was detected
+     * Looks up the given value and returns an array of the positions in the Database or one of the following constants:
+     *
+     * NOT_FOUND: The value was not found and thus does not exist in the managed collection - You don't have to query other Indexes
+     * NO_RESULT: The Index can not provide a result for the lookup - You can query other Indexes
+     * ERROR: A problem was detected - You can query other Indexes
      *
      * @param mixed $value Value to look for
      * @return int[]
@@ -57,6 +60,7 @@ class Key extends AbstractIndex
         }
         return self::NOT_FOUND;
     }
+
 
     /**
      * Builds the index for the given collection
@@ -158,7 +162,7 @@ class Key extends AbstractIndex
      * @param int $position
      * @return bool
      */
-    protected function _positionIsDefined($position)
+    protected function positionIsDefined($position)
     {
         return in_array($position, $this->map);
     }

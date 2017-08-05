@@ -1,23 +1,33 @@
 language: php
 
 php:
-  - 5.4
   - 5.5
   - 5.6
+  - 7.0
   - hhvm
+  - nightly
+
+env:
+  - WITH_TWIG=yes
+  - WITH_TWIG=no
 
 matrix:
   allow_failures:
     - php: hhvm
+    - php: nightly
+
+sudo: false
 
 before_script:
   - cd ./Tests/Resources/
   - unzip people.json.zip
   - cd ../../
   - composer install --prefer-source
+  - >
+    if [[ "$WITH_TWIG" == "yes" ]]; then
+      composer require twig/twig;
+    fi
+
 
 script:
   phpunit --bootstrap ./Tests/Unit/Bootstrap.php ./Tests/Unit
-
-#git:
-#  depth: 5

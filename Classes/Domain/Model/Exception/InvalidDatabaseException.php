@@ -18,5 +18,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\DataAccess\Exception
  */
-class InvalidDatabaseException extends RuntimeException {
+class InvalidDatabaseException extends RuntimeException
+{
 } 

@@ -1,17 +1,13 @@
 #!/usr/bin/env php
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__.'/_autoload.php';
 
 use Symfony\Component\Console\Application;
 
-$bootstrap = new \Cundd\PersistentObjectStore\Bootstrap();
+$bootstrap = new \Cundd\PersistentObjectStore\Bootstrap\Core();
 
 /** @var DI\Container $diContainer */
 $diContainer = $bootstrap->getDiContainer();
-
-/** @var \Cundd\PersistentObjectStore\Console\ConsoleCommand $consoleCommand */
-$consoleCommand = $diContainer->get('Cundd\\PersistentObjectStore\\Console\\ConsoleCommand');
-
 
 $application = new Application('Stairtower', \Cundd\PersistentObjectStore\Constants::VERSION);
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\ConsoleCommand'));
@@ -21,6 +17,12 @@ $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data
 
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\ListCommand'));
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\AddCommand'));
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\FilterCommand'));
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\FindCommand'));
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\RemoveCommand'));
+
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Cache\\ClearCommand'));
+
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Server\\StartCommand'));
+$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Server\\RouterStartCommand'));
 $application->run();

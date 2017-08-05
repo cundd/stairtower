@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Serializer;
+
 use Cundd\PersistentObjectStore\RuntimeException;
 
 /**
@@ -14,5 +15,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\Serializer
  */
-class Exception extends RuntimeException {
+class Exception extends RuntimeException
+{
 }

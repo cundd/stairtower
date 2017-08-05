@@ -8,32 +8,35 @@
 
 namespace Cundd\PersistentObjectStore\Formatter;
 
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+
 /**
  * Interface for data formatter responsible to transform Document objects into matching string representations
  *
  * @package Cundd\PersistentObjectStore\Formatter
  */
-interface FormatterInterface {
-	/**
-	 * Sets the configuration for the formatter
-	 *
-	 * @param $configuration
-	 * @return $this
-	 */
-	public function setConfiguration($configuration);
+interface FormatterInterface
+{
+    /**
+     * Sets the configuration for the formatter
+     *
+     * @param $configuration
+     * @return $this
+     */
+    public function setConfiguration($configuration);
 
-	/**
-	 * Formats the given input model(s)
-	 *
-	 * @param DocumentInterface|array<DocumentInterface> $inputModel
-	 * @return string
-	 */
-	public function format($inputModel);
+    /**
+     * Formats the given input
+     *
+     * @param DocumentInterface|DocumentInterface[]|\SplFixedArray|string $input
+     * @return string
+     */
+    public function format($input);
 
-	/**
-	 * Returns the content suffix for the formatter
-	 *
-	 * @return string
-	 */
-	public function getContentSuffix();
+    /**
+     * Returns the content suffix for the formatter
+     *
+     * @return string
+     */
+    public function getContentSuffix();
 }

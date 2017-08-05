@@ -12,15 +12,17 @@ namespace Cundd\PersistentObjectStore\System\Lock;
 use Cundd\PersistentObjectStore\AbstractCase;
 
 
-class FileLockWithAccessToFilePath extends FileLock {
-	/**
-	 * Returns the path to the lock file.
-	 *
-	 * @return	string
-	 */
-	public function getLockPath() {
-		return $this->_getLockPath();
-	}
+class FileLockWithAccessToFilePath extends FileLock
+{
+    /**
+     * Returns the path to the lock file.
+     *
+     * @return    string
+     */
+    public function getProtectedLockPath()
+    {
+        return $this->getLockPath();
+    }
 }
 
 /**
@@ -28,108 +30,116 @@ class FileLockWithAccessToFilePath extends FileLock {
  *
  * @package Cundd\PersistentObjectStore\System\Lock
  */
-class FileLockTest extends AbstractCase {
-	/**
-	 * @var LockInterface
-	 */
-	protected $fixture;
+class FileLockTest extends AbstractCase
+{
+    /**
+     * @var LockInterface
+     */
+    protected $fixture;
 
-	protected function tearDown() {
-		unset($this->fixture);
+    /**
+     * @test
+     */
+    public function lockTest()
+    {
+        $this->assertFalse($this->fixture->isLocked());
+        $this->fixture->lock();
+        $this->assertTrue($this->fixture->isLocked());
+        $this->fixture->unlock();
+        $this->assertFalse($this->fixture->isLocked());
+    }
 
-		parent::tearDown();
-	}
+    /**
+     * @test
+     */
+    public function unlockTest()
+    {
+        $this->fixture = new FileLockWithAccessToFilePath();
+        $lockPath      = $this->fixture->getProtectedLockPath();
 
-	/**
-	 * @test
-	 */
-	public function lockTest() {
-		$this->assertFalse($this->fixture->isLocked());
-		$this->fixture->lock();
-		$this->assertTrue($this->fixture->isLocked());
-		$this->fixture->unlock();
-		$this->assertFalse($this->fixture->isLocked());
-	}
+        $this->assertFalse($this->fixture->isLocked());
+        $this->fixture->lock();
+        $this->assertTrue($this->fixture->isLocked());
+        $this->fixture->unlock();
+        $this->assertFalse($this->fixture->isLocked());
+        $this->assertFileNotExists($lockPath);
 
-	/**
-	 * @test
-	 */
-	public function unlockTest() {
-		$this->fixture = new FileLockWithAccessToFilePath();
-		$lockPath = $this->fixture->getLockPath();
+        $this->fixture->lock();
+        $this->assertTrue($this->fixture->isLocked());
+        $this->assertFileExists($lockPath);
 
-		$this->assertFalse($this->fixture->isLocked());
-		$this->fixture->lock();
-		$this->assertTrue($this->fixture->isLocked());
-		$this->fixture->unlock();
-		$this->assertFalse($this->fixture->isLocked());
-		$this->assertFileNotExists($lockPath);
+        unset($this->fixture);
+        $this->assertFileNotExists($lockPath);
+    }
 
-		$this->fixture->lock();
-		$this->assertTrue($this->fixture->isLocked());
-		$this->assertFileExists($lockPath);
+    /**
+     * @test
+     */
+    public function tryLockTest()
+    {
+        $this->assertFalse($this->fixture->isLocked());
+        $this->fixture->tryLock();
+        $this->assertTrue($this->fixture->isLocked());
+        $this->fixture->unlock();
+        $this->assertFalse($this->fixture->isLocked());
+    }
 
-		unset($this->fixture);
-		$this->assertFileNotExists($lockPath);
-	}
+    /**
+     * @test
+     */
+    public function namedLockTest()
+    {
+        $this->fixture = new FileLockWithAccessToFilePath('lock-name/with-a-slash');
 
-	/**
-	 * @test
-	 */
-	public function tryLockTest() {
-		$this->assertFalse($this->fixture->isLocked());
-		$this->fixture->tryLock();
-		$this->assertTrue($this->fixture->isLocked());
-		$this->fixture->unlock();
-		$this->assertFalse($this->fixture->isLocked());
-	}
+        $this->assertFalse($this->fixture->isLocked());
+        $this->fixture->lock();
+        $this->assertTrue($this->fixture->isLocked());
+        $this->fixture->unlock();
+        $this->assertFalse($this->fixture->isLocked());
+    }
 
-	/**
-	 * @test
-	 */
-	public function namedLockTest() {
-		$this->fixture = new FileLockWithAccessToFilePath('lock-name/with-a-slash');
+    /**
+     * @test
+     */
+    public function namedUnlockTest()
+    {
+        $this->fixture = new FileLockWithAccessToFilePath('lock-name/with-a-slash');
+        $lockPath      = $this->fixture->getProtectedLockPath();
 
-		$this->assertFalse($this->fixture->isLocked());
-		$this->fixture->lock();
-		$this->assertTrue($this->fixture->isLocked());
-		$this->fixture->unlock();
-		$this->assertFalse($this->fixture->isLocked());
-	}
+        $this->assertFalse($this->fixture->isLocked());
+        $this->fixture->lock();
+        $this->assertTrue($this->fixture->isLocked());
+        $this->fixture->unlock();
+        $this->assertFalse($this->fixture->isLocked());
+        $this->assertFileNotExists($lockPath);
 
-	/**
-	 * @test
-	 */
-	public function namedUnlockTest() {
-		$this->fixture = new FileLockWithAccessToFilePath('lock-name/with-a-slash');
-		$lockPath = $this->fixture->getLockPath();
+        $this->fixture->lock();
+        $this->assertTrue($this->fixture->isLocked());
+        $this->assertFileExists($lockPath);
 
-		$this->assertFalse($this->fixture->isLocked());
-		$this->fixture->lock();
-		$this->assertTrue($this->fixture->isLocked());
-		$this->fixture->unlock();
-		$this->assertFalse($this->fixture->isLocked());
-		$this->assertFileNotExists($lockPath);
+        unset($this->fixture);
+        $this->assertFileNotExists($lockPath);
+    }
 
-		$this->fixture->lock();
-		$this->assertTrue($this->fixture->isLocked());
-		$this->assertFileExists($lockPath);
+    /**
+     * @test
+     */
+    public function namedTryLockTest()
+    {
+        $this->fixture = new FileLockWithAccessToFilePath('lock-name/with-a-slash');
 
-		unset($this->fixture);
-		$this->assertFileNotExists($lockPath);
-	}
+        $this->assertFalse($this->fixture->isLocked());
+        $this->fixture->tryLock();
+        $this->assertTrue($this->fixture->isLocked());
+        $this->fixture->unlock();
+        $this->assertFalse($this->fixture->isLocked());
+    }
 
-	/**
-	 * @test
-	 */
-	public function namedTryLockTest() {
-		$this->fixture = new FileLockWithAccessToFilePath('lock-name/with-a-slash');
+    protected function tearDown()
+    {
+        unset($this->fixture);
 
-		$this->assertFalse($this->fixture->isLocked());
-		$this->fixture->tryLock();
-		$this->assertTrue($this->fixture->isLocked());
-		$this->fixture->unlock();
-		$this->assertFalse($this->fixture->isLocked());
-	}
+        parent::tearDown();
+    }
 }
  

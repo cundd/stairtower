@@ -16,5 +16,6 @@ use Cundd\PersistentObjectStore\LogicException;
  *
  * @package Cundd\PersistentObjectStore\Filter\Exception
  */
-class InvalidComparisonException extends LogicException {
+class InvalidComparisonException extends LogicException
+{
 } 

@@ -17,20 +17,30 @@ use Symfony\Component\Console\Command\Command;
  *
  * @package Cundd\PersistentObjectStore\Console
  */
-abstract class AbstractCommand extends Command {
-	/**
-	 * Document Access Coordinator
-	 *
-	 * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
-	 * @Inject
-	 */
-	protected $coordinator;
+abstract class AbstractCommand extends Command
+{
+    /**
+     * Document Access Coordinator
+     *
+     * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
+     * @Inject
+     */
+    protected $coordinator;
 
-	/**
-	 * Serializer instance
-	 *
-	 * @var \Cundd\PersistentObjectStore\Serializer\DataInstanceSerializer
-	 * @Inject
-	 */
-	protected $serializer;
+    /**
+     * Serializer instance
+     *
+     * @var \Cundd\PersistentObjectStore\Serializer\DataInstanceSerializer
+     * @Inject
+     */
+    protected $serializer;
+
+    /**
+     * Formatter
+     *
+     * @var \Cundd\PersistentObjectStore\Formatter\JsonFormatter
+     * @Inject
+     */
+    protected $formatter;
+
 }

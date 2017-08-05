@@ -13,5 +13,6 @@ namespace Cundd\PersistentObjectStore\Server\Exception;
  *
  * @package Cundd\PersistentObjectStore\Server\Exception
  */
-class InvalidRequestParameterException extends InvalidRequestException {
+class InvalidRequestParameterException extends InvalidRequestException
+{
 } 

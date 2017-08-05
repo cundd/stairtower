@@ -7,6 +7,7 @@
  */
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
+
 use Cundd\PersistentObjectStore\KeyValueCodingInterface;
 
 /**
@@ -14,70 +15,71 @@ use Cundd\PersistentObjectStore\KeyValueCodingInterface;
  *
  * @package Cundd\PersistentObjectStore
  */
-interface DocumentInterface extends KeyValueCodingInterface {
-	/**
-	 * Returns the timestamp of the creation
-	 *
-	 * @return int
-	 */
-	public function getCreationTime();
+interface DocumentInterface extends KeyValueCodingInterface
+{
+    /**
+     * Returns the timestamp of the creation
+     *
+     * @return int
+     */
+    public function getCreationTime();
 
-	/**
-	 * Returns the timestamp of the last modification
-	 *
-	 * @return int
-	 */
-	public function getModificationTime();
+    /**
+     * Returns the timestamp of the last modification
+     *
+     * @return int
+     */
+    public function getModificationTime();
 
-	/**
-	 * Returns the associated database
-	 *
-	 * @return string
-	 */
-	public function getDatabaseIdentifier();
+    /**
+     * Returns the associated database
+     *
+     * @return string
+     */
+    public function getDatabaseIdentifier();
 
-	/**
-	 * Returns the global unique identifier
-	 *
-	 * @return string
-	 */
-	public function getGuid();
+    /**
+     * Returns the global unique identifier
+     *
+     * @return string
+     */
+    public function getGuid();
 
-	/**
-	 * Returns the ID
-	 *
-	 * @return string
-	 */
-	public function getId();
+    /**
+     * Returns the ID
+     *
+     * @return string
+     */
+    public function getId();
 
-	/**
-	 * Returns the underlying data
-	 *
-	 * @return mixed
-	 */
-	public function getData();
+    /**
+     * Returns the underlying data
+     *
+     * @return array
+     */
+    public function getData();
 
-	/**
-	 * Returns the value for the given key from the data
-	 *
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function valueForKey($key);
+    /**
+     * Returns the value for the given key from the data
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function valueForKey($key);
 
-	/**
-	 * Sets the value for the given key from the data
-	 *
-	 * @param mixed $value
-	 * @param string $key
-	 */
-	public function setValueForKey($value, $key);
+    /**
+     * Sets the value for the given key from the data
+     *
+     * @param mixed  $value
+     * @param string $key
+     */
+    public function setValueForKey($value, $key);
 
-	/**
-	 * Returns the value for the given key path from the data
-	 *
-	 * @param string $keyPath
-	 * @return mixed
-	 */
-	public function valueForKeyPath($keyPath);
+    /**
+     * Returns the value for the given key path from the data
+     *
+     * @param string $keyPath
+     * @return mixed
+     */
+    public function valueForKeyPath($keyPath);
 }

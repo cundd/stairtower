@@ -19,38 +19,43 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package Cundd\PersistentObjectStore\Console
  */
-class ListCommand extends AbstractCommand {
-	/**
-	 * Configure the command
-	 */
-	protected function configure() {
-		$this
-			->setName('data:list')
-			->setDescription('List data from a databases')
-			->addArgument(
-				'identifier',
-				InputArgument::REQUIRED,
-				'Unique name of the database to create'
-			)
-		;
-	}
+class ListCommand extends AbstractCommand
+{
+    /**
+     * Configure the command
+     */
+    protected function configure()
+    {
+        $this
+            ->setName('data:list')
+            ->setDescription('List data from a databases')
+            ->addArgument(
+                'identifier',
+                InputArgument::REQUIRED,
+                'Unique name of the database to create'
+            )
+            ->setAliases(['database:show']);
+    }
 
-	/**
-	 * Execute the command
-	 *
-	 * @param InputInterface  $input
-	 * @param OutputInterface $output
-	 * @return int|null|void
-	 */
-	protected function execute(InputInterface $input, OutputInterface $output) {
-		$databaseIdentifier = $input->getArgument('identifier');
-		if (!$databaseIdentifier) throw new \InvalidArgumentException('Missing database identifier argument', 1412524227);
-		$database = $this->coordinator->getDatabase($databaseIdentifier);
+    /**
+     * Execute the command
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $databaseIdentifier = $input->getArgument('identifier');
+        if (!$databaseIdentifier) {
+            throw new \InvalidArgumentException('Missing database identifier argument', 1412524227);
+        }
+        $database = $this->coordinator->getDatabase($databaseIdentifier);
 
-		/** @var DocumentInterface $document */
-		foreach ($database as $document) {
-			$description = sprintf('%s', $document->getGuid());
-			$output->writeln($description);
-		}
-	}
+        /** @var DocumentInterface $document */
+        foreach ($database as $document) {
+            $description = sprintf('%s', $document->getGuid());
+            $output->writeln($description);
+        }
+    }
 } 

@@ -13,5 +13,6 @@ namespace Cundd\PersistentObjectStore\Server\Exception;
  *
  * @package Cundd\PersistentObjectStore\Server\Exception
  */
-class InvalidServerChangeException extends ServerException {
+class InvalidServerChangeException extends ServerException
+{
 } 

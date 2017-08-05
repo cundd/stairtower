@@ -18,38 +18,41 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package Cundd\PersistentObjectStore\Console
  */
-class DropCommand extends AbstractCommand {
-	/**
-	 * Configure the command
-	 */
-	protected function configure() {
-		$this
-			->setName('database:drop')
-			->setDescription('Drop the given database')
-			->addArgument(
-				'identifier',
-				InputArgument::REQUIRED,
-				'Unique name of the database to remove'
-			)
+class DropCommand extends AbstractCommand
+{
+    /**
+     * Configure the command
+     */
+    protected function configure()
+    {
+        $this
+            ->setName('database:drop')
+            ->setDescription('Drop the given database')
+            ->addArgument(
+                'identifier',
+                InputArgument::REQUIRED,
+                'Unique name of the database to remove'
+            )
 //			->addOption(
 //				'yell',
 //				null,
 //				InputOption::VALUE_NONE,
 //				'If set, the task will yell in uppercase letters'
 //			)
-		;
-	}
+        ;
+    }
 
-	/**
-	 * Execute the command
-	 *
-	 * @param InputInterface  $input
-	 * @param OutputInterface $output
-	 * @return int|null|void
-	 */
-	protected function execute(InputInterface $input, OutputInterface $output) {
-		$databaseIdentifier = $input->getArgument('identifier');
-		$this->coordinator->dropDatabase($databaseIdentifier);
-		$output->writeln(sprintf('<info>Dropped database %s</info>', $databaseIdentifier));
-	}
+    /**
+     * Execute the command
+     *
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $databaseIdentifier = $input->getArgument('identifier');
+        $this->coordinator->dropDatabase($databaseIdentifier);
+        $output->writeln(sprintf('<info>Dropped database %s</info>', $databaseIdentifier));
+    }
 }

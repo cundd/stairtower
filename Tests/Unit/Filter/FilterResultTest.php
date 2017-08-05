@@ -6,175 +6,344 @@
  * Time: 16:13
  */
 
-namespace Cundd\PersistentObjectStore\DataAccess;
+namespace Cundd\PersistentObjectStore\Filter;
 
-use Cundd\PersistentObjectStore\AbstractDataBasedCase;
+use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Filter;
-use PHPUnit_Framework_TestCase;
+use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
+use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 
 /**
  * Test for Cundd\PersistentObjectStore\Filter\FilterResult
  *
  * @package Cundd\PersistentObjectStore\Filter
  */
-class FilterResultTest extends AbstractDataBasedCase {
-	/**
-	 * @var \Cundd\PersistentObjectStore\Filter\FilterResult
-	 */
-	protected $fixture;
+class FilterResultTest extends AbstractDatabaseBasedCase
+{
+    /**
+     * @var \Cundd\PersistentObjectStore\Filter\FilterResult
+     */
+    protected $fixture;
 
-	/**
-	 * @var Filter
-	 */
-	protected $filter;
+    /**
+     * @var Filter
+     */
+    protected $filter;
 
-	protected function setUp() {
-		$this->checkPersonFile();
+    /**
+     * @test
+     */
+    public function currentTest()
+    {
+        $currentObject = $this->fixture->current();
+        $this->assertNotNull($currentObject);
 
-		$this->setUpXhprof();
+        $this->assertNotNull($this->fixture->current());
+        $this->assertSame($currentObject, $this->fixture->current());
 
-		/** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
-		$coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
+        $this->assertSame('Nolan Byrd', $this->fixture->current()->valueForKeyPath('name'));
+        $this->assertContains('labore', $this->fixture->current()->valueForKeyPath('tags'));
 
-		$this->filter = new Filter();
+        $this->fixture->next();
+        $this->assertNotNull($this->fixture->current());
 
-//		$database = $coordinator->getDataByDatabase('contacts');
-//		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
+        $this->assertSame('Booker Oneil', $this->fixture->current()->valueForKeyPath('name'));
+        $this->assertContains('laboris', $this->fixture->current()->valueForKeyPath('tags'));
+    }
 
-		$database = $coordinator->getDatabase('people');
-		$this->filter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
-		$this->fixture = $this->filter->filterCollection($database);
-	}
+    /**
+     * @test
+     */
+    public function currentWithMoreConstraintsTest()
+    {
+        /** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
+        $coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
 
-	protected function tearDown() {
-		unset($this->filter);
-		unset($this->fixture);
-		parent::tearDown();
-	}
+        $filter = new Filter(new LogicalComparison(ComparisonInterface::TYPE_AND, [
+            new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'),
+            new PropertyComparison('name', ComparisonInterface::TYPE_EQUAL_TO, 'Booker Oneil'),
+        ]));
 
-	/**
-	 * @test
-	 */
-	public function currentTest() {
-		$currentObject = $this->fixture->current();
-		$this->assertNotNull($currentObject);
+        $database     = $coordinator->getDatabase('people');
+        $filterResult = $filter->filterCollection($database);
 
-		$this->assertNotNull($this->fixture->current());
-		$this->assertSame($currentObject, $this->fixture->current());
+        $currentObject = $filterResult->current();
+        $this->assertNotNull($currentObject);
 
-		$this->assertSame('Nolan Byrd', $this->fixture->current()->valueForKeyPath('name'));
-		$this->assertContains('labore', $this->fixture->current()->valueForKeyPath('tags'));
+        $this->assertNotNull($filterResult->current());
 
-		$this->fixture->next();
-		$this->assertNotNull($this->fixture->current());
+        $this->assertSame('Booker Oneil', $filterResult->current()->valueForKeyPath('name'));
+        $this->assertContains('laboris', $filterResult->current()->valueForKeyPath('tags'));
+    }
 
-		$this->assertSame('Booker Oneil', $this->fixture->current()->valueForKeyPath('name'));
-		$this->assertContains('laboris', $this->fixture->current()->valueForKeyPath('tags'));
-	}
+    /**
+     * @test
+     */
+    public function currentWithNestedConstraintsTest()
+    {
+        $database = $this->getSmallPeopleDatabase();
+        $filter = new Filter(
+            new LogicalComparison(
+                ComparisonInterface::TYPE_OR,
+                new LogicalComparison(
+                    ComparisonInterface::TYPE_AND,
+                    new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
+                    new PropertyComparison('age', ComparisonInterface::TYPE_LESS_THAN, 25)
+                ),
+                new LogicalComparison(
+                    ComparisonInterface::TYPE_AND,
+                    new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'),
+                    new PropertyComparison('age', ComparisonInterface::TYPE_LESS_THAN, 25)
+                )
+            )
+        );
+        $filterResult = $filter->filterCollection($database);
+        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertEquals(25, $filterResult->count());
 
-	/**
-	 * @test
-	 */
-	public function nextTest() {
-		$this->fixture->next();
-		$this->assertNotNull($this->fixture->current());
-		$this->assertSame('Booker Oneil', $this->fixture->current()->valueForKeyPath('name'));
-		$this->assertContains('laboris', $this->fixture->current()->valueForKeyPath('tags'));
-	}
+        $currentObject = $filterResult->current();
+        $this->assertNotNull($currentObject);
 
-	/**
-	 * @test
-	 */
-	public function countTest() {
-		$this->fixture->next();
-		$this->fixture->next();
-		$this->fixture->next();
-		$this->fixture->next();
-		$this->assertEquals(1713, $this->fixture->count());
-		$this->assertNotNull($this->fixture->current());
+        $this->assertSame('angelaroberts@cundd.net', $currentObject->valueForKey('email'));
+        $this->assertSame('Angela Roberts', $currentObject->valueForKey('name'));
+        $this->assertContains('tempor', $currentObject->valueForKey('tags'));
+        $this->assertContains('blue', $currentObject->valueForKey('eyeColor'));
 
-		iterator_to_array($this->fixture);
-		$this->assertEquals(1713, $this->fixture->count());
-	}
+        $filterResult->next();
+        $currentObject = $filterResult->current();
+        $this->assertNotNull($currentObject);
 
-	/**
-	 * @test
-	 * @expectedException \Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException
-	 */
-	public function iterateAndGetCurrentShouldThrowAnException() {
-		$this->assertEquals(1713, $this->fixture->count());
-		$this->assertNotNull($this->fixture->current());
+        $this->assertSame('elliottgentry@andershun.com', $currentObject->valueForKey('email'));
+        $this->assertSame('Elliott Gentry', $currentObject->valueForKey('name'));
+        $this->assertContains('aliqua', $currentObject->valueForKey('tags'));
+        $this->assertContains('green', $currentObject->valueForKey('eyeColor'));
 
-		iterator_to_array($this->fixture);
-		$this->assertEquals(1713, $this->fixture->count());
-		$this->assertNotNull($this->fixture->current());
-	}
 
-	/**
-	 * @test
-	 */
-	public function doALotOfThings() {
-		$exception = NULL;
-		$this->assertEquals(1713, $this->fixture->count());
-		$this->assertNotNull($this->fixture->current());
+        $filter = new Filter(
+            new LogicalComparison(
+                ComparisonInterface::TYPE_AND,
+                [
+                    new LogicalComparison(
+                        ComparisonInterface::TYPE_OR,
+                        [
+                            new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
+                            new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green')
+                        ]
+                    ),
+                    new PropertyComparison('age', ComparisonInterface::TYPE_LESS_THAN, 25)
+                ]
+            )
+        );
 
-		iterator_to_array($this->fixture);
-		$this->assertEquals(1713, $this->fixture->count());
+        $filterResult = $filter->filterCollection($database);
+        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertEquals(25, $filterResult->count());
 
-		try {
-			$this->fixture->rewind();
-			$this->fixture->next();
-			iterator_to_array($this->fixture);
-			$this->fixture->rewind();
+        $currentObject = $filterResult->current();
+        $this->assertNotNull($currentObject);
 
-			$i = 0;
-			while (++$i < $this->fixture->count()) {
-				$this->fixture->next();
-			}
-		} catch (\Exception $exception) {
-			echo $exception;
-		}
-		$this->assertNull($exception);
-	}
+        $this->assertSame('angelaroberts@cundd.net', $currentObject->valueForKey('email'));
+        $this->assertSame('Angela Roberts', $currentObject->valueForKey('name'));
+        $this->assertContains('tempor', $currentObject->valueForKey('tags'));
+        $this->assertContains('blue', $currentObject->valueForKey('eyeColor'));
 
-	/**
-	 * A test that should validate the behavior of data object references in a database
-	 *
-	 * @test
-	 */
-	public function objectLiveCycleTest() {
-		/** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
-		$coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
+        $filterResult->next();
+        $currentObject = $filterResult->current();
+        $this->assertNotNull($currentObject);
 
-		$newFilter = new Filter();
+        $this->assertSame('elliottgentry@andershun.com', $currentObject->valueForKey('email'));
+        $this->assertSame('Elliott Gentry', $currentObject->valueForKey('name'));
+        $this->assertContains('aliqua', $currentObject->valueForKey('tags'));
+        $this->assertContains('green', $currentObject->valueForKey('eyeColor'));
 
-//		$database = $coordinator->getDataByDatabase('contacts');
-//		$this->filter->addComparison(new Comparison('email', ComparisonInterface::TYPE_CONTAINS, '@cundd.net'));
 
-		$database = $coordinator->getDatabase('people');
-		$newFilter->addComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
-		$newFilterResult = $newFilter->filterCollection($database);
+        $filter = new Filter(
+            new LogicalComparison(
+                ComparisonInterface::TYPE_AND,
+                new LogicalComparison(
+                    ComparisonInterface::TYPE_OR,
+                    new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
+                    new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green')
+                ),
+                new PropertyComparison('age', ComparisonInterface::TYPE_LESS_THAN, 25)
+            )
+        );
 
-		/** @var DocumentInterface $memberFromNewFilter */
-		$memberFromNewFilter = $newFilterResult->current();
+        $filterResult = $filter->filterCollection($database);
+        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertEquals(25, $filterResult->count());
 
-		/** @var DocumentInterface $memberFromFixture */
-		$memberFromFixture = $this->fixture->current();
+        $currentObject = $filterResult->current();
+        $this->assertNotNull($currentObject);
 
-		$this->assertEquals($memberFromNewFilter, $memberFromFixture);
+        $this->assertSame('angelaroberts@cundd.net', $currentObject->valueForKey('email'));
+        $this->assertSame('Angela Roberts', $currentObject->valueForKey('name'));
+        $this->assertContains('tempor', $currentObject->valueForKey('tags'));
+        $this->assertContains('blue', $currentObject->valueForKey('eyeColor'));
 
-		$movie = 'Star Wars';
-		$key = 'favorite_movie';
+        $filterResult->next();
+        $currentObject = $filterResult->current();
+        $this->assertNotNull($currentObject);
 
-		$memberFromNewFilter->setValueForKey($movie, $key);
-		$this->assertEquals($memberFromNewFilter, $memberFromFixture);
-		$this->assertEquals(spl_object_hash($memberFromNewFilter), spl_object_hash($memberFromFixture));
-		$this->assertEquals($movie, $memberFromNewFilter->valueForKey($key));
-		$this->assertEquals($movie, $memberFromFixture->valueForKey($key));
+        $this->assertSame('elliottgentry@andershun.com', $currentObject->valueForKey('email'));
+        $this->assertSame('Elliott Gentry', $currentObject->valueForKey('name'));
+        $this->assertContains('aliqua', $currentObject->valueForKey('tags'));
+        $this->assertContains('green', $currentObject->valueForKey('eyeColor'));
+    }
 
-	}
+    /**
+     * @test
+     */
+    public function nextTest()
+    {
+        $this->fixture->next();
+        $this->assertNotNull($this->fixture->current());
+        $this->assertSame('Booker Oneil', $this->fixture->current()->valueForKeyPath('name'));
+        $this->assertContains('laboris', $this->fixture->current()->valueForKeyPath('tags'));
+    }
+
+    /**
+     * @test
+     */
+    public function countTest()
+    {
+        $this->fixture->next();
+        $this->fixture->next();
+        $this->fixture->next();
+        $this->fixture->next();
+        $this->assertEquals(24, $this->fixture->count());
+        $this->assertNotNull($this->fixture->current());
+
+        iterator_to_array($this->fixture);
+        $this->assertEquals(24, $this->fixture->count());
+    }
+
+    /**
+     * @test
+     * @expectedException \Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException
+     */
+    public function iterateAndGetCurrentShouldThrowAnException()
+    {
+        $this->assertEquals(24, $this->fixture->count());
+        $this->assertNotNull($this->fixture->current());
+
+        iterator_to_array($this->fixture);
+        $this->assertEquals(24, $this->fixture->count());
+        $this->assertNotNull($this->fixture->current());
+    }
+
+    /**
+     * @test
+     */
+    public function doALotOfThings()
+    {
+        $this->assertEquals(24, $this->fixture->count());
+        $this->assertNotNull($this->fixture->current());
+
+        iterator_to_array($this->fixture);
+        $this->assertEquals(24, $this->fixture->count());
+
+            $this->fixture->rewind();
+            $this->fixture->next();
+            iterator_to_array($this->fixture);
+            $this->fixture->rewind();
+
+            $i = 0;
+            while (++$i < $this->fixture->count()) {
+                $this->fixture->next();
+            }
+    }
+
+    /**
+     * A test that should validate the behavior of data object references in a database
+     *
+     * @test
+     */
+    public function objectLiveCycleTest()
+    {
+        $database = $this->getSmallPeopleDatabase();
+        $newFilter = new Filter(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
+        $newFilterResult = $newFilter->filterCollection($database);
+
+        /** @var DocumentInterface $memberFromNewFilter */
+        $memberFromNewFilter = $newFilterResult->current();
+
+        /** @var DocumentInterface $memberFromFixture */
+        $memberFromFixture = $this->fixture->current();
+
+        $this->assertEquals($memberFromNewFilter, $memberFromFixture);
+
+        $movie = 'Star Wars';
+        $key   = 'favorite_movie';
+
+        $memberFromNewFilter->setValueForKey($movie, $key);
+        $this->assertEquals($memberFromNewFilter, $memberFromFixture);
+        $this->assertEquals(spl_object_hash($memberFromNewFilter), spl_object_hash($memberFromFixture));
+        $this->assertEquals($movie, $memberFromNewFilter->valueForKey($key));
+        $this->assertEquals($movie, $memberFromFixture->valueForKey($key));
+    }
+
+    /**
+     * @test
+     */
+    public function filterNormalCollectionTest()
+    {
+        $exampleCollection = new \SplObjectStorage();
+        $exampleCollection->attach(new Document(array(
+            'name'    => 'Red Hot Chili Peppers',
+            'founded' => 1983,
+            'breakUp' => null,
+            'url'     => 'http://www.redhotchilipeppers.com/',
+        )));
+
+        $exampleCollection->attach(new Document(array(
+            'name'    => 'The Beatles',
+            'founded' => 1960,
+            'breakUp' => 1970,
+            'url'     => 'http://thebeatles.com/',
+        )));
+
+        $exampleCollection->attach(new Document(array(
+            'name'    => 'Pink Floyd',
+            'founded' => 1965,
+            'breakUp' => 2014,
+            'url'     => 'http://thebeatles.com/',
+        )));
+
+        $filter       = new Filter(new PropertyComparison('breakUp', ComparisonInterface::TYPE_LESS_THAN_OR_EQUAL_TO,
+            2014));
+        $filterResult = $filter->filterCollection($exampleCollection);
+
+        $this->assertEquals(3, $filterResult->count());
+
+
+        $exampleCollection->attach(new Document(array(
+            'name'    => 'Starflyer 59',
+            'founded' => 1993,
+            'breakUp' => null,
+            'url'     => 'http://www.sf59.com/',
+        )));
+
+        $this->assertEquals(3, $filterResult->count());
+    }
+
+    protected function setUp()
+    {
+        $this->setUpXhprof();
+
+        $database = $this->getSmallPeopleDatabase();
+        $this->filter = new Filter();
+        $this->filter->setComparison(new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'));
+        $this->fixture = $this->filter->filterCollection($database);
+    }
+
+    protected function tearDown()
+    {
+        unset($this->filter);
+        unset($this->fixture);
+        parent::tearDown();
+    }
 }
  

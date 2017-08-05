@@ -11,5 +11,6 @@ namespace Cundd\PersistentObjectStore\Filter\Exception;
 
 use Cundd\PersistentObjectStore\RuntimeException;
 
-class InvalidCollectionException extends RuntimeException{
+class InvalidCollectionException extends RuntimeException
+{
 } 

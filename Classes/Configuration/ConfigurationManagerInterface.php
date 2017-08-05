@@ -13,21 +13,22 @@ namespace Cundd\PersistentObjectStore\Configuration;
  *
  * @package Cundd\PersistentObjectStore\Configuration
  */
-interface ConfigurationManagerInterface {
-	/**
-	 * Returns the configuration for the given key path
-	 *
-	 * @param string $keyPath
-	 * @return mixed
-	 */
-	public function getConfigurationForKeyPath($keyPath);
+interface ConfigurationManagerInterface
+{
+    /**
+     * Returns the configuration for the given key path
+     *
+     * @param string $keyPath
+     * @return mixed
+     */
+    public function getConfigurationForKeyPath($keyPath);
 
-	/**
-	 * Sets the configuration for the given key path
-	 *
-	 * @param string $keyPath
-	 * @param mixed $value
-	 * @return $this
-	 */
-	public function setConfigurationForKeyPath($keyPath, $value);
+    /**
+     * Sets the configuration for the given key path
+     *
+     * @param string $keyPath
+     * @param mixed  $value
+     * @return $this
+     */
+    public function setConfigurationForKeyPath($keyPath, $value);
 }

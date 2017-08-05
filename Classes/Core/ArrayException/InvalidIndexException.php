@@ -16,5 +16,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
  *
  * @package Cundd\PersistentObjectStore\Core\ArrayException
  */
-class InvalidIndexException extends RuntimeException {
+class InvalidIndexException extends RuntimeException
+{
 } 

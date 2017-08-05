@@ -1,15 +1,19 @@
 {
-    "name": "cundd/persistent-object-store",
+    "name": "cundd/stairtower",
     "description": "A document storage entirely written in PHP",
-	"version": "0.0.1-dev",
+    "homepage": "http://stairtower.cundd.net",
     "require": {
-        "react/react": "0.4.*",
-		"mnapoli/php-di": "~4.0",
-		"symfony/console": "2.5.5"
+        "doctrine/annotations": "^1.2.7",
+        "doctrine/cache": "^1.6.0",
+        "monolog/monolog": "1.17",
+        "php-di/php-di": "^5.4.0",
+        "react/react": "0.4.2",
+        "symfony/console": "2.6",
+        "symfony/process": "2.6"
     },
-	"require-dev": {
-		"doctrine/dbal": "~2.4"
-	},
+    "require-dev": {
+        "phpunit/phpunit": "4.6.*"
+    },
     "license": "MIT",
     "authors": [
         {
@@ -17,9 +21,17 @@
             "email": "info@cundd.net"
         }
     ],
-	"autoload": {
-		"psr-4": {
-			"Cundd\\PersistentObjectStore\\": "Classes/"
-		}
-	}
+    "autoload": {
+        "psr-4": {
+            "Cundd\\PersistentObjectStore\\": "Classes/"
+        }
+    },
+    "bin": [
+        "bin/console",
+        "bin/server"
+    ],
+
+    "suggest": {
+        "twig/twig": "Provides the standard view implementation for the application framework"
+    }
 }

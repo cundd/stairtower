@@ -13,14 +13,34 @@ namespace Cundd\PersistentObjectStore\System\Lock;
  *
  * @package Cundd\PersistentObjectStore\System
  */
-class Factory {
-	/**
-	 * Creates a new Lock instance
-	 *
-	 * @param string $name Name of a named lock
-	 * @return LockInterface
-	 */
-	static public function createLock($name = NULL) {
-		return new FileLock($name);
-	}
+class Factory
+{
+    /**
+     * Implementation class for locks
+     *
+     * @var string
+     */
+    protected static $lockImplementationClass = 'Cundd\\PersistentObjectStore\\System\\Lock\\FileLock';
+
+    /**
+     * Creates a new Lock instance
+     *
+     * @param string $name Name of a named lock
+     * @return LockInterface
+     */
+    public static function createLock($name = null)
+    {
+        $class = (string)static::$lockImplementationClass;
+        return new $class($name);
+    }
+
+    /**
+     * Defines the implementation for locks
+     *
+     * @param string $className
+     */
+    public static function setLockImplementationClass($className)
+    {
+        static::$lockImplementationClass = $className;
+    }
 } 

@@ -14,5 +14,6 @@ use Cundd\PersistentObjectStore\LogicException;
  *
  * @package Cundd\PersistentObjectStore\Server\Exception
  */
-class InvalidEventLoopException extends LogicException {
+class InvalidEventLoopException extends LogicException
+{
 } 
