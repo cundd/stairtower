@@ -166,6 +166,14 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
             'blur',
             $this->makeInstance('Cundd\\StairWay\\Controller\\ApplicationController')
         ));
+        $this->assertEquals('/_cundd-stair_way-application/blur/people-small/0b5e3637477c?a=1&b=2',
+            $this->fixture->buildUriFor(
+                'blur',
+                'Cundd\\StairWay\\Controller\\ApplicationController',
+                $database,
+                $document,
+                ['a' => 1, 'b' => 2]
+            ));
     }
 
     /**
