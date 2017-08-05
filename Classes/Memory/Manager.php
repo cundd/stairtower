@@ -115,7 +115,7 @@ abstract class Manager implements ManagerInterface
      * @param bool   $graceful
      * @return array
      */
-    public static function getIdentifiersByTag(string $tag, boolean $graceful = false)
+    public static function getIdentifiersByTag(string $tag, bool $graceful = false)
     {
         if (!isset(self::$managedObjectTags[$tag])) {
             if (!$graceful) {
