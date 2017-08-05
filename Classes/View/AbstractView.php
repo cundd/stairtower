@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 21.03.15
- * Time: 20:38
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\View;
 
 /**
  * Abstract View class
- *
- * @package Cundd\PersistentObjectStore\View
  */
 abstract class AbstractView implements ViewInterface
 {
@@ -20,7 +13,7 @@ abstract class AbstractView implements ViewInterface
      *
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * @var string
@@ -32,9 +25,9 @@ abstract class AbstractView implements ViewInterface
      *
      * @param string $key
      * @param mixed  $value
-     * @return $this
+     * @return ViewInterface
      */
-    public function assign($key, $value)
+    public function assign(string $key, $value): ViewInterface
     {
         $this->data[$key] = $value;
 
@@ -45,20 +38,22 @@ abstract class AbstractView implements ViewInterface
      * Assign multiple values
      *
      * @param array $values
-     * @return $this
+     * @return ViewInterface
      */
-    public function assignMultiple($values)
+    public function assignMultiple(array $values): ViewInterface
     {
         $this->data = array_merge($this->data, (array)$values);
+
+        return $this;
     }
 
     /**
      * Sets the path to the template
      *
      * @param string $templatePath
-     * @return $this
+     * @return ViewInterface
      */
-    public function setTemplatePath($templatePath)
+    public function setTemplatePath(string $templatePath): ViewInterface
     {
         $this->templatePath = $templatePath;
 
@@ -70,9 +65,9 @@ abstract class AbstractView implements ViewInterface
      *
      * @return string
      */
-    public function getTemplatePath()
+    public function getTemplatePath(): string
     {
-        return $this->templatePath;
+        return (string)$this->templatePath;
     }
 
     function __toString()

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 20.09.14
- * Time: 16:16
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
@@ -25,40 +20,6 @@ class DocumentTest extends AbstractCase
     public function getGuidTest()
     {
         $this->assertEquals('congress_members-1', $this->fixture->getGuid());
-    }
-
-    /**
-     * @test
-     */
-    public function getCreationTimeTest()
-    {
-//		$this->assertEquals('ffffffffff', $this->fixture->getCreationTime());
-    }
-
-    /**
-     * @test
-     */
-    public function setCreationTimeTest()
-    {
-//		$this->fixture->setCreationTime($creationTime);
-//		$this->assertEquals('fffffffffffff', $this->getCreationTime($creationTime));
-    }
-
-    /**
-     * @test
-     */
-    public function getModificationTimeTest()
-    {
-//		$this->assertEquals('ffffffffff', $this->fixture->getModificationTime());
-    }
-
-    /**
-     * @test
-     */
-    public function setModificationTimeTest()
-    {
-//		$this->fixture->setModificationTime($modificationTime);
-//		$this->assertEquals('fffffffffffff', $this->getModificationTime($modificationTime));
     }
 
     /**
@@ -100,10 +61,10 @@ class DocumentTest extends AbstractCase
      */
     public function setDataTest()
     {
-        $data = array(
+        $data = [
             'name' => 'Daniel Corn',
             'job'  => 'Developer',
-        );
+        ];
         $this->fixture->setData($data);
         $this->assertEquals($data, $this->fixture->getData());
     }
@@ -114,8 +75,10 @@ class DocumentTest extends AbstractCase
     public function valueForKeyTest()
     {
         $this->assertEquals(1, $this->fixture->getId());
-        $this->assertEquals('Representative for Hawaii\'s 1st congressional district',
-            $this->fixture->valueForKey('description'));
+        $this->assertEquals(
+            'Representative for Hawaii\'s 1st congressional district',
+            $this->fixture->valueForKey('description')
+        );
         $this->assertEquals(1, $this->fixture->valueForKey('district'));
         $this->assertEquals('1986-10-18', $this->fixture->valueForKey('enddate'));
         $this->assertEquals(null, $this->fixture->valueForKey('leadership_title'));
@@ -144,8 +107,10 @@ class DocumentTest extends AbstractCase
     public function valueForKeyPathTest()
     {
         $this->assertEquals(1, $this->fixture->valueForKeyPath(Constants::DATA_ID_KEY));
-        $this->assertEquals('Representative for Hawaii\'s 1st congressional district',
-            $this->fixture->valueForKeyPath('description'));
+        $this->assertEquals(
+            'Representative for Hawaii\'s 1st congressional district',
+            $this->fixture->valueForKeyPath('description')
+        );
         $this->assertEquals(1, $this->fixture->valueForKeyPath('district'));
         $this->assertEquals('1986-10-18', $this->fixture->valueForKeyPath('enddate'));
         $this->assertEquals(null, $this->fixture->valueForKeyPath('leadership_title'));
@@ -190,7 +155,7 @@ class DocumentTest extends AbstractCase
     {
         $this->assertEmpty((new Document(false))->getData());
         $this->assertEmpty((new Document(null))->getData());
-        $this->assertEmpty((new Document(array()))->getData());
+        $this->assertEmpty((new Document([]))->getData());
         $this->assertEmpty((new Document(''))->getData());
     }
 
@@ -278,7 +243,9 @@ FIXTURE;
 
         $document->setDatabaseIdentifier('congress_members');
         $document->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : null);
-        $document->setModificationTime(isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : null);
+        $document->setModificationTime(
+            isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : null
+        );
 
         $this->fixture = $document;
     }

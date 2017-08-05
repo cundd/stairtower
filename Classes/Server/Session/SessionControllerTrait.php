@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.04.15
- * Time: 18:55
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Session;
 
@@ -13,12 +8,10 @@ use Cundd\PersistentObjectStore\Server\Cookie\Constants as CookieConstants;
 use Cundd\PersistentObjectStore\Server\Cookie\Cookie;
 use Cundd\PersistentObjectStore\Server\Session\Constants as SessionConstants;
 use Cundd\PersistentObjectStore\Server\ValueObject\MutableControllerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 
 /**
  * A trait to provide a controller with the ability to load a session
- *
- * @package Cundd\PersistentObjectStore\Server\Session
  */
 trait SessionControllerTrait
 {
@@ -57,15 +50,17 @@ trait SessionControllerTrait
      * @param array   $headers
      * @return MutableControllerResultInterface
      */
-    public function buildResponse($statusCode = null, $data = null, $contentType = null, $headers = array())
+    public function buildResponse($statusCode = 0, $data = null, $contentType = '', $headers = [])
     {
-        $response      = new MutableControllerResult($statusCode, $data, $contentType, $headers);
+        $response = new MutableControllerResult($statusCode, $data, $contentType, $headers);
         $sessionCookie = new Cookie(SessionConstants::SESSION_ID_COOKIE_NAME, $this->getSession()->getIdentifier());
 
-        $response->setHeaders(array_merge(
-            $response->getHeaders(),
-            [CookieConstants::SET_COOKIE_HEADER_NAME => $sessionCookie->toHeader()]
-        ));
+        $response->setHeaders(
+            array_merge(
+                $response->getHeaders(),
+                [CookieConstants::SET_COOKIE_HEADER_NAME => $sessionCookie->toHeader()]
+            )
+        );
         //$response->addHeader(
         //    CookieConstants::SET_COOKIE_HEADER_NAME,
         //    $sessionCookie->toHeader()
@@ -77,7 +72,7 @@ trait SessionControllerTrait
     /**
      * Returns the current Request Info instance
      *
-     * @return Request
+     * @return RequestInterface
      */
-    abstract public function getRequest();
+    abstract public function getRequest(): ?RequestInterface;
 }

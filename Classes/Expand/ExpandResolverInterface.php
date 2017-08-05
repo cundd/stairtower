@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 29.12.14
- * Time: 15:55
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Expand;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
 /**
  * Interface for the class that will fetch the Documents and set the property according to a Expand configuration
- *
- * @package Cundd\PersistentObjectStore\Expand
  */
 interface ExpandResolverInterface
 {

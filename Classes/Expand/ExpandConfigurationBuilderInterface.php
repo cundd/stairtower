@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 29.12.14
- * Time: 15:48
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Expand;
 
 /**
  * Interface for Expand configuration builders
- *
- * @package Cundd\PersistentObjectStore\Expand
  */
 interface ExpandConfigurationBuilderInterface
 {

@@ -1,15 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 02.04.15
- * Time: 16:33
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
 
-interface RequestInterface {
+interface RequestInterface
+{
     /**
      * Returns the request body
      *

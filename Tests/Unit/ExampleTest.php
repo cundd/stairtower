@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 21.09.14
- * Time: 22:21
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore;
 
@@ -15,8 +10,6 @@ use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 
 /**
  * Tests case that shows and proofs the usage of the database
- *
- * @package Cundd\PersistentObjectStore
  */
 class ExampleTest extends AbstractDataBasedCase
 {
@@ -52,8 +45,12 @@ class ExampleTest extends AbstractDataBasedCase
         $this->assertContains('brown', $currentObject->valueForKey('eyeColor'));
 
         // Brown eyes are ok, but lets search for someone with blue eyes
-        $filterResult = $database->filter(new Filter\Comparison\PropertyComparison('eyeColor',
-            ComparisonInterface::TYPE_EQUAL_TO, 'blue'));
+        $filterResult = $database->filter(
+            new Filter\Comparison\PropertyComparison(
+                'eyeColor',
+                ComparisonInterface::TYPE_EQUAL_TO, 'blue'
+            )
+        );
 
         $currentObject = $filterResult->current();
         $this->assertNotNull($currentObject);
@@ -65,11 +62,12 @@ class ExampleTest extends AbstractDataBasedCase
 
         // Ok, that's a guy... lets look for a girl
         $filterResult = $database->filter(
-            new Filter\Comparison\LogicalComparison(ComparisonInterface::TYPE_AND,
-                array(
+            new Filter\Comparison\LogicalComparison(
+                ComparisonInterface::TYPE_AND,
+                [
                     new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
                     new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'female'),
-                )
+                ]
             )
         );
 
@@ -94,9 +92,13 @@ class ExampleTest extends AbstractDataBasedCase
 //		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
 
         // Let's see how many people in the database have blue eyes
-        $filterResult = $database->filter(new Filter\Comparison\PropertyComparison('eyeColor',
-            ComparisonInterface::TYPE_EQUAL_TO, 'blue'));
-        $blueEyes     = $filterResult->count();
+        $filterResult = $database->filter(
+            new Filter\Comparison\PropertyComparison(
+                'eyeColor',
+                ComparisonInterface::TYPE_EQUAL_TO, 'blue'
+            )
+        );
+        $blueEyes = $filterResult->count();
         $this->assertSame(1684, $blueEyes);
 
         $endTime = microtime(true);
@@ -104,9 +106,13 @@ class ExampleTest extends AbstractDataBasedCase
 
 
         // Let's see how many people in the database have brown eyes
-        $filterResult = $database->filter(new Filter\Comparison\PropertyComparison('eyeColor',
-            ComparisonInterface::TYPE_EQUAL_TO, 'brown'));
-        $brownEyes    = $filterResult->count();
+        $filterResult = $database->filter(
+            new Filter\Comparison\PropertyComparison(
+                'eyeColor',
+                ComparisonInterface::TYPE_EQUAL_TO, 'brown'
+            )
+        );
+        $brownEyes = $filterResult->count();
         $this->assertSame(1601, $brownEyes);
 
         $endTime = microtime(true);
@@ -114,8 +120,12 @@ class ExampleTest extends AbstractDataBasedCase
 
 
         // Let's see how many people in the database have brown or blue eyes
-        $filterResult  = $database->filter(new Filter\Comparison\PropertyComparison('eyeColor',
-            ComparisonInterface::TYPE_IN, array('blue', 'brown')));
+        $filterResult = $database->filter(
+            new Filter\Comparison\PropertyComparison(
+                'eyeColor',
+                ComparisonInterface::TYPE_IN, ['blue', 'brown']
+            )
+        );
         $blueBrownEyes = $filterResult->count();
         $this->assertSame($blueEyes + $brownEyes, $blueBrownEyes);
 
@@ -124,21 +134,30 @@ class ExampleTest extends AbstractDataBasedCase
 
 
         $filterResult = $database->filter(
-            new Filter\Comparison\LogicalComparison(ComparisonInterface::TYPE_OR,
-                new Filter\Comparison\LogicalComparison(ComparisonInterface::TYPE_AND,
-                    array(
-                        new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO,
-                            'brown'),
+            new Filter\Comparison\LogicalComparison(
+                ComparisonInterface::TYPE_OR,
+                new Filter\Comparison\LogicalComparison(
+                    ComparisonInterface::TYPE_AND,
+                    [
+                        new Filter\Comparison\PropertyComparison(
+                            'eyeColor', ComparisonInterface::TYPE_EQUAL_TO,
+                            'brown'
+                        ),
                         new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'male'),
-                    )
+                    ]
                 ),
-                new Filter\Comparison\LogicalComparison(ComparisonInterface::TYPE_AND,
-                    array(
-                        new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO,
-                            'blue'),
-                        new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO,
-                            'female'),
-                    )
+                new Filter\Comparison\LogicalComparison(
+                    ComparisonInterface::TYPE_AND,
+                    [
+                        new Filter\Comparison\PropertyComparison(
+                            'eyeColor', ComparisonInterface::TYPE_EQUAL_TO,
+                            'blue'
+                        ),
+                        new Filter\Comparison\PropertyComparison(
+                            'gender', ComparisonInterface::TYPE_EQUAL_TO,
+                            'female'
+                        ),
+                    ]
                 )
             )
         );

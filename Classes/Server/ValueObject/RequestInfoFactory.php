@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 10.10.14
- * Time: 14:59
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
@@ -15,8 +10,6 @@ use React\Http\Request as BaseRequest;
 
 /**
  * Factory for Request instances
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
 class RequestInfoFactory
 {
@@ -41,10 +34,10 @@ class RequestInfoFactory
             return $request;
         }
 
-        $pathParts           = explode('/', $request->getPath());
-        $pathParts           = array_values(array_filter($pathParts));
-        $dataIdentifier      = null;
-        $databaseIdentifier  = null;
+        $pathParts = explode('/', $request->getPath());
+        $pathParts = array_values(array_filter($pathParts));
+        $dataIdentifier = null;
+        $databaseIdentifier = null;
         $controllerClassName = null;
 
         if (count($pathParts) >= 2) {
@@ -66,7 +59,7 @@ class RequestInfoFactory
             list($controllerClassName, $handlerAction) = $controllerAndActionArray;
 
             $databaseIdentifier = isset($pathParts[2]) ? $pathParts[2] : null;
-            $dataIdentifier     = isset($pathParts[3]) ? $pathParts[3] : null;
+            $dataIdentifier = isset($pathParts[3]) ? $pathParts[3] : null;
         }
 
         $cookies = [];
@@ -99,6 +92,7 @@ class RequestInfoFactory
         if (!$factoryInstance) {
             $factoryInstance = new self();
         }
+
         return $factoryInstance->buildRequestFromRawRequest($request);
     }
 
@@ -112,7 +106,7 @@ class RequestInfoFactory
     public static function getHandlerClassForRequest($request)
     {
         $default = 'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface';
-        $path    = $request->getPath();
+        $path = $request->getPath();
         if (!$path) {
             return $default;
         }
@@ -182,7 +176,7 @@ class RequestInfoFactory
         // Generate the Controller class name
         $controllerClassName = $controllerIdentifier;
         $controllerClassName = str_replace(' ', '', ucwords(str_replace('_', ' ', $controllerClassName)));
-        $lastUnderscore      = strrpos($controllerClassName, '-');
+        $lastUnderscore = strrpos($controllerClassName, '-');
         $controllerClassName = str_replace(' ', '\\', ucwords(str_replace('-', ' ', $controllerClassName)));
         $controllerClassName = ''
             . substr($controllerClassName, 0, $lastUnderscore + 1)
@@ -194,7 +188,7 @@ class RequestInfoFactory
             return false;
         }
 
-        $method     = $request->getMethod();
+        $method = $request->getMethod();
         $actionName = GeneralUtility::underscoreToCamelCase(strtolower($method) . '_' . $actionIdentifier) . 'Action';
         if (!ctype_alnum($actionName)) {
             throw new InvalidRequestActionException('Action name must be alphanumeric', 1420547305);
@@ -203,7 +197,7 @@ class RequestInfoFactory
         // Don't check if the action exists here
         // if (!method_exists($controllerClassName, $actionName)) return false;
 
-        return array($controllerClassName, $actionName);
+        return [$controllerClassName, $actionName];
     }
 
     /**
@@ -230,7 +224,7 @@ class RequestInfoFactory
      */
     protected static function getActionForRequestAndClass($request, $interface)
     {
-        $path   = $request->getPath();
+        $path = $request->getPath();
         $method = $request->getMethod();
         if (!$path) {
             return false;
@@ -262,7 +256,7 @@ class RequestInfoFactory
      */
     public static function getServerActionForRequest($request)
     {
-        $path   = $request->getPath();
+        $path = $request->getPath();
         $method = $request->getMethod();
         $path = ltrim($path, '/');
         if (!$path || $path[0] !== '_' || $method !== 'POST') {
@@ -270,7 +264,7 @@ class RequestInfoFactory
         }
         list($action,) = explode('/', substr($path, 1), 2);
 
-        if (in_array($action, array('shutdown', 'restart',))) {
+        if (in_array($action, ['shutdown', 'restart',])) {
             return $action;
         }
 
@@ -281,7 +275,7 @@ class RequestInfoFactory
      * Creates a copy of the given Request Info with the given body
      *
      * @param Request $requestInfo
-     * @param mixed       $body
+     * @param mixed   $body
      * @return Request
      */
     public static function copyWithBody($requestInfo, $body)

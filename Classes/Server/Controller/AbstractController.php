@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.01.15
- * Time: 11:04
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Controller;
 
@@ -12,14 +7,12 @@ use Cundd\PersistentObjectStore\Server\Exception\RequestMethodNotImplementedExce
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 use Cundd\PersistentObjectStore\View\ViewControllerInterface;
-use React\Http\Response;
 use React\Stream\WritableStreamInterface;
 
 /**
  * An abstract Controller implementation
- *
- * @package Cundd\PersistentObjectStore\Server\Controller
  */
 abstract class AbstractController implements ControllerInterface
 {
@@ -35,82 +28,47 @@ abstract class AbstractController implements ControllerInterface
      *
      * @return void
      */
-    public function initialize()
+    public function initialize(): void
     {
     }
 
-    /**
-     * Sets the Request Info for the current request
-     *
-     * @param Request $request
-     * @return $this
-     */
-    public function setRequest(Request $request)
+    public function setRequest(RequestInterface $request): ControllerInterface
     {
         $this->request = $request;
+
         return $this;
     }
 
-    /**
-     * Returns the current Request Info instance
-     *
-     * @return Request
-     */
-    public function getRequest()
+    public function getRequest(): ?RequestInterface
     {
         return $this->request;
     }
 
-    /**
-     * Unset the Request Info instance after the request has been processed
-     *
-     * This method will be called to free the Request Info instance
-     *
-     * @return void
-     */
-    public function unsetRequest()
+    public function unsetRequest(): void
     {
         $this->request = null;
     }
 
-    /**
-     * Will be invoked before the actual action method is called but after the Request Info has been set
-     *
-     * @param string $action
-     * @return void
-     */
-    public function willInvokeAction($action)
+    public function willInvokeAction(string $action): void
     {
         if ($this instanceof ViewControllerInterface) {
             $templatePath = $this->getTemplatePath($action);
             $this->getView()->setTemplatePath($templatePath);
-            $this->getView()->assignMultiple(array(
-                'appNamespace' => $this->getUriBuilder()->getControllerNamespaceForController($this),
-                'action'       => $this->getRequest()->getActionName(),
-            ));
+            $this->getView()->assignMultiple(
+                [
+                    'appNamespace' => $this->getUriBuilder()->getControllerNamespaceForController($this),
+                    'action'       => $this->getRequest()->getActionName(),
+                ]
+            );
         }
     }
 
-    /**
-     * Will be invoked after the actual action method is called
-     *
-     * @param string                    $action
-     * @param ControllerResultInterface $result
-     */
-    public function didInvokeAction($action, ControllerResultInterface $result)
+    public function didInvokeAction(string $action, ControllerResultInterface $result)
     {
     }
 
-    /**
-     * Process the given request
-     *
-     * The result output is returned by altering the given response.
-     *
-     * @param Request                          $request
-     * @param WritableStreamInterface|Response $response The response, modified by this handler
-     * @return mixed Returns the result of the processing
-     */
-    public function processRequest(Request $request, WritableStreamInterface $response) {
+    public function processRequest(RequestInterface $request, WritableStreamInterface $response)
+    {
         if (!method_exists($this, $request->getAction())) {
             throw new RequestMethodNotImplementedException(
                 sprintf('Request method %s is not defined', $request->getAction()),
@@ -154,13 +112,16 @@ abstract class AbstractController implements ControllerInterface
     /**
      * Returns the argument to be passed to the action
      *
-     * @param Request $request Request info object
-     * @param string $action Action name
-     * @param bool $noArgument Reference the will be set to true if no argument should be passed
+     * @param RequestInterface $request    Request info object
+     * @param string           $action     Action name
+     * @param bool             $noArgument Reference the will be set to true if no argument should be passed
      * @return mixed
      */
-    protected function prepareArgumentForRequestAndAction($request, $action, &$noArgument = false)
-    {
+    protected function prepareArgumentForRequestAndAction(
+        RequestInterface $request,
+        string $action,
+        &$noArgument = false
+    ) {
         return $request->getBody();
     }
 }

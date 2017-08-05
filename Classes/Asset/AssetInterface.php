@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.04.15
- * Time: 19:44
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Asset;
 
 /**
  * Interface for Assets
- *
- * @package Cundd\PersistentObjectStore\Asset
  */
 interface AssetInterface
 {
@@ -20,19 +13,19 @@ interface AssetInterface
      *
      * @return string
      */
-    public function getUri();
+    public function getUri(): string;
 
     /**
      * Returns the content of the asset
      *
      * @return string
      */
-    public function getContent();
+    public function getContent(): string;
 
     /**
      * Returns the content type for the asset
      *
      * @return string
      */
-    public function getContentType();
+    public function getContentType(): string;
 }

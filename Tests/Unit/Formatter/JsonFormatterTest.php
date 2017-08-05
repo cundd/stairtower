@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 07.01.15
- * Time: 21:16
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Formatter;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Domain\Model\Document;
 
 /**
  * Test class for JsonFormatter
- *
- * @package Cundd\PersistentObjectStore\Formatter
  */
 class JsonFormatterTest extends AbstractCase
 {
@@ -36,7 +29,7 @@ class JsonFormatterTest extends AbstractCase
         $expected = '{
     "a key": "a value"
 }';
-        $this->assertEquals($expected, $this->fixture->format(array('a key' => 'a value')));
+        $this->assertEquals($expected, $this->fixture->format(['a key' => 'a value']));
 
         $expected = '{
     "a key": "a value",
@@ -47,7 +40,7 @@ class JsonFormatterTest extends AbstractCase
         "modificationTime": null
     }
 }';
-        $this->assertEquals($expected, $this->fixture->format(new Document(array('a key' => 'a value'))));
+        $this->assertEquals($expected, $this->fixture->format(new Document(['a key' => 'a value'])));
 
         $expected = '[
     {
@@ -57,10 +50,15 @@ class JsonFormatterTest extends AbstractCase
         "second key": "second value"
     }
 ]';
-        $this->assertEquals($expected, $this->fixture->format([
-            new Document(array('a key' => 'a value')),
-            new Document(array('second key' => 'second value')),
-        ]));
+        $this->assertEquals(
+            $expected,
+            $this->fixture->format(
+                [
+                    new Document(['a key' => 'a value']),
+                    new Document(['second key' => 'second value']),
+                ]
+            )
+        );
     }
 
     /**

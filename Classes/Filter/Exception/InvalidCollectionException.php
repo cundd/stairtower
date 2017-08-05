@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 01.09.14
- * Time: 22:25
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter\Exception;
 

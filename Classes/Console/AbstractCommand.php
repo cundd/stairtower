@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.10.14
- * Time: 16:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console;
 
@@ -14,8 +9,6 @@ use Symfony\Component\Console\Command\Command;
 
 /**
  * Abstract command
- *
- * @package Cundd\PersistentObjectStore\Console
  */
 abstract class AbstractCommand extends Command
 {

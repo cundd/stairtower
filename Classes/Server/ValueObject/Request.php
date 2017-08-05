@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 10.10.14
- * Time: 14:49
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
@@ -18,8 +13,6 @@ use React\Http\Request as BaseRequest;
 
 /**
  * Object that holds information about a parsed request
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
 class Request implements Immutable, RequestInterface
 {
@@ -99,7 +92,7 @@ class Request implements Immutable, RequestInterface
         $action = null,
         $controllerClass = null,
         $body = null,
-        $cookies = array()
+        $cookies = []
     ) {
         if ($method) {
             GeneralUtility::assertRequestMethod($method);
@@ -110,14 +103,14 @@ class Request implements Immutable, RequestInterface
         if ($databaseIdentifier) {
             GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
         }
-        $this->method             = $method;
-        $this->dataIdentifier     = $dataIdentifier;
+        $this->method = $method;
+        $this->dataIdentifier = $dataIdentifier;
         $this->databaseIdentifier = $databaseIdentifier;
-        $this->action             = $action ?: null;
-        $this->originalRequest    = $request;
-        $this->controllerClass    = $controllerClass ?: null;
-        $this->body               = $body ?: null;
-        $this->cookies            = $cookies;
+        $this->action = $action ?: null;
+        $this->originalRequest = $request;
+        $this->controllerClass = $controllerClass ?: null;
+        $this->body = $body ?: null;
+        $this->cookies = $cookies;
     }
 
     /**
@@ -193,7 +186,7 @@ class Request implements Immutable, RequestInterface
             return null;
         }
         $actionPrefix = substr($action, 0, 3);
-        $nameOffset   = 0;
+        $nameOffset = 0;
         switch ($actionPrefix) {
             case 'get':
             case 'put':
@@ -254,17 +247,17 @@ class Request implements Immutable, RequestInterface
             return ContentType::JSON_APPLICATION;
         }
         $headers = $this->getHeaders();
-        $accept  = '*/*';
+        $accept = '*/*';
         if (isset($headers['Accept'])) {
             $accept = $headers['Accept'];
         }
 
         $acceptedTypes = explode(',', $accept);
-        $sorting       = array(
+        $sorting = [
             ContentType::JSON_APPLICATION => array_search('application/json', $acceptedTypes),
             ContentType::HTML_TEXT        => array_search('text/html', $acceptedTypes),
             ContentType::XML_TEXT         => array_search('text/xml', $acceptedTypes),
-        );
+        ];
 
         if ($sorting[ContentType::JSON_APPLICATION] === false) {
             $sorting[ContentType::JSON_APPLICATION] = 1000;
@@ -397,7 +390,7 @@ class Request implements Immutable, RequestInterface
         }
 
         if (count($arguments) > 0) {
-            return call_user_func_array(array($this->originalRequest, $name), $arguments);
+            return call_user_func_array([$this->originalRequest, $name], $arguments);
         }
 
         return $this->originalRequest->$name();

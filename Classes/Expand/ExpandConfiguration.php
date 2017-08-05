@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 29.12.14
- * Time: 15:48
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Expand;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\Immutable;
 
 /**
  * Expand configurations
- *
- * @package Cundd\PersistentObjectStore\Expand
  */
 class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
 {
@@ -80,9 +73,9 @@ class ExpandConfiguration implements ExpandConfigurationInterface, Immutable
             throw new InvalidConfigurationException('Foreign property key must not be empty', 1419938513);
         }
 
-        $this->localKey           = $localKey;
+        $this->localKey = $localKey;
         $this->databaseIdentifier = $databaseIdentifier;
-        $this->foreignKey         = $foreignKey;
+        $this->foreignKey = $foreignKey;
         $this->asKey = $asKey;
         $this->expandToMany = $expandToMany ? true : false;
     }

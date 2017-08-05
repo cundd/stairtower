@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 18.10.14
- * Time: 13:40
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Memory;
 
@@ -19,32 +14,32 @@ interface ManagerInterface
      * @param object $object
      * @param string $identifier
      * @param array  $tags
+     * @return
      */
-    public static function registerObject($object, $identifier, $tags = array());
+    public static function registerObject($object, string $identifier, array $tags = []);
 
     /**
      * Returns the object for the given identifier or FALSE if it was not found
      *
      * @param string $identifier
-     * @return object|bool
+     * @return bool|object
      */
-    public static function getObject($identifier);
+    public static function getObject(string $identifier);
 
     /**
      * Returns if an object for the given identifier is registered
      *
      * @param string $identifier
-     * @return object|bool
+     * @return bool|object
      */
-    public static function hasObject($identifier);
+    public static function hasObject(string $identifier);
 
     /**
      * Frees the object with the given identifier from the Memory Manager
      *
      * @param string $identifier
-     * @throws ManagerException if no object for the given identifier is registered
      */
-    public static function free($identifier);
+    public static function free(string $identifier);
 
 
     /**
@@ -53,9 +48,8 @@ interface ManagerInterface
      * @param string $tag
      * @param bool   $graceful
      * @return array
-     * @throws ManagerException if the given tag is not found an graceful is FALSE
      */
-    public static function getIdentifiersByTag($tag, $graceful = false);
+    public static function getIdentifiersByTag(string $tag, bool $graceful = false);
 
     /**
      * Returns all objects with a given tag
@@ -63,15 +57,15 @@ interface ManagerInterface
      * @param string $tag
      * @return array
      */
-    public static function getObjectsByTag($tag);
+    public static function getObjectsByTag(string $tag);
 
     /**
      * Free all objects with a given tag
      *
      * @param string $tag
-     * @return array
+     * @return
      */
-    public static function freeObjectsByTag($tag);
+    public static function freeObjectsByTag(string $tag);
 
     /**
      * Frees all managed objects

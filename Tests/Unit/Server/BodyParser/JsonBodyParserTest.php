@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 13.10.14
- * Time: 17:17
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\BodyParser;
 
@@ -165,8 +160,6 @@ class JsonBodyParserTest_DummyRequestClass implements RequestInterface
 
 /**
  * JSON based body parser
- *
- * @package Cundd\PersistentObjectStore\Server\BodyParser
  */
 class JsonBodyParserTest extends AbstractCase
 {
@@ -184,22 +177,26 @@ class JsonBodyParserTest extends AbstractCase
         /** @var RequestInterface $dummyRequest */
         $dummyRequest = new JsonBodyParserTest_DummyRequestClass();
         $this->assertArrayHasKey('email', $this->fixture->parse('{"email":"info@cundd.net"}', $dummyRequest));
-        $this->assertArrayHasKey('email',
-            $this->fixture->parse('{"email":"info@cundd.net","name":"Daniel"}', $dummyRequest));
-        $this->assertArrayHasKey('email',
-            $this->fixture->parse('{"name":"Daniel","email":"info@cundd.net"}', $dummyRequest));
+        $this->assertArrayHasKey(
+            'email',
+            $this->fixture->parse('{"email":"info@cundd.net","name":"Daniel"}', $dummyRequest)
+        );
+        $this->assertArrayHasKey(
+            'email',
+            $this->fixture->parse('{"name":"Daniel","email":"info@cundd.net"}', $dummyRequest)
+        );
 
 
-        $testContent = array(
-            array(
+        $testContent = [
+            [
                 'email' => 'info@cundd.net',
                 'name'  => 'Daniel',
-            ),
-            array(
+            ],
+            [
                 'email' => 'spm@cundd.net',
                 'name'  => 'Superman',
-            ),
-        );
+            ],
+        ];
         $this->assertEquals($testContent, $this->fixture->parse(json_encode($testContent), $dummyRequest));
     }
 

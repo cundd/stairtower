@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11.10.14
- * Time: 20:07
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Utility;
 
@@ -12,10 +7,8 @@ use Cundd\PersistentObjectStore\Server\ContentType;
 
 /**
  * Tests for the ContentType Utility
- *
- * @package Cundd\PersistentObjectStore\Utility
  */
-class ContentTypeUtilityTest extends \PHPUnit_Framework_TestCase
+class ContentTypeUtilityTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @test

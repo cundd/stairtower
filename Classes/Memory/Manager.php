@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 17.10.14
- * Time: 12:52
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Memory;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\Memory\Exception\ManagerException;
 
 /**
  * The Memory Manager tries to help managing the used and available memory
- *
- * @package Cundd\PersistentObjectStore
  */
 abstract class Manager implements ManagerInterface
 {
@@ -22,14 +15,14 @@ abstract class Manager implements ManagerInterface
      *
      * @var array
      */
-    protected static $managedObjects = array();
+    protected static $managedObjects = [];
 
     /**
      * A collection tags
      *
      * @var array
      */
-    protected static $managedObjectTags = array();
+    protected static $managedObjectTags = [];
 
     /**
      * Returns all registered objects
@@ -48,13 +41,15 @@ abstract class Manager implements ManagerInterface
      * @param string $identifier
      * @param array  $tags
      */
-    public static function registerObject($object, $identifier, $tags = array())
+    public static function registerObject($object, string $identifier, array $tags = [])
     {
         if (!is_string($identifier)) {
-            throw new ManagerException('Given identifier is not of type string. Maybe the arguments are swapped',
-                1413544400);
+            throw new ManagerException(
+                'Given identifier is not of type string. Maybe the arguments are swapped',
+                1413544400
+            );
         }
-        $identifier                        = self::prepareIdentifier($identifier);
+        $identifier = self::prepareIdentifier($identifier);
         self::$managedObjects[$identifier] = $object;
 
         foreach ($tags as $tag) {
@@ -71,12 +66,15 @@ abstract class Manager implements ManagerInterface
     public static function prepareIdentifier($identifier)
     {
         if (!is_scalar($identifier)) {
-            throw new ManagerException(sprintf(
+            throw new ManagerException(
+                sprintf(
                     'Invalid identifier type %s',
                     $identifier === null ? 'null' : gettype($identifier)
                 ),
-                1413543979);
+                1413543979
+            );
         }
+
         return (string)$identifier;
     }
 
@@ -88,7 +86,7 @@ abstract class Manager implements ManagerInterface
     {
         $identifier = self::prepareIdentifier($identifier);
         if (!isset(self::$managedObjectTags[$tag])) {
-            self::$managedObjectTags[$tag] = array();
+            self::$managedObjectTags[$tag] = [];
         }
         self::$managedObjectTags[$tag][$identifier] = true;
     }
@@ -99,13 +97,14 @@ abstract class Manager implements ManagerInterface
      * @param string $tag
      * @return array
      */
-    public static function getObjectsByTag($tag)
+    public static function getObjectsByTag(string $tag)
     {
-        $foundObjects     = array();
+        $foundObjects = [];
         $foundIdentifiers = self::getIdentifiersByTag($tag, true);
         foreach ($foundIdentifiers as $identifier) {
             $foundObjects[$identifier] = self::getObject($identifier);
         }
+
         return $foundObjects;
     }
 
@@ -116,14 +115,16 @@ abstract class Manager implements ManagerInterface
      * @param bool   $graceful
      * @return array
      */
-    public static function getIdentifiersByTag($tag, $graceful = false)
+    public static function getIdentifiersByTag(string $tag, boolean $graceful = false)
     {
         if (!isset(self::$managedObjectTags[$tag])) {
             if (!$graceful) {
                 throw new ManagerException(sprintf('Tag %s is not found', $tag), 1413544961);
             }
-            return array();
+
+            return [];
         }
+
         return array_keys(self::$managedObjectTags[$tag]);
     }
 
@@ -131,14 +132,15 @@ abstract class Manager implements ManagerInterface
      * Returns the object for the given identifier or FALSE if it was not found
      *
      * @param string $identifier
-     * @return object|bool
+     * @return bool|object
      */
-    public static function getObject($identifier)
+    public static function getObject(string $identifier)
     {
         $identifier = self::prepareIdentifier($identifier);
         if (!self::hasObject($identifier)) {
             return false;
         }
+
         return self::$managedObjects[$identifier];
     }
 
@@ -146,11 +148,12 @@ abstract class Manager implements ManagerInterface
      * Returns if an object for the given identifier is registered
      *
      * @param string $identifier
-     * @return object|bool
+     * @return bool|object
      */
-    public static function hasObject($identifier)
+    public static function hasObject(string $identifier)
     {
         $identifier = self::prepareIdentifier($identifier);
+
         return isset(self::$managedObjects[$identifier]);
     }
 
@@ -160,7 +163,7 @@ abstract class Manager implements ManagerInterface
      * @param string $tag
      * @return array
      */
-    public static function freeObjectsByTag($tag)
+    public static function freeObjectsByTag(string $tag)
     {
         $foundIdentifiers = self::getIdentifiersByTag($tag, true);
         foreach ($foundIdentifiers as $identifier) {
@@ -173,7 +176,7 @@ abstract class Manager implements ManagerInterface
      *
      * @param string $identifier
      */
-    public static function free($identifier)
+    public static function free(string $identifier)
     {
         $identifier = self::prepareIdentifier($identifier);
         if (!isset(self::$managedObjects[$identifier])) {
@@ -217,7 +220,7 @@ abstract class Manager implements ManagerInterface
         foreach ($identifiers as $identifier) {
             self::free($identifier);
         }
-        self::$managedObjects = array();
+        self::$managedObjects = [];
         self::cleanup();
     }
 } 

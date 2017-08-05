@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 03.11.14
- * Time: 20:53
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Index;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
 /**
  * Interface for Index implementation
- *
- * @package Cundd\PersistentObjectStore\Index
  */
 interface IndexInterface
 {
@@ -37,9 +30,9 @@ interface IndexInterface
      * Returns if the Index is capable to lookup the given value
      *
      * @param mixed $value Value to lookup
-     * @return boolean
+     * @return bool
      */
-    public function canLookup($value);
+    public function canLookup($value): bool;
 
     /**
      * Looks up the given value and returns an array of the positions in the Database or one of the following constants:
@@ -49,7 +42,7 @@ interface IndexInterface
      * ERROR: A problem was detected - You can query other Indexes
      *
      * @param mixed $value Value to look for
-     * @return int[]
+     * @return int[]|int
      */
     public function lookup($value);
 
@@ -58,34 +51,34 @@ interface IndexInterface
      *
      * @param DocumentInterface|array $document
      * @param int                     $position
-     * @return $this
+     * @return IndexInterface
      */
-    public function addEntryWithPosition($document, $position);
+    public function addEntryWithPosition($document, $position): IndexInterface;
 
     /**
      * Updates the given entry in the Index
      *
      * @param DocumentInterface|array $document
      * @param int                     $position
-     * @return $this
+     * @return IndexInterface
      */
-    public function updateEntryForPosition($document, $position);
+    public function updateEntryForPosition($document, $position): IndexInterface;
 
     /**
      * Removes the given entry in the Index
      *
      * @param DocumentInterface|array $document
-     * @return $this
+     * @return IndexInterface
      */
-    public function deleteEntry($document);
+    public function deleteEntry($document): IndexInterface;
 
     /**
      * Builds the index for the given collection
      *
      * @param DatabaseInterface|\Iterator $database
-     * @return $this
+     * @return IndexInterface
      */
-    public function indexDatabase($database);
+    public function indexDatabase($database): IndexInterface;
 
     /**
      * Returns the property key to be indexed

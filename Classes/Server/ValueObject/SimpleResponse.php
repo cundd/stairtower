@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 30.05.15
- * Time: 14:11
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
@@ -16,8 +11,6 @@ use React\Stream\WritableStreamInterface;
 
 /**
  * Implementation of a Response without an attached connection
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
 class SimpleResponse extends EventEmitter implements WritableStreamInterface
 {
@@ -53,7 +46,7 @@ class SimpleResponse extends EventEmitter implements WritableStreamInterface
      * @param array $headers
      * @throws \Exception
      */
-    public function writeHead($status = 200, array $headers = array())
+    public function writeHead($status = 200, array $headers = [])
     {
         if ($this->headWritten) {
             throw new \Exception('Response head has already been written.');
@@ -64,7 +57,7 @@ class SimpleResponse extends EventEmitter implements WritableStreamInterface
         }
 
         $headers = array_merge(
-            array('X-Powered-By' => 'React/alpha'),
+            ['X-Powered-By' => 'React/alpha'],
             $headers
         );
         if ($this->chunkedEncoding) {
@@ -96,8 +89,8 @@ class SimpleResponse extends EventEmitter implements WritableStreamInterface
         }
 
         if ($this->chunkedEncoding) {
-            $len     = strlen($data);
-            $chunk   = dechex($len) . "\r\n" . $data . "\r\n";
+            $len = strlen($data);
+            $chunk = dechex($len) . "\r\n" . $data . "\r\n";
             $flushed = $this->doWrite($chunk);
         } else {
             $flushed = $this->doWrite($data);
@@ -184,23 +177,25 @@ class SimpleResponse extends EventEmitter implements WritableStreamInterface
         $headersSent = headers_sent($file, $line);
         if (!$headersSent) {
             $status = (int)$status;
-            $text   = isset(ResponseCodes::$statusTexts[$status]) ? ResponseCodes::$statusTexts[$status] : '';
+            $text = isset(ResponseCodes::$statusTexts[$status]) ? ResponseCodes::$statusTexts[$status] : '';
             header("HTTP/1.1 $status $text");
 
             foreach ($headers as $name => $value) {
-                $name = str_replace(array("\r", "\n"), '', $name);
+                $name = str_replace(["\r", "\n"], '', $name);
 
                 foreach ((array)$value as $val) {
-                    $val = str_replace(array("\r", "\n"), '', $val);
+                    $val = str_replace(["\r", "\n"], '', $val);
 
                     header("$name: $val");
                 }
             }
         } else {
-            $this->logError(sprintf(
+            $this->logError(
+                sprintf(
                     'Warning: Cannot modify header information - headers already sent by (output started at %s:%d)',
                     $file,
-                    $line)
+                    $line
+                )
             );
         }
     }

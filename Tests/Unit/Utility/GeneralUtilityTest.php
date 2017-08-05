@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 14.10.14
- * Time: 18:26
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Utility;
 
@@ -32,10 +27,8 @@ class DummyObjectThatCanBeConvertedToString
 
 /**
  * Tests for the general utility
- *
- * @package Cundd\PersistentObjectStore\Utility
  */
-class GeneralUtilityTest extends \PHPUnit_Framework_TestCase
+class GeneralUtilityTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @test
@@ -248,12 +241,18 @@ class GeneralUtilityTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals('_mySuperMethod', GeneralUtility::underscoreToCamelCase('_my_super_method'));
         $this->assertEquals('_someThingPrivate', GeneralUtility::underscoreToCamelCase('_some_thing_private'));
-        $this->assertEquals('thisWouldBeMorePublic',
-            GeneralUtility::underscoreToCamelCase('this_would_be_more_public'));
-        $this->assertEquals('butThatsJustNamesAnyway',
-            GeneralUtility::underscoreToCamelCase('but_thats_just_names_anyway'));
-        $this->assertEquals('howDoesThisWork4numbers',
-            GeneralUtility::underscoreToCamelCase('how_does_this_work_4numbers'));
+        $this->assertEquals(
+            'thisWouldBeMorePublic',
+            GeneralUtility::underscoreToCamelCase('this_would_be_more_public')
+        );
+        $this->assertEquals(
+            'butThatsJustNamesAnyway',
+            GeneralUtility::underscoreToCamelCase('but_thats_just_names_anyway')
+        );
+        $this->assertEquals(
+            'howDoesThisWork4numbers',
+            GeneralUtility::underscoreToCamelCase('how_does_this_work_4numbers')
+        );
         $this->assertEquals('2Good', GeneralUtility::underscoreToCamelCase('2_good'));
     }
 
@@ -263,7 +262,7 @@ class GeneralUtilityTest extends \PHPUnit_Framework_TestCase
     public function toStringTest()
     {
         $this->assertSame('Jesus saved my life', GeneralUtility::toString('Jesus saved my life'));
-        $this->assertSame('Jesus saved my life', GeneralUtility::toString(array('Jesus', 'saved', 'my', 'life')));
+        $this->assertSame('Jesus saved my life', GeneralUtility::toString(['Jesus', 'saved', 'my', 'life']));
         $this->assertSame('1', GeneralUtility::toString(1));
         $this->assertSame('0', GeneralUtility::toString(0));
         $this->assertSame('1', GeneralUtility::toString(true));
@@ -275,7 +274,7 @@ class GeneralUtilityTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('Resource id ', GeneralUtility::toString($tempFile));
         fclose($tempFile);
 
-        $dataInstance = new Document(array('my' => 'life'));
+        $dataInstance = new Document(['my' => 'life']);
         $this->assertFalse(GeneralUtility::toString($dataInstance));
 
         $object = new DummyObjectThatCanBeConvertedToString('my life');
@@ -289,7 +288,7 @@ class GeneralUtilityTest extends \PHPUnit_Framework_TestCase
     public function getTypeTest()
     {
         $this->assertSame('string', GeneralUtility::getType('Jesus saved my life'));
-        $this->assertSame('array', GeneralUtility::getType(array('Jesus', 'saved', 'my', 'life')));
+        $this->assertSame('array', GeneralUtility::getType(['Jesus', 'saved', 'my', 'life']));
         $this->assertSame('integer', GeneralUtility::getType(1));
         $this->assertSame('integer', GeneralUtility::getType(0));
         $this->assertSame('boolean', GeneralUtility::getType(true));
@@ -303,13 +302,17 @@ class GeneralUtilityTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('resource', GeneralUtility::getType($tempFile));
         fclose($tempFile);
 
-        $dataInstance = new Document(array('my' => 'life'));
-        $this->assertSame('Cundd\\PersistentObjectStore\\Domain\\Model\\Document',
-            GeneralUtility::getType($dataInstance));
+        $dataInstance = new Document(['my' => 'life']);
+        $this->assertSame(
+            'Cundd\\PersistentObjectStore\\Domain\\Model\\Document',
+            GeneralUtility::getType($dataInstance)
+        );
 
         $object = new DummyObjectThatCanBeConvertedToString('my life');
-        $this->assertSame('Cundd\\PersistentObjectStore\\Utility\\DummyObjectThatCanBeConvertedToString',
-            GeneralUtility::getType($object));
+        $this->assertSame(
+            'Cundd\\PersistentObjectStore\\Utility\\DummyObjectThatCanBeConvertedToString',
+            GeneralUtility::getType($object)
+        );
     }
 }
  

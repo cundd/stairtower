@@ -1,19 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 02.04.15
- * Time: 20:48
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
 /**
  * Test for Null Result
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class NullResultTest extends \PHPUnit_Framework_TestCase
+class NullResultTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var NullResult

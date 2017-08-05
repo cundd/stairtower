@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 01.09.14
- * Time: 21:34
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter;
 
@@ -17,8 +12,6 @@ use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * Filter implementation
- *
- * @package Cundd\PersistentObjectStore\Filter
  */
 class Filter implements FilterInterface
 {
@@ -62,6 +55,7 @@ class Filter implements FilterInterface
         if (!($collection instanceof \Iterator)) {
             throw new InvalidCollectionException('Can not iterate over the given object', 1409603143);
         }
+
         return new FilterResult($collection, $this);
     }
 
@@ -79,11 +73,14 @@ class Filter implements FilterInterface
         }
         if (!$comparison instanceof ComparisonInterface) {
             throw new InvalidComparisonException(
-                sprintf('Given comparison is of type %s',
-                    is_object($comparison) ? get_class($comparison) : gettype($comparison)),
+                sprintf(
+                    'Given comparison is of type %s',
+                    is_object($comparison) ? get_class($comparison) : gettype($comparison)
+                ),
                 1420038127
             );
         }
+
         return $this->comparison->perform($item);
     }
 
@@ -106,5 +103,7 @@ class Filter implements FilterInterface
     public function setComparison($comparison)
     {
         $this->comparison = $comparison;
+
+        return $this;
     }
 }

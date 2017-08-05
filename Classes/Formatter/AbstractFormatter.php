@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 30.08.14
- * Time: 13:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Formatter;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
 /**
  * Abstract formatter
- *
- * @package Cundd\PersistentObjectStore\Formatter
  */
 abstract class AbstractFormatter implements FormatterInterface
 {
@@ -27,11 +20,13 @@ abstract class AbstractFormatter implements FormatterInterface
      * Sets the configuration for the formatter
      *
      * @param $configuration
-     * @return $this
+     * @return FormatterInterface
      */
-    public function setConfiguration($configuration)
+    public function setConfiguration($configuration): FormatterInterface
     {
         $this->configuration = $configuration;
+
+        return $this;
     }
 
     /**
@@ -47,7 +42,7 @@ abstract class AbstractFormatter implements FormatterInterface
         }
         if ($data instanceof \SplFixedArray) {
             $dataCount = $data->count();
-            $foundData = array();
+            $foundData = [];
             for ($i = 0; $i < $dataCount; $i++) {
                 $dataObject = $data[$i];
                 if ($dataObject instanceof DocumentInterface) {
@@ -56,9 +51,10 @@ abstract class AbstractFormatter implements FormatterInterface
                     $foundData[$i] = $dataObject;
                 }
             }
+
             return $foundData;
         } elseif (is_array($data) || $data instanceof \Iterator) {
-            $foundData = array();
+            $foundData = [];
             foreach ($data as $key => $dataObject) {
                 if ($dataObject instanceof DocumentInterface) {
                     $foundData[$key] = $dataObject->getData();
@@ -66,10 +62,12 @@ abstract class AbstractFormatter implements FormatterInterface
                     $foundData[$key] = $dataObject;
                 }
             }
+
             return $foundData;
         } elseif (is_scalar($data)) {
-            return array('message' => $data);
+            return ['message' => $data];
         }
+
         return $data;
     }
 } 

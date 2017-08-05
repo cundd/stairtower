@@ -1,10 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 10.10.14
- * Time: 17:59
- */
+declare(strict_types=1);
+
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
 use Cundd\PersistentObjectStore\Asset\AssetInterface;
@@ -17,7 +13,6 @@ use Cundd\PersistentObjectStore\Expand\ExpandConfigurationInterface;
 use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
-use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RawResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
@@ -26,8 +21,6 @@ use SplFixedArray;
 
 /**
  * Handler implementation
- *
- * @package Cundd\PersistentObjectStore\Server\Handler
  */
 class Handler implements HandlerInterface
 {
@@ -158,7 +151,7 @@ class Handler implements HandlerInterface
         }
 
         $database->add($document);
-        $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_CREATED, array($document));
+        $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_CREATED, [$document]);
 
         return new HandlerResult(
             201,
@@ -208,9 +201,9 @@ class Handler implements HandlerInterface
             DebugUtility::pl('Database creation parameters are currently not supported');
         }
         $databaseIdentifier = $request->getDatabaseIdentifier();
-        $database           = $this->coordinator->createDatabase($databaseIdentifier);
+        $database = $this->coordinator->createDatabase($databaseIdentifier);
         if ($database) {
-            $this->eventEmitter->scheduleFutureEmit(Event::DATABASE_CREATED, array($database));
+            $this->eventEmitter->scheduleFutureEmit(Event::DATABASE_CREATED, [$database]);
 
             return new HandlerResult(201, sprintf('Database "%s" created', $databaseIdentifier));
         } else {
@@ -231,7 +224,9 @@ class Handler implements HandlerInterface
         // Extract the Expand configuration from the query
         $expandConfiguration = null;
         if (isset($query[Constants::EXPAND_KEYWORD]) && $query[Constants::EXPAND_KEYWORD]) {
-            $expandConfiguration = $this->expandConfigurationBuilder->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
+            $expandConfiguration = $this->expandConfigurationBuilder->buildExpandConfigurations(
+                $query[Constants::EXPAND_KEYWORD]
+            );
             unset($query[Constants::EXPAND_KEYWORD]);
         }
 
@@ -240,8 +235,8 @@ class Handler implements HandlerInterface
             $document = $this->getDataForRequest($request);
             if ($document) {
                 if ($expandConfiguration) {
-                    $collection = $this->expandObjectsInCollection(array($document), $expandConfiguration);
-                    $document   = $collection[0];
+                    $collection = $this->expandObjectsInCollection([$document], $expandConfiguration);
+                    $document = $collection[0];
                 }
 
                 return new HandlerResult(
@@ -274,10 +269,10 @@ class Handler implements HandlerInterface
 
         // If there is a filter defined
         if ($query) {
-            $filter            = $this->filterBuilder->buildFilter($query);
-            $filterResult      = $filter->filterCollection($database);
+            $filter = $this->filterBuilder->buildFilter($query);
+            $filterResult = $filter->filterCollection($database);
             $filterResultCount = $filterResult->count();
-            $statusCode        = $filterResultCount > 0 ? 200 : 404;
+            $statusCode = $filterResultCount > 0 ? 200 : 404;
             if (!$expandConfiguration || $filterResultCount === 0) {
                 return new HandlerResult($statusCode, $filterResult);
             }
@@ -327,19 +322,21 @@ class Handler implements HandlerInterface
         }
         $document = $this->getDataForRequest($request);
         if (!$document) {
-            return new HandlerResult(404, sprintf(
-                'Document instance with identifier "%s" not found in database "%s"',
-                $request->getDataIdentifier(),
-                $request->getDatabaseIdentifier()
-            ));
+            return new HandlerResult(
+                404, sprintf(
+                    'Document instance with identifier "%s" not found in database "%s"',
+                    $request->getDataIdentifier(),
+                    $request->getDatabaseIdentifier()
+                )
+            );
         }
 
         $database = $this->getDatabaseForRequest($request);
 
         $data[Constants::DATA_ID_KEY] = $request->getDataIdentifier();
-        $newDocument                  = new Document($data, $database->getIdentifier());
+        $newDocument = new Document($data, $database->getIdentifier());
         $database->update($newDocument);
-        $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_UPDATED, array($document));
+        $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_UPDATED, [$document]);
 
         return new HandlerResult(200, $newDocument);
     }
@@ -379,14 +376,14 @@ class Handler implements HandlerInterface
             }
             $database->remove($document);
 
-            $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_DELETED, array($document));
+            $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_DELETED, [$document]);
 
             return new HandlerResult(204, sprintf('Document "%s" deleted', $request->getDataIdentifier()));
         }
 
         $databaseIdentifier = $database->getIdentifier();
         $this->coordinator->dropDatabase($databaseIdentifier);
-        $this->eventEmitter->scheduleFutureEmit(Event::DATABASE_DELETED, array($database));
+        $this->eventEmitter->scheduleFutureEmit(Event::DATABASE_DELETED, [$database]);
 
         return new HandlerResult(204, sprintf('Database "%s" deleted', $databaseIdentifier));
     }
@@ -447,20 +444,22 @@ class Handler implements HandlerInterface
      */
     public function getCountAction(Request $request)
     {
-        $count      = null;
+        $count = null;
         $readResult = $this->read($request);
-        $data       = $readResult->getData();
+        $data = $readResult->getData();
         if ($data instanceof DatabaseInterface || $data instanceof FilterResultInterface) {
             $count = $data->count();
         }
         if ($count === null) {
-            return new HandlerResult(400, sprintf(
-                'Could not count result of type %s',
-                (is_object($data) ? get_class($data) : gettype($data))
-            ));
+            return new HandlerResult(
+                400, sprintf(
+                    'Could not count result of type %s',
+                    (is_object($data) ? get_class($data) : gettype($data))
+                )
+            );
         }
 
-        return new HandlerResult(200, array('count' => $count));
+        return new HandlerResult(200, ['count' => $count]);
     }
 
     /**
@@ -488,11 +487,11 @@ class Handler implements HandlerInterface
                 $this->expandResolver->expandDocument($item, $expandConfiguration);
             }
 
-            return SplFixedArray::fromArray(array($item));
+            return SplFixedArray::fromArray([$item]);
         }
 
         $clonedObjectCollection = new SplFixedArray($collectionCount);
-        $i                      = 0;
+        $i = 0;
         while ($i < $collectionCount) {
             $clonedObjectCollection[$i] = clone $collection[$i];
             $i++;

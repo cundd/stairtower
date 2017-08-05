@@ -1,14 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 14.10.14
- * Time: 20:15
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter;
 
-use Cundd\PersistentObjectStore\Domain\Model\Database;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
 use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
@@ -17,8 +11,6 @@ use Cundd\PersistentObjectStore\Utility\DebugUtility;
 
 /**
  * FilterBuild implementation
- *
- * @package Cundd\PersistentObjectStore\Filter
  */
 class FilterBuilder implements FilterBuilderInterface
 {
@@ -42,26 +34,7 @@ class FilterBuilder implements FilterBuilderInterface
      */
     protected $cachedFilters = [];
 
-    /**
-     * Build a Filter with the given query parts
-     *
-     * @param string[] $queryParts
-     * @param Database $collection
-     * @return FilterResult
-     */
-    public function buildFilterFromQueryParts($queryParts, $collection)
-    {
-        $filter = $this->buildFilter($queryParts);
-        return $filter->filterCollection($collection);
-    }
-
-    /**
-     * Build a Filter from the given definition
-     *
-     * @param array $filterDefinition
-     * @return Filter
-     */
-    public function buildFilter($filterDefinition)
+    public function buildFilter(array $filterDefinition): FilterInterface
     {
         $cachedFilter = $this->getCachedFilterForFilterDefinition($filterDefinition);
         if ($cachedFilter) {
@@ -71,6 +44,7 @@ class FilterBuilder implements FilterBuilderInterface
         $comparison = $this->getComparisonFromArray($filterDefinition);
         $newFilter = new Filter($comparison);
         $this->setCachedFilterForFilterDefinition($newFilter, $filterDefinition);
+
         return $newFilter;
     }
 
@@ -80,20 +54,23 @@ class FilterBuilder implements FilterBuilderInterface
      * @param string[] $filterDefinition
      * @return ComparisonInterface Returns the Comparison instance
      */
-    public function getComparisonFromArray($filterDefinition)
+    public function getComparisonFromArray(array $filterDefinition)
     {
-        $comparisons = array();
+        $comparisons = [];
         if (!is_array($filterDefinition) && !$filterDefinition instanceof \Traversable) {
             DebugUtility::var_dump($filterDefinition);
             throw new InvalidFilterBuilderInputException(
-                sprintf('Given value of type %s is not traversable',
-                    is_object($filterDefinition) ? get_class($filterDefinition) : gettype($filterDefinition)),
+                sprintf(
+                    'Given value of type %s is not traversable',
+                    is_object($filterDefinition) ? get_class($filterDefinition) : gettype($filterDefinition)
+                ),
                 1418495499
             );
         }
         foreach ($filterDefinition as $key => $value) {
             $comparisons[] = $this->getComparisonForValueAndKey($value, $key);
         }
+
         return new LogicalComparison(ComparisonInterface::TYPE_AND, $comparisons);
     }
 
@@ -104,9 +81,9 @@ class FilterBuilder implements FilterBuilderInterface
      * @param string $key
      * @return LogicalComparison|PropertyComparison|null
      */
-    public function getComparisonForValueAndKey($value, $key)
+    public function getComparisonForValueAndKey($value, string $key)
     {
-        $comparison     = null;
+        $comparison = null;
         $comparisonType = null;
         if ($key === null || $key === '') {
             throw new InvalidFilterBuilderInputException('No key given', 1418043342);
@@ -116,7 +93,9 @@ class FilterBuilder implements FilterBuilderInterface
          * If the value isn't an array or the array does not contain a Comparison Type
          */
         if ($comparisonType === null) {
-            if ($key[0] === '$' && $this->comparisonTypeHelper->isComparisonType($key)) { // Check if the key's first character is a dollar
+            if ($key[0] === '$' && $this->comparisonTypeHelper->isComparisonType(
+                    $key
+                )) { // Check if the key's first character is a dollar
                 $comparisonType = $key;
             } elseif (is_string($value) && $value !== '' && $value[0] === '$'
                 && $value[0] === $this->comparisonTypeHelper->isComparisonTypeWithoutValue($value)
@@ -130,12 +109,14 @@ class FilterBuilder implements FilterBuilderInterface
          */
         if ($comparisonType === null) {
             if (is_array($value)) {
-                $arrayKey   = key($value);
+                $arrayKey = key($value);
                 $arrayValue = current($value);
 
-                if ($arrayKey[0] === '$' && $this->comparisonTypeHelper->isComparisonType($arrayKey)) { // Check if the key's first character is a dollar
+                if ($arrayKey[0] === '$' && $this->comparisonTypeHelper->isComparisonType(
+                        $arrayKey
+                    )) { // Check if the key's first character is a dollar
                     $comparisonType = $arrayKey;
-                    $value          = $arrayValue;
+                    $value = $arrayValue;
                 }
             }
         }
@@ -181,13 +162,13 @@ class FilterBuilder implements FilterBuilderInterface
                         1418036311
                     );
                 }
-                $logicalComparisonConstraints = array();
-            foreach ($value as $subKey => $subValue) {
-                if (is_int($subKey) && (is_array($subValue) || $subValue instanceof \Traversable)) {
-                    $logicalComparisonConstraints[] = $this->getComparisonFromArray($subValue);
-                } else {
-                    $logicalComparisonConstraints[] = $this->getComparisonForValueAndKey($subValue, $subKey);
-                }
+                $logicalComparisonConstraints = [];
+                foreach ($value as $subKey => $subValue) {
+                    if (is_int($subKey) && (is_array($subValue) || $subValue instanceof \Traversable)) {
+                        $logicalComparisonConstraints[] = $this->getComparisonFromArray($subValue);
+                    } else {
+                        $logicalComparisonConstraints[] = $this->getComparisonForValueAndKey($subValue, $subKey);
+                    }
                 }
                 $comparison = new LogicalComparison($comparisonType, $logicalComparisonConstraints);
                 $comparison->setStrict(true);
@@ -205,6 +186,7 @@ class FilterBuilder implements FilterBuilderInterface
                 );
 
         }
+
         return $comparison;
     }
 
@@ -214,27 +196,27 @@ class FilterBuilder implements FilterBuilderInterface
      * @param array $filterDefinition
      * @return FilterInterface|null Returns the cached Filter or null if none was found
      */
-    protected function getCachedFilterForFilterDefinition($filterDefinition){
+    protected function getCachedFilterForFilterDefinition(array $filterDefinition): ?FilterInterface
+    {
         $filterKey = json_encode($filterDefinition);
-        if(!$filterKey) {
+        if (!$filterKey) {
             return null;
         }
-        if (isset($this->cachedFilters[$filterKey]))  {
-            return $this->cachedFilters[$filterKey];
-        }
-        return null;
+
+        return $this->cachedFilters[$filterKey] ?? null;
     }
 
     /**
      * Adds the Filter to the cache for the given filter definition
      *
      * @param FilterInterface $filter
-     * @param array $filterDefinition
+     * @param array           $filterDefinition
      * @return void
      */
-    protected function setCachedFilterForFilterDefinition($filter, $filterDefinition){
+    protected function setCachedFilterForFilterDefinition(FilterInterface $filter, array $filterDefinition)
+    {
         $filterKey = json_encode($filterDefinition);
-        if($filterKey) {
+        if ($filterKey) {
             $this->cachedFilters[$filterKey] = $filter;
         }
     }

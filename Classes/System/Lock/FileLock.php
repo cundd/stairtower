@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.10.14
- * Time: 11:22
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\System\Lock;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 
 /**
  * File based lock implementation
- *
- * @package Cundd\PersistentObjectStore\System\Lock
  */
 class FileLock extends AbstractLock
 {
@@ -43,6 +36,7 @@ class FileLock extends AbstractLock
             }
             $lockPathExists = true;
         }
+
         return $lockPath . 'lock_' . sha1($this->getName());
     }
 
@@ -56,6 +50,7 @@ class FileLock extends AbstractLock
         if ($this->isLocked()) {
             return unlink($this->getLockPath());
         }
+
         return true;
     }
 
@@ -64,7 +59,7 @@ class FileLock extends AbstractLock
      *
      * @return bool
      */
-    public function isLocked()
+    public function isLocked(): bool
     {
         return file_exists($this->getLockPath());
     }

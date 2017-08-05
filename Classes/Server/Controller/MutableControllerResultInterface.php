@@ -1,17 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 10.10.14
- * Time: 17:59
- */
+declare(strict_types=1);
+
 namespace Cundd\PersistentObjectStore\Server\Controller;
 
 
 /**
  * Interface for classes that describe a mutable Controller response
- *
- * @package Cundd\PersistentObjectStore\Server\Handler
  */
 interface MutableControllerResultInterface extends ControllerResultInterface
 {
@@ -19,49 +13,49 @@ interface MutableControllerResultInterface extends ControllerResultInterface
      * Sets the content type of the request
      *
      * @param string $contentType
-     * @return $this
+     * @return MutableControllerResultInterface
      */
-    public function setContentType($contentType);
+    public function setContentType(string $contentType): MutableControllerResultInterface;
 
     /**
      * Sets the headers to send with the response
      *
      * @param array $headers
-     * @return $this
+     * @return MutableControllerResultInterface
      */
-    public function setHeaders($headers);
+    public function setHeaders(array $headers): MutableControllerResultInterface;
 
     /**
      * Add the header with the given name
      *
      * @param string $name
      * @param mixed  $header
-     * @return $this
+     * @return MutableControllerResultInterface
      */
-    public function addHeader($name, $header);
+    public function addHeader(string $name, $header): MutableControllerResultInterface;
 
     /**
      * Replace the header with the given name
      *
      * @param string $name
      * @param mixed  $header
-     * @return $this
+     * @return MutableControllerResultInterface
      */
-    public function replaceHeader($name, $header);
+    public function replaceHeader(string $name, $header): MutableControllerResultInterface;
 
     /**
      * Sets the status code for the response
      *
      * @param int $statusCode
-     * @return $this
+     * @return MutableControllerResultInterface
      */
-    public function setStatusCode($statusCode);
+    public function setStatusCode(int $statusCode): MutableControllerResultInterface;
 
     /**
      * Sets the request's response data
      *
      * @param mixed $data
-     * @return $this
+     * @return MutableControllerResultInterface
      */
-    public function setData($data);
+    public function setData($data): MutableControllerResultInterface;
 }

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 06.09.14
- * Time: 21:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Utility;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
 
 /**
  * Utility for common Document features
- *
- * @package Cundd\Rest\Utility
  */
 class DocumentUtility
 {
@@ -36,9 +29,14 @@ class DocumentUtility
                 $document->setValueForKey(static::getIdentifierForDocument($document), Constants::DATA_ID_KEY);
             }
         } else {
-            throw new InvalidDataException(sprintf('Given data instance is not of type object but %s',
-                gettype($document)), 1412859398);
+            throw new InvalidDataException(
+                sprintf(
+                    'Given data instance is not of type object but %s',
+                    gettype($document)
+                ), 1412859398
+            );
         }
+
         return $document;
     }
 
@@ -58,14 +56,14 @@ class DocumentUtility
                 return $document[Constants::DATA_ID_KEY];
             }
         } else {
-            $value = $document->getId(Constants::DATA_ID_KEY);
+            $value = $document->getId();
             if ($value) {
                 return $value;
             }
         }
 
         // If no read ID is defined check the most common
-        $commonIdentifiers = array('id', 'uid', 'email');
+        $commonIdentifiers = ['id', 'uid', 'email'];
         foreach ($commonIdentifiers as $identifier) {
             if ($argumentIsArray) {
                 if (isset($document[$identifier])) {
@@ -78,11 +76,15 @@ class DocumentUtility
                 }
             }
         }
-        return sha1(sprintf('stairtower_%s_%s_document_%s',
-            Constants::VERSION,
-            getmypid(),
-            microtime()
-        ));
+
+        return sha1(
+            sprintf(
+                'stairtower_%s_%s_document_%s',
+                Constants::VERSION,
+                getmypid(),
+                microtime()
+            )
+        );
     }
 
     /**
@@ -96,6 +98,7 @@ class DocumentUtility
         if (!isset($data[Constants::DATA_ID_KEY])) {
             $data[Constants::DATA_ID_KEY] = static::getIdentifierForDocument($data);
         }
+
         return $data;
     }
 

@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 20.09.14
- * Time: 10:44
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 /**
  * Special database interface that describes the access to objects by index
- *
- * @package Cundd\PersistentObjectStore\Domain\Model
  */
 interface DatabaseObjectDataInterface
 {

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 30.08.14
- * Time: 14:34
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Sorting;
 
@@ -17,8 +12,6 @@ use SplFixedArray;
 
 /**
  * Class to sort a collection of objects
- *
- * @package Cundd\PersistentObjectStore\Sorting
  */
 class Sorter
 {
@@ -51,70 +44,9 @@ class Sorter
     public function setSortFlags($sortFlags)
     {
         $this->sortFlags = $sortFlags;
+
         return $this;
     }
-
-//
-//	/**
-//	 * Sort the collection of objects by the given key
-//	 *
-//	 * @param Database|\Iterator|array $collection
-//	 * @param string                   $keyPath
-//	 * @param bool                     $descending
-//	 * @return SortResult
-//	 */
-//	public function sortCollectionByPropertyKeyPath($collection, $keyPath, $descending = FALSE) {
-//		$start = microtime(TRUE);
-//
-//
-//		if (is_array($collection)) {
-//			$dataCollectionRaw = SplFixedArray::fromArray($collection);
-//		} else if ($collection instanceof Database) {
-////			$dataCollectionRaw = $collection->getRawData();
-//			$dataCollectionRaw = $collection->prepareAll();
-//		} else {
-//			$dataCollectionRaw = SplFixedArray::fromArray(iterator_to_array($collection));
-//		}
-//		$dataCollectionCount = $dataCollectionRaw->getSize();
-//
-//		$end = microtime(TRUE);
-//		DebugUtility::pl("Get: %0.6f\n", $end - $start);
-//
-//		$resultArray = array();
-//
-//
-//		$start = microtime(TRUE);
-//
-//		$i = 0;
-//		while ($i < $dataCollectionCount) {
-//			$item = $dataCollectionRaw[$i];
-//
-//			if ($item instanceof KeyValueCodingInterface) {
-//				$propertyValue = $item->valueForKeyPath($keyPath);
-//			} else {
-//				$propertyValue = ObjectUtility::valueForKeyPathOfObject($keyPath, $item);
-//			}
-//			$resultArray[$propertyValue] = $item;
-//			$i++;
-//		}
-//		$end = microtime(TRUE);
-//		DebugUtility::pl("Prepare: %0.6f\n", $end - $start);
-//
-//
-//		if (!$descending) {
-//			$result = ksort($resultArray, $this->sortFlags);
-//		} else {
-//			$result = krsort($resultArray, $this->sortFlags);
-//		}
-//		if (!$result) {
-//			throw new SortingException('Could not sort the database', 1412021636);
-//		}
-//
-////		if ($collection instanceof Database) {
-////			Dynamic
-////		}
-//		return SortResult::fromArray(array_values($resultArray));
-//	}
 
     /**
      * Sort the collection of objects by the given key
@@ -127,7 +59,7 @@ class Sorter
     public function sortCollectionByPropertyKeyPath($collection, $keyPath, $descending = false)
     {
         $packedObjectsKey = 'objects';
-        $resultArray      = array();
+        $resultArray = [];
 
         if (is_array($collection)) {
             $dataCollectionRaw = SplFixedArray::fromArray($collection);
@@ -168,9 +100,9 @@ class Sorter
                 );
             }
             if (!isset($resultArray[$propertyValue])) {
-                $resultArray[$propertyValue] = array(
-                    $packedObjectsKey => array()
-                );
+                $resultArray[$propertyValue] = [
+                    $packedObjectsKey => [],
+                ];
             }
             $resultArray[$propertyValue][$packedObjectsKey][] = $item;
 
@@ -188,14 +120,14 @@ class Sorter
         }
 
         // Unpack the objects
-        $i                = 0;
-        $j                = 0;
+        $i = 0;
+        $j = 0;
         $resultFixedArray = new SortResult($dataCollectionCount);
-        $resultArray      = SplFixedArray::fromArray(array_values($resultArray));
+        $resultArray = SplFixedArray::fromArray(array_values($resultArray));
         $resultArrayCount = $resultArray->count();
         while ($i < $resultArrayCount) {
             $packedObjects = $resultArray[$i][$packedObjectsKey];
-            $item          = current($packedObjects);
+            $item = current($packedObjects);
             do {
                 $resultFixedArray[$j] = $item;
                 $j++;
@@ -204,9 +136,15 @@ class Sorter
         }
 
         if ($j != $dataCollectionCount) {
-            throw new SortingException(sprintf('Number of result items does not match the number of input items (%d/%d)',
-                $j, $dataCollectionCount), 1412243235);
+            throw new SortingException(
+                sprintf(
+                    'Number of result items does not match the number of input items (%d/%d)',
+                    $j,
+                    $dataCollectionCount
+                ), 1412243235
+            );
         }
+
         return $resultFixedArray;
     }
 
@@ -237,6 +175,7 @@ class Sorter
         if ($descending) {
             array_reverse($dataCollectionRaw);
         }
+
         return SortResult::fromArray(array_values($dataCollectionRaw));
     }
 }

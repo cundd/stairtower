@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.10.14
- * Time: 16:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console\Data;
 
@@ -18,8 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console command to find data
- *
- * @package Cundd\PersistentObjectStore\Console
  */
 class FilterCommand extends AbstractDataCommand
 {
@@ -61,8 +54,12 @@ class FilterCommand extends AbstractDataCommand
             $output->write($this->formatter->format($result->toArray()));
             //$output->write($this->formatter->format($result-));
         } else {
-            $output->write(sprintf('<info>Nothing found in database %s</info>',
-                $input->getArgument('database')));
+            $output->write(
+                sprintf(
+                    '<info>Nothing found in database %s</info>',
+                    $input->getArgument('database')
+                )
+            );
         }
     }
 } 

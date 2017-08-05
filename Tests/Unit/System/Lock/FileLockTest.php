@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.10.14
- * Time: 11:42
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\System\Lock;
 
@@ -27,8 +22,6 @@ class FileLockWithAccessToFilePath extends FileLock
 
 /**
  * Class FileLockTest
- *
- * @package Cundd\PersistentObjectStore\System\Lock
  */
 class FileLockTest extends AbstractCase
 {
@@ -55,7 +48,7 @@ class FileLockTest extends AbstractCase
     public function unlockTest()
     {
         $this->fixture = new FileLockWithAccessToFilePath();
-        $lockPath      = $this->fixture->getProtectedLockPath();
+        $lockPath = $this->fixture->getProtectedLockPath();
 
         $this->assertFalse($this->fixture->isLocked());
         $this->fixture->lock();
@@ -104,7 +97,7 @@ class FileLockTest extends AbstractCase
     public function namedUnlockTest()
     {
         $this->fixture = new FileLockWithAccessToFilePath('lock-name/with-a-slash');
-        $lockPath      = $this->fixture->getProtectedLockPath();
+        $lockPath = $this->fixture->getProtectedLockPath();
 
         $this->assertFalse($this->fixture->isLocked());
         $this->fixture->lock();

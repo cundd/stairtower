@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 21.03.15
- * Time: 20:46
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\View\Twig;
 
@@ -15,6 +10,7 @@ use Cundd\PersistentObjectStore\View\AbstractView;
 use Cundd\PersistentObjectStore\View\Exception\InvalidTemplatePathException;
 use Cundd\PersistentObjectStore\View\ExpandableViewInterface;
 use Cundd\PersistentObjectStore\View\Twig\Loader\Filesystem;
+use Cundd\PersistentObjectStore\View\ViewInterface;
 use Twig_Environment;
 use Twig_Extension_Debug;
 use Twig_Loader_Filesystem;
@@ -24,8 +20,6 @@ use Twig_SimpleFunction;
 
 /**
  * Twig based View
- *
- * @package Cundd\PersistentObjectStore\View\Twig
  */
 class View extends AbstractView implements ExpandableViewInterface
 {
@@ -44,12 +38,13 @@ class View extends AbstractView implements ExpandableViewInterface
      *
      * @return string
      */
-    public function render()
+    public function render(): string
     {
         if (!$this->templatePath) {
             throw new InvalidTemplatePathException('Template path not defined', 1449572720);
         }
-        $development = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('serverMode') === ServerInterface::SERVER_MODE_DEVELOPMENT;
+        $development = ConfigurationManager::getSharedInstance()
+                ->getConfigurationForKeyPath('serverMode') === ServerInterface::SERVER_MODE_DEVELOPMENT;
         $this->getLoader()->setDisableCache($development);
 
         return $this->getEngine()->render(basename($this->templatePath), $this->data);
@@ -63,14 +58,15 @@ class View extends AbstractView implements ExpandableViewInterface
     public function getEngine()
     {
         if (!$this->engine) {
-            $development = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('serverMode') === ServerInterface::SERVER_MODE_DEVELOPMENT;
+            $development = ConfigurationManager::getSharedInstance()
+                    ->getConfigurationForKeyPath('serverMode') === ServerInterface::SERVER_MODE_DEVELOPMENT;
 
             $this->engine = new Twig_Environment(
                 $this->getLoader(),
-                array(
+                [
                     'debug' => $development,
                     //'cache' => $development ? null : ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('tempPath'),
-                )
+                ]
             );
 
             if ($development) {
@@ -85,15 +81,15 @@ class View extends AbstractView implements ExpandableViewInterface
      * Sets the path to the template
      *
      * @param string $templatePath
-     * @return $this
+     * @return ViewInterface
      */
-    public function setTemplatePath($templatePath)
+    public function setTemplatePath(string $templatePath): ViewInterface
     {
         parent::setTemplatePath($templatePath);
         $templateDirectoryPath = dirname($templatePath);
 
         $loader = $this->getLoader();
-        if ($loader instanceof Twig_Loader_Filesystem){
+        if ($loader instanceof Twig_Loader_Filesystem) {
             if (!in_array($templateDirectoryPath, $loader->getPaths())) {
                 $loader->addPath($templateDirectoryPath);
             }
@@ -117,7 +113,7 @@ class View extends AbstractView implements ExpandableViewInterface
             if ($this->templatePath && dirname($this->templatePath)) {
                 $loaderPaths = [
                     dirname($this->templatePath),
-                    dirname(dirname($this->templatePath))
+                    dirname(dirname($this->templatePath)),
                 ];
             }
             $this->loader = new Filesystem($loaderPaths);
@@ -129,14 +125,15 @@ class View extends AbstractView implements ExpandableViewInterface
     /**
      * Add the function with the given key
      *
-     * @param string   $key Key under which the function will be available inside the template
+     * @param string   $key      Key under which the function will be available inside the template
      * @param Callable $callback Callback for this template function
-     * @param array    $options Additional options (dependent on the actual view implementation)
-     * @return $this
+     * @param array    $options  Additional options (dependent on the actual view implementation)
+     * @return ExpandableViewInterface
      */
-    public function addFunction($key, $callback, array $options = array())
+    public function addFunction(string $key, callable $callback, array $options = []): ExpandableViewInterface
     {
         $this->getEngine()->addFunction(new Twig_SimpleFunction($key, $callback, $options));
+
         return $this;
     }
 
@@ -146,11 +143,12 @@ class View extends AbstractView implements ExpandableViewInterface
      * @param string   $key      Key under which the filter will be available inside the template
      * @param Callable $callback Callback for this filter
      * @param array    $options  Additional options (dependent on the actual view implementation)
-     * @return $this
+     * @return ExpandableViewInterface
      */
-    public function addFilter($key, $callback, array $options = array())
+    public function addFilter(string $key, callable $callback, array $options = []): ExpandableViewInterface
     {
         $this->getEngine()->addFilter(new Twig_SimpleFilter($key, $callback, $options));
+
         return $this;
     }
 }

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 20:11
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 
@@ -17,8 +12,6 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
  * Coordinator responsible for managing the data
- *
- * @package Cundd\PersistentObjectStore\DataAccess
  */
 class Coordinator implements CoordinatorInterface
 {
@@ -62,23 +55,27 @@ class Coordinator implements CoordinatorInterface
      */
     #protected $objectStore = array();
 
-
     /**
      * Returns the database with the given identifier
      *
      * @param string $databaseIdentifier
      * @return DatabaseInterface
      */
-    public function getDatabase($databaseIdentifier)
+    public function getDatabase(string $databaseIdentifier): DatabaseInterface
     {
         GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
         if (!Manager::hasObject($databaseIdentifier)) {
             $memoryUsage = null;
-            $database    = $this->dataReader->loadDatabase($databaseIdentifier, $memoryUsage);
-            Manager::registerObject($database, $databaseIdentifier, array(self::MEMORY_MANAGER_TAG));
+            $database = $this->dataReader->loadDatabase($databaseIdentifier, $memoryUsage);
+            Manager::registerObject($database, $databaseIdentifier, [self::MEMORY_MANAGER_TAG]);
+
             return $database;
         }
-        return Manager::getObject($databaseIdentifier);
+
+        /** @var DatabaseInterface $database */
+        $database = Manager::getObject($databaseIdentifier);
+
+        return $database;
     }
 
     /**
@@ -88,25 +85,30 @@ class Coordinator implements CoordinatorInterface
      * @param array  $options            Additional options for the created database
      * @return DatabaseInterface
      */
-    public function createDatabase($databaseIdentifier, $options = array())
+    public function createDatabase(string $databaseIdentifier, $options = []): DatabaseInterface
     {
         GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
         if ($this->databaseExists($databaseIdentifier)) {
-            throw new InvalidDatabaseException(sprintf('Database "%s" already exists', $databaseIdentifier),
-                1412524749);
+            throw new InvalidDatabaseException(
+                sprintf('Database "%s" already exists', $databaseIdentifier),
+                1412524749
+            );
         }
         if (Manager::hasObject($databaseIdentifier)) {
-            throw new InvalidDatabaseException(sprintf('Database "%s" already exists in memory', $databaseIdentifier),
-                1412524750);
+            throw new InvalidDatabaseException(
+                sprintf('Database "%s" already exists in memory', $databaseIdentifier),
+                1412524750
+            );
         }
 
         $this->dataWriter->createDatabase($databaseIdentifier, $options);
 
         $newDatabase = new Database($databaseIdentifier);
-        Manager::registerObject($newDatabase, $databaseIdentifier, array(self::MEMORY_MANAGER_TAG));
+        Manager::registerObject($newDatabase, $databaseIdentifier, [self::MEMORY_MANAGER_TAG]);
         $this->allDatabaseIdentifiers[$databaseIdentifier] = $databaseIdentifier;
         $this->logger->info(sprintf('Create database "%s"', $databaseIdentifier));
-        $this->eventEmitter->emit(Event::DATABASE_CREATED, array($databaseIdentifier));
+        $this->eventEmitter->emit(Event::DATABASE_CREATED, [$databaseIdentifier]);
+
         return $newDatabase;
     }
 
@@ -116,12 +118,13 @@ class Coordinator implements CoordinatorInterface
      * @param string $databaseIdentifier Unique identifier of the database
      * @return bool
      */
-    public function databaseExists($databaseIdentifier)
+    public function databaseExists(string $databaseIdentifier): bool
     {
         GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
         if ($this->allDatabaseIdentifiers === null) {
             $this->listDatabases();
         }
+
         return isset($this->allDatabaseIdentifiers[$databaseIdentifier]);
     }
 
@@ -131,7 +134,7 @@ class Coordinator implements CoordinatorInterface
      * @param string $databaseIdentifier Unique identifier of the database
      * @return void
      */
-    public function dropDatabase($databaseIdentifier)
+    public function dropDatabase(string $databaseIdentifier)
     {
         GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
 
@@ -140,14 +143,16 @@ class Coordinator implements CoordinatorInterface
             Manager::free($databaseIdentifier);
         }
         if (!$this->databaseExists($databaseIdentifier)) {
-            throw new InvalidDatabaseException(sprintf('Database "%s" does not exist', $databaseIdentifier),
-                1412525836);
+            throw new InvalidDatabaseException(
+                sprintf('Database "%s" does not exist', $databaseIdentifier),
+                1412525836
+            );
         }
 
         $this->dataWriter->dropDatabase($databaseIdentifier);
         unset($this->allDatabaseIdentifiers[$databaseIdentifier]);
         $this->logger->info(sprintf('Drop database "%s"', $databaseIdentifier));
-        $this->eventEmitter->emit(Event::DATABASE_DROPPED, array($databaseIdentifier));
+        $this->eventEmitter->emit(Event::DATABASE_DROPPED, [$databaseIdentifier]);
     }
 
     /**
@@ -155,7 +160,7 @@ class Coordinator implements CoordinatorInterface
      *
      * @return string[]
      */
-    public function listInMemoryDatabases()
+    public function listInMemoryDatabases(): array
     {
         return array_diff($this->listDatabases(), $this->listPersistedDatabases());
     }
@@ -165,7 +170,7 @@ class Coordinator implements CoordinatorInterface
      *
      * @return array
      */
-    public function listDatabases()
+    public function listDatabases(): array
     {
         if ($this->allDatabaseIdentifiers === null) {
             $this->allDatabaseIdentifiers = array_combine(
@@ -173,6 +178,7 @@ class Coordinator implements CoordinatorInterface
                 $this->listPersistedDatabases()
             );
         }
+
         return array_values($this->allDatabaseIdentifiers);
     }
 
@@ -181,20 +187,16 @@ class Coordinator implements CoordinatorInterface
      *
      * @return string[]
      */
-    public function listPersistedDatabases()
+    public function listPersistedDatabases(): array
     {
         return $this->dataReader->listPersistedDatabases();
     }
 
-    /**
-     * Returns all data matching the given query
-     *
-     * @param $query
-     * @return array
-     */
-    public function getDataByQuery($query)
+    public function getDataByQuery($query): array
     {
+        return [];
     }
+
 
     /**
      * Commit all changed databases to the file system
@@ -224,12 +226,12 @@ class Coordinator implements CoordinatorInterface
      *
      * @param DatabaseInterface $database
      */
-    public function commitDatabase($database)
+    public function commitDatabase(DatabaseInterface $database)
     {
         $this->logger->info(sprintf('Commit database "%s"', $database->getIdentifier()));
         $this->dataWriter->writeDatabase($database);
         $database->setState(DatabaseStateInterface::STATE_CLEAN);
-        $this->eventEmitter->emit(Event::DATABASE_COMMITTED, array($database));
+        $this->eventEmitter->emit(Event::DATABASE_COMMITTED, [$database]);
     }
 
     /**
@@ -241,6 +243,6 @@ class Coordinator implements CoordinatorInterface
      */
     protected function performQueryOnDatabase($queryParts, $database)
     {
-//		if (isset($queryParts['select']))
+        return [];
     }
 }

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 20:12
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
@@ -17,8 +12,6 @@ use \JsonSerializable;
 
 /**
  * Class that represents a block of data
- *
- * @package Cundd\PersistentObjectStore
  */
 class Document implements DocumentInterface, JsonSerializable
 {
@@ -28,7 +21,7 @@ class Document implements DocumentInterface, JsonSerializable
     protected $id;
     protected $data;
 
-    public function __construct($data = array(), $databaseIdentifier = '')
+    public function __construct($data = [], $databaseIdentifier = '')
     {
         if ($data) {
             $this->assertDataType($data);
@@ -96,6 +89,7 @@ class Document implements DocumentInterface, JsonSerializable
         if (isset($this->data[$key])) {
             return $this->data[$key];
         }
+
         return null;
     }
 
@@ -149,8 +143,10 @@ class Document implements DocumentInterface, JsonSerializable
     public function setValueForKey($value, $key)
     {
         if (!is_string($key)) {
-            throw new LogicException('Given key path is not of type string (maybe arguments are ordered incorrect)',
-                1395484136);
+            throw new LogicException(
+                'Given key path is not of type string (maybe arguments are ordered incorrect)',
+                1395484136
+            );
         }
         $this->data[$key] = $value;
     }
@@ -166,6 +162,7 @@ class Document implements DocumentInterface, JsonSerializable
         if (!strpos($keyPath, '.')) {
             return $this->valueForKey($keyPath);
         }
+
         return ObjectUtility::valueForKeyPathOfObject($keyPath, $this->getData());
     }
 
@@ -200,13 +197,14 @@ class Document implements DocumentInterface, JsonSerializable
      */
     function jsonSerialize()
     {
-        $objectData                           = $this->getData();
-        $objectData[Constants::DATA_META_KEY] = array(
+        $objectData = $this->getData();
+        $objectData[Constants::DATA_META_KEY] = [
             'guid'             => $this->getGuid(),
             'database'         => $this->getDatabaseIdentifier(),
             'creationTime'     => $this->getCreationTime(),
             'modificationTime' => $this->getModificationTime(),
-        );
+        ];
+
         return $objectData;
     }
 

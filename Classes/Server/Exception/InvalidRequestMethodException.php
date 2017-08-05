@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11.10.14
- * Time: 15:19
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Exception;
 
 /**
  * Exception thrown for invalid request methods
- *
- * @package Cundd\PersistentObjectStore\Server\Exception
  */
 class InvalidRequestMethodException extends InvalidRequestException
 {

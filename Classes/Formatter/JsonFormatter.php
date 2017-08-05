@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 30.08.14
- * Time: 13:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Formatter;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
 /**
  * Class JsonFormatter
- *
- * @package Cundd\PersistentObjectStore\Formatter
  */
 class JsonFormatter extends AbstractFormatter
 {

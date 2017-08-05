@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 31.08.14
- * Time: 16:13
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter;
 
@@ -17,8 +12,6 @@ use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
 
 /**
  * Test for Cundd\PersistentObjectStore\Filter\FilterResult
- *
- * @package Cundd\PersistentObjectStore\Filter
  */
 class FilterResultTest extends AbstractDatabaseBasedCase
 {
@@ -61,12 +54,16 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         /** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
         $coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
 
-        $filter = new Filter(new LogicalComparison(ComparisonInterface::TYPE_AND, [
-            new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'),
-            new PropertyComparison('name', ComparisonInterface::TYPE_EQUAL_TO, 'Booker Oneil'),
-        ]));
+        $filter = new Filter(
+            new LogicalComparison(
+                ComparisonInterface::TYPE_AND, [
+                    new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'),
+                    new PropertyComparison('name', ComparisonInterface::TYPE_EQUAL_TO, 'Booker Oneil'),
+                ]
+            )
+        );
 
-        $database     = $coordinator->getDatabase('people');
+        $database = $coordinator->getDatabase('people');
         $filterResult = $filter->filterCollection($database);
 
         $currentObject = $filterResult->current();
@@ -129,10 +126,10 @@ class FilterResultTest extends AbstractDatabaseBasedCase
                         ComparisonInterface::TYPE_OR,
                         [
                             new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
-                            new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green')
+                            new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'),
                         ]
                     ),
-                    new PropertyComparison('age', ComparisonInterface::TYPE_LESS_THAN, 25)
+                    new PropertyComparison('age', ComparisonInterface::TYPE_LESS_THAN, 25),
                 ]
             )
         );
@@ -245,15 +242,15 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         iterator_to_array($this->fixture);
         $this->assertEquals(24, $this->fixture->count());
 
-            $this->fixture->rewind();
-            $this->fixture->next();
-            iterator_to_array($this->fixture);
-            $this->fixture->rewind();
+        $this->fixture->rewind();
+        $this->fixture->next();
+        iterator_to_array($this->fixture);
+        $this->fixture->rewind();
 
-            $i = 0;
-            while (++$i < $this->fixture->count()) {
-                $this->fixture->next();
-            }
+        $i = 0;
+        while (++$i < $this->fixture->count()) {
+            $this->fixture->next();
+        }
     }
 
     /**
@@ -276,7 +273,7 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         $this->assertEquals($memberFromNewFilter, $memberFromFixture);
 
         $movie = 'Star Wars';
-        $key   = 'favorite_movie';
+        $key = 'favorite_movie';
 
         $memberFromNewFilter->setValueForKey($movie, $key);
         $this->assertEquals($memberFromNewFilter, $memberFromFixture);
@@ -291,40 +288,60 @@ class FilterResultTest extends AbstractDatabaseBasedCase
     public function filterNormalCollectionTest()
     {
         $exampleCollection = new \SplObjectStorage();
-        $exampleCollection->attach(new Document(array(
-            'name'    => 'Red Hot Chili Peppers',
-            'founded' => 1983,
-            'breakUp' => null,
-            'url'     => 'http://www.redhotchilipeppers.com/',
-        )));
+        $exampleCollection->attach(
+            new Document(
+                [
+                    'name'    => 'Red Hot Chili Peppers',
+                    'founded' => 1983,
+                    'breakUp' => null,
+                    'url'     => 'http://www.redhotchilipeppers.com/',
+                ]
+            )
+        );
 
-        $exampleCollection->attach(new Document(array(
-            'name'    => 'The Beatles',
-            'founded' => 1960,
-            'breakUp' => 1970,
-            'url'     => 'http://thebeatles.com/',
-        )));
+        $exampleCollection->attach(
+            new Document(
+                [
+                    'name'    => 'The Beatles',
+                    'founded' => 1960,
+                    'breakUp' => 1970,
+                    'url'     => 'http://thebeatles.com/',
+                ]
+            )
+        );
 
-        $exampleCollection->attach(new Document(array(
-            'name'    => 'Pink Floyd',
-            'founded' => 1965,
-            'breakUp' => 2014,
-            'url'     => 'http://thebeatles.com/',
-        )));
+        $exampleCollection->attach(
+            new Document(
+                [
+                    'name'    => 'Pink Floyd',
+                    'founded' => 1965,
+                    'breakUp' => 2014,
+                    'url'     => 'http://thebeatles.com/',
+                ]
+            )
+        );
 
-        $filter       = new Filter(new PropertyComparison('breakUp', ComparisonInterface::TYPE_LESS_THAN_OR_EQUAL_TO,
-            2014));
+        $filter = new Filter(
+            new PropertyComparison(
+                'breakUp', ComparisonInterface::TYPE_LESS_THAN_OR_EQUAL_TO,
+                2014
+            )
+        );
         $filterResult = $filter->filterCollection($exampleCollection);
 
         $this->assertEquals(3, $filterResult->count());
 
 
-        $exampleCollection->attach(new Document(array(
-            'name'    => 'Starflyer 59',
-            'founded' => 1993,
-            'breakUp' => null,
-            'url'     => 'http://www.sf59.com/',
-        )));
+        $exampleCollection->attach(
+            new Document(
+                [
+                    'name'    => 'Starflyer 59',
+                    'founded' => 1993,
+                    'breakUp' => null,
+                    'url'     => 'http://www.sf59.com/',
+                ]
+            )
+        );
 
         $this->assertEquals(3, $filterResult->count());
     }

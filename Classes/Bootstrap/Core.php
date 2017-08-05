@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 19:37
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Bootstrap;
 
@@ -15,8 +10,6 @@ use DI\ContainerBuilder;
 
 /**
  * Core bootstrapping class
- *
- * @package Cundd\PersistentObjectStore
  */
 class Core
 {
@@ -91,7 +84,10 @@ class Core
             foreach ($startupMethods as $startupMethod) {
                 $classAndMethod = explode('::', $startupMethod, 2);
                 if (count($classAndMethod) < 2) {
-                    throw new InvalidArgumentError('Startup methods must be defined in the format \class\name::method', 1448974563);
+                    throw new InvalidArgumentError(
+                        'Startup methods must be defined in the format \class\name::method',
+                        1448974563
+                    );
                 }
                 $instance = $this->getDiContainer()->get($classAndMethod[0]);
                 $method = $classAndMethod[1];

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 04.04.15
- * Time: 14:39
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Session;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 
 /**
  * Interface for classes that allow creation and loading of session objects
- *
- * @package Cundd\PersistentObjectStore\Server\Session
  */
 interface SessionProviderInterface
 {
@@ -23,7 +16,7 @@ interface SessionProviderInterface
      * @param string $sessionId Optional session ID to use. If none is given it will be generated
      * @return SessionInterface
      */
-    public function create($sessionId = null);
+    public function create($sessionId = null):SessionInterface;
 
     /**
      * Loads the session with the given session ID
@@ -31,7 +24,7 @@ interface SessionProviderInterface
      * @param string $sessionId
      * @return SessionInterface|null
      */
-    public function load($sessionId);
+    public function load(string $sessionId):?SessionInterface;
 
     /**
      * Loads the session for the given request
@@ -39,5 +32,5 @@ interface SessionProviderInterface
      * @param RequestInterface $request
      * @return SessionInterface|null
      */
-    public function loadForRequest(RequestInterface $request);
+    public function loadForRequest(RequestInterface $request):?SessionInterface;
 }

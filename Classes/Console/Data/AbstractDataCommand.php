@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 09.10.14
- * Time: 16:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console\Data;
 
@@ -21,8 +16,6 @@ use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Abstract command that provides functions to load Document instances from input arguments
- *
- * @package Cundd\PersistentObjectStore\Console\Document
  */
 class AbstractDataCommand extends AbstractCommand
 {
@@ -59,11 +52,14 @@ class AbstractDataCommand extends AbstractCommand
         $database = $this->findDatabaseInstanceFromInput($input);
         if (is_string($query)) {
             GeneralUtility::assertDataIdentifier($query);
+
             return $database->findByIdentifier($query);
         } elseif (!empty($query)) {
             $filter = $this->filterBuilder->buildFilter($query);
+
             return $filter->filterCollection($database);
         }
+
         return $database;
     }
 
@@ -76,6 +72,7 @@ class AbstractDataCommand extends AbstractCommand
     protected function findDatabaseInstanceFromInput(InputInterface $input)
     {
         $databaseIdentifier = $input->getArgument('database');
+
         return $this->coordinator->getDatabase($databaseIdentifier);
     }
 
@@ -94,9 +91,15 @@ class AbstractDataCommand extends AbstractCommand
         $database = $this->findDatabaseInstanceFromInput($input);
         $document = $database->findByIdentifier($objectIdentifier);
         if (!$document && !$graceful) {
-            throw new InvalidDataException(sprintf('Object with ID "%s" not found in database %s', $objectIdentifier,
-                $database->getIdentifier()));
+            throw new InvalidDataException(
+                sprintf(
+                    'Object with ID "%s" not found in database %s',
+                    $objectIdentifier,
+                    $database->getIdentifier()
+                )
+            );
         }
+
         return $document;
     }
 } 

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 20:11
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 
 /**
  * Interface for coordinators responsible for managing the data
- *
- * @package Cundd\PersistentObjectStore\DataAccess
  */
 interface CoordinatorInterface
 {
@@ -23,7 +16,7 @@ interface CoordinatorInterface
      * @param string $databaseIdentifier
      * @return DatabaseInterface
      */
-    public function getDatabase($databaseIdentifier);
+    public function getDatabase(string $databaseIdentifier): DatabaseInterface;
 
     /**
      * Creates a new database with the given identifier and options
@@ -32,7 +25,7 @@ interface CoordinatorInterface
      * @param array  $options            Additional options for the created database
      * @return DatabaseInterface
      */
-    public function createDatabase($databaseIdentifier, $options = array());
+    public function createDatabase(string $databaseIdentifier, $options = []): DatabaseInterface;
 
     /**
      * Drops the database with the given identifier
@@ -40,7 +33,7 @@ interface CoordinatorInterface
      * @param string $databaseIdentifier Unique identifier of the database
      * @return void
      */
-    public function dropDatabase($databaseIdentifier);
+    public function dropDatabase(string $databaseIdentifier);
 
     /**
      * Returns if the database with the given identifier exists
@@ -48,28 +41,28 @@ interface CoordinatorInterface
      * @param string $databaseIdentifier Unique identifier of the database
      * @return bool
      */
-    public function databaseExists($databaseIdentifier);
+    public function databaseExists(string $databaseIdentifier): bool;
 
     /**
      * Returns an array of the identifiers of available databases
      *
      * @return array
      */
-    public function listDatabases();
+    public function listDatabases(): array;
 
     /**
      * Returns an array of the identifiers of databases that are not already persisted
      *
      * @return string[]
      */
-    public function listInMemoryDatabases();
+    public function listInMemoryDatabases(): array;
 
     /**
      * Returns an array of the identifiers of databases that are already persisted
      *
      * @return string[]
      */
-    public function listPersistedDatabases();
+    public function listPersistedDatabases() : array;
 
     /**
      * Returns all data matching the given query
@@ -77,14 +70,14 @@ interface CoordinatorInterface
      * @param $query
      * @return array
      */
-    public function getDataByQuery($query);
+    public function getDataByQuery($query):array;
 
     /**
      * Commit the database to the file system
      *
      * @param DatabaseInterface $database
      */
-    public function commitDatabase($database);
+    public function commitDatabase(DatabaseInterface $database);
 
     /**
      * Commit all changed databases to the file system

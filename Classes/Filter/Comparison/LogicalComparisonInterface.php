@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 14.09.14
- * Time: 17:44
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter\Comparison;
 
 /**
  * Interface for logical comparison
- *
- * @package Cundd\PersistentObjectStore\Filter\Comparison
  */
 interface LogicalComparisonInterface extends ComparisonInterface
 {

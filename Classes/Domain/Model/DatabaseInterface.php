@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 20.09.14
- * Time: 10:44
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
@@ -15,8 +10,6 @@ use Cundd\PersistentObjectStore\Index\IndexableInterface;
 
 /**
  * Interface for Database implementations
- *
- * @package Cundd\PersistentObjectStore\Domain\Model
  */
 interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, IndexableInterface, \Iterator, \Countable, \SeekableIterator
 {
@@ -39,9 +32,9 @@ interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, 
      * Returns the object with the given identifier
      *
      * @param string $identifier
-     * @return DocumentInterface|NULL
+     * @return DocumentInterface
      */
-    public function findByIdentifier($identifier);
+    public function findByIdentifier($identifier): ?DocumentInterface;
 
     /**
      * Sets the raw data

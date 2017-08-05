@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 09.10.14
- * Time: 14:18
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore;
 
 /**
  * Collections of constants used through out the system
- *
- * @package Cundd\PersistentObjectStore
  */
 interface Constants
 {

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 02.02.15
- * Time: 19:43
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Bootstrap;
 
@@ -19,8 +14,6 @@ use React\Http\Response;
 
 /**
  * Router bootstrapping for conventional servers
- *
- * @package Cundd\PersistentObjectStore\Bootstrap
  */
 class Router extends AbstractBootstrap
 {
@@ -36,7 +29,7 @@ class Router extends AbstractBootstrap
      *
      * @var array
      */
-    protected $arguments = array();
+    protected $arguments = [];
 
     /**
      * Configure the server/router
@@ -47,8 +40,8 @@ class Router extends AbstractBootstrap
     public function configure($arguments)
     {
         $this->arguments = $arguments;
-        $dataPath        = getenv(Constants::ENVIRONMENT_KEY_SERVER_DATA_PATH);
-        $serverMode      = $this->getServerModeFromEnv();
+        $dataPath = getenv(Constants::ENVIRONMENT_KEY_SERVER_DATA_PATH);
+        $serverMode = $this->getServerModeFromEnv();
 
         $configurationManager = ConfigurationManager::getSharedInstance();
         if ($serverMode === ServerInterface::SERVER_MODE_DEVELOPMENT) {
@@ -78,7 +71,7 @@ class Router extends AbstractBootstrap
      */
     protected function doExecute()
     {
-        $request  = $this->createRequestInstance();
+        $request = $this->createRequestInstance();
         $response = $this->getResponse();
         $this->server->prepareAndHandle($request, $response);
         $this->handleSentData($request);
@@ -91,9 +84,13 @@ class Router extends AbstractBootstrap
      */
     protected function createRequestInstance()
     {
-        $mergedArguments = array_reduce($this->arguments, function ($carry, $item) {
-            return array_merge($carry, array_change_key_case($item, CASE_LOWER));
-        }, array());
+        $mergedArguments = array_reduce(
+            $this->arguments,
+            function ($carry, $item) {
+                return array_merge($carry, array_change_key_case($item, CASE_LOWER));
+            },
+            []
+        );
 
         $requestPath = parse_url($mergedArguments['request_uri'], PHP_URL_PATH);
 
@@ -133,7 +130,7 @@ class Router extends AbstractBootstrap
             return getallheaders();
         }
 
-        $headers = array();
+        $headers = [];
         foreach ($this->arguments['server'] as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
                 $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;

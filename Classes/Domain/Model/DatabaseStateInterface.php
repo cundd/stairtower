@@ -1,18 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 20.09.14
- * Time: 10:44
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 
 /**
  * Interface for Database implementations
- *
- * @package Cundd\PersistentObjectStore\Domain\Model
  */
 interface DatabaseStateInterface
 {

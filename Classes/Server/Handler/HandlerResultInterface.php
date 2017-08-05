@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 10.10.14
- * Time: 17:59
- */
+declare(strict_types=1);
+
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
 /**
  * Interface for classes that describe a Handlers response
- *
- * @package Cundd\PersistentObjectStore\Server\Handler
  */
 interface HandlerResultInterface
 {

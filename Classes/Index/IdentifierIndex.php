@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 03.11.14
- * Time: 21:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Index;
 
@@ -21,8 +16,6 @@ use SplFixedArray;
 
 /**
  * Key implementation
- *
- * @package Cundd\PersistentObjectStore\Index
  */
 class IdentifierIndex extends Key
 {
@@ -30,12 +23,12 @@ class IdentifierIndex extends Key
      * Builds the index for the given collection
      *
      * @param DatabaseInterface|\Iterator $database
-     * @return $this
+     * @return IndexInterface
      */
-    public function indexDatabase($database)
+    public function indexDatabase($database): IndexInterface
     {
         // Clear the map
-        $this->map = array();
+        $this->map = [];
 
         /** @var SplFixedArray $collection */
         $collection = null;
@@ -58,8 +51,8 @@ class IdentifierIndex extends Key
         }
 
         $position = 0;
-        $count    = $collection->getSize();
-        $tempMap  = array();
+        $count = $collection->getSize();
+        $tempMap = [];
 
         if ($count > 0) {
             $collectionContainsDocumentObjects = $collection[0] instanceof DocumentInterface;
@@ -75,13 +68,17 @@ class IdentifierIndex extends Key
 //				DebugUtility::var_dump('Index', $key);
 
                 if (isset($tempMap[$key])) {
-                    throw new DuplicateEntryException(sprintf('Duplicate entry \'%s\' for identifier', $key),
-                        1415046937);
+                    throw new DuplicateEntryException(
+                        sprintf('Duplicate entry \'%s\' for identifier', $key),
+                        1415046937
+                    );
                 }
                 $tempMap[$key] = $position;
             } while (++$position < $count);
         }
         $this->map = $tempMap;
+
+        return $this;
     }
 
     /**
@@ -89,15 +86,16 @@ class IdentifierIndex extends Key
      *
      * @param DocumentInterface|array $document
      * @param  int                    $position
-     * @return $this
+     * @return IndexInterface
      */
-    public function addEntryWithPosition($document, $position)
+    public function addEntryWithPosition($document, $position): IndexInterface
     {
         $key = DocumentUtility::getIdentifierForDocument($document);
         if (isset($this->map[$key])) {
             throw new DuplicateEntryException(sprintf('Duplicate entry \'%s\' for identifier', $key), 1415046937);
         }
         $this->map[$key] = $position;
+
         return $this;
     }
 
@@ -106,15 +104,16 @@ class IdentifierIndex extends Key
      *
      * @param DocumentInterface|array $document
      * @param int                     $position
-     * @return $this
+     * @return IndexInterface
      */
-    public function updateEntryForPosition($document, $position)
+    public function updateEntryForPosition($document, $position): IndexInterface
     {
         $key = DocumentUtility::getIdentifierForDocument($document);
         if (!isset($this->map[$key])) {
             throw new InvalidEntryException(sprintf('Entry \'%s\' not found to update', $key), 1415047116);
         }
         $this->map[$key] = $position;
+
         return $this;
     }
 
@@ -122,9 +121,9 @@ class IdentifierIndex extends Key
      * Removes the given entry in the Index
      *
      * @param DocumentInterface|array $document
-     * @return $this
+     * @return IndexInterface
      */
-    public function deleteEntry($document)
+    public function deleteEntry($document): IndexInterface
     {
         DebugUtility::var_dump($this->map);
         $key = DocumentUtility::getIdentifierForDocument($document);
@@ -134,6 +133,7 @@ class IdentifierIndex extends Key
         unset($this->map[$key]);
 
         DebugUtility::var_dump($this->map);
+
         return $this;
     }
 
@@ -146,6 +146,4 @@ class IdentifierIndex extends Key
     {
         return Constants::DATA_ID_KEY;
     }
-
-
 }

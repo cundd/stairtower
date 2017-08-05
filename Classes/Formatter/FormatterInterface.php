@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 30.08.14
- * Time: 11:47
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Formatter;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
 /**
  * Interface for data formatter responsible to transform Document objects into matching string representations
- *
- * @package Cundd\PersistentObjectStore\Formatter
  */
 interface FormatterInterface
 {
@@ -21,9 +14,9 @@ interface FormatterInterface
      * Sets the configuration for the formatter
      *
      * @param $configuration
-     * @return $this
+     * @return FormatterInterface
      */
-    public function setConfiguration($configuration);
+    public function setConfiguration($configuration): FormatterInterface;
 
     /**
      * Formats the given input

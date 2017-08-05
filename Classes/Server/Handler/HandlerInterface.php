@@ -1,18 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 10.10.14
- * Time: 17:59
- */
+declare(strict_types=1);
+
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 
 /**
  * Interface for classes that handle the actions from incoming requests
- *
- * @package Cundd\PersistentObjectStore\Server\Handler
  */
 interface HandlerInterface
 {

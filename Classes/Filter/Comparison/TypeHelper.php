@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.12.14
- * Time: 16:23
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter\Comparison;
 
@@ -12,8 +7,6 @@ use ReflectionClass;
 
 /**
  * Helper to test and convert Comparison Types
- *
- * @package Cundd\PersistentObjectStore\Filter\Comparison
  */
 class TypeHelper
 {
@@ -22,7 +15,7 @@ class TypeHelper
      *
      * @var array
      */
-    public static $comparisonTypesMapDollar = array(
+    public static $comparisonTypesMapDollar = [
         '$eq'   => ComparisonInterface::TYPE_EQUAL_TO,
         '$ne'   => ComparisonInterface::TYPE_NOT_EQUAL_TO,
         '$lt'   => ComparisonInterface::TYPE_LESS_THAN,
@@ -36,7 +29,7 @@ class TypeHelper
         '$em'   => ComparisonInterface::TYPE_IS_EMPTY,
         '$and'  => ComparisonInterface::TYPE_AND,
         '$or'   => ComparisonInterface::TYPE_OR,
-    );
+    ];
 
     /**
      * Returns if the given value is a Comparison Type
@@ -47,6 +40,7 @@ class TypeHelper
     public function isComparisonType($input)
     {
         $comparisonInterfaceTypes = $this->getComparisonTypes();
+
         return in_array($input, $comparisonInterfaceTypes, true);
     }
 
@@ -59,9 +53,12 @@ class TypeHelper
     {
         static $comparisonInterfaceTypes;
         if (!$comparisonInterfaceTypes) {
-            $reflectionClass          = new ReflectionClass('Cundd\\PersistentObjectStore\\Filter\\Comparison\\ComparisonInterface');
+            $reflectionClass = new ReflectionClass(
+                'Cundd\\PersistentObjectStore\\Filter\\Comparison\\ComparisonInterface'
+            );
             $comparisonInterfaceTypes = $reflectionClass->getConstants();
         }
+
         return $comparisonInterfaceTypes;
     }
 
@@ -96,7 +93,7 @@ class TypeHelper
     public function isPropertyComparisonType($input)
     {
         return $this->isComparisonType($input)
-        && $input !== ComparisonInterface::TYPE_OR
-        && $input !== ComparisonInterface::TYPE_AND;
+            && $input !== ComparisonInterface::TYPE_OR
+            && $input !== ComparisonInterface::TYPE_AND;
     }
 }

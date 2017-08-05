@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.10.14
- * Time: 16:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console\Cache;
 
@@ -18,8 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console command to clear the caches
- *
- * @package Cundd\PersistentObjectStore\Console
  */
 class ClearCommand extends Command
 {

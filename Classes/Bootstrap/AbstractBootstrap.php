@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 02.02.15
- * Time: 19:43
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Bootstrap;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\ErrorHandling\ErrorHandler;
 
 /**
  * Abstract bootstrapping class for the server and router
- *
- * @package Cundd\PersistentObjectStore\Bootstrap
  */
 abstract class AbstractBootstrap
 {
@@ -44,7 +37,7 @@ abstract class AbstractBootstrap
      */
     public function __construct($arguments)
     {
-        ini_set('display_errors', true);
+        ini_set('display_errors', '1');
         set_time_limit(0);
 
         $this->configure($arguments);
@@ -69,7 +62,17 @@ abstract class AbstractBootstrap
     public function execute()
     {
         $this->configureErrorHandling();
-        $this->doExecute();
+        try {
+            $this->doExecute();
+        } catch (\Error $error) {
+            $this->errorHandler->handle(
+                $error->getCode(),
+                $error->getMessage(),
+                $error->getFile(),
+                $error->getLine(),
+                [$error]
+            );
+        }
         $this->crashHandler->unregister();
     }
 

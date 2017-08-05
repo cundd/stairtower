@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.10.14
- * Time: 16:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console\Database;
 
@@ -15,8 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console command to create a new database
- *
- * @package Cundd\PersistentObjectStore\Console
  */
 class DropCommand extends AbstractCommand
 {

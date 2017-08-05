@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 13.10.14
- * Time: 17:17
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\BodyParser;
 

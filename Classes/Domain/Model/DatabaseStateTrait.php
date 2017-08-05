@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 06.02.15
- * Time: 21:52
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
 /**
  * Trait to manage Database State
- *
- * @package Cundd\PersistentObjectStore\Domain\Model
  */
 trait DatabaseStateTrait
 {
@@ -41,6 +34,7 @@ trait DatabaseStateTrait
     public function setState($newState)
     {
         $this->state = $newState;
+
         return $this;
     }
 }

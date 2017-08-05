@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11.10.14
- * Time: 20:18
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
@@ -21,8 +16,6 @@ use React\Http\Request;
 
 /**
  * Handler test
- *
- * @package Cundd\PersistentObjectStore\Server\Handler
  */
 class HandlerTest extends AbstractCase
 {
@@ -51,7 +44,7 @@ class HandlerTest extends AbstractCase
      */
     public function noRouteTest()
     {
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/'));
         $handlerResult = $this->fixture->noRoute($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -66,8 +59,8 @@ class HandlerTest extends AbstractCase
      */
     public function createTest()
     {
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('POST', '/contacts/'));
-        $data          = array('email' => 'info-for-me@cundd.net', 'name' => 'Daniel');
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('POST', '/contacts/'));
+        $data = ['email' => 'info-for-me@cundd.net', 'name' => 'Daniel'];
         $handlerResult = $this->fixture->create($requestInfo, $data);
 
         $this->assertInstanceOf(
@@ -89,7 +82,7 @@ class HandlerTest extends AbstractCase
 
         $i = 0;
         do {
-            $data          = array('email' => "info$i-for-me@cundd.net", 'name' => 'Daniel');
+            $data = ['email' => "info$i-for-me@cundd.net", 'name' => 'Daniel'];
             $handlerResult = $this->fixture->create($requestInfo, $data);
         } while (++$i < 10000);
         // Validate the last result
@@ -112,15 +105,17 @@ class HandlerTest extends AbstractCase
     public function createDatabaseTest()
     {
         $databaseIdentifier = 'test-db-' . time();
-        $expectedPath       = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
+                'writeDataPath'
+            ) . $databaseIdentifier . '.json';
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('PUT', sprintf('/%s/', $databaseIdentifier))
         );
-        $databaseOptions = array();
+        $databaseOptions = [];
         // Todo: Enable Database creation parameters
         // $databaseOptions = array('type' => 'memory');
-        $handlerResult   = $this->fixture->create($requestInfo, $databaseOptions);
+        $handlerResult = $this->fixture->create($requestInfo, $databaseOptions);
 
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -142,7 +137,7 @@ class HandlerTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('POST', '/contacts/info@cundd.net')
         );
-        $data          = array('email' => 'info-for-me@cundd.net', 'name' => 'Daniel');
+        $data = ['email' => 'info-for-me@cundd.net', 'name' => 'Daniel'];
         $handlerResult = $this->fixture->create($requestInfo, $data);
 
         $this->assertInstanceOf(
@@ -167,8 +162,12 @@ class HandlerTest extends AbstractCase
      */
     public function readTest()
     {
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET',
-            '/contacts/info@cundd.net'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            new Request(
+                'GET',
+                '/contacts/info@cundd.net'
+            )
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -191,7 +190,7 @@ class HandlerTest extends AbstractCase
      */
     public function readDatabaseTest()
     {
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/'));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -215,7 +214,7 @@ class HandlerTest extends AbstractCase
     public function readWithSearchTest()
     {
         parse_str('firstName=Daniel', $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -240,7 +239,7 @@ class HandlerTest extends AbstractCase
     public function readWithEmptyResultSearchTest()
     {
         parse_str('firstName=Some-thing-not-existing', $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -256,7 +255,7 @@ class HandlerTest extends AbstractCase
 
 
         parse_str('some-thing-not-existing=Daniel', $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -276,9 +275,11 @@ class HandlerTest extends AbstractCase
      */
     public function updateTest()
     {
-        $newName     = 'Steve ' . time();
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('PUT', '/contacts/info@cundd.net'));
-        $data        = array('email' => 'info@cundd.net', 'name' => $newName);
+        $newName = 'Steve ' . time();
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            new Request('PUT', '/contacts/info@cundd.net')
+        );
+        $data = ['email' => 'info@cundd.net', 'name' => $newName];
 
         $handlerResult = $this->fixture->update($requestInfo, $data);
         $this->assertInstanceOf(
@@ -301,11 +302,11 @@ class HandlerTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('PUT', '/contacts/email@does-not-exist.net')
         );
-        $data        = array(
+        $data = [
             'what ever' => 'this will not be updated',
             'email'     => 'info@cundd.net',
-            'name'      => 'Daniel'
-        );
+            'name'      => 'Daniel',
+        ];
 
         $handlerResult = $this->fixture->update($requestInfo, $data);
         $this->assertInstanceOf(
@@ -341,6 +342,7 @@ class HandlerTest extends AbstractCase
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function deleteDatabaseTest()
     {
@@ -361,7 +363,7 @@ class HandlerTest extends AbstractCase
      */
     public function getStatsActionTest()
     {
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/_stats/'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/_stats/'));
         $handlerResult = $this->fixture->getStatsAction($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -374,7 +376,7 @@ class HandlerTest extends AbstractCase
      */
     public function getAssetActionTest()
     {
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/_asset/book.json'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/_asset/book.json'));
         $handlerResult = $this->fixture->getAssetAction($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -390,7 +392,9 @@ class HandlerTest extends AbstractCase
      */
     public function doNotGetAssetActionTest()
     {
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/_asset/not-existing.jpg'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            new Request('GET', '/_asset/not-existing.jpg')
+        );
         $handlerResult = $this->fixture->getAssetAction($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -408,12 +412,14 @@ class HandlerTest extends AbstractCase
         $configurationManager->setConfigurationForKeyPath('publicResources', __DIR__ . '/../../../Resources/');
 
         $diContainer = $this->getDiContainer();
-        $server      = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\DummyServer');
+        $server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\DummyServer');
         $diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $server);
-        
+
         $coordinator = $diContainer->get('Cundd\\PersistentObjectStore\\DataAccess\\CoordinatorInterface');
 
-        $this->requestInfoFactory = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory');
+        $this->requestInfoFactory = $diContainer->get(
+            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory'
+        );
 
 
         parent::setUp();

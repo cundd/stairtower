@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.10.14
- * Time: 12:38
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 

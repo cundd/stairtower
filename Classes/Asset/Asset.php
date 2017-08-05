@@ -1,36 +1,29 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.04.15
- * Time: 20:00
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Asset;
 
 /**
  * Asset implementation
- *
- * @package Cundd\PersistentObjectStore\Asset
  */
 class Asset implements AssetInterface
 {
     /**
      * @var string
      */
-    protected $uri;
+    private $uri;
 
     /**
      * @var string
      */
-    protected $content;
+    private $content;
 
     /**
-     * @var
+     * @var string
      */
     private $contentType;
 
-    function __construct($uri, $content, $contentType)
+    function __construct(string $uri, string $content, string $contentType)
     {
         $this->uri = $uri;
         $this->content = $content;
@@ -38,26 +31,17 @@ class Asset implements AssetInterface
     }
 
 
-    /**
-     * @inheritdoc
-     */
-    public function getUri()
+    public function getUri(): string
     {
         return $this->uri;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getContentType()
+    public function getContentType(): string
     {
         return $this->contentType;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->content;
     }

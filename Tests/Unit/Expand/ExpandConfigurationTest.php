@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 30.12.14
- * Time: 12:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Expand;
 
@@ -12,10 +7,8 @@ use Cundd\PersistentObjectStore\Constants;
 
 /**
  * ExpandConfiguration test
- *
- * @package Cundd\PersistentObjectStore\Expand
  */
-class ExpandConfigurationTest extends \PHPUnit_Framework_TestCase
+class ExpandConfigurationTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @test

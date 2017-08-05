@@ -1,15 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 31.08.14
- * Time: 16:25
- */
+declare(strict_types=1);
+
 namespace Cundd\PersistentObjectStore\Tests\Unit;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 
-class Bootstrap {
+class Bootstrap
+{
     public function init()
     {
         $XHPROF_ROOT = __DIR__ . '/../../xhprof-0.9.4/';
@@ -32,7 +29,10 @@ class Bootstrap {
 
 
         ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('dataPath', __DIR__ . '/../Resources/');
-        ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('writeDataPath', __DIR__ . '/../../var/Temp/');
+        ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath(
+            'writeDataPath',
+            __DIR__ . '/../../var/Temp/'
+        );
     }
 }
 

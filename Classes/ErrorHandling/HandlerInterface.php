@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.02.15
- * Time: 12:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\ErrorHandling;
 
 /**
  * Interface for Error and Crash Handler
- *
- * @package Cundd\PersistentObjectStore\ErrorHandling
  */
 interface HandlerInterface
 {
@@ -30,5 +23,5 @@ interface HandlerInterface
      * @param array  $errcontext
      * @return bool
      */
-    public function handle($errno, $errstr, $errfile = '', $errline = 0, $errcontext = array());
+    public function handle(int $errno, string $errstr, string $errfile = '', int $errline = 0, $errcontext = []);
 }

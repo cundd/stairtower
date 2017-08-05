@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 04.04.15
- * Time: 14:43
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Session\Exception;
 

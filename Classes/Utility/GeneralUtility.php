@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 25.08.14
- * Time: 21:40
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Utility;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
 
 /**
  * Interface GeneralUtilityInterface
- *
- * @package Cundd\PersistentObjectStore\Utility
  */
 abstract class GeneralUtility
 {
@@ -53,7 +46,7 @@ abstract class GeneralUtility
      */
     public static function assertRequestMethod($method)
     {
-        if (!in_array($method, array('GET', 'POST', 'PUT', 'DELETE', 'HEAD'))) {
+        if (!in_array($method, ['GET', 'POST', 'PUT', 'DELETE', 'HEAD'])) {
             throw new InvalidRequestMethodException("Invalid method '$method'", 1413052000);
         }
     }
@@ -67,14 +60,15 @@ abstract class GeneralUtility
      */
     public static function formatBytes($bytes, $precision = 2)
     {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
         $bytes = max($bytes, 0);
-        $pow   = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow   = min($pow, count($units) - 1);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
 
         // Uncomment one of the following alternatives
         $bytes /= pow(1024, $pow);
+
         // $bytes /= (1 << (10 * $pow));
 
         return round($bytes, $precision) . ' ' . $units[$pow];
@@ -91,6 +85,7 @@ abstract class GeneralUtility
         if (is_integer($var) || ((string)(int)$var === $var)) {
             return intval($var);
         }
+
         return null;
     }
 
@@ -103,6 +98,7 @@ abstract class GeneralUtility
     public static function underscoreToCamelCase($underscoreString)
     {
         $prefix = $underscoreString[0] === '_' ? '_' : '';
+
         return $prefix . lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $underscoreString))));
     }
 
@@ -141,6 +137,7 @@ abstract class GeneralUtility
             case is_object($value) && method_exists($value, '__toString'):
                 return (string)$value;
         }
+
         return false;
     }
 
@@ -164,7 +161,7 @@ abstract class GeneralUtility
     public static function removeDirectoryRecursive($dir)
     {
         $success = true;
-        $files   = array_diff(scandir($dir), array('.', '..'));
+        $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
             if (is_dir("$dir/$file")) {
                 $success *= self::removeDirectoryRecursive("$dir/$file");
@@ -172,6 +169,7 @@ abstract class GeneralUtility
                 $success *= unlink("$dir/$file");
             }
         }
+
         return (bool)($success * rmdir($dir));
     }
 } 

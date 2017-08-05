@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 02.04.15
- * Time: 21:31
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Cookie;
 
@@ -15,8 +10,6 @@ use DateTime;
 
 /**
  * Cookie representation
- *
- * @package Cundd\PersistentObjectStore\Server\Cookie
  */
 class Cookie implements Immutable
 {
@@ -81,14 +74,14 @@ class Cookie implements Immutable
     protected $urlEncode = true;
 
     function __construct(
-        $name,
-        $value,
-        $expires = null,
-        $path = null,
-        $domain = null,
-        $secure = false,
-        $httpOnly = false,
-        $urlEncode = true
+        string $name,
+        ?string $value,
+        \DateTimeInterface $expires = null,
+        string $path = null,
+        string $domain = null,
+        bool $secure = false,
+        bool $httpOnly = false,
+        bool $urlEncode = true
     ) {
         if (!$name) {
             throw new InvalidArgumentError('Missing argument cookie "name"', 1428005989);
@@ -99,13 +92,13 @@ class Cookie implements Immutable
             $expires->setTimezone(new \DateTimeZone('GMT'));
         }
 
-        $this->name      = $name;
-        $this->value     = $value;
-        $this->expires   = $expires;
-        $this->path      = $path;
-        $this->domain    = $domain;
-        $this->secure    = (bool)$secure;
-        $this->httpOnly  = (bool)$httpOnly;
+        $this->name = $name;
+        $this->value = $value;
+        $this->expires = $expires;
+        $this->path = $path;
+        $this->domain = $domain;
+        $this->secure = (bool)$secure;
+        $this->httpOnly = (bool)$httpOnly;
         $this->urlEncode = (bool)$urlEncode;
     }
 
@@ -114,7 +107,8 @@ class Cookie implements Immutable
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -123,7 +117,8 @@ class Cookie implements Immutable
      *
      * @return string
      */
-    public function getValue() {
+    public function getValue()
+    {
         return $this->value;
     }
 
@@ -132,7 +127,8 @@ class Cookie implements Immutable
      *
      * @return DateTime
      */
-    public function getExpires() {
+    public function getExpires()
+    {
         return $this->expires;
     }
 
@@ -142,7 +138,8 @@ class Cookie implements Immutable
      * @link http://en.wikipedia.org/wiki/HTTP_cookie#Domain_and_Path
      * @return string
      */
-    public function getPath() {
+    public function getPath()
+    {
         return $this->path;
     }
 
@@ -152,7 +149,8 @@ class Cookie implements Immutable
      * @link http://en.wikipedia.org/wiki/HTTP_cookie#Domain_and_Path
      * @return string
      */
-    public function getDomain() {
+    public function getDomain()
+    {
         return $this->domain;
     }
 
@@ -162,7 +160,8 @@ class Cookie implements Immutable
      * @link http://en.wikipedia.org/wiki/HTTP_cookie#Secure_and_HttpOnly
      * @return bool
      */
-    public function getHttpOnly() {
+    public function getHttpOnly()
+    {
         return $this->httpOnly;
     }
 
@@ -172,7 +171,8 @@ class Cookie implements Immutable
      * @link http://en.wikipedia.org/wiki/HTTP_cookie#Secure_and_HttpOnly
      * @return bool
      */
-    public function getSecure() {
+    public function getSecure()
+    {
         return $this->secure;
     }
 
@@ -181,7 +181,8 @@ class Cookie implements Immutable
      *
      * @return bool
      */
-    public function getUrlEncode() {
+    public function getUrlEncode()
+    {
         return $this->urlEncode;
     }
 
@@ -195,7 +196,7 @@ class Cookie implements Immutable
         $definitions = [];
 
         if ($this->urlEncode) {
-            $definitions[$this->name] = urlencode($this->value);
+            $definitions[$this->name] = urlencode((string)$this->value);
         } else {
             $definitions[$this->name] = $this->value;
         }
@@ -249,6 +250,7 @@ class Cookie implements Immutable
                 return $dateDefinition;
             }
         }
-        return (string) $date;
+
+        return (string)$date;
     }
 }

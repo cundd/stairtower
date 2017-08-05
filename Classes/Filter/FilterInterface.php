@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 01.09.14
- * Time: 20:52
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
 
 /**
  * Interface for collection filters
- *
- * @package Cundd\PersistentObjectStore\Filter
  */
 interface FilterInterface
 {

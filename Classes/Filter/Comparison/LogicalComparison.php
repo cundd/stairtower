@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 13.09.14
- * Time: 19:25
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter\Comparison;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
 
 /**
  * Nested logical comparison
- *
- * @package Cundd\PersistentObjectStore\Filter\Comparison
  */
 class LogicalComparison implements LogicalComparisonInterface
 {
@@ -41,7 +34,7 @@ class LogicalComparison implements LogicalComparisonInterface
      *
      * @var array
      */
-    protected $constraints = array();
+    protected $constraints = [];
 
     /**
      * Creates a new comparison
@@ -73,7 +66,7 @@ class LogicalComparison implements LogicalComparisonInterface
     {
         $strict = $this->isStrict();
         $operator = $this->getOperator();
-        $isOr     = $operator === ComparisonInterface::TYPE_OR;
+        $isOr = $operator === ComparisonInterface::TYPE_OR;
         if ($operator !== ComparisonInterface::TYPE_AND && $operator !== ComparisonInterface::TYPE_OR) {
             throw new InvalidComparisonException(
                 sprintf('Can not perform logical comparison with operator %s', $operator),
@@ -88,12 +81,16 @@ class LogicalComparison implements LogicalComparisonInterface
 
         foreach ($constraints as $constraint) {
             if ($strict && !($constraint instanceof ComparisonInterface)) {
-                throw new InvalidComparisonException(sprintf(
-                    'Current constraint is no Comparison Interface instance but %s',
-                    is_object($constraint) ? get_class($constraint) : gettype($constraint)
-                ), 1418037096);
+                throw new InvalidComparisonException(
+                    sprintf(
+                        'Current constraint is no Comparison Interface instance but %s',
+                        is_object($constraint) ? get_class($constraint) : gettype($constraint)
+                    ), 1418037096
+                );
             }
-            $constraintResult = !!($constraint instanceof ComparisonInterface ? $constraint->perform($testValue) : $constraint);
+            $constraintResult = !!($constraint instanceof ComparisonInterface ? $constraint->perform(
+                $testValue
+            ) : $constraint);
 
             // If the operator is OR and one constraint is TRUE return TRUE
             if ($isOr && $constraintResult) {
@@ -156,6 +153,7 @@ class LogicalComparison implements LogicalComparisonInterface
     public function setStrict($strict)
     {
         $this->strict = $strict;
+
         return $this;
     }
 }

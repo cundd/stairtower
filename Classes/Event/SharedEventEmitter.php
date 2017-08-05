@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 01.09.14
- * Time: 21:34
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Event;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\RuntimeException;
 
 /**
  * Shared Event Emitter to dispatch events
- *
- * @package Cundd\PersistentObjectStore\Emitter
  */
 class SharedEventEmitter
 {
@@ -63,6 +56,7 @@ class SharedEventEmitter
         if (!static::$_sharedEventEmitter) {
             throw new RuntimeException('Shared Event Emitter has not been created', 1413369080);
         }
+
         return static::$_sharedEventEmitter;
     }
 
@@ -115,6 +109,7 @@ class SharedEventEmitter
     public function setEventLoop($eventLoop)
     {
         $this->eventLoop = $eventLoop;
+
         return $this;
     }
 
@@ -129,9 +124,11 @@ class SharedEventEmitter
     public function scheduleFutureEmit($event, array $arguments = [])
     {
         if ($this->eventLoop) {
-            $this->eventLoop->futureTick(function () use ($event, $arguments) {
-                $this->getEventEmitter()->emit($event, $arguments);
-            });
+            $this->eventLoop->futureTick(
+                function () use ($event, $arguments) {
+                    $this->getEventEmitter()->emit($event, $arguments);
+                }
+            );
         } else {
             $this->getEventEmitter()->emit($event, $arguments);
         }

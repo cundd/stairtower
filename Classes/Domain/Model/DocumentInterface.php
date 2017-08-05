@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 20:12
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\KeyValueCodingInterface;
 
 /**
  * Abstract interface to describe the parameters of a persisted object
- *
- * @package Cundd\PersistentObjectStore
  */
 interface DocumentInterface extends KeyValueCodingInterface
 {

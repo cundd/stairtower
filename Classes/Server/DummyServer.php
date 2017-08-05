@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 19:38
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server;
 
@@ -26,8 +21,6 @@ use React\Stream\WritableStreamInterface;
 
 /**
  * A dummy server implementation for testing
- *
- * @package Cundd\PersistentObjectStore
  */
 class DummyServer implements ServerInterface
 {
@@ -196,8 +189,10 @@ class DummyServer implements ServerInterface
      */
     public function collectStatistics($detailed = false)
     {
-        return new Statistics(Constants::VERSION, $this->getGuid(), $this->getStartTime(), memory_get_usage(true),
-            memory_get_peak_usage(true));
+        return new Statistics(
+            Constants::VERSION, $this->getGuid(), $this->getStartTime(), memory_get_usage(true),
+            memory_get_peak_usage(true)
+        );
     }
 
     /**
@@ -207,7 +202,8 @@ class DummyServer implements ServerInterface
      */
     public function getGuid()
     {
-        return sprintf('stairtower_%s_%s_%s_%d',
+        return sprintf(
+            'stairtower_%s_%s_%s_%d',
             Constants::VERSION,
             getmypid(),
             $this->getIp(),
@@ -393,7 +389,7 @@ class DummyServer implements ServerInterface
     public function start()
     {
         $this->setupServer();
-        $this->startTime  = new DateTime();
+        $this->startTime = new DateTime();
         $this->_isRunning = true;
     }
 

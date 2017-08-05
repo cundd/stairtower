@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 29.12.14
- * Time: 15:48
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Expand;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Expand\Exception\InvalidExpandBuilderInputExcept
 
 /**
  * Expand configuration builder
- *
- * @package Cundd\PersistentObjectStore\Expand
  */
 class ExpandConfigurationBuilder implements ExpandConfigurationBuilderInterface
 {
@@ -26,7 +19,7 @@ class ExpandConfigurationBuilder implements ExpandConfigurationBuilderInterface
      */
     public function buildExpandConfigurations($expandDefinition)
     {
-        $expandConfigurationCollection = array();
+        $expandConfigurationCollection = [];
         $expandDefinitionParts = explode(Constants::EXPAND_REQUEST_DELIMITER, $expandDefinition);
         foreach ($expandDefinitionParts as $currentDefinition) {
             $currentDefinitionParts = explode(Constants::EXPAND_REQUEST_SPLIT_CHAR, $currentDefinition);
@@ -44,7 +37,7 @@ class ExpandConfigurationBuilder implements ExpandConfigurationBuilderInterface
 
             $expandToMany = false;
             if (substr($localKey, -1) === Constants::EXPAND_REQUEST_TO_MANY) {
-                $localKey     = substr($localKey, 0, -1);
+                $localKey = substr($localKey, 0, -1);
                 $expandToMany = true;
             }
             $expandConfigurationCollection[] = new ExpandConfiguration(
@@ -55,6 +48,7 @@ class ExpandConfigurationBuilder implements ExpandConfigurationBuilderInterface
                 $expandToMany
             );
         }
+
         return $expandConfigurationCollection;
     }
 }

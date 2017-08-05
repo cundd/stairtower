@@ -1,19 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 02.04.15
- * Time: 20:48
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Cookie;
 
 /**
  * Test for Cookies
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class CookieTest extends \PHPUnit_Framework_TestCase
+class CookieTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Cookie
@@ -28,7 +21,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
-            (string) new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true)
+            (string)new Cookie(
+                'user',
+                'daniel',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                '.example.com',
+                true,
+                true
+            )
         );
     }
 
@@ -39,7 +40,14 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure',
-            (string) new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true)
+            (string)new Cookie(
+                'user',
+                'daniel',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                '.example.com',
+                true
+            )
         );
     }
 
@@ -50,7 +58,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; HttpOnly',
-            (string) new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', false, true)
+            (string)new Cookie(
+                'user',
+                'daniel',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                '.example.com',
+                false,
+                true
+            )
         );
     }
 
@@ -61,7 +77,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Secure; HttpOnly',
-            (string) new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', null, true, true)
+            (string)new Cookie(
+                'user',
+                'daniel',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                null,
+                true,
+                true
+            )
         );
     }
 
@@ -72,7 +96,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
-            (string) new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), null, '.example.com', true, true)
+            (string)new Cookie(
+                'user',
+                'daniel',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                null,
+                '.example.com',
+                true,
+                true
+            )
         );
     }
 
@@ -83,7 +115,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Path=/home; Domain=.example.com; Secure; HttpOnly',
-            (string) new Cookie('user', 'daniel', null, '/home', '.example.com', true, true)
+            (string)new Cookie('user', 'daniel', null, '/home', '.example.com', true, true)
         );
     }
 
@@ -94,7 +126,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
-            (string) new Cookie('user', null, new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true)
+            (string)new Cookie(
+                'user',
+                null,
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                '.example.com',
+                true,
+                true
+            )
         );
     }
 
@@ -104,7 +144,9 @@ class CookieTest extends \PHPUnit_Framework_TestCase
      */
     public function cookieWithoutNameTest()
     {
-        new Cookie(null, 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true);
+        new Cookie(
+            '', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true
+        );
     }
 
     /**
@@ -114,7 +156,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
-            (new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true))->toHeader()
+            (new Cookie(
+                'user',
+                'daniel',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                '.example.com',
+                true,
+                true
+            ))->toHeader()
         );
     }
 
@@ -125,7 +175,14 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure',
-            (new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true))->toHeader()
+            (new Cookie(
+                'user',
+                'daniel',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                '.example.com',
+                true
+            ))->toHeader()
         );
     }
 
@@ -136,7 +193,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; HttpOnly',
-            (new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', false, true))->toHeader()
+            (new Cookie(
+                'user',
+                'daniel',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                '.example.com',
+                false,
+                true
+            ))->toHeader()
         );
     }
 
@@ -147,7 +212,9 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Secure; HttpOnly',
-            (new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', null, true, true))->toHeader()
+            (new Cookie(
+                'user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', null, true, true
+            ))->toHeader()
         );
     }
 
@@ -158,7 +225,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=daniel; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
-            (new Cookie('user', 'daniel', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), null, '.example.com', true, true))->toHeader()
+            (new Cookie(
+                'user',
+                'daniel',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                null,
+                '.example.com',
+                true,
+                true
+            ))->toHeader()
         );
     }
 
@@ -180,7 +255,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
-            (new Cookie('user', null, new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true))->toHeader()
+            (new Cookie(
+                'user',
+                null,
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                '.example.com',
+                true,
+                true
+            ))->toHeader()
         );
     }
 
@@ -191,7 +274,15 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=A+string+that+should+be+encoded.+Including+a+semicolon+%3B; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
-            (string) new Cookie('user', 'A string that should be encoded. Including a semicolon ;', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true)
+            (string)new Cookie(
+                'user',
+                'A string that should be encoded. Including a semicolon ;',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                '.example.com',
+                true,
+                true
+            )
         );
     }
 
@@ -202,7 +293,16 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertSame(
             'user=A string that should not be encoded. Including a semicolon ;; Path=/home; Expires=Thu, 02 Apr 2015 22:00:00 GMT; Domain=.example.com; Secure; HttpOnly',
-            (string) new Cookie('user', 'A string that should not be encoded. Including a semicolon ;', new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'), '/home', '.example.com', true, true, false)
+            (string)new Cookie(
+                'user',
+                'A string that should not be encoded. Including a semicolon ;',
+                new \DateTime('Thu, 02 Apr 2015 23:00:00 +0100'),
+                '/home',
+                '.example.com',
+                true,
+                true,
+                false
+            )
         );
     }
 }

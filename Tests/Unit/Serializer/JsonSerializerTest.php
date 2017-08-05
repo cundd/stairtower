@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 24.08.14
- * Time: 22:48
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Serializer;
 
 
-class JsonSerializerTest extends \PHPUnit_Framework_TestCase
+class JsonSerializerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var JsonSerializer
@@ -60,15 +55,15 @@ class JsonSerializerTest extends \PHPUnit_Framework_TestCase
         $input = false;
         $this->assertSame($input, $this->fixture->unserialize($this->fixture->serialize($input)));
 
-        $input = array();
+        $input = [];
         $this->assertSame($input, $this->fixture->unserialize($this->fixture->serialize($input)));
 
-        $input            = new \stdClass();
+        $input = new \stdClass();
         $input->firstName = 'Daniel';
-        $input->lastName  = 'Corn';
+        $input->lastName = 'Corn';
         $this->assertEquals(get_object_vars($input), $this->fixture->unserialize($this->fixture->serialize($input)));
 
-        $input = array(1 => 'A', 2 => 'B', 3 => 'C');
+        $input = [1 => 'A', 2 => 'B', 3 => 'C'];
         $this->assertEquals($input, $this->fixture->unserialize($this->fixture->serialize($input)));
 
         $input = range('A', 9);

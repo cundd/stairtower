@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 03.11.14
- * Time: 21:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Index;
 
@@ -20,8 +15,6 @@ use SplFixedArray;
 
 /**
  * Key implementation
- *
- * @package Cundd\PersistentObjectStore\Index
  */
 class Key extends AbstractIndex
 {
@@ -30,34 +23,25 @@ class Key extends AbstractIndex
      *
      * @var array
      */
-    protected $map = array();
+    protected $map = [];
 
     /**
      * Returns if the Index is capable to lookup the given value
      *
      * @param mixed $value Value to lookup
-     * @return boolean
+     * @return bool
      */
-    public function canLookup($value)
+    public function canLookup($value): bool
     {
         return is_scalar($value);
     }
 
-    /**
-     * Looks up the given value and returns an array of the positions in the Database or one of the following constants:
-     *
-     * NOT_FOUND: The value was not found and thus does not exist in the managed collection - You don't have to query other Indexes
-     * NO_RESULT: The Index can not provide a result for the lookup - You can query other Indexes
-     * ERROR: A problem was detected - You can query other Indexes
-     *
-     * @param mixed $value Value to look for
-     * @return int[]
-     */
     public function lookup($value)
     {
         if (isset($this->map[$value])) {
-            return array($this->map[$value]);
+            return [$this->map[$value]];
         }
+
         return self::NOT_FOUND;
     }
 
@@ -66,12 +50,12 @@ class Key extends AbstractIndex
      * Builds the index for the given collection
      *
      * @param DatabaseInterface|\Iterator $database
-     * @return $this
+     * @return IndexInterface
      */
-    public function indexDatabase($database)
+    public function indexDatabase($database): IndexInterface
     {
         // Clear the map
-        $this->map = array();
+        $this->map = [];
 
         /** @var SplFixedArray $collection */
         $collection = null;
@@ -96,13 +80,15 @@ class Key extends AbstractIndex
         }
 
         $position = 0;
-        $count    = $collection->getSize();
+        $count = $collection->getSize();
         if ($count > 0) {
             do {
                 $tempEntry = DocumentUtility::assertDocumentIdentifier($database[$position]);
                 $this->addEntryWithPosition($tempEntry, $position);
             } while (++$position < $count);
         }
+
+        return $this;
     }
 
     /**
@@ -110,16 +96,19 @@ class Key extends AbstractIndex
      *
      * @param DocumentInterface|array $document
      * @param  int                    $position
-     * @return $this
+     * @return IndexInterface
      */
-    public function addEntryWithPosition($document, $position)
+    public function addEntryWithPosition($document, $position): IndexInterface
     {
         $key = ObjectUtility::valueForKeyPathOfObject($this->getProperty(), $document);
         if (isset($this->map[$key])) {
-            throw new DuplicateEntryException(sprintf('Duplicate entry \'%s\' for key %s', $key, $this->getProperty()),
-                1415046937);
+            throw new DuplicateEntryException(
+                sprintf('Duplicate entry \'%s\' for key %s', $key, $this->getProperty()),
+                1415046937
+            );
         }
         $this->map[$key] = $position;
+
         return $this;
     }
 
@@ -128,15 +117,16 @@ class Key extends AbstractIndex
      *
      * @param DocumentInterface|array $document
      * @param int                     $position
-     * @return $this
+     * @return IndexInterface
      */
-    public function updateEntryForPosition($document, $position)
+    public function updateEntryForPosition($document, $position): IndexInterface
     {
         $key = ObjectUtility::valueForKeyPathOfObject($this->getProperty(), $document);
         if (!isset($this->map[$key])) {
             throw new InvalidEntryException(sprintf('Entry \'%s\' not found to update', $key), 1415047116);
         }
         $this->map[$key] = $position;
+
         return $this;
     }
 
@@ -144,15 +134,16 @@ class Key extends AbstractIndex
      * Removes the given entry in the Index
      *
      * @param DocumentInterface|array $document
-     * @return $this
+     * @return IndexInterface
      */
-    public function deleteEntry($document)
+    public function deleteEntry($document): IndexInterface
     {
         $key = ObjectUtility::valueForKeyPathOfObject($this->getProperty(), $document);
         if (!isset($this->map[$key])) {
             throw new InvalidEntryException(sprintf('Entry \'%s\' not found to delete', $key), 1415047176);
         }
         unset($this->map[$key]);
+
         return $this;
     }
 

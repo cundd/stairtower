@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.04.15
- * Time: 20:15
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Asset;
 
@@ -12,10 +7,8 @@ use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 
 /**
  * Test for Asset Provider
- *
- * @package Cundd\PersistentObjectStore\Asset
  */
-class AssetProviderTest extends \PHPUnit_Framework_TestCase
+class AssetProviderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var AssetProviderInterface
@@ -109,15 +102,4 @@ class AssetProviderTest extends \PHPUnit_Framework_TestCase
     {
         $this->fixture->getAssetForUri('/some/../path');
     }
-
-    /**
-     * @test
-     * @expectedException \Cundd\PersistentObjectStore\Asset\Exception\InvalidUriException
-     * @expectedExceptionCode 1428518315
-     */
-    public function uriIsNoStringTest()
-    {
-        $this->fixture->getAssetForUri([]);
-    }
-
 }

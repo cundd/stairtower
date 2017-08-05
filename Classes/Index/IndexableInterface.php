@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 30.12.14
- * Time: 13:14
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Index;
 
 /**
  * Interface for classes that have associated Indexes
- *
- * @package Cundd\PersistentObjectStore\Index
  */
 interface IndexableInterface
 {

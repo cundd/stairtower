@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 22.03.15
- * Time: 11:26
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\View;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\Server\UriBuilderInterface;
 
 /**
  * Trait for View base controllers
- *
- * @package Cundd\PersistentObjectStore\View
  */
 trait ViewControllerTrait
 {
@@ -52,7 +45,7 @@ trait ViewControllerTrait
     public function getView()
     {
         if (!$this->view) {
-            $viewClass  = $this->viewClass;
+            $viewClass = $this->viewClass;
             $this->view = new $viewClass();
 
             $this->initializeViewAdditions();
@@ -92,12 +85,12 @@ trait ViewControllerTrait
         $basePath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('privateResources');
 
         // Strip 'Action'
-        $templateIdentifier  = substr($action, 0, -6);
+        $templateIdentifier = substr($action, 0, -6);
         $controllerNamespace = $this->getUriBuilder()->getControllerNamespaceForController($this);
-        $controllerName      = ucfirst(
+        $controllerName = ucfirst(
             substr(strrchr($controllerNamespace, UriBuilderInterface::CONTROLLER_NAME_SEPARATOR), 1)
         );
-        $templatePath        = sprintf($this->templatePathPattern, $basePath, $controllerName, $templateIdentifier);
+        $templatePath = sprintf($this->templatePathPattern, $basePath, $controllerName, $templateIdentifier);
 
         return $templatePath;
     }
@@ -126,9 +119,9 @@ trait ViewControllerTrait
             $this->view->addFunction(
                 'assetUri',
                 function ($assetUri, $noCache = false) {
-                    $uri = '/_asset/'.ltrim($assetUri);
+                    $uri = '/_asset/' . ltrim($assetUri);
                     if ($noCache) {
-                        return $uri.'?v='.time();
+                        return $uri . '?v=' . time();
                     }
 
                     return $uri;

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.10.14
- * Time: 16:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console\Server;
 
@@ -16,8 +11,6 @@ use Symfony\Component\Process\Process;
 
 /**
  * Abstract console command to start the server
- *
- * @package Cundd\PersistentObjectStore\Console
  */
 abstract class AbstractServerCommand extends Command
 {

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.10.14
- * Time: 16:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console\Data;
 
@@ -16,7 +11,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Console command to find data
  *
- * @package Cundd\PersistentObjectStore\Console
  * @deprecated Use the Filter command instead
  */
 class FindCommand extends AbstractDataCommand
@@ -55,8 +49,13 @@ class FindCommand extends AbstractDataCommand
         if ($document) {
             $output->write($this->serializer->serialize($document->getData()));
         } else {
-            $output->write(sprintf('<info>Object with ID %s not found in database %s</info>',
-                $input->getArgument('identifier'), $input->getArgument('database')));
+            $output->write(
+                sprintf(
+                    '<info>Object with ID %s not found in database %s</info>',
+                    $input->getArgument('identifier'),
+                    $input->getArgument('database')
+                )
+            );
         }
     }
 } 

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11.10.14
- * Time: 14:28
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 
 /**
  * Class to signal deferred results implementation
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
 class DeferredResult implements HandlerResultInterface, Immutable
 {

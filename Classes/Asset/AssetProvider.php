@@ -1,23 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.04.15
- * Time: 19:54
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Asset;
 
-use function Couchbase\defaultDecoder;
 use Cundd\PersistentObjectStore\Asset\Exception\InvalidUriException;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Memory\Manager;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
  * Asset Provider implementation
- *
- * @package Cundd\PersistentObjectStore\Asset
  */
 class AssetProvider implements AssetProviderInterface
 {
@@ -31,27 +22,14 @@ class AssetProvider implements AssetProviderInterface
      */
     const MEMORY_MANAGER_TAG = 'asset';
 
-    /**
-     * Returns if an Asset for the given URI exists
-     *
-     * @param string $uri
-     * @return bool
-     */
-    public function hasAssetForUri($uri)
+    public function hasAssetForUri(string $uri): bool
     {
         $this->assertUri($uri);
 
         return $this->getAssetForUri($uri) !== null;
     }
 
-    /**
-     * Returns the Asset for the given URI
-     *
-     * @param string $uri
-     * @param bool   $noCache
-     * @return AssetInterface|null
-     */
-    public function getAssetForUri($uri, $noCache = false)
+    public function getAssetForUri(string $uri, bool $noCache = false): ?AssetInterface
     {
         $this->assertUri($uri);
         $memoryManagerKey = self::MEMORY_MANAGER_KEY_PREFIX . $uri;
@@ -74,12 +52,12 @@ class AssetProvider implements AssetProviderInterface
      * @param string $uri
      * @return AssetInterface|null
      */
-    public function loadAssetForUri($uri)
+    public function loadAssetForUri(string $uri): ?AssetInterface
     {
         $basePath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('publicResources');
         $uri = str_replace('..', '', $uri);
         $fullPath = $basePath . $uri;
-        if (file_exists($fullPath)) {
+        if (file_exists($fullPath) && is_readable($fullPath)) {
             return new Asset($uri, file_get_contents($fullPath), $this->getAssetContentType($fullPath));
         }
 
@@ -87,10 +65,10 @@ class AssetProvider implements AssetProviderInterface
     }
 
     /**
-     * @param $fullPath
+     * @param string $fullPath
      * @return string
      */
-    private function getAssetContentType($fullPath)
+    private function getAssetContentType(string $fullPath)
     {
         $fileInfo = new \finfo(FILEINFO_MIME);
 
@@ -119,12 +97,6 @@ class AssetProvider implements AssetProviderInterface
      */
     protected function assertUri($uri)
     {
-        if (!is_string($uri)) {
-            throw new InvalidUriException(
-                sprintf('URI must be of type string %s given', GeneralUtility::getType($uri)),
-                1428518315
-            );
-        }
         if (!$uri) {
             throw new InvalidUriException('No URI given', 1428518305);
         }

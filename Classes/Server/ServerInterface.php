@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 13.10.14
- * Time: 13:02
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server;
 
@@ -22,8 +17,6 @@ use React\Stream\WritableStreamInterface;
 
 /**
  * Interface for server implementations
- *
- * @package Cundd\PersistentObjectStore\Server
  */
 interface ServerInterface
 {

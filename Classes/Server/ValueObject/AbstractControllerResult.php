@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11.10.14
- * Time: 14:28
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
 
 /**
  * Abstract controller result implementation
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
 abstract class AbstractControllerResult extends AbstractHandlerResult implements ControllerResultInterface
 {
@@ -23,14 +16,14 @@ abstract class AbstractControllerResult extends AbstractHandlerResult implements
      *
      * @var string
      */
-    protected $contentType;
+    public $contentType;
 
     /**
      * Headers to send with the response
      *
      * @var array
      */
-    protected $headers = array();
+    protected $headers = [];
 
     /**
      * Creates a new result with the given data and status
@@ -40,53 +33,29 @@ abstract class AbstractControllerResult extends AbstractHandlerResult implements
      * @param string  $contentType
      * @param array   $headers
      */
-    public function __construct($statusCode, $data = null, $contentType = ContentType::HTML_TEXT, $headers = array())
-    {
+    public function __construct(
+        int $statusCode,
+        $data = null,
+        ?string $contentType = ContentType::HTML_TEXT,
+        array $headers = []
+    ) {
         parent::__construct($statusCode, $data);
         $this->contentType = $contentType;
-        $this->headers     = (array)$headers;
+        $this->headers = (array)$headers;
     }
 
-    /**
-     * Returns the content type of the request
-     *
-     * @return string
-     */
-    public function getContentType()
+    public function getContentType(): string
     {
         return $this->contentType ? $this->contentType . '; charset=utf-8' : '';
     }
 
-    /**
-     * Retrieves all message headers.
-     *
-     * The keys represent the header name as it will be sent over the wire, and
-     * each value is an array of strings associated with the header.
-     *
-     *     // Represent the headers as a string
-     *     foreach ($message->getHeaders() as $name => $values) {
-     *         echo $name . ": " . implode(", ", $values);
-     *     }
-     *
-     *     // Emit headers iteratively:
-     *     foreach ($message->getHeaders() as $name => $values) {
-     *         foreach ($values as $value) {
-     *             header(sprintf('%s: %s', $name, $value), false);
-     *         }
-     *     }
-     *
-     * While header names are not case-sensitive, getHeaders() will preserve the
-     * exact case in which headers were originally specified.
-     *
-     * @return array Returns an associative array of the message's headers. Each
-     *     key MUST be a header name, and each value MUST be an array of strings.
-     */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         $contentType = $this->getContentType();
         if (!$contentType) {
             return $this->headers;
         }
+
         return array_replace(
             $this->headers,
             [

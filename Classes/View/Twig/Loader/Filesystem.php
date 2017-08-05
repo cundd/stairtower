@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 22.03.15
- * Time: 10:57
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\View\Twig\Loader;
 
@@ -13,8 +8,6 @@ use Twig_Loader_Filesystem as BaseFilesystem;
 
 /**
  * Filesystem loader that provides additional features for development
- *
- * @package Cundd\PersistentObjectStore\View\Twig\Loader
  */
 class Filesystem extends BaseFilesystem
 {
@@ -45,7 +38,7 @@ class Filesystem extends BaseFilesystem
     /**
      * Returns true if the template is still fresh.
      *
-     * @param string    $name The template name
+     * @param string     $name The template name
      * @param \timestamp $time The last modification time of the cached template
      * @return bool
      */

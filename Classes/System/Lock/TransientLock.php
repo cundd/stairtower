@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.10.14
- * Time: 11:22
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\System\Lock;
 
 /**
  * Transient in-memory based lock implementation
- *
- * @package Cundd\PersistentObjectStore\System\Lock
  */
 class TransientLock extends AbstractLock
 {
@@ -20,7 +13,7 @@ class TransientLock extends AbstractLock
      *
      * @var array
      */
-    protected static $locks = array();
+    protected static $locks = [];
 
     /**
      * Locks a lock. Only for internal use.
@@ -30,6 +23,7 @@ class TransientLock extends AbstractLock
     protected function lockInternal()
     {
         self::$locks[$this->getName()] = true;
+
         return true;
     }
 
@@ -43,6 +37,7 @@ class TransientLock extends AbstractLock
         if ($this->isLocked()) {
             unset(self::$locks[$this->getName()]);
         }
+
         return true;
     }
 
@@ -51,7 +46,7 @@ class TransientLock extends AbstractLock
      *
      * @return bool
      */
-    public function isLocked()
+    public function isLocked(): bool
     {
         return isset(self::$locks[$this->getName()]);
     }

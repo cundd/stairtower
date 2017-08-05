@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.10.14
- * Time: 11:42
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\System\Lock;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\AbstractCase;
 
 /**
  * Class TransientLockTest
- *
- * @package Cundd\PersistentObjectStore\System\Lock
  */
 class TransientLockTest extends AbstractCase
 {

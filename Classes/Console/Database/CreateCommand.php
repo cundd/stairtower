@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.10.14
- * Time: 16:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console\Database;
 
@@ -15,8 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console command to create a new database
- *
- * @package Cundd\PersistentObjectStore\Console
  */
 class CreateCommand extends AbstractCommand
 {
@@ -57,8 +50,8 @@ class CreateCommand extends AbstractCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $databaseIdentifier = $input->getArgument('identifier');
-        $options            = $input->getArgument('options');
-        $database           = $this->coordinator->createDatabase($databaseIdentifier, $options);
+        $options = $input->getArgument('options');
+        $database = $this->coordinator->createDatabase($databaseIdentifier, $options);
         if ($database) {
             $output->writeln(sprintf('<info>Created database %s</info>', $databaseIdentifier));
         }

@@ -1,18 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 10.10.14
- * Time: 17:59
- */
+declare(strict_types=1);
+
 namespace Cundd\PersistentObjectStore\Server\Controller;
 
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 
 /**
  * Interface for classes that describe a Controller response
- *
- * @package Cundd\PersistentObjectStore\Server\Handler
  */
 interface ControllerResultInterface extends HandlerResultInterface
 {
@@ -21,7 +15,7 @@ interface ControllerResultInterface extends HandlerResultInterface
      *
      * @return string
      */
-    public function getContentType();
+    public function getContentType(): string;
 
     /**
      * Retrieves all message headers.
@@ -47,5 +41,5 @@ interface ControllerResultInterface extends HandlerResultInterface
      * @return array Returns an associative array of the message's headers. Each
      *     key MUST be a header name, and each value MUST be an array of strings.
      */
-    public function getHeaders();
+    public function getHeaders(): array;
 }

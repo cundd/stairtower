@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 21:21
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Serializer;
 
 /**
  * Class to serialize data to be sent
- *
- * @package Cundd\PersistentObjectStore
  */
 class JsonSerializer implements SerializerInterface
 {
@@ -28,6 +21,7 @@ class JsonSerializer implements SerializerInterface
         if ($serializedData === false && json_last_error() !== JSON_ERROR_NONE) {
             throw $this->createExceptionFromLastError();
         }
+
         return $serializedData;
     }
 
@@ -46,9 +40,10 @@ class JsonSerializer implements SerializerInterface
         }
         $data = json_decode($string, true);
         if ($data === null) {
-        //if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
+            //if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
             throw $this->createExceptionFromLastError();
         }
+
         return $data;
     }
 
@@ -82,6 +77,7 @@ class JsonSerializer implements SerializerInterface
         } else {
             $errorMessage = json_last_error_msg();
         }
+
         return new Exception($errorMessage, json_last_error());
     }
 

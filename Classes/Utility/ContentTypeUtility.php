@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11.10.14
- * Time: 13:06
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Utility;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\Server\ContentType;
 
 /**
  * Helper class to convert content types to file endings and vice versa
- *
- * @package Cundd\PersistentObjectStore\Server
  */
 class ContentTypeUtility
 {
@@ -22,7 +15,7 @@ class ContentTypeUtility
      *
      * @var array
      */
-    protected static $suffixToContentTypeMap = array(
+    protected static $suffixToContentTypeMap = [
         'jpg'   => ContentType::JPEG_IMAGE,
         'jpeg'  => ContentType::JPEG_IMAGE,
         'png'   => ContentType::PNG_IMAGE,
@@ -34,26 +27,28 @@ class ContentTypeUtility
         'plain' => ContentType::PLAIN_TEXT,
         'csv'   => ContentType::CSV_TEXT,
         'css'   => ContentType::CSS_TEXT,
-    );
+    ];
 
     /**
      * Converts the content type to a file suffix
      *
      * @param string $contentType
-     * @return string
+     * @return string|false
      */
-    public static function convertContentTypeToSuffix($contentType)
+    public static function convertContentTypeToSuffix(string $contentType)
     {
-        return array_search($contentType, static::$suffixToContentTypeMap);
+        $result = array_search($contentType, static::$suffixToContentTypeMap);
+
+        return false === $result ? false : (string)$result;
     }
 
     /**
      * Converts the file suffix to the content type
      *
      * @param string $suffix
-     * @return string
+     * @return string|false
      */
-    public static function convertSuffixToContentType($suffix)
+    public static function convertSuffixToContentType(string $suffix)
     {
         return isset(static::$suffixToContentTypeMap[$suffix]) ? static::$suffixToContentTypeMap[$suffix] : false;
     }

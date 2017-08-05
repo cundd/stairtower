@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 31.08.14
- * Time: 16:39
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 
 /**
  * Abstract data based test case
- *
- * @package Cundd\PersistentObjectStore
  */
 class AbstractDataBasedCase extends AbstractCase
 {
@@ -25,13 +18,14 @@ class AbstractDataBasedCase extends AbstractCase
      */
     public function getAllTestObjects()
     {
-        $allTestData    = $this->getAllTestData();
-        $allTestObjects = array();
+        $allTestData = $this->getAllTestData();
+        $allTestObjects = [];
         foreach ($allTestData as $currentTestData) {
-            $currentObject    = new Document($currentTestData, 'contacts');
+            $currentObject = new Document($currentTestData, 'contacts');
             $allTestObjects[] = $currentObject;
 //			$allTestObjects[$currentObject->getGuid()] = $currentObject;
         }
+
         return $allTestObjects;
     }
 
@@ -42,12 +36,16 @@ class AbstractDataBasedCase extends AbstractCase
      */
     public function getAllTestData()
     {
-        return array_map(function ($item) {
-            if (isset($item['email'])) {
-                $item[Constants::DATA_ID_KEY] = $item['email'];
-            }
-            return $item;
-        }, json_decode(file_get_contents(__DIR__ . '/../Resources/contacts.json'), true));
+        return array_map(
+            function ($item) {
+                if (isset($item['email'])) {
+                    $item[Constants::DATA_ID_KEY] = $item['email'];
+                }
+
+                return $item;
+            },
+            json_decode(file_get_contents(__DIR__ . '/../Resources/contacts.json'), true)
+        );
     }
 
     /**
@@ -66,12 +64,13 @@ class AbstractDataBasedCase extends AbstractCase
      */
     public function databaseToDataArray($database)
     {
-        $foundData = array();
+        $foundData = [];
 
         /** @var DocumentInterface $dataObject */
         foreach ($database as $dataObject) {
             $foundData[] = $dataObject->getData();
         }
+
         return $foundData;
     }
 } 

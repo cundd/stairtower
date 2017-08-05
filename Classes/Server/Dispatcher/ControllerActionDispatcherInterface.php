@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.01.15
- * Time: 11:35
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Dispatcher;
 
@@ -16,8 +11,6 @@ use React\Http\Response;
 
 /**
  * Interface for classes that can dispatch controller actions that will be handled by a custom Controller
- *
- * @package Cundd\PersistentObjectStore\Server\Dispatcher
  */
 interface ControllerActionDispatcherInterface
 {

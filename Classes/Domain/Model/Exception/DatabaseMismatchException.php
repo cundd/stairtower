@@ -1,12 +1,14 @@
 <?php
+declare(strict_types=1);
+
 namespace Cundd\PersistentObjectStore\Domain\Model\Exception;
 
-    /**
-     * Created by PhpStorm.
-     * User: daniel
-     * Date: 21.09.14
-     * Time: 18:05
-     */
+/**
+ * Created by PhpStorm.
+ * User: daniel
+ * Date: 21.09.14
+ * Time: 18:05
+ */
 
 
 /**

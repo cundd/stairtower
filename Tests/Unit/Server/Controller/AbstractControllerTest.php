@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.01.15
- * Time: 11:08
- */
+declare(strict_types=1);
 
 namespace Server\Controller;
 
@@ -18,8 +13,6 @@ use React_ConnectionStub;
 
 /**
  * Tests for the abstract Controller implementation
- *
- * @package Server\Controller
  */
 class AbstractControllerTest extends AbstractCase
 {
@@ -37,9 +30,13 @@ class AbstractControllerTest extends AbstractCase
     {
         parent::setUp();
 
-        $this->fixture = $this->getMockForAbstractClass('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController');
+        $this->fixture = $this->getMockForAbstractClass(
+            'Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController'
+        );
 
-        $this->requestInfoFactory = $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory');
+        $this->requestInfoFactory = $this->getDiContainer()->get(
+            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory'
+        );
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/my_method')
         );
@@ -55,6 +52,7 @@ class AbstractControllerTest extends AbstractCase
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function initializeTest()
     {
@@ -69,7 +67,8 @@ class AbstractControllerTest extends AbstractCase
     {
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\ValueObject\\Request',
-            $this->fixture->getRequest());
+            $this->fixture->getRequest()
+        );
     }
 
     /**
@@ -77,7 +76,7 @@ class AbstractControllerTest extends AbstractCase
      */
     public function setRequestTest()
     {
-        $request     = new Request('GET', '/loaned/');
+        $request = new Request('GET', '/loaned/');
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest($request);
         $this->fixture->setRequest($requestInfo);
         $this->assertSame($requestInfo, $this->fixture->getRequest());
@@ -89,7 +88,7 @@ class AbstractControllerTest extends AbstractCase
      */
     public function unsetRequestTest()
     {
-        $request     = new Request('GET', '/loaned/');
+        $request = new Request('GET', '/loaned/');
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest($request);
         $this->fixture->setRequest($requestInfo);
 
@@ -99,6 +98,7 @@ class AbstractControllerTest extends AbstractCase
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function willInvokeActionTest()
     {
@@ -107,6 +107,7 @@ class AbstractControllerTest extends AbstractCase
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function didInvokeActionTest()
     {
@@ -122,7 +123,7 @@ class AbstractControllerTest extends AbstractCase
 
         /** @var ControllerInterface $controller */
         $controller = $this->getMockBuilder('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController')
-            ->setMethods(array('getHelloAction'))
+            ->setMethods(['getHelloAction'])
             ->getMock();
         $controller
             ->expects($this->any())
@@ -148,7 +149,7 @@ class AbstractControllerTest extends AbstractCase
     {
         /** @var ControllerInterface $controller */
         $controller = $this->getMockBuilder('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController')
-            ->setMethods(array('getHelloWorldAction'))
+            ->setMethods(['getHelloWorldAction'])
             ->getMock();
         $controller
             ->expects($this->any())
@@ -174,7 +175,7 @@ class AbstractControllerTest extends AbstractCase
     {
         /** @var ControllerInterface $controller */
         $controller = $this->getMockBuilder('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController')
-            ->setMethods(array('getHelloWorldAction'))
+            ->setMethods(['getHelloWorldAction'])
             ->getMock();
         $controller
             ->expects($this->any())

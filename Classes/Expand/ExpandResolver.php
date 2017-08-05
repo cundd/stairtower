@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 29.12.14
- * Time: 15:55
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Expand;
 
@@ -27,8 +22,6 @@ use SplFixedArray;
 
 /**
  * Class that will fetch the Documents and set the property according to a Expand configuration
- *
- * @package Cundd\PersistentObjectStore\Expand
  */
 class ExpandResolver implements ExpandResolverInterface
 {
@@ -61,7 +54,7 @@ class ExpandResolver implements ExpandResolverInterface
             );
         }
 
-        $localKey      = $configuration->getLocalKey();
+        $localKey = $configuration->getLocalKey();
         $propertyToSet = $configuration->getAsKey() ?: $localKey;
 
         // Get the local value
@@ -73,6 +66,7 @@ class ExpandResolver implements ExpandResolverInterface
 
         $foreignValue = $this->getValueFromCollection($database, $configuration, $localValue);
         ObjectUtility::setValueForKeyPathOfObject($foreignValue, $propertyToSet, $document);
+
         return !!$foreignValue;
     }
 
@@ -103,10 +97,10 @@ class ExpandResolver implements ExpandResolverInterface
             );
         }
 
-        $success                = true;
-        $localKey               = $configuration->getLocalKey();
-        $propertyToSet          = $configuration->getAsKey() ?: $localKey;
-        $fixedCollectionCount   = $fixedCollection->count();
+        $success = true;
+        $localKey = $configuration->getLocalKey();
+        $propertyToSet = $configuration->getAsKey() ?: $localKey;
+        $fixedCollectionCount = $fixedCollection->count();
         $foreignValueCollection = $this->collectRelatedDocuments(
             $fixedCollection,
             $configuration,
@@ -118,7 +112,7 @@ class ExpandResolver implements ExpandResolverInterface
         $i = 0;
         do {
             $currentDocument = $fixedCollection[$i];
-            $localValue      = $localValueCollection[$i];
+            $localValue = $localValueCollection[$i];
 
             // If $foreignValueCollection is false or the local value is null the foreign value has to be null
             if ($foreignValueCollection === false || $localValue === null) {
@@ -130,6 +124,7 @@ class ExpandResolver implements ExpandResolverInterface
 
             $success *= (!!$foreignValue);
         } while (++$i < $fixedCollectionCount);
+
         return !!$success;
     }
 
@@ -157,7 +152,7 @@ class ExpandResolver implements ExpandResolverInterface
      * @param SplFixedArray                $fixedCollection
      * @param ExpandConfigurationInterface $configuration
      * @param SplFixedArray                $localValueCollection Reference to be filled with the local values
-     * @param bool $localValuesAreScalar Reference to be set to true if all local values are scalar
+     * @param bool                         $localValuesAreScalar Reference to be set to true if all local values are scalar
      * @return ArrayObject|bool|FilterResultInterface
      */
     public function collectRelatedDocuments(
@@ -177,13 +172,13 @@ class ExpandResolver implements ExpandResolverInterface
             );
         }
 
-        $i          = 0;
-        $localKey   = $configuration->getLocalKey();
+        $i = 0;
+        $localKey = $configuration->getLocalKey();
         $foreignKey = $configuration->getForeignKey();
 
         // Get all the local values
         $returnDictionary = true;
-        $didSetAValue     = false;
+        $didSetAValue = false;
         $fixedCollectionCount = $fixedCollection->count();
         $localValueCollection = new SplFixedArray($fixedCollectionCount);
         do {
@@ -206,7 +201,7 @@ class ExpandResolver implements ExpandResolverInterface
             // Swap $returnDictionary to false if the local value is no scalar
             if ($returnDictionary && !is_scalar($localValue)) {
                 $localValuesAreScalar = false;
-                $returnDictionary     = false;
+                $returnDictionary = false;
             }
 
             $localValueCollection[$i] = $localValue;
@@ -225,15 +220,18 @@ class ExpandResolver implements ExpandResolverInterface
             $possibleValueCollection = $localValueCollection;
         }
 
-        $filter       = new Filter(new PropertyComparison(
-            $foreignKey,
-            ComparisonInterface::TYPE_IN,
-            $possibleValueCollection
-        ));
+        $filter = new Filter(
+            new PropertyComparison(
+                $foreignKey,
+                ComparisonInterface::TYPE_IN,
+                $possibleValueCollection
+            )
+        );
         $filterResult = $filter->filterCollection($database);
         if (!$returnDictionary) {
             return $filterResult;
         }
+
         return $this->transformFilterResultToDictionaryWithKey($filterResult, $foreignKey);
     }
 
@@ -246,9 +244,9 @@ class ExpandResolver implements ExpandResolverInterface
      */
     protected function transformFilterResultToDictionaryWithKey($filterResult, $key)
     {
-        $i                      = 0;
-        $dictionary             = new ArrayObject();
-        $fixedFilterResult      = $filterResult->toFixedArray();
+        $i = 0;
+        $dictionary = new ArrayObject();
+        $fixedFilterResult = $filterResult->toFixedArray();
         $fixedFilterResultCount = $fixedFilterResult->count();
         if ($fixedFilterResultCount === 0) {
             return $dictionary;
@@ -266,6 +264,7 @@ class ExpandResolver implements ExpandResolverInterface
             }
             $dictionary[$currentDocument->valueForKeyPath($key)][] = $currentDocument;
         } while (++$i < $fixedFilterResultCount);
+
         return $dictionary;
     }
 
@@ -293,11 +292,13 @@ class ExpandResolver implements ExpandResolverInterface
         ) {
             $foreignValue = $collection->queryIndexesForValueOfProperty($localValue, $foreignKey);
         } elseif ($collection) {
-            $filter = new Filter(new PropertyComparison(
-                $foreignKey,
-                ComparisonInterface::TYPE_EQUAL_TO,
-                $localValue
-            ));
+            $filter = new Filter(
+                new PropertyComparison(
+                    $foreignKey,
+                    ComparisonInterface::TYPE_EQUAL_TO,
+                    $localValue
+                )
+            );
             $foreignValue = $filter->filterCollection($collection);
 
             // If expand to many is not defined only the first result has to be queried
@@ -316,13 +317,16 @@ class ExpandResolver implements ExpandResolverInterface
         // Check if many objects are expected
         if ($configuration->getExpandToMany()) {
             if (!$foreignValue instanceof \Traversable && !is_array($foreignValue)) {
-                $foreignValue = array($foreignValue);
+                $foreignValue = [$foreignValue];
+
                 return $foreignValue;
             }
+
             return $foreignValue;
         } elseif ($foreignValue instanceof SplFixedArray) { // Retrieve the first value
             if ($foreignValue->getSize() > 0) {
                 $foreignValue = $foreignValue[0];
+
                 return $foreignValue;
             } else {
                 return null;
@@ -330,6 +334,7 @@ class ExpandResolver implements ExpandResolverInterface
         } elseif (is_array($foreignValue)) {
             return reset($foreignValue);
         }
+
         return $foreignValue;
     }
 }

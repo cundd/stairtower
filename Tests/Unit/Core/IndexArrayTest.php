@@ -1,26 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.09.14
- * Time: 11:35
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Core;
 
 /**
  * Tests for class IndexArray
- *
- * @package Cundd\PersistentObjectStore\Core
  */
-class IndexArrayTest extends \PHPUnit_Framework_TestCase
+class IndexArrayTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var IndexArray
      */
     protected $fixture;
 
-    protected $testData = array(
+    protected $testData = [
         'Daniel',
         'Lisa',
         'Yvonne',
@@ -28,7 +21,7 @@ class IndexArrayTest extends \PHPUnit_Framework_TestCase
         'Alfons',
         'Steve',
         'Bob',
-    );
+    ];
 
     /**
      * @test

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 03.11.14
- * Time: 21:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Index;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 
 /**
  * Abstract Index implementation
- *
- * @package Cundd\PersistentObjectStore\Index
  */
 abstract class AbstractIndex implements IndexInterface
 {
@@ -59,7 +52,7 @@ abstract class AbstractIndex implements IndexInterface
     public function setProperty($key)
     {
         $this->property = $key;
+
         return $this;
     }
-
-} 
+}

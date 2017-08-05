@@ -40,7 +40,6 @@ $RECYCLE.BIN/
 
 ### NetBeans
 nbproject/private/
-build/
 nbbuild/
 dist/
 nbdist/
@@ -48,7 +47,7 @@ nbactions.xml
 nb-configuration.xml
 
 ### PhpStorm
-.idea/workspace.xml
+.idea
 
 ### Eclipse
 *.pydevproject
@@ -79,20 +78,3 @@ local.properties
 
 # Composer
 vendor/
-
-# Node
-lib-cov
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-
-pids
-logs
-results
-
-npm-debug.log
-node_modules

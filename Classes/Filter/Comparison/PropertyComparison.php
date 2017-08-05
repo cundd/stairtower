@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 01.09.14
- * Time: 21:45
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter\Comparison;
 
@@ -16,8 +11,6 @@ use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
 /**
  * Property comparison implementation
- *
- * @package Cundd\PersistentObjectStore\Filter
  */
 class PropertyComparison implements PropertyComparisonInterface
 {
@@ -52,7 +45,7 @@ class PropertyComparison implements PropertyComparisonInterface
     public function __construct($property, $operator, $value = null)
     {
         $this->property = $property;
-        $this->value    = $value;
+        $this->value = $value;
         $this->operator = $operator;
     }
 
@@ -118,6 +111,7 @@ class PropertyComparison implements PropertyComparisonInterface
             case PropertyComparisonInterface::TYPE_IS_EMPTY:
                 return !$propertyValue;
         }
+
         return false;
     }
 
@@ -162,6 +156,7 @@ class PropertyComparison implements PropertyComparisonInterface
         if (is_string($search)) {
             return $this->performLikeString($value, $search);
         }
+
         return false;
     }
 
@@ -183,6 +178,7 @@ class PropertyComparison implements PropertyComparisonInterface
         if (is_string($collection)) {
             return strpos($collection, (string)$search) !== false;
         }
+
         return false;
     }
 
@@ -199,6 +195,7 @@ class PropertyComparison implements PropertyComparisonInterface
         if ($searchAsInt === null) {
             return false;
         }
+
         return $int === $searchAsInt;
     }
 
@@ -212,6 +209,7 @@ class PropertyComparison implements PropertyComparisonInterface
     protected function performLikeFloat($float, $search)
     {
         $searchAsFloat = floatval($search);
+
         return abs(($float - $searchAsFloat) / $searchAsFloat) < 0.00001;
 //		return abs($float - $searchAsFloat) > abs(($float - $searchAsFloat) / $searchAsFloat);
     }
@@ -247,7 +245,8 @@ class PropertyComparison implements PropertyComparisonInterface
 
             $search = str_replace('?', '\w', $search);
             $search = str_replace('%', '\w*', $search);
-            $regex  = sprintf('%s^%s$%s', $regexDelimiter, $search, $regexDelimiter);
+            $regex = sprintf('%s^%s$%s', $regexDelimiter, $search, $regexDelimiter);
+
             return preg_match($regex, $stringValue) > 0;
         }
 
@@ -267,16 +266,24 @@ class PropertyComparison implements PropertyComparisonInterface
         $expression1 = $this->property;
         $expression2 = $this->value;
 
-        $result1 = (bool)($expression1 instanceof PropertyComparisonInterface ? $expression1->perform($testValue) : $expression1);
+        $result1 = (bool)($expression1 instanceof PropertyComparisonInterface ? $expression1->perform(
+            $testValue
+        ) : $expression1);
 
         if ($operator === PropertyComparisonInterface::TYPE_AND) {
-            $result2 = (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform($testValue) : $expression2);
+            $result2 = (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform(
+                $testValue
+            ) : $expression2);
+
             return $result1 && $result2;
         } elseif ($operator === PropertyComparisonInterface::TYPE_OR) {
             if ($result1) {
                 return $result1;
             }
-            return (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform($testValue) : $expression2);
+
+            return (bool)($expression2 instanceof PropertyComparisonInterface ? $expression2->perform(
+                $testValue
+            ) : $expression2);
         }
         throw new InvalidComparisonException(
             sprintf('Can not perform logical comparison with operator %s', $operator),

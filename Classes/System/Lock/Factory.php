@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.10.14
- * Time: 11:07
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\System\Lock;
 
 /**
  * Factory class to retrieve the best lock implementation
- *
- * @package Cundd\PersistentObjectStore\System
  */
 class Factory
 {
@@ -28,9 +21,10 @@ class Factory
      * @param string $name Name of a named lock
      * @return LockInterface
      */
-    public static function createLock($name = null)
+    public static function createLock($name = null): LockInterface
     {
         $class = (string)static::$lockImplementationClass;
+
         return new $class($name);
     }
 
@@ -39,7 +33,7 @@ class Factory
      *
      * @param string $className
      */
-    public static function setLockImplementationClass($className)
+    public static function setLockImplementationClass(string $className)
     {
         static::$lockImplementationClass = $className;
     }

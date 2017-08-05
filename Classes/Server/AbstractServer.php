@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 19:38
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server;
 
@@ -30,8 +25,6 @@ use React\Stream\WritableStreamInterface;
 
 /**
  * Abstract server
- *
- * @package Cundd\PersistentObjectStore
  */
 abstract class AbstractServer implements ServerInterface
 {
@@ -145,20 +138,22 @@ abstract class AbstractServer implements ServerInterface
      */
     public function collectStatistics($detailed = false)
     {
-        $statistics = new Statistics(Constants::VERSION, $this->getGuid(), $this->getStartTime(),
-            memory_get_usage(true), memory_get_peak_usage(true));
+        $statistics = new Statistics(
+            Constants::VERSION, $this->getGuid(), $this->getStartTime(),
+            memory_get_usage(true), memory_get_peak_usage(true)
+        );
         if (!$detailed) {
             return $statistics;
         }
 
         $detailedStatistics = $statistics->jsonSerialize() + [
                 'eventLoopImplementation' => get_class($this->getEventLoop()),
-                'os'                      => array(
+                'os'                      => [
                     'vendor'  => php_uname('s'),
                     'version' => php_uname('r'),
                     'machine' => php_uname('m'),
                     'info'    => php_uname('v'),
-                ),
+                ],
             ];
 
         return $detailedStatistics;
@@ -171,7 +166,8 @@ abstract class AbstractServer implements ServerInterface
      */
     public function getGuid()
     {
-        return sprintf('stairtower_%s_%s_%s_%d',
+        return sprintf(
+            'stairtower_%s_%s_%s_%d',
             Constants::VERSION,
             getmypid(),
             $this->getIp(),
@@ -256,7 +252,7 @@ abstract class AbstractServer implements ServerInterface
 
         if ($error instanceof SecurityException) {
             $response->end();
-        } elseif($error instanceof InvalidRequestActionException) {
+        } elseif ($error instanceof InvalidRequestActionException) {
             $this->handleResult(
                 new RawResult($this->getStatusCodeForException($error), $error->getMessage()),
                 $request,
@@ -364,7 +360,7 @@ abstract class AbstractServer implements ServerInterface
 
             case 'shutdown':
                 $this->handleResult(new HandlerResult(202, 'Server is going to shut down'), $request, $response);
-                $this->eventLoop->addTimer(0.5, array($this, 'shutdown'));
+                $this->eventLoop->addTimer(0.5, [$this, 'shutdown']);
                 break;
 
 //			case 'stop':
@@ -404,7 +400,7 @@ abstract class AbstractServer implements ServerInterface
     {
         $this->prepareEventLoop();
         $this->setupServer();
-        $this->startTime     = new DateTime();
+        $this->startTime = new DateTime();
         $this->isRunningFlag = true;
         $this->eventLoop->run();
         $this->isRunningFlag = false;
@@ -420,12 +416,17 @@ abstract class AbstractServer implements ServerInterface
 
         // If the server is run in test-mode shut it down after 1 minute
         if ($this->getMode() === ServerInterface::SERVER_MODE_TEST) {
-            $this->writeln('Server is started in test mode and will shut down after %d seconds',
-                $this->getAutoShutdownTime());
-            $this->eventLoop->addTimer($this->getAutoShutdownTime(), function ($timer) {
-                $this->writeln('Auto shutdown time reached');
-                $this->shutdown();
-            });
+            $this->writeln(
+                'Server is started in test mode and will shut down after %d seconds',
+                $this->getAutoShutdownTime()
+            );
+            $this->eventLoop->addTimer(
+                $this->getAutoShutdownTime(),
+                function ($timer) {
+                    $this->writeln('Auto shutdown time reached');
+                    $this->shutdown();
+                }
+            );
         }
     }
 
@@ -437,10 +438,13 @@ abstract class AbstractServer implements ServerInterface
         if ($this->maintenanceTimer) {
             $this->eventLoop->cancelTimer($this->maintenanceTimer);
         }
-        $this->maintenanceTimer = $this->eventLoop->addTimer($this->maintenanceInterval, function ($timer) {
-            $this->runMaintenance();
-            $this->postponeMaintenance();
-        });
+        $this->maintenanceTimer = $this->eventLoop->addTimer(
+            $this->maintenanceInterval,
+            function ($timer) {
+                $this->runMaintenance();
+                $this->postponeMaintenance();
+            }
+        );
     }
 
     /**
@@ -576,7 +580,7 @@ abstract class AbstractServer implements ServerInterface
     protected function writeln($format, $vars = null)
     {
         $arguments = func_get_args();
-        call_user_func_array(array($this, 'formatAndWrite'), $arguments);
+        call_user_func_array([$this, 'formatAndWrite'], $arguments);
         $this->formatAndWrite(PHP_EOL);
     }
 
@@ -589,7 +593,7 @@ abstract class AbstractServer implements ServerInterface
     protected function write($format, $vars = null)
     {
         $arguments = func_get_args();
-        call_user_func_array(array($this, 'formatAndWrite'), $arguments);
+        call_user_func_array([$this, 'formatAndWrite'], $arguments);
     }
 
     /**

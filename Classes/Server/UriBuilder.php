@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 27.01.15
- * Time: 21:07
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server;
 
@@ -17,8 +12,6 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
  * Class to build URIs for controller actions
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
 class UriBuilder implements UriBuilderInterface
 {
@@ -48,7 +41,7 @@ class UriBuilder implements UriBuilderInterface
         }
 
         $actionIdentifier = $action;
-        $uriParts         = [];
+        $uriParts = [];
 
         $uriParts[] = $this->getControllerNamespaceForController($controller);
         $uriParts[] = $actionIdentifier;
@@ -70,7 +63,7 @@ class UriBuilder implements UriBuilderInterface
             $uriParts[] = $this->getDocumentUriPart($document);
         }
 
-        $uri = '/'.implode('/', $uriParts);
+        $uri = '/' . implode('/', $uriParts);
         if (!empty($query)) {
             return $uri . '?' . http_build_query($query);
         }
@@ -93,12 +86,12 @@ class UriBuilder implements UriBuilderInterface
             $delimiter = '\\';
         } elseif (strpos($controllerClass, '_') !== false) {
             $controllerClass = str_replace('_', '-', $controllerClass);
-            $delimiter       = '-';
+            $delimiter = '-';
         } else {
             return '';
         }
 
-        $controllerSuffix       = '_controller';
+        $controllerSuffix = '_controller';
         $controllerSuffixLength = strlen($controllerSuffix);
 
         $controllerNameParts = explode(
@@ -118,7 +111,7 @@ class UriBuilder implements UriBuilderInterface
 
         }
 
-        return '_'.implode(self::CONTROLLER_NAME_SEPARATOR, $uriParts);
+        return '_' . implode(self::CONTROLLER_NAME_SEPARATOR, $uriParts);
     }
 
     /**

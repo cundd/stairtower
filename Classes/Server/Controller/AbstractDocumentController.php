@@ -1,26 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 12.02.15
- * Time: 21:04
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Controller;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface;
 use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\Document;
 use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Server\ServerInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 use ReflectionClass;
 
 /**
  * An abstract Document based Controller
- *
- * @package Cundd\Sa\Controller
  */
 abstract class AbstractDocumentController extends AbstractController implements DocumentControllerInterface
 {
@@ -49,9 +43,8 @@ abstract class AbstractDocumentController extends AbstractController implements 
      */
     public function isDevelopmentMode()
     {
-        return ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
-            'serverMode'
-        ) === ServerInterface::SERVER_MODE_DEVELOPMENT;
+        return ConfigurationManager::getSharedInstance()
+                ->getConfigurationForKeyPath('serverMode') === ServerInterface::SERVER_MODE_DEVELOPMENT;
     }
 
     /**
@@ -59,7 +52,7 @@ abstract class AbstractDocumentController extends AbstractController implements 
      *
      * @return \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
      */
-    public function getCoordinator()
+    public function getCoordinator(): CoordinatorInterface
     {
         return $this->coordinator;
     }
@@ -69,7 +62,7 @@ abstract class AbstractDocumentController extends AbstractController implements 
      *
      * @return DatabaseInterface|null
      */
-    public function getDatabaseForCurrentRequest()
+    public function getDatabaseForCurrentRequest(): ?DatabaseInterface
     {
         return $this->getDatabaseForRequest($this->getRequest());
     }
@@ -77,15 +70,15 @@ abstract class AbstractDocumentController extends AbstractController implements 
     /**
      * Returns the database for the given request or null if it is not specified
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return DatabaseInterface|null
      */
-    public function getDatabaseForRequest(Request $request)
+    public function getDatabaseForRequest(RequestInterface $request): ?DatabaseInterface
     {
         if (!$request->getDatabaseIdentifier()) {
             return null;
         }
-        $coordinator        = $this->getCoordinator();
+        $coordinator = $this->getCoordinator();
         $databaseIdentifier = $request->getDatabaseIdentifier();
         if (!$coordinator->databaseExists($databaseIdentifier)) {
             return null;
@@ -102,7 +95,7 @@ abstract class AbstractDocumentController extends AbstractController implements 
      *
      * @return DocumentInterface|null
      */
-    public function getDocumentForCurrentRequest()
+    public function getDocumentForCurrentRequest(): ?DocumentInterface
     {
         return $this->getDocumentForRequest($this->getRequest());
     }
@@ -110,10 +103,10 @@ abstract class AbstractDocumentController extends AbstractController implements 
     /**
      * Returns the Document for the given request or null if it is not specified
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return DocumentInterface|null
      */
-    public function getDocumentForRequest(Request $request)
+    public function getDocumentForRequest(RequestInterface $request): ?DocumentInterface
     {
         if (!$request->getDataIdentifier()) {
             return null;
@@ -134,13 +127,16 @@ abstract class AbstractDocumentController extends AbstractController implements 
     /**
      * Returns the argument to be passed to the action
      *
-     * @param Request $request Request info object
-     * @param string  $action Action name
-     * @param bool    $noArgument Reference the will be set to true if no argument should be passed
-     * @return Document|null
+     * @param RequestInterface $request    Request info object
+     * @param string           $action     Action name
+     * @param bool             $noArgument Reference the will be set to true if no argument should be passed
+     * @return DocumentInterface|null
      */
-    protected function prepareArgumentForRequestAndAction($request, $action, &$noArgument = false)
-    {
+    protected function prepareArgumentForRequestAndAction(
+        RequestInterface $request,
+        string $action,
+        &$noArgument = false
+    ) {
         $requiresDocumentArgument = $this->checkIfActionRequiresDocumentArgument($action);
         if ($requiresDocumentArgument === 0) {
             $noArgument = true;
@@ -170,18 +166,18 @@ abstract class AbstractDocumentController extends AbstractController implements 
      * @param string $actionMethod Method name
      * @return int Returns 1 if a Document is required, 2 if it is optional otherwise 0
      */
-    protected function checkIfActionRequiresDocumentArgument($actionMethod)
+    protected function checkIfActionRequiresDocumentArgument(string $actionMethod)
     {
-        static $controllerActionRequiresDocumentCache = array();
-        $controllerClass            = get_class($this);
-        $controllerActionIdentifier = $controllerClass.'::'.$actionMethod;
+        static $controllerActionRequiresDocumentCache = [];
+        $controllerClass = get_class($this);
+        $controllerActionIdentifier = $controllerClass . '::' . $actionMethod;
 
         if (isset($controllerActionRequiresDocumentCache[$controllerActionIdentifier])) {
             return $controllerActionRequiresDocumentCache[$controllerActionIdentifier];
         }
 
-        $classReflection                                                    = new ReflectionClass($controllerClass);
-        $methodReflection                                                   = $classReflection->getMethod(
+        $classReflection = new ReflectionClass($controllerClass);
+        $methodReflection = $classReflection->getMethod(
             $actionMethod
         );
         $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = 0;

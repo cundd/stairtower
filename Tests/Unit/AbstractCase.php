@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 31.08.14
- * Time: 16:16
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore;
 
@@ -16,10 +11,8 @@ use Monolog\Logger;
 
 /**
  * Abstract base class for tests
- *
- * @package Cundd\PersistentObjectStore
  */
-class AbstractCase extends \PHPUnit_Framework_TestCase
+class AbstractCase extends \PHPUnit\Framework\TestCase
 {
     /**
      * Defines if Xhprof should be used
@@ -64,7 +57,7 @@ class AbstractCase extends \PHPUnit_Framework_TestCase
 //			require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_runs.php';
 
             $xhprofRuns = new \XHProfRuns_Default();
-            $runId      = $xhprofRuns->save_run($xhprofData, 'cundd_pos');
+            $runId = $xhprofRuns->save_run($xhprofData, 'cundd_pos');
 
             echo PHP_EOL . 'http://localhost:8080/index.php?run=' . $runId . '&source=cundd_pos' . PHP_EOL;
         }
@@ -94,18 +87,22 @@ class AbstractCase extends \PHPUnit_Framework_TestCase
             return;
         }
         if (!self::$didSetupXhprof && extension_loaded('xhprof') && class_exists('XHProfRuns_Default')) {
-            ini_set('xhprof.output_dir',
-                ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('tempPath'));
+            ini_set(
+                'xhprof.output_dir',
+                ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('tempPath')
+            );
 
 
             xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 
             self::$didSetupXhprof = true;
-            register_shutdown_function(array(__CLASS__, 'tearDownXhprof'));
+            register_shutdown_function([__CLASS__, 'tearDownXhprof']);
 
             echo PHP_EOL . 'Manually start xhprof server if needed:' . PHP_EOL;
-            printf('php -S 127.0.0.1:8080 -d xhprof.output_dir="%s" -t path/to/xhprof_html' . PHP_EOL,
-                ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('tempPath'));
+            printf(
+                'php -S 127.0.0.1:8080 -d xhprof.output_dir="%s" -t path/to/xhprof_html' . PHP_EOL,
+                ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('tempPath')
+            );
 
         }
     }
@@ -132,6 +129,7 @@ class AbstractCase extends \PHPUnit_Framework_TestCase
             $logger->pushHandler(new NullHandler());
             $this->diContainer->set('Psr\\Log\\LoggerInterface', $logger);
         }
+
         return $this->diContainer;
     }
 
@@ -158,6 +156,7 @@ class AbstractCase extends \PHPUnit_Framework_TestCase
             printf('Please unzip the file %s.zip to %s to run this tests', $personsDataPath, $personsDataPath);
             die(1);
         }
+
         return $personsDataPath;
     }
 }

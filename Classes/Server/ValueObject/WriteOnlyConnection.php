@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 30.05.15
- * Time: 14:07
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
@@ -20,14 +15,14 @@ class WriteOnlyConnection extends EventEmitter implements ConnectionInterface
     protected $closing = false;
 
     protected $data = '';
-    protected $lastError = array(
+    protected $lastError = [
         'number'  => 0,
         'message' => '',
         'file'    => '',
         'line'    => 0,
-    );
+    ];
 
-    function __construct()
+    public function __construct()
     {
         $this->stream = fopen('php://output', 'w');
     }
@@ -53,7 +48,7 @@ class WriteOnlyConnection extends EventEmitter implements ConnectionInterface
         echo "resume()" . PHP_EOL;
     }
 
-    public function pipe(WritableStreamInterface $dest, array $options = array())
+    public function pipe(WritableStreamInterface $dest, array $options = [])
     {
         echo "pipe()" . PHP_EOL;
     }
@@ -84,8 +79,8 @@ class WriteOnlyConnection extends EventEmitter implements ConnectionInterface
         $this->writable = false;
         $this->data = '';
 
-        $this->emit('end', array($this));
-        $this->emit('close', array($this));
+        $this->emit('end', [$this]);
+        $this->emit('close', [$this]);
         $this->removeAllListeners();
 
         $this->handleClose();
@@ -165,11 +160,11 @@ class WriteOnlyConnection extends EventEmitter implements ConnectionInterface
 
         if (false === $sent) {
             throw new \ErrorException(
-                    $this->lastError['message'],
-                    0,
-                    $this->lastError['number'],
-                    $this->lastError['file'],
-                    $this->lastError['line']
+                $this->lastError['message'],
+                0,
+                $this->lastError['number'],
+                $this->lastError['file'],
+                $this->lastError['line']
             );
         }
 
@@ -182,7 +177,7 @@ class WriteOnlyConnection extends EventEmitter implements ConnectionInterface
         //    $this->emit('drain', [$this]);
         //}
 
-        $this->data = (string) substr($this->data, $sent);
+        $this->data = (string)substr($this->data, $sent);
 
         //if (0 === strlen($this->data)) {
         //    $this->loop->removeWriteStream($this->stream);
@@ -194,10 +189,10 @@ class WriteOnlyConnection extends EventEmitter implements ConnectionInterface
 
     private function errorHandler($errno, $errstr, $errfile, $errline)
     {
-        $this->lastError['number']  = $errno;
+        $this->lastError['number'] = $errno;
         $this->lastError['message'] = $errstr;
-        $this->lastError['file']    = $errfile;
-        $this->lastError['line']    = $errline;
+        $this->lastError['file'] = $errfile;
+        $this->lastError['line'] = $errline;
     }
 
     /**
@@ -216,7 +211,8 @@ class WriteOnlyConnection extends EventEmitter implements ConnectionInterface
      * @param $data
      * @return bool
      */
-    protected function isHeader($data) {
+    protected function isHeader($data)
+    {
         return (is_string($data) && substr($data, 0, 9) === 'HTTP/1.1 ');
     }
 

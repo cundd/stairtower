@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.10.14
- * Time: 17:41
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\ErrorHandling;
 
@@ -18,8 +13,6 @@ use DateTime;
 
 /**
  * Crash handler that tries to rescue the in-memory databases
- *
- * @package Cundd\PersistentObjectStore
  */
 class CrashHandler implements HandlerInterface
 {
@@ -43,7 +36,7 @@ class CrashHandler implements HandlerInterface
      */
     public function register()
     {
-        register_shutdown_function(array($this, 'shutdown'));
+        register_shutdown_function([$this, 'shutdown']);
         static::$isRegistered = true;
     }
 
@@ -63,8 +56,8 @@ class CrashHandler implements HandlerInterface
     {
         $error = error_get_last();
         if (static::$isRegistered && $error !== null) {
-            $errno   = intval($error['type']);
-            $errstr  = $error['message'];
+            $errno = intval($error['type']);
+            $errstr = $error['message'];
             $errfile = $error['file'];
             $errline = $error['line'];
 
@@ -82,10 +75,10 @@ class CrashHandler implements HandlerInterface
      * @param array  $errcontext
      * @return bool
      */
-    public function handle($errno, $errstr, $errfile = '', $errline = 0, $errcontext = array())
+    public function handle(int $errno, string $errstr, string $errfile = '', int $errline = 0, $errcontext = [])
     {
         // Construct a helpful crash message
-        $errorReport   = [];
+        $errorReport = [];
         $errorReport[] = sprintf(
             'Server crashed with code %d and message "%s" in %s at %s',
             $errno,
@@ -101,7 +94,7 @@ class CrashHandler implements HandlerInterface
         $errorReport[] = $this->rescueData();
 
         // Output and save the information
-        $errorReport     = implode(PHP_EOL, $errorReport);
+        $errorReport = implode(PHP_EOL, $errorReport);
         $errorReportPath = static::getRescueDirectory() . 'CRASH_REPORT.txt';
         file_put_contents($errorReportPath, $errorReport);
         print $errorReport;
@@ -114,9 +107,10 @@ class CrashHandler implements HandlerInterface
      */
     protected function getTimeWithMicroseconds()
     {
-        $t     = microtime(true);
+        $t = microtime(true);
         $micro = sprintf('%06d', ($t - floor($t)) * 1000000);
-        $now   = new DateTime(gmdate('Y-m-d H:i:s.') . $micro);
+        $now = new DateTime(gmdate('Y-m-d H:i:s.') . $micro);
+
         return $now;
     }
 
@@ -127,9 +121,9 @@ class CrashHandler implements HandlerInterface
      */
     public function rescueData()
     {
-        $resultMessageParts = array();
-        $data               = Manager::getObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
-        $backupDirectory    = $this->getRescueDirectory();
+        $resultMessageParts = [];
+        $data = Manager::getObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
+        $backupDirectory = $this->getRescueDirectory();
         if ($data) {
             foreach ($data as $databaseIdentifier => $database) {
                 $currentData = null;
@@ -145,7 +139,7 @@ class CrashHandler implements HandlerInterface
                 }
 
                 $backupData = null;
-                $jsonData   = json_encode($currentData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                $jsonData = json_encode($currentData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                 if ($jsonData) {
                     $backupData = $jsonData;
                 } else {
@@ -155,8 +149,11 @@ class CrashHandler implements HandlerInterface
 
                 $backupPath = $backupDirectory . $databaseIdentifier . '.' . ($jsonData ? 'json' : 'bin');
                 if (file_put_contents($backupPath, $backupData)) {
-                    $resultMessageParts[] = sprintf('Created backup of database %s at %s', $databaseIdentifier,
-                        $backupPath);
+                    $resultMessageParts[] = sprintf(
+                        'Created backup of database %s at %s',
+                        $databaseIdentifier,
+                        $backupPath
+                    );
                 } else {
                     $resultMessageParts[] = sprintf('Can not rescue database %s', $databaseIdentifier);
                 }
@@ -164,6 +161,7 @@ class CrashHandler implements HandlerInterface
         } else {
             $resultMessageParts[] = sprintf('Can not find any data to rescue');
         }
+
         return implode(PHP_EOL, $resultMessageParts);
     }
 
@@ -179,6 +177,7 @@ class CrashHandler implements HandlerInterface
         if (!file_exists($backupDirectory)) {
             mkdir($backupDirectory, 0770, true);
         }
+
         return $backupDirectory;
     }
 } 

@@ -1,19 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 02.04.15
- * Time: 20:48
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
 /**
  * Test for mutable Handler Results
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class MutableHandlerResultTest extends \PHPUnit_Framework_TestCase
+class MutableHandlerResultTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var MutableHandlerResult
@@ -55,7 +48,8 @@ class MutableHandlerResultTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function setDataTest(){
+    public function setDataTest()
+    {
         $newData = 'new data';
         $this->fixture->setData($newData);
         $this->assertSame($newData, $this->fixture->getData());

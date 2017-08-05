@@ -1,19 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11.10.14
- * Time: 14:28
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
+use Cundd\PersistentObjectStore\Server\ContentType;
 use Cundd\PersistentObjectStore\Server\Controller\MutableControllerResultInterface;
 
 /**
  * Controller result implementation
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
 class MutableControllerResult extends AbstractControllerResult implements MutableControllerResultInterface
 {
@@ -25,55 +19,33 @@ class MutableControllerResult extends AbstractControllerResult implements Mutabl
      * @param string  $contentType
      * @param array   $headers
      */
-    public function __construct($statusCode = null, $data = null, $contentType = null, $headers = array())
+    public function __construct(int $statusCode = null, $data = null, string $contentType = ContentType::HTML_TEXT, array $headers = [])
     {
-        $this->statusCode  = $statusCode;
-        $this->data        = $data;
-        $this->contentType = $contentType;
-        $this->headers     = (array)$headers;
+        parent::__construct($statusCode, $data, $contentType, $headers);
     }
 
-    /**
-     * Sets the content type of the request
-     *
-     * @param string $contentType
-     * @return $this
-     */
-    public function setContentType($contentType)
+    public function setContentType(string $contentType): MutableControllerResultInterface
     {
         $this->contentType = $contentType;
 
         return $this;
     }
 
-    /**
-     * Sets the headers to send with the response
-     *
-     * @param array $headers
-     * @return $this
-     */
-    public function setHeaders($headers)
+    public function setHeaders(array $headers): MutableControllerResultInterface
     {
         $this->headers = $headers;
 
         return $this;
     }
 
-    /**
-     * Add the header with the given name
-     *
-     * @param string $name
-     * @param mixed  $header
-     * @return $this
-     */
-    public function addHeader($name, $header)
+    public function addHeader(string $name, $header): MutableControllerResultInterface
     {
         if (isset($this->headers[$name])) {
             $existingHeader = $this->headers[$name];
             if (is_array($existingHeader)) {
                 $this->headers[$name][] = $header;
             } else {
-                $this->headers[$name] = array($existingHeader, $header);
+                $this->headers[$name] = [$existingHeader, $header];
             }
         } else {
             $this->headers[$name] = $header;
@@ -82,44 +54,24 @@ class MutableControllerResult extends AbstractControllerResult implements Mutabl
         return $this;
     }
 
-    /**
-     * Replace the header with the given name
-     *
-     * @param string $name
-     * @param mixed  $header
-     * @return $this
-     */
-    public function replaceHeader($name, $header)
+    public function replaceHeader(string $name, $header): MutableControllerResultInterface
     {
         $this->headers[$name] = $header;
 
         return $this;
     }
 
-    /**
-     * Sets the status code for the response
-     *
-     * @param int $statusCode
-     * @return $this
-     */
-    public function setStatusCode($statusCode)
+    public function setStatusCode(int $statusCode): MutableControllerResultInterface
     {
         $this->statusCode = $statusCode;
 
         return $this;
     }
 
-    /**
-     * Sets the request's response data
-     *
-     * @param mixed $data
-     * @return $this
-     */
-    public function setData($data)
+    public function setData($data): MutableControllerResultInterface
     {
         $this->data = $data;
 
         return $this;
     }
-
 }

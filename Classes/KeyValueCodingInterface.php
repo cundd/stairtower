@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 24.09.14
- * Time: 08:25
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore;
 

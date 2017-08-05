@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 22.03.15
- * Time: 11:45
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\View;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Server\UriBuilderInterface;
 
 /**
  * Interface for View based controllers
- *
- * @package Cundd\PersistentObjectStore\View
  */
 interface ViewControllerInterface extends ControllerInterface
 {

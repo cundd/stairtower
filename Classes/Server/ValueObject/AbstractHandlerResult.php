@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11.10.14
- * Time: 14:28
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 
 /**
  * Abstract result implementation
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
 abstract class AbstractHandlerResult implements HandlerResultInterface
 {
@@ -34,10 +27,10 @@ abstract class AbstractHandlerResult implements HandlerResultInterface
      * @param integer $statusCode
      * @param mixed   $data
      */
-    public function __construct($statusCode, $data = null)
+    public function __construct(int $statusCode, $data = null)
     {
         $this->statusCode = $statusCode;
-        $this->data       = $data;
+        $this->data = $data;
     }
 
 
@@ -56,7 +49,7 @@ abstract class AbstractHandlerResult implements HandlerResultInterface
      *
      * @return integer
      */
-    public function getStatusCode()
+    public function getStatusCode():int
     {
         return $this->statusCode;
     }

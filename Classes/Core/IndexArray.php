@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.09.14
- * Time: 10:42
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Core;
 
@@ -16,8 +11,6 @@ use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
  *
  * The main differences between a IndexArray and a normal PHP array is that it allows only integers as indexes.
  * The advantage is that it allows a faster array implementation.
- *
- * @package Cundd\PersistentObjectStore\Core
  */
 class IndexArray implements \Iterator, \ArrayAccess, \Countable
 {
@@ -26,7 +19,7 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
      *
      * @var array
      */
-    protected $elements = array();
+    protected $elements = [];
 
     /**
      * Index of the element the array currently points to
@@ -62,14 +55,15 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
      */
     public function initWithArray($elements)
     {
-        $this->elements = array();
-        $tempElements   = array();
+        $this->elements = [];
+        $tempElements = [];
         foreach ($elements as $item) {
             $tempElements[] = $item;
         }
-        $this->elements     = $tempElements;
-        $this->length       = count($tempElements);
+        $this->elements = $tempElements;
+        $this->length = count($tempElements);
         $this->currentIndex = 0;
+
         return $this;
     }
 
@@ -84,6 +78,7 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
         if (!$this->length) {
             throw new IndexOutOfRangeException('Array is empty', 1410178600);
         }
+
         return $this->elements[0];
     }
 
@@ -99,6 +94,7 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
         if (!$this->length) {
             throw new IndexOutOfRangeException('Array is empty', 1410178600);
         }
+
         return $this->elements[$this->length - 1];
     }
 
@@ -128,9 +124,10 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
      */
     protected function popInternal()
     {
-        $lastIndex   = --$this->length;
+        $lastIndex = --$this->length;
         $lastElement = $this->elements[$lastIndex];
         unset($this->elements[$lastIndex]);
+
         return $lastElement;
     }
 
@@ -150,6 +147,7 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
         if (!isset($this->elements[$this->currentIndex])) {
             return null;
         }
+
         return $this->elements[$this->currentIndex];
     }
 
@@ -237,6 +235,7 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
         if ($offset === null) {
             return false;
         }
+
         return $offset < $this->length;
     }
 
@@ -251,6 +250,7 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
         if (is_integer($var) || (string)(int)$var === $var) {
             return intval($var);
         }
+
         return null;
     }
 
@@ -278,6 +278,7 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
         if (isset($this->elements[$offset])) {
             return $this->elements[$offset];
         }
+
         return null;
     }
 
@@ -317,8 +318,10 @@ class IndexArray implements \Iterator, \ArrayAccess, \Countable
             throw new InvalidIndexException('Offset could not be converted to integer', 1410167582);
         }
         if ($offset > $this->length) {
-            throw new IndexOutOfRangeException('Offset is out of range. Current maximum offset is ' . $this->length,
-                1410167584);
+            throw new IndexOutOfRangeException(
+                'Offset is out of range. Current maximum offset is ' . $this->length,
+                1410167584
+            );
         }
 
         if ($offset == $this->length) { // Push the element if needed

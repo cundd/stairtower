@@ -1,11 +1,6 @@
 <?php
+declare(strict_types=1);
 
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.01.15
- * Time: 12:20
- */
 
 use Cundd\PersistentObjectStore\Server\Session\SessionControllerTrait;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
@@ -13,7 +8,6 @@ use Evenement\EventEmitter;
 use React\Socket\ConnectionInterface;
 use React\Stream\WritableStreamInterface;
 use React\Stream\Util;
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
 
 class Test_Application
 {
@@ -21,28 +15,31 @@ class Test_Application
 
 class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server\Controller\ControllerInterface
 {
-    public function initialize()
+    public function initialize(): void
     {
     }
 
-    public function setRequest(Request $request)
+    public function setRequest(RequestInterface $request
+    ): \Cundd\PersistentObjectStore\Server\Controller\ControllerInterface {
+        return $this;
+    }
+
+    public function getRequest(): RequestInterface
+    {
+        return null;
+    }
+
+    public function unsetRequest(): void
     {
     }
 
-    public function getRequest()
+    public function willInvokeAction(string $action): void
     {
     }
 
-    public function unsetRequest()
-    {
-    }
-
-    public function willInvokeAction($action)
-    {
-    }
 
     public function didInvokeAction(
-        $action,
+        string $action,
         \Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface $result
     ) {
     }
@@ -68,7 +65,7 @@ class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server
     }
 
     public function processRequest(
-        Request $request,
+        RequestInterface $request,
         WritableStreamInterface $response
     ) {
     }
@@ -82,6 +79,10 @@ class_alias('Test_Application_Controller', 'Cundd\\TestModule\\Controller\\Appli
 
 class React_ConnectionStub extends EventEmitter implements ConnectionInterface
 {
+    public function getLocalAddress()
+    {
+    }
+
     private $data = '';
 
     public function isReadable()
@@ -102,7 +103,7 @@ class React_ConnectionStub extends EventEmitter implements ConnectionInterface
     {
     }
 
-    public function pipe(WritableStreamInterface $dest, array $options = array())
+    public function pipe(WritableStreamInterface $dest, array $options = [])
     {
         Util::pipe($this, $dest, $options);
 
@@ -137,8 +138,6 @@ class React_ConnectionStub extends EventEmitter implements ConnectionInterface
 
 /**
  * Dummy Session Controller
- *
- * @package Cundd\PersistentObjectStore\Server\Session
  */
 class Test_Session_Controller
 {

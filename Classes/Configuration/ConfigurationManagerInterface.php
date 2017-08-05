@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 25.08.14
- * Time: 21:56
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Configuration;
 
 /**
  * Interface for Configuration Managers
- *
- * @package Cundd\PersistentObjectStore\Configuration
  */
 interface ConfigurationManagerInterface
 {
@@ -21,7 +14,7 @@ interface ConfigurationManagerInterface
      * @param string $keyPath
      * @return mixed
      */
-    public function getConfigurationForKeyPath($keyPath);
+    public function getConfigurationForKeyPath(string $keyPath);
 
     /**
      * Sets the configuration for the given key path
@@ -30,5 +23,5 @@ interface ConfigurationManagerInterface
      * @param mixed  $value
      * @return $this
      */
-    public function setConfigurationForKeyPath($keyPath, $value);
+    public function setConfigurationForKeyPath(string $keyPath, $value): self;
 }

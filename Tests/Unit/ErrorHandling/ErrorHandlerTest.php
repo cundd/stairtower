@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.02.15
- * Time: 12:33
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\ErrorHandling;
 
@@ -17,10 +12,8 @@ class TestClass_ForErrorHandler
 
 /**
  * Test for ErrorHandler
- *
- * @package Cundd\PersistentObjectStore\ErrorHandling
  */
-class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
+class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ErrorHandler
@@ -48,6 +41,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
     public function stdClassToStringTest()
     {
         $object = new stdClass();
+
         return (string)$object;
     }
 
@@ -58,71 +52,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
     public function documentToStringTest()
     {
         $object = new TestClass_ForErrorHandler();
+
         return (string)$object;
-    }
-
-    /**
-     * @test
-     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
-     */
-    public function expectTestClassGetArrayTest()
-    {
-        $this->markTestSkippedOnPhp7();
-        $this->expectTestClass(array());
-    }
-
-    /**
-     * @test
-     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
-     */
-    public function expectTestClassGetNullTest()
-    {
-        $this->markTestSkippedOnPhp7();
-        $this->expectTestClass(null);
-    }
-
-    /**
-     * @test
-     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
-     */
-    public function expectTestClassGetStdClassTest()
-    {
-        $this->markTestSkippedOnPhp7();
-        $this->expectTestClass(new stdClass());
-    }
-
-    /**
-     * @test
-     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
-     */
-    public function expectArrayGetNullTest()
-    {
-        $this->markTestSkippedOnPhp7();
-        $this->expectArray(null);
-    }
-
-    /**
-     * @test
-     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
-     */
-    public function expectArrayGetStdClassTest()
-    {
-        $this->markTestSkippedOnPhp7();
-        $this->expectArray(new stdClass());
-    }
-
-    protected function expectTestClass(TestClass_ForErrorHandler $object)
-    {
-    }
-
-    protected function expectArray(array $array)
-    {
-    }
-
-    private function markTestSkippedOnPhp7()
-    {
-        if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
-            $this->markTestSkipped('Error handling changed in PHP 7 (http://php.net/manual/en/class.typeerror.php)');
-        }
     }
 }

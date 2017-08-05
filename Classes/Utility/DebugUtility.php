@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 06.09.14
- * Time: 21:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Utility;
 
 /**
  * Debug utility
- *
- * @package Cundd\Rest\Utility
  */
 class DebugUtility
 {
@@ -29,7 +22,7 @@ class DebugUtility
     {
         $variables = func_get_args();
         static::$backtraceOffset += 2;
-        call_user_func_array(array(__CLASS__, 'debug'), $variables);
+        call_user_func_array([__CLASS__, 'debug'], $variables);
         static::$backtraceOffset -= 2;
     }
 
@@ -41,8 +34,8 @@ class DebugUtility
      */
     public static function pl($message, $additional = null)
     {
-        $caller      = static::getCaller();
-        $htmlOutput  = php_sapi_name() !== 'cli';
+        $caller = static::getCaller();
+        $htmlOutput = php_sapi_name() !== 'cli';
         $colorOutput = isset($_SERVER['TERM']) && strtolower($_SERVER['TERM']) === 'xterm';
 
         if ($htmlOutput) {
@@ -65,9 +58,9 @@ class DebugUtility
             echo "<span class='rest-debug-path' style='font-size:9px'><a href='file:$file'>see $file($line)</a></span>";
             echo "</pre>";
         } elseif ($colorOutput) {
-                echo "\033[0;35m" . "$file($line)" . "\033[0m";
-            } else {
-                echo "($file:$line)";
+            echo "\033[0;35m" . "$file($line)" . "\033[0m";
+        } else {
+            echo "($file:$line)";
         }
 
         if ($htmlOutput) {
@@ -94,8 +87,9 @@ class DebugUtility
         } else {
             $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         }
-        $caller                 = $backtrace[static::$backtraceOffset];
+        $caller = $backtrace[static::$backtraceOffset];
         $caller['relativePath'] = '.' . substr($caller['file'], $basePathLength);
+
         return $caller;
     }
 
@@ -105,10 +99,13 @@ class DebugUtility
     public static function printMemorySample()
     {
         static::$backtraceOffset += 1;
-        static::debug(sprintf('Memory: %s (max: %s)',
-            GeneralUtility::formatBytes(memory_get_usage(true)),
-            GeneralUtility::formatBytes(memory_get_peak_usage(true))
-        ));
+        static::debug(
+            sprintf(
+                'Memory: %s (max: %s)',
+                GeneralUtility::formatBytes(memory_get_usage(true)),
+                GeneralUtility::formatBytes(memory_get_peak_usage(true))
+            )
+        );
         static::$backtraceOffset -= 1;
     }
 
@@ -119,8 +116,8 @@ class DebugUtility
      */
     public static function debug($variable)
     {
-        $caller      = static::getCaller();
-        $htmlOutput  = php_sapi_name() !== 'cli';
+        $caller = static::getCaller();
+        $htmlOutput = php_sapi_name() !== 'cli';
         $colorOutput = isset($_SERVER['TERM']) && strtolower($_SERVER['TERM']) === 'xterm';
 
         if ($htmlOutput) {
@@ -143,10 +140,10 @@ class DebugUtility
             echo "<span class='rest-debug-path' style='font-size:9px'><a href='file:$file'>see $file($line)</a></span>";
             echo "</pre>";
         } elseif ($colorOutput) {
-                echo "\033[0;35m" . "$file($line)" . "\033[0m";
-            } else {
-                echo "($file:$line)";
-            }
+            echo "\033[0;35m" . "$file($line)" . "\033[0m";
+        } else {
+            echo "($file:$line)";
+        }
 
 
         if ($htmlOutput) {
@@ -166,12 +163,13 @@ class DebugUtility
     public static function measureCallback($callback)
     {
         $startTime = microtime(true);
-        $result    = $callback();
-        $endTime   = microtime(true);
+        $result = $callback();
+        $endTime = microtime(true);
 
         static::$backtraceOffset++;
         static::pl('Callback took %0.6f seconds', $endTime - $startTime);
         static::$backtraceOffset--;
+
         return $result;
     }
 

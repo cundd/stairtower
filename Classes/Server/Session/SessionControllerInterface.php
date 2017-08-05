@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 06.04.15
- * Time: 17:11
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Session;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\Server\Controller\MutableControllerResultInterfa
 
 /**
  * Interface for Session based controllers
- *
- * @package Cundd\PersistentObjectStore\Server\Session
  */
 interface SessionControllerInterface
 {

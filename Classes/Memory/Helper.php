@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 24.10.14
- * Time: 21:55
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Memory;
 
@@ -18,8 +13,6 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
  * Helper to check and free memory
- *
- * @package Cundd\PersistentObjectStore\Memory
  */
 class Helper
 {
@@ -32,6 +25,7 @@ class Helper
     public function guessMemoryForJsonFile($filePath)
     {
         $value = filesize($filePath);
+
         return 15.954 * $value - 2E+07;
     }
 
@@ -43,10 +37,10 @@ class Helper
      */
     public function freeMemory($size)
     {
-        $size          = abs($size);
+        $size = abs($size);
         $currentMemory = memory_get_usage(true);
-        $freedMemory   = 0;
-        $databases = Manager::getObjectsByTag(Coordinator::MEMORY_MANAGER_TAG, true);
+        $freedMemory = 0;
+        $databases = Manager::getObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
         foreach ($databases as $identifier => $database) {
             /** @var DatabaseInterface $database */
             if ($database->getState() === DatabaseStateInterface::STATE_CLEAN) {
@@ -60,6 +54,7 @@ class Helper
             }
 //			DebugUtility::var_dump(gc_enabled(), array_keys(get_defined_vars()), GeneralUtility::formatBytes($currentMemory), GeneralUtility::formatBytes($freedMemory));
         }
+
 //		DebugUtility::var_dump(gc_enabled(), array_keys(get_defined_vars()), GeneralUtility::formatBytes($currentMemory), GeneralUtility::formatBytes($freedMemory));
         return false;
     }
@@ -101,19 +96,20 @@ class Helper
      * The method tries to free enough memory if needed
      *
      * @param $filePath
-     * @return bool
      */
-    public function checkMemoryForJsonFile($filePath)
+    public function checkMemoryForJsonFile(string $filePath)
     {
-        $guessedMemory   = $this->guessMemoryForJsonFile($filePath);
+        $guessedMemory = $this->guessMemoryForJsonFile($filePath);
         $availableMemory = $this->getAvailableMemory();
 //		DebugUtility::pl('Available memory: %s', GeneralUtility::formatBytes($availableMemory));
 //		DebugUtility::pl('We will need about %s', GeneralUtility::formatBytes($guessedMemory));
         if ($guessedMemory > $availableMemory) {
 //			DebugUtility::pl('Please free %s bytes', GeneralUtility::formatBytes($guessedMemory - $availableMemory));
             if (!$this->freeMemory($guessedMemory - $availableMemory)) {
-                DebugUtility::pl('Required estimated memory amount of %s not available',
-                    GeneralUtility::formatBytes($guessedMemory - $availableMemory));
+                DebugUtility::pl(
+                    'Required estimated memory amount of %s not available',
+                    GeneralUtility::formatBytes($guessedMemory - $availableMemory)
+                );
 
 //				throw new MemoryException(sprintf(
 //					'Required memory amount of %s not available',

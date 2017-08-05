@@ -14,7 +14,7 @@ then
     php composer-setup.php --install-dir=/usr/local/bin
     RESULT=$?
     rm composer-setup.php
-    exit $RESULT
+    exit ${RESULT}
 else
     >&2 echo 'ERROR: Invalid installer signature'
     rm composer-setup.php

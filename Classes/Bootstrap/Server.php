@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 02.02.15
- * Time: 19:43
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Bootstrap;
 
@@ -16,8 +11,6 @@ use Psr\Log\LogLevel;
 
 /**
  * Server bootstrapping
- *
- * @package Cundd\PersistentObjectStore\Bootstrap
  */
 class Server extends AbstractBootstrap
 {
@@ -30,13 +23,13 @@ class Server extends AbstractBootstrap
     public function configure($arguments)
     {
         // Parse the arguments
-        $longOptions = array(
+        $longOptions = [
             "port::",
             "ip::",
             "data-path::",
             'test::',
             'dev::',
-        );
+        ];
         $options = getopt('h::', $longOptions);
 
         // Print the help
@@ -130,7 +123,7 @@ class Server extends AbstractBootstrap
             return ServerInterface::SERVER_MODE_TEST;
         }
 
-        switch (strtolower(getenv(Constants::ENVIRONMENT_KEY_SERVER_MODE))) {
+        switch (strtolower((string)getenv(Constants::ENVIRONMENT_KEY_SERVER_MODE))) {
             case 'dev':
                 return ServerInterface::SERVER_MODE_DEVELOPMENT;
 

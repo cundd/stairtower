@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.10.14
- * Time: 11:08
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\System\Lock;
 
 /**
  * Interface for locks
- *
- * @package Cundd\PersistentObjectStore\System
  */
 interface LockInterface
 {
@@ -29,7 +22,7 @@ interface LockInterface
      * @return void
      * @throws \Cundd\PersistentObjectStore\System\Lock\Exception\TimeoutException if the timeout is reached before the lock can be acquired
      */
-    public function lockWithTimeout($timeout);
+    public function lockWithTimeout(int $timeout);
 
     /**
      * Relinquishes a previously acquired lock
@@ -44,14 +37,14 @@ interface LockInterface
      *
      * @return bool
      */
-    public function tryLock();
+    public function tryLock(): bool;
 
     /**
      * Returns if the lock is currently locked
      *
      * @return bool
      */
-    public function isLocked();
+    public function isLocked(): bool;
 
     /**
      * Returns the identifier of the named lock
@@ -60,5 +53,5 @@ interface LockInterface
      *
      * @return string
      */
-    public function getName();
+    public function getName(): string;
 }

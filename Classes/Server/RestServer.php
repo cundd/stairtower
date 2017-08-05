@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 19:38
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server;
 
@@ -42,8 +37,6 @@ use ReflectionClass;
 
 /**
  * REST server
- *
- * @package Cundd\PersistentObjectStore
  */
 class RestServer extends AbstractServer implements StandardActionDispatcherInterface, SpecialHandlerActionDispatcherInterface, ServerActionDispatcherInterface, ControllerActionDispatcherInterface
 {
@@ -72,7 +65,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handle the given request
      *
-     * @param Request $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      */
     public function handle($request, $response)
@@ -80,7 +73,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         // If the configured log level is DEBUG log all requests
         static $debugLog = -1;
         if ($debugLog === -1) {
-            $debugLog = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('logLevel') <= Logger::DEBUG;
+            $debugLog = ConfigurationManager::getSharedInstance()
+                    ->getConfigurationForKeyPath('logLevel') <= Logger::DEBUG;
         }
 
         $requestResult = null;
@@ -153,7 +147,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the standard action
      *
-     * @param Request $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
      */
@@ -197,7 +191,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param Request $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
      */
@@ -215,7 +209,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         try {
             if ($contentLength) {
                 $this->waitForBodyAndPerformCallback(
-                    $request, $response,
+                    $request,
+                    $response,
                     function ($originalRequest, $requestBody) use ($self, $controller, $request, $response) {
                         $request = RequestInfoFactory::copyWithBody($request, $requestBody);
 
@@ -236,7 +231,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param Request $request
+     * @param Request              $request
      * @param \React\Http\Response $response
      * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
      */
@@ -244,14 +239,14 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     {
         $handler = $this->getHandlerForRequest($request);
 
-        return call_user_func(array($handler, $request->getAction()), $request);
+        return call_user_func([$handler, $request->getAction()], $request);
     }
 
     /**
      * Handles the given Controller/Action request action
      *
-     * @param Request $request
-     * @param Response $response
+     * @param Request             $request
+     * @param Response            $response
      * @param ControllerInterface $controller
      * @return ControllerResultInterface Returns the Handler Result
      */
@@ -299,8 +294,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given server action
      *
-     * @param string $serverAction
-     * @param Request $request
+     * @param string               $serverAction
+     * @param Request              $request
      * @param \React\Http\Response $response
      */
     public function dispatchServerAction($serverAction, $request, $response)
@@ -312,14 +307,15 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      * Handle the given request result
      *
      * @param HandlerResultInterface $result
-     * @param Request $request
-     * @param Response $response
+     * @param Request                $request
+     * @param Response               $response
      */
     public function handleResult($result, $request, $response)
     {
         if ($result instanceof RawResultInterface) {
-            $response->writeHead($result->getStatusCode(),
-                array('Content-Type' =>  $result->getContentType())
+            $response->writeHead(
+                $result->getStatusCode(),
+                ['Content-Type' => $result->getContentType()]
             );
             $responseData = $result->getData();
             if ($responseData !== null) {
@@ -346,7 +342,11 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             );
             $response->writeHead(
                 $result->getStatusCode(),
-                array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
+                [
+                    'Content-Type' => ContentTypeUtility::convertSuffixToContentType(
+                            $formatter->getContentSuffix()
+                        ) . '; charset=utf-8',
+                ]
             );
             $responseData = $result->getData();
             if ($responseData !== null) {
@@ -359,7 +359,11 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             $formatter = $this->getFormatterForRequest($request);
             $response->writeHead(
                 204,
-                array('Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix()) . '; charset=utf-8')
+                [
+                    'Content-Type' => ContentTypeUtility::convertSuffixToContentType(
+                            $formatter->getContentSuffix()
+                        ) . '; charset=utf-8',
+                ]
             );
             $response->end($formatter->format('No content'));
         } else {
@@ -370,7 +374,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Waits for the total request body and performs the needed action
      *
-     * @param Request $request
+     * @param Request  $request
      * @param Response $response
      */
     public function waitForBodyAndPerformHandlerAction($request, $response)
@@ -404,40 +408,48 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Waits for the total request body and performs the needed action
      *
-     * @param Request $request Incoming request
-     * @param Response $response Outgoing response to write the result to
-     * @param Callback $callback Callback to invoke
-     * @param bool $allowRawBody If set to true Body Parser exceptions will be ignored
+     * @param Request  $request      Incoming request
+     * @param Response $response     Outgoing response to write the result to
+     * @param Callback $callback     Callback to invoke
+     * @param bool     $allowRawBody If set to true Body Parser exceptions will be ignored
      */
-    public function waitForBodyAndPerformCallback($request, $response, $callback, $allowRawBody)
+    public function waitForBodyAndPerformCallback($request, $response, callable $callback, bool $allowRawBody)
     {
-        $self = $this;
-
         $requestBody = '';
         $contentLength = $this->getContentLengthFromRequest($request);
         $receivedData = 0;
 
         $logger = $this->logger;
-        $logger->debug(sprintf(
-            '< Start deferred request with content-length %d %s %s %s',
-            $contentLength,
-            $request->getMethod(),
-            $request->getPath(),
-            $request->getHttpVersion()
-        ));
+        $logger->debug(
+            sprintf(
+                '< Start deferred request with content-length %d %s %s %s',
+                $contentLength,
+                $request->getMethod(),
+                $request->getPath(),
+                $request->getHttpVersion()
+            )
+        );
+
+        if ($contentLength <= 0) {
+            $requestResult = $callback($request, null);
+            if ($requestResult !== null) {
+                $this->handleResult($requestResult, $request, $response);
+            }
+
+            return;
+        }
 
 
-        $request->on('data',
+        $request->on(
+            'data',
             function ($data) use (
-                $self,
                 $request,
                 $response,
                 &$requestBody,
                 &$receivedData,
                 $contentLength,
                 $callback,
-                $allowRawBody
-                ,
+                $allowRawBody,
                 $logger
             ) {
                 $logger->debug('Receive data');
@@ -445,14 +457,13 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                     $requestBody .= $data;
                     $receivedData += strlen($data);
                     if ($receivedData >= $contentLength) {
-
                         $requestBodyParsed = null;
                         if ($allowRawBody) {
                             $requestBodyParsed = $requestBody;
                         }
                         if ($requestBody) {
                             try {
-                                $requestBodyParsed = $self->getBodyParserForRequest($request)->parse(
+                                $requestBodyParsed = $this->getBodyParserForRequest($request)->parse(
                                     $requestBody,
                                     $request
                                 );
@@ -467,26 +478,32 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                             }
                         }
 
-                        $logger->debug(sprintf(
-                            '> Handle deferred request %s %s %s',
-                            $request->getMethod(),
-                            $request->getPath(),
-                            $request->getHttpVersion()
-                        ));
+                        $logger->debug(
+                            sprintf(
+                                '> Handle deferred request %s %s %s',
+                                $request->getMethod(),
+                                $request->getPath(),
+                                $request->getHttpVersion()
+                            )
+                        );
 
                         $requestResult = $callback($request, $requestBodyParsed);
                         if ($requestResult !== null) {
-                            $self->handleResult($requestResult, $request, $response);
+                            $this->handleResult($requestResult, $request, $response);
                         }
                     }
                 } catch (\Exception $exception) {
                     $this->handleError($exception, $request, $response);
                 }
-            });
+            }
+        );
 
-        $request->on('end', function () use ($logger) {
-            $this->logger->debug('X End of connection', func_get_args());
-        });
+        $request->on(
+            'end',
+            function () use ($logger) {
+                $this->logger->debug('X End of connection', func_get_args());
+            }
+        );
     }
 
     /**
@@ -498,7 +515,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     protected function getContentLengthFromRequest($request)
     {
         $headers = $request->getHeaders();
-        $headerNamesToCheck = array('Content-Length', 'Content-length', 'content-length');
+        $headerNamesToCheck = ['Content-Length', 'Content-length', 'content-length'];
         foreach ($headerNamesToCheck as $headerName) {
             if (isset($headers[$headerName])) {
                 return $headers[$headerName];
@@ -625,7 +642,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         $this->socketServer = new SocketServer($this->getEventLoop());
 
         $httpServer = new HttpServer($this->socketServer, $this->getEventLoop());
-        $httpServer->on('request', array($this, 'prepareAndHandle'));
+        $httpServer->on('request', [$this, 'prepareAndHandle']);
         $this->socketServer->listen($this->port, $this->ip);
 
         $this->writeln(Constants::MESSAGE_CLI_WELCOME . PHP_EOL);
@@ -636,7 +653,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handle the given request
      *
-     * @param \React\Http\Request $request
+     * @param \React\Http\Request  $request
      * @param \React\Http\Response $response
      */
     public function prepareAndHandle($request, $response)
@@ -679,13 +696,13 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
      *
      * TODO: Move this functionality into a separate class
      *
-     * @param string|object $controller Class name or instance
-     * @param string $actionMethod Method name
+     * @param string|object $controller   Class name or instance
+     * @param string        $actionMethod Method name
      * @return int Returns 1 if a Document is required, 2 if it is optional otherwise 0
      */
     protected function getControllerActionRequiresDocumentArgument($controller, $actionMethod)
     {
-        static $controllerActionRequiresDocumentCache = array();
+        static $controllerActionRequiresDocumentCache = [];
         $controllerClass = is_string($controller) ? $controller : get_class($controller);
         $controllerActionIdentifier = $controllerClass . '::' . $actionMethod;
 
@@ -699,7 +716,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         foreach ($methodReflection->getParameters() as $parameter) {
             $argumentClassName = $parameter->getClass() ? trim($parameter->getClass()->getName()) : null;
             if ($argumentClassName && $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\Document') {
-                $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = ($parameter->isOptional() ? 2 : 1);
+                $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = ($parameter->isOptional(
+                ) ? 2 : 1);
                 break;
             }
         }

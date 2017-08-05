@@ -1,21 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.01.15
- * Time: 10:40
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Controller;
 
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 use React\Http\Response;
 use React\Stream\WritableStreamInterface;
 
 /**
  * Interface for Controllers
- *
- * @package Cundd\PersistentObjectStore\Server\Controller
  */
 interface ControllerInterface
 {
@@ -23,25 +16,23 @@ interface ControllerInterface
      * Initialize the Controller instance
      *
      * This method will be called first in the request handling
-     *
-     * @return void
      */
-    public function initialize();
+    public function initialize(): void;
 
     /**
      * Sets the Request Info for the current request
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return $this
      */
-    public function setRequest(Request $request);
+    public function setRequest(RequestInterface $request): ControllerInterface;
 
     /**
      * Returns the current Request Info instance
      *
-     * @return Request
+     * @return RequestInterface
      */
-    public function getRequest();
+    public function getRequest(): ?RequestInterface;
 
     /**
      * Unset the Request Info instance after the request has been processed
@@ -50,7 +41,7 @@ interface ControllerInterface
      *
      * @return void
      */
-    public function unsetRequest();
+    public function unsetRequest(): void;
 
     /**
      * Will be invoked before the actual action method is called but after the Request Info has been set
@@ -58,7 +49,7 @@ interface ControllerInterface
      * @param string $action
      * @return void
      */
-    public function willInvokeAction($action);
+    public function willInvokeAction(string $action): void;
 
     /**
      * Will be invoked after the actual action method is called
@@ -66,16 +57,16 @@ interface ControllerInterface
      * @param string                    $action
      * @param ControllerResultInterface $result
      */
-    public function didInvokeAction($action, ControllerResultInterface $result);
+    public function didInvokeAction(string $action, ControllerResultInterface $result);
 
     /**
      * Process the given request
      *
      * The result output is returned by altering the given response.
      *
-     * @param Request                          $request
+     * @param RequestInterface                 $request
      * @param WritableStreamInterface|Response $response The response, modified by this handler
      * @return mixed Returns the result of the processing
      */
-    public function processRequest(Request $request, WritableStreamInterface $response);
+    public function processRequest(RequestInterface $request, WritableStreamInterface $response);
 }

@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 06.02.15
- * Time: 21:20
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Index;
 
 /**
  * Trait for Indexable
- *
- * @package Cundd\PersistentObjectStore\Index
  */
 trait IndexableTrait
 {
@@ -20,7 +13,7 @@ trait IndexableTrait
      *
      * @var IndexInterface[]
      */
-    protected $indexes = array();
+    protected $indexes = [];
 
     /**
      * Queries the registered Indexes for the given value and property
@@ -40,7 +33,7 @@ trait IndexableTrait
         }
 
         // Loop through each of the Indexes
-        $i            = 0;
+        $i = 0;
         $indexesCount = count($this->indexes);
 
         do {
@@ -54,13 +47,15 @@ trait IndexableTrait
                 if ($indexLookupResult === IndexInterface::NOT_FOUND) {
                     return IndexInterface::NOT_FOUND;
                 }
-                $resultCollection = array();
+                $resultCollection = [];
                 foreach ($indexLookupResult as $currentIndexLookupResult) {
                     $resultCollection[] = $this->getObjectDataForIndex($currentIndexLookupResult);
                 }
+
                 return $resultCollection;
             }
         } while (++$i < $indexesCount);
+
         return IndexInterface::NO_RESULT;
     }
 
@@ -85,9 +80,9 @@ trait IndexableTrait
      */
     public function getIndexesForValueOfProperty($value, $property)
     {
-        $i               = 0;
-        $matchingIndexes = array();
-        $indexesCount    = count($this->indexes);
+        $i = 0;
+        $matchingIndexes = [];
+        $indexesCount = count($this->indexes);
         do {
             $indexInstance = $this->indexes[$i];
             // If the Index can look up the given value and the Index manages the ID property add it to the result
@@ -95,6 +90,7 @@ trait IndexableTrait
                 $matchingIndexes[] = $indexInstance;
             }
         } while (++$i < $indexesCount);
+
         return $matchingIndexes;
     }
 

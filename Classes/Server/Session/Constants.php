@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 06.04.15
- * Time: 17:41
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Session;
 
 /**
  * Constants for sessions
- *
- * @package Cundd\PersistentObjectStore\Server\Session
  */
 interface Constants
 {

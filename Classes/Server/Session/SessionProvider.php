@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 04.04.15
- * Time: 13:45
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Session;
 
@@ -16,8 +11,6 @@ use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 
 /**
  * Session instance
- *
- * @package Cundd\PersistentObjectStore\Server\Session
  */
 class SessionProvider implements SessionProviderInterface
 {
@@ -31,17 +24,11 @@ class SessionProvider implements SessionProviderInterface
      */
     const MEMORY_MANAGER_TAG = 'session';
 
-    /**
-     * Create (start) a new session
-     *
-     * @param string $sessionId Optional session ID to use. If none is given it will be generated
-     * @return SessionInterface
-     */
-    public function create($sessionId = null)
+    public function create($sessionId = null): SessionInterface
     {
         if (!$sessionId) {
             $sessionId = $this->generateSessionId();
-        } elseif($this->load($sessionId)) {
+        } elseif ($this->load((string)$sessionId)) {
             throw new InvalidSessionIdentifierException(
                 sprintf('Session with identifier %s already exists', $sessionId),
                 1428151672
@@ -49,7 +36,8 @@ class SessionProvider implements SessionProviderInterface
         }
 
         $session = new Session($sessionId);
-        Manager::registerObject($session, self::MEMORY_MANAGER_KEY_PREFIX . $sessionId, array(self::MEMORY_MANAGER_TAG));
+        Manager::registerObject($session, self::MEMORY_MANAGER_KEY_PREFIX . $sessionId, [self::MEMORY_MANAGER_TAG]);
+
         return $session;
     }
 
@@ -59,13 +47,17 @@ class SessionProvider implements SessionProviderInterface
      * @param string $sessionId
      * @return SessionInterface|null
      */
-    public function load($sessionId)
+    public function load(string $sessionId): ?SessionInterface
     {
         $memoryManagerKey = self::MEMORY_MANAGER_KEY_PREFIX . $sessionId;
         if (!Manager::hasObject($memoryManagerKey)) {
             return null;
         }
-        return Manager::getObject($memoryManagerKey);
+
+        /** @var SessionInterface $session */
+        $session = Manager::getObject($memoryManagerKey);
+
+        return $session;
     }
 
     /**
@@ -74,7 +66,7 @@ class SessionProvider implements SessionProviderInterface
      * @param RequestInterface $request
      * @return SessionInterface|null
      */
-    public function loadForRequest(RequestInterface $request)
+    public function loadForRequest(RequestInterface $request):?SessionInterface
     {
         $cookie = $request->getCookie(Constants::SESSION_ID_COOKIE_NAME);
         if (!$cookie) {
@@ -82,6 +74,7 @@ class SessionProvider implements SessionProviderInterface
         }
 
         $sessionId = $cookie->getValue();
+
         return $this->load($sessionId);
     }
 
@@ -90,11 +83,12 @@ class SessionProvider implements SessionProviderInterface
      *
      * @return string
      */
-    protected function generateSessionId()
+    protected function generateSessionId(): string
     {
         if (!is_callable('openssl_random_pseudo_bytes')) {
             throw new MissingExtensionException('OpenSSL is not enabled', 1428151048);
         }
+
         return bin2hex(openssl_random_pseudo_bytes(24));
     }
 }

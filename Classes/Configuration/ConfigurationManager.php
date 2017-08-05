@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 25.08.14
- * Time: 22:00
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Configuration;
 
@@ -16,8 +11,6 @@ use Symfony\Component\Process\PhpExecutableFinder;
 
 /**
  * Configuration Manager class
- *
- * @package Cundd\PersistentObjectStore\Configuration
  */
 class ConfigurationManager implements ConfigurationManagerInterface
 {
@@ -38,8 +31,10 @@ class ConfigurationManager implements ConfigurationManagerInterface
     public function __construct()
     {
         $configurationReader = new ConfigurationReader();
-        $this->configuration = array_replace_recursive($this->getDefaults(),
-            $configurationReader->readConfigurationFiles());
+        $this->configuration = array_replace_recursive(
+            $this->getDefaults(),
+            $configurationReader->readConfigurationFiles()
+        );
 
         self::$sharedInstance = $this;
     }
@@ -49,13 +44,13 @@ class ConfigurationManager implements ConfigurationManagerInterface
      *
      * @return array
      */
-    public function getDefaults()
+    public function getDefaults(): array
     {
-        $basePath         = $this->getBasePath();
-        $varPath          = $basePath . 'var/';
+        $basePath = $this->getBasePath();
+        $varPath = $basePath . 'var/';
         $installationPath = $this->getInstallationPath();
 
-        return array(
+        return [
             'basePath'         => $basePath,
             'binPath'          => $installationPath . 'bin/',
             'phpBinPath'       => $this->getPhpBinaryPath(),
@@ -69,8 +64,8 @@ class ConfigurationManager implements ConfigurationManagerInterface
             'tempPath'         => $varPath . 'Temp/',
             'rescuePath'       => $varPath . 'Rescue/',
             'logLevel'         => Logger::INFO,
-            'serverMode'       => ServerInterface::SERVER_MODE_NOT_RUNNING
-        );
+            'serverMode'       => ServerInterface::SERVER_MODE_NOT_RUNNING,
+        ];
     }
 
     /**
@@ -78,7 +73,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
      *
      * @return string
      */
-    public function getBasePath()
+    public function getBasePath(): string
     {
         static $basePath;
         if (!$basePath) {
@@ -96,7 +91,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
      *
      * @return string
      */
-    public function getInstallationPath()
+    public function getInstallationPath(): string
     {
         static $installPath;
         if (!$installPath) {
@@ -111,9 +106,10 @@ class ConfigurationManager implements ConfigurationManagerInterface
      *
      * @return string
      */
-    public function getPhpBinaryPath()
+    public function getPhpBinaryPath(): string
     {
         $finder = new PhpExecutableFinder();
+
         return $finder->find();
     }
 
@@ -122,7 +118,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
      *
      * @return ConfigurationManagerInterface
      */
-    public static function getSharedInstance()
+    public static function getSharedInstance(): ConfigurationManagerInterface
     {
         if (!self::$sharedInstance) {
             new static();
@@ -137,7 +133,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
      * @param string $keyPath
      * @return mixed
      */
-    public function getConfigurationForKeyPath($keyPath)
+    public function getConfigurationForKeyPath(string $keyPath)
     {
         return ObjectUtility::valueForKeyPathOfObject($keyPath, $this->configuration);
     }
@@ -147,9 +143,9 @@ class ConfigurationManager implements ConfigurationManagerInterface
      *
      * @param string $keyPath
      * @param mixed  $value
-     * @return $this
+     * @return ConfigurationManagerInterface
      */
-    public function setConfigurationForKeyPath($keyPath, $value)
+    public function setConfigurationForKeyPath(string $keyPath, $value): ConfigurationManagerInterface
     {
         if (strpos($keyPath, '.') !== false) {
             throw new RuntimeException('Dot notation is currently not supported');
@@ -158,15 +154,4 @@ class ConfigurationManager implements ConfigurationManagerInterface
 
         return $this;
     }
-
-    /**
-     * Returns the map from events to classes and methods
-     *
-     * @return array
-     */
-    protected function getEventToClassMap()
-    {
-
-    }
-
 }

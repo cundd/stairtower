@@ -1,24 +1,19 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 20:10
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
 use Cundd\PersistentObjectStore\Domain\Model\Database;
+use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseStateInterface;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
 
 /**
  * Class to read data from it's source
- *
- * @package Cundd\PersistentObjectStore\DataAccess
  */
 class Reader
 {
@@ -38,16 +33,17 @@ class Reader
      *
      * @param string $databaseIdentifier
      * @param int    $memoryUsage Amount of memory used to load the data
-     * @return Database
+     * @return DatabaseInterface
      */
-    public function loadDatabase($databaseIdentifier, &$memoryUsage = null)
+    public function loadDatabase(string $databaseIdentifier, &$memoryUsage = null): DatabaseInterface
     {
-        $memoryUsage        = memory_get_usage(true);
-        $database           = new Database($databaseIdentifier);
-        $dataCollection     = $this->_loadDataCollection($databaseIdentifier);
-        $metaDataCollection = $this->_loadMetaDataCollection($databaseIdentifier);
-        $this->_fillDatabaseWithData($database, $dataCollection, $metaDataCollection);
+        $memoryUsage = memory_get_usage(true);
+        $database = new Database($databaseIdentifier);
+        $dataCollection = $this->loadDataCollection($databaseIdentifier);
+        $metaDataCollection = $this->loadMetaDataCollection($databaseIdentifier);
+        $this->fillDatabaseWithData($database, $dataCollection, $metaDataCollection);
         $memoryUsage = memory_get_usage(true) - $memoryUsage;
+
         return $database;
     }
 
@@ -58,9 +54,11 @@ class Reader
      * @return array
      * @throws ReaderException if the database could not be found
      */
-    protected function _loadDataCollection($databaseIdentifier)
+    protected function loadDataCollection(string $databaseIdentifier)
     {
-        $path  = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.json';
+        $path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
+                'dataPath'
+            ) . $databaseIdentifier . '.json';
         $error = null;
         $this->databaseExists($databaseIdentifier, $error);
         if ($error instanceof ReaderException) {
@@ -75,13 +73,14 @@ class Reader
         $fileData = file_get_contents($path);
         $lock->unlock();
 //		DebugUtility::printMemorySample();
-        $serializer     = new JsonSerializer();
+        $serializer = new JsonSerializer();
         $dataCollection = $serializer->unserialize($fileData);
 //		DebugUtility::printMemorySample();
 
         if ($dataCollection === null) {
-            return array();
+            return [];
         }
+
         return $dataCollection;
     }
 
@@ -92,15 +91,18 @@ class Reader
      * @param ReaderException $error              Reference to be filled with an exception describing the error if the database could not be read
      * @return bool
      */
-    public function databaseExists($databaseIdentifier, &$error = null)
+    public function databaseExists(string $databaseIdentifier, &$error = null): bool
     {
-        $path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.json';
+        $path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath')
+            . $databaseIdentifier . '.json';
         if (!file_exists($path)) {
             $error = new ReaderException("Database with name '$databaseIdentifier' not found", 1408127629);
+
             return false;
         }
         if (!is_readable($path)) {
             $error = new ReaderException("Database with name '$databaseIdentifier' is not readable", 1412509416);
+
             return false;
         }
         //if (filesize($path) === 0) {
@@ -115,17 +117,26 @@ class Reader
      *
      * @return string[]
      */
-    public function listPersistedDatabases()
+    public function listPersistedDatabases(): array
     {
-        $foundDatabases = glob(ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . '*.json',
-            GLOB_MARK);
-        $foundDatabases = array_filter($foundDatabases, function ($item) {
-            return substr($item, -1) !== DIRECTORY_SEPARATOR;
-        });
-        $foundDatabases = array_map(function ($item) {
-            // Get the basename and strip '.json'
-            return substr(basename($item), 0, -5);
-        }, $foundDatabases);
+        $foundDatabases = glob(
+            ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . '*.json',
+            GLOB_MARK
+        );
+        $foundDatabases = array_filter(
+            $foundDatabases,
+            function ($item) {
+                return substr($item, -1) !== DIRECTORY_SEPARATOR;
+            }
+        );
+        $foundDatabases = array_map(
+            function ($item) {
+                // Get the basename and strip '.json'
+                return substr(basename($item), 0, -5);
+            },
+            $foundDatabases
+        );
+
         return $foundDatabases;
     }
 
@@ -135,11 +146,12 @@ class Reader
      * @param string $databaseIdentifier
      * @return array
      */
-    protected function _loadMetaDataCollection($databaseIdentifier)
+    protected function loadMetaDataCollection(string $databaseIdentifier)
     {
-        $path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.meta.json';
+        $path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath')
+            . $databaseIdentifier . '.meta.json';
         if (!file_exists($path)) {
-            return array();
+            return [];
         }
 
         $lock = Factory::createLock($databaseIdentifier);
@@ -147,8 +159,9 @@ class Reader
         $fileData = file_get_contents($path);
         $lock->unlock();
 //		DebugUtility::printMemorySample();
-        $serializer     = new JsonSerializer();
+        $serializer = new JsonSerializer();
         $dataCollection = $serializer->unserialize($fileData);
+
 //		DebugUtility::printMemorySample();
 
         return $dataCollection;
@@ -157,12 +170,15 @@ class Reader
     /**
      * Fills the database with the given data
      *
-     * @param Database $database
-     * @param          array <Document> $data
-     * @param          array <Document> $metaData
+     * @param Database            $database
+     * @param DocumentInterface[] $dataCollection
+     * @param DocumentInterface[] $metaDataCollection
      */
-    protected function _fillDatabaseWithData($database, $dataCollection, $metaDataCollection)
-    {
+    protected function fillDatabaseWithData(
+        Database $database,
+        array $dataCollection,
+        array $metaDataCollection
+    ) {
         $database->setRawData($dataCollection);
         $database->setState(DatabaseStateInterface::STATE_CLEAN);
     }

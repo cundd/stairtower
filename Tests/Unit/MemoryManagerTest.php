@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 18.10.14
- * Time: 13:39
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore;
 
@@ -14,8 +9,6 @@ use stdClass;
 
 /**
  * MemoryManager tests
- *
- * @package Cundd\PersistentObjectStore
  */
 class MemoryManagerTest extends AbstractCase
 {
@@ -24,13 +17,13 @@ class MemoryManagerTest extends AbstractCase
      */
     public function registerObjectTest()
     {
-        $object     = new Document(array('email' => 'info@cundd.net'));
+        $object = new Document(['email' => 'info@cundd.net']);
         $identifier = 'my-identifier';
         Manager::registerObject($object, $identifier);
         $this->assertTrue(Manager::hasObject($identifier));
         $this->assertSame($object, Manager::getObject($identifier));
 
-        $object     = new stdClass();
+        $object = new stdClass();
         $identifier = 'my-identifier-2';
         Manager::registerObject($object, $identifier);
         $this->assertTrue(Manager::hasObject($identifier));
@@ -46,13 +39,13 @@ class MemoryManagerTest extends AbstractCase
         $this->assertFalse(Manager::hasObject($identifier));
         $this->assertFalse(Manager::getObject($identifier));
 
-        $object     = new Document(array('email' => 'info@cundd.net'));
+        $object = new Document(['email' => 'info@cundd.net']);
         $identifier = 'my-identifier';
         Manager::registerObject($object, $identifier);
         $this->assertTrue(Manager::hasObject($identifier));
         $this->assertSame($object, Manager::getObject($identifier));
 
-        $object     = new stdClass();
+        $object = new stdClass();
         $identifier = 'my-identifier-2';
         Manager::registerObject($object, $identifier);
         $this->assertTrue(Manager::hasObject($identifier));
@@ -92,19 +85,19 @@ class MemoryManagerTest extends AbstractCase
      */
     protected function createBigData($identifier1, $identifier2, $identifier3)
     {
-        $object = new Document(array('email' => 'info@cundd.net'));
-        Manager::registerObject($object, $identifier1, array('tag1', 'tag2'));
+        $object = new Document(['email' => 'info@cundd.net']);
+        Manager::registerObject($object, $identifier1, ['tag1', 'tag2']);
         $this->assertTrue(Manager::hasObject($identifier1));
         $this->assertSame($object, Manager::getObject($identifier1));
 
-        $object       = new stdClass();
+        $object = new stdClass();
         $object->data = file_get_contents($this->checkPersonFile());
-        Manager::registerObject($object, $identifier2, array('tag1', 'tag2', 'tag3'));
+        Manager::registerObject($object, $identifier2, ['tag1', 'tag2', 'tag3']);
         $this->assertTrue(Manager::hasObject($identifier2));
         $this->assertSame($object, Manager::getObject($identifier2));
 
         $object = new stdClass();
-        Manager::registerObject($object, $identifier3, array('tag2', 'tag3'));
+        Manager::registerObject($object, $identifier3, ['tag2', 'tag3']);
         $this->assertTrue(Manager::hasObject($identifier3));
         $this->assertSame($object, Manager::getObject($identifier3));
     }
@@ -124,20 +117,20 @@ class MemoryManagerTest extends AbstractCase
      */
     public function getIdentifiersByTagTest()
     {
-        $object1     = new stdClass();
+        $object1 = new stdClass();
         $identifier1 = 'my-identifier';
-        Manager::registerObject($object1, $identifier1, array('tag1', 'tag2'));
+        Manager::registerObject($object1, $identifier1, ['tag1', 'tag2']);
 
-        $object2     = new stdClass();
+        $object2 = new stdClass();
         $identifier2 = 'my-identifier-2';
-        Manager::registerObject($object2, $identifier2, array('tag1', 'tag2', 'tag3'));
+        Manager::registerObject($object2, $identifier2, ['tag1', 'tag2', 'tag3']);
 
-        $object3     = new stdClass();
+        $object3 = new stdClass();
         $identifier3 = 'my-identifier-3';
-        Manager::registerObject($object3, $identifier3, array('tag2', 'tag3'));
+        Manager::registerObject($object3, $identifier3, ['tag2', 'tag3']);
 
         $identifiers = Manager::getIdentifiersByTag('tag1');
-        $this->assertSame(array($identifier1, $identifier2), $identifiers);
+        $this->assertSame([$identifier1, $identifier2], $identifiers);
     }
 
     /**
@@ -162,23 +155,26 @@ class MemoryManagerTest extends AbstractCase
      */
     public function getObjectsByTagTest()
     {
-        $object1     = new stdClass();
+        $object1 = new stdClass();
         $identifier1 = 'my-identifier';
-        Manager::registerObject($object1, $identifier1, array('tag1', 'tag2'));
+        Manager::registerObject($object1, $identifier1, ['tag1', 'tag2']);
 
-        $object2     = new stdClass();
+        $object2 = new stdClass();
         $identifier2 = 'my-identifier-2';
-        Manager::registerObject($object2, $identifier2, array('tag1', 'tag2', 'tag3'));
+        Manager::registerObject($object2, $identifier2, ['tag1', 'tag2', 'tag3']);
 
-        $object3     = new stdClass();
+        $object3 = new stdClass();
         $identifier3 = 'my-identifier-3';
-        Manager::registerObject($object3, $identifier3, array('tag2', 'tag3'));
+        Manager::registerObject($object3, $identifier3, ['tag2', 'tag3']);
 
         $objects = Manager::getObjectsByTag('tag1');
-        $this->assertSame(array(
-            $identifier1 => $object1,
-            $identifier2 => $object2
-        ), $objects);
+        $this->assertSame(
+            [
+                $identifier1 => $object1,
+                $identifier2 => $object2,
+            ],
+            $objects
+        );
     }
 
     /**
@@ -208,6 +204,7 @@ class MemoryManagerTest extends AbstractCase
 
     /**
      * @test
+     * @doesNotPerformAssertions
      */
     public function cleanupTest()
     {

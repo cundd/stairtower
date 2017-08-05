@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 27.01.15
- * Time: 20:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 
 /**
  * Interface for UriBuilder instances
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
 interface UriBuilderInterface
 {

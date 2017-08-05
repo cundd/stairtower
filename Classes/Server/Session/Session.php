@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 04.04.15
- * Time: 13:45
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Session;
 
@@ -17,8 +12,6 @@ use Cundd\PersistentObjectStore\Utility\ObjectUtility;
 
 /**
  * Session instance
- *
- * @package Cundd\PersistentObjectStore\Server\Session
  */
 class Session implements SessionInterface
 {
@@ -42,10 +35,10 @@ class Session implements SessionInterface
      * @param string $identifier
      * @param array  $data
      */
-    function __construct($identifier = null, $data = array())
+    function __construct($identifier = null, $data = [])
     {
         $this->identifier = $identifier ?: $this->generateSessionId();
-        $this->data       = $data;
+        $this->data = $data;
     }
 
     /**

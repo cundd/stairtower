@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 14.09.14
- * Time: 16:29
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter;
 
@@ -17,8 +12,6 @@ use stdClass;
 
 /**
  * Tests for different comparisons
- *
- * @package Cundd\PersistentObjectStore\Filter
  */
 class ComparisonTest extends AbstractCase
 {
@@ -32,9 +25,9 @@ class ComparisonTest extends AbstractCase
      */
     public function equalToTest()
     {
-        $propertyKey      = 'name';
-        $testValue        = 'Daniel';
-        $testObject       = new stdClass();
+        $propertyKey = 'name';
+        $testValue = 'Daniel';
+        $testObject = new stdClass();
         $testObject->name = 'Daniel';
 
         $this->fixture = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_EQUAL_TO, $testValue);
@@ -49,12 +42,14 @@ class ComparisonTest extends AbstractCase
      */
     public function notEqualToTest()
     {
-        $propertyKey      = 'name';
-        $testValue        = 'Bob';
-        $testObject       = new stdClass();
+        $propertyKey = 'name';
+        $testValue = 'Bob';
+        $testObject = new stdClass();
         $testObject->name = 'Daniel';
-        $this->fixture    = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_NOT_EQUAL_TO,
-            $testValue);
+        $this->fixture = new PropertyComparison(
+            $propertyKey, PropertyComparisonInterface::TYPE_NOT_EQUAL_TO,
+            $testValue
+        );
         $this->assertTrue($this->fixture->perform($testObject));
 
         $testObject->name = 'Bob';
@@ -66,12 +61,14 @@ class ComparisonTest extends AbstractCase
      */
     public function lessThanTest()
     {
-        $propertyKey        = 'number';
-        $testValue          = 2;
-        $testObject         = new stdClass();
+        $propertyKey = 'number';
+        $testValue = 2;
+        $testObject = new stdClass();
         $testObject->number = 1;
-        $this->fixture      = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_LESS_THAN,
-            $testValue);
+        $this->fixture = new PropertyComparison(
+            $propertyKey, PropertyComparisonInterface::TYPE_LESS_THAN,
+            $testValue
+        );
         $this->assertTrue($this->fixture->perform($testObject));
 
         $testObject->number = 2;
@@ -83,12 +80,14 @@ class ComparisonTest extends AbstractCase
      */
     public function lessThanOrEqualToTest()
     {
-        $propertyKey        = 'number';
-        $testValue          = 2;
-        $testObject         = new stdClass();
+        $propertyKey = 'number';
+        $testValue = 2;
+        $testObject = new stdClass();
         $testObject->number = 1;
-        $this->fixture      = new PropertyComparison($propertyKey,
-            PropertyComparisonInterface::TYPE_LESS_THAN_OR_EQUAL_TO, $testValue);
+        $this->fixture = new PropertyComparison(
+            $propertyKey,
+            PropertyComparisonInterface::TYPE_LESS_THAN_OR_EQUAL_TO, $testValue
+        );
         $this->assertTrue($this->fixture->perform($testObject));
 
         $testObject->number = 2;
@@ -103,12 +102,14 @@ class ComparisonTest extends AbstractCase
      */
     public function greaterThanTest()
     {
-        $propertyKey        = 'number';
-        $testValue          = 2;
-        $testObject         = new stdClass();
+        $propertyKey = 'number';
+        $testValue = 2;
+        $testObject = new stdClass();
         $testObject->number = 10;
-        $this->fixture      = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_GREATER_THAN,
-            $testValue);
+        $this->fixture = new PropertyComparison(
+            $propertyKey, PropertyComparisonInterface::TYPE_GREATER_THAN,
+            $testValue
+        );
         $this->assertTrue($this->fixture->perform($testObject));
 
         $testObject->number = 2;
@@ -123,12 +124,14 @@ class ComparisonTest extends AbstractCase
      */
     public function greaterThanOrEqualToTest()
     {
-        $propertyKey        = 'number';
-        $testValue          = 2;
-        $testObject         = new stdClass();
+        $propertyKey = 'number';
+        $testValue = 2;
+        $testObject = new stdClass();
         $testObject->number = 10;
-        $this->fixture      = new PropertyComparison($propertyKey,
-            PropertyComparisonInterface::TYPE_GREATER_THAN_OR_EQUAL_TO, $testValue);
+        $this->fixture = new PropertyComparison(
+            $propertyKey,
+            PropertyComparisonInterface::TYPE_GREATER_THAN_OR_EQUAL_TO, $testValue
+        );
         $this->assertTrue($this->fixture->perform($testObject));
 
         $testObject->number = 2;
@@ -143,11 +146,11 @@ class ComparisonTest extends AbstractCase
      */
     public function likeTest()
     {
-        $propertyKey      = 'name';
-        $testValue        = 'Daniel';
-        $testObject       = new stdClass();
+        $propertyKey = 'name';
+        $testValue = 'Daniel';
+        $testObject = new stdClass();
         $testObject->name = 'Daniel';
-        $this->fixture    = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_LIKE, $testValue);
+        $this->fixture = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_LIKE, $testValue);
         $this->assertTrue($this->fixture->perform($testObject));
     }
 
@@ -156,12 +159,14 @@ class ComparisonTest extends AbstractCase
      */
     public function containsTest()
     {
-        $propertyKey      = 'name';
-        $testValue        = 'Daniel';
-        $testObject       = new stdClass();
+        $propertyKey = 'name';
+        $testValue = 'Daniel';
+        $testObject = new stdClass();
         $testObject->name = 'Daniel';
-        $this->fixture    = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_CONTAINS,
-            $testValue);
+        $this->fixture = new PropertyComparison(
+            $propertyKey, PropertyComparisonInterface::TYPE_CONTAINS,
+            $testValue
+        );
         $this->assertTrue($this->fixture->perform($testObject));
     }
 
@@ -170,11 +175,11 @@ class ComparisonTest extends AbstractCase
      */
     public function inTest()
     {
-        $propertyKey      = 'name';
-        $testValue        = 'Daniel';
-        $testObject       = new stdClass();
+        $propertyKey = 'name';
+        $testValue = 'Daniel';
+        $testObject = new stdClass();
         $testObject->name = 'Daniel';
-        $this->fixture    = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_IN, $testValue);
+        $this->fixture = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_IN, $testValue);
         $this->assertTrue($this->fixture->perform($testObject));
     }
 
@@ -183,11 +188,11 @@ class ComparisonTest extends AbstractCase
      */
     public function isNullTest()
     {
-        $propertyKey      = 'name';
-        $testValue        = 'Daniel';
-        $testObject       = new stdClass();
+        $propertyKey = 'name';
+        $testValue = 'Daniel';
+        $testObject = new stdClass();
         $testObject->name = null;
-        $this->fixture    = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_IS_NULL, $testValue);
+        $this->fixture = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_IS_NULL, $testValue);
         $this->assertTrue($this->fixture->perform($testObject));
     }
 
@@ -196,15 +201,17 @@ class ComparisonTest extends AbstractCase
      */
     public function isEmptyTest()
     {
-        $propertyKey      = 'name';
-        $testValue        = 'Daniel';
-        $testObject       = new stdClass();
+        $propertyKey = 'name';
+        $testValue = 'Daniel';
+        $testObject = new stdClass();
         $testObject->name = '';
-        $this->fixture    = new PropertyComparison($propertyKey, PropertyComparisonInterface::TYPE_IS_EMPTY,
-            $testValue);
+        $this->fixture = new PropertyComparison(
+            $propertyKey, PropertyComparisonInterface::TYPE_IS_EMPTY,
+            $testValue
+        );
         $this->assertTrue($this->fixture->perform($testObject));
 
-        $testObject->name = array();
+        $testObject->name = [];
         $this->assertTrue($this->fixture->perform($testObject));
 
         $testObject->name = null;
@@ -216,8 +223,8 @@ class ComparisonTest extends AbstractCase
      */
     public function andTest()
     {
-        $testObject         = new stdClass();
-        $testObject->name   = 'Yvonne';
+        $testObject = new stdClass();
+        $testObject->name = 'Yvonne';
         $testObject->status = 'Girlfriend';
 
         $this->fixture = new LogicalComparison(
@@ -235,8 +242,8 @@ class ComparisonTest extends AbstractCase
      */
     public function orTest()
     {
-        $testObject         = new stdClass();
-        $testObject->name   = 'Yvonne';
+        $testObject = new stdClass();
+        $testObject->name = 'Yvonne';
         $testObject->status = 'Girlfriend';
 
         $this->fixture = new LogicalComparison(
@@ -250,7 +257,7 @@ class ComparisonTest extends AbstractCase
         $testObject->status = 'Ex';
         $this->assertTrue($this->fixture->perform($testObject));
 
-        $testObject->name   = 'Bob';
+        $testObject->name = 'Bob';
         $testObject->status = 'Son';
         $this->assertFalse($this->fixture->perform($testObject));
     }

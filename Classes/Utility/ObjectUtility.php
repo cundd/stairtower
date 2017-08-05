@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 19.03.14
- * Time: 18:06
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Utility;
 
@@ -13,8 +8,6 @@ use Cundd\PersistentObjectStore\LogicException;
 
 /**
  * Utility class for accessing object properties
- *
- * @package Cundd\PersistentObjectStore\Utilities
  */
 class ObjectUtility
 {
@@ -30,16 +23,18 @@ class ObjectUtility
     public static function setValueForKeyPathOfObject($value, $keyPath, $object, $graceful = false)
     {
         if (!is_string($keyPath)) {
-            throw new LogicException('Given key path is not of type string (maybe arguments are ordered incorrect)',
-                1395484136);
+            throw new LogicException(
+                'Given key path is not of type string (maybe arguments are ordered incorrect)',
+                1395484136
+            );
         }
         if ($keyPath === '') {
             throw new LogicException('Given key path is empty', 1395484137);
         }
 
         $successfullySet = true;
-        $keyPathParts    = explode('.', $keyPath);
-        $key             = array_pop($keyPathParts);
+        $keyPathParts = explode('.', $keyPath);
+        $key = array_pop($keyPathParts);
         if (count($keyPathParts) > 0) {
             $currentValue = static::valueForKeyPathOfObject(implode('.', $keyPathParts), $object);
         } else {
@@ -112,8 +107,8 @@ class ObjectUtility
         }
 
         $pathFullyResolved = true;
-        $currentValue      = $object;
-        $key               = strtok($keyPath, '.');
+        $currentValue = $object;
+        $key = strtok($keyPath, '.');
         do {
             // Current value is an array
             if (is_array($currentValue) && isset($currentValue[$key])) {
@@ -137,11 +132,11 @@ class ObjectUtility
                     $currentValue = $currentValue->$key;
                 } else {
                     $pathFullyResolved = false;
-                    $currentValue      = null;
+                    $currentValue = null;
                 }
             } else {
                 $pathFullyResolved = false;
-                $currentValue      = null;
+                $currentValue = null;
             }
 
             if ($currentValue === null) {
@@ -160,6 +155,7 @@ class ObjectUtility
                 $currentValue = $default;
             }
         }
+
         return $currentValue;
     }
 } 

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.10.14
- * Time: 16:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console;
 
@@ -16,8 +11,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console command to run an interactive session
- *
- * @package Cundd\PersistentObjectStore\Console
  */
 class ConsoleCommand extends Command
 {
@@ -34,15 +27,15 @@ class ConsoleCommand extends Command
      *
      * @var array
      */
-    protected $exitCommands = array('quit', 'exit', '\\q');
+    protected $exitCommands = ['quit', 'exit', '\\q'];
 
     /**
      * @var array
      */
-    protected $aliases = array(
+    protected $aliases = [
         'll' => 'list',
         'h'  => 'help',
-    );
+    ];
 
     /**
      * Configure the command
@@ -98,7 +91,7 @@ class ConsoleCommand extends Command
             }
             $this->$subcommandMethod($output, $arguments);
         } catch (\Exception $exception) {
-            $output->writeln('<error>'.$exception->getMessage().'</error>');
+            $output->writeln('<error>' . $exception->getMessage() . '</error>');
         }
     }
 
@@ -184,8 +177,8 @@ class ConsoleCommand extends Command
     private function getSubCommandMethod($subcommand)
     {
         $availableSubCommands = $this->getAvailableSubCommands();
-        if (in_array($subcommand.'Command', $availableSubCommands)) {
-            return $subcommand.'Command';
+        if (in_array($subcommand . 'Command', $availableSubCommands)) {
+            return $subcommand . 'Command';
         }
 
         if (!isset($this->aliases[$subcommand])) {
@@ -193,8 +186,8 @@ class ConsoleCommand extends Command
         }
 
         $aliasCommand = $this->aliases[$subcommand];
-        if (in_array($aliasCommand.'Command', $availableSubCommands)) {
-            return $aliasCommand.'Command';
+        if (in_array($aliasCommand . 'Command', $availableSubCommands)) {
+            return $aliasCommand . 'Command';
         }
 
         return '';

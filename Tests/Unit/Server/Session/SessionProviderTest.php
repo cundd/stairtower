@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.04.15
- * Time: 10:52
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Session;
 
@@ -14,10 +9,8 @@ use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 
 /**
  * Test class for the Session Provider
- *
- * @package Cundd\PersistentObjectStore\Server\Session
  */
-class SessionProviderTest extends \PHPUnit_Framework_TestCase
+class SessionProviderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var SessionProviderInterface
@@ -36,7 +29,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase
     public function createWithSessionIdTest()
     {
         $sessionId = 'my-session';
-        $session   = $this->fixture->create($sessionId);
+        $session = $this->fixture->create($sessionId);
         $this->assertNotNull($session);
         $this->assertSame($sessionId, $session->getIdentifier());
     }
@@ -48,7 +41,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase
     public function createExistingSessionShouldFailTest()
     {
         $sessionId = 'my-new-session-' . __METHOD__ . time();
-        $session   = $this->fixture->create($sessionId);
+        $session = $this->fixture->create($sessionId);
         $this->assertNotNull($session);
 
         $this->fixture->create($sessionId);
@@ -69,7 +62,7 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function loadTest()
     {
-        $sessionId      = 'my-new-session';
+        $sessionId = 'my-new-session';
         $createdSession = $this->fixture->create($sessionId);
 
 
@@ -92,12 +85,14 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase
      */
     public function loadForRequestTest()
     {
-        $sessionId      = 'my-new-session-' . __METHOD__ . time();
+        $sessionId = 'my-new-session-' . __METHOD__ . time();
         $createdSession = $this->fixture->create($sessionId);
 
 
         /** @var RequestInterface $request */
-        $request = $this->getMockForAbstractClass('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface');
+        $request = $this->getMockForAbstractClass(
+            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface'
+        );
         $request
             ->expects($this->any())
             ->method('getCookie')
@@ -118,7 +113,9 @@ class SessionProviderTest extends \PHPUnit_Framework_TestCase
         $sessionId = 'not-existing-session-' . time();
 
         /** @var RequestInterface $request */
-        $request = $this->getMockForAbstractClass('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface');
+        $request = $this->getMockForAbstractClass(
+            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface'
+        );
         $request
             ->expects($this->any())
             ->method('getCookie')

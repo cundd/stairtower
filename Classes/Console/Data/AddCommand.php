@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.10.14
- * Time: 16:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console\Data;
 
@@ -16,8 +11,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console command to list data
- *
- * @package Cundd\PersistentObjectStore\Console
  */
 class AddCommand extends AbstractDataCommand
 {
@@ -63,11 +56,21 @@ class AddCommand extends AbstractDataCommand
         $this->coordinator->commitDatabase($database);
 
         if ($database->contains($document)) {
-            $output->writeln(sprintf('<info>Object with ID %s was add to database %s</info>', $objectIdentifier,
-                $database->getIdentifier()));
+            $output->writeln(
+                sprintf(
+                    '<info>Object with ID %s was add to database %s</info>',
+                    $objectIdentifier,
+                    $database->getIdentifier()
+                )
+            );
         } else {
-            $output->writeln(sprintf('<info>Object with ID %s could not be add to database %s</info>',
-                $objectIdentifier, $database->getIdentifier()));
+            $output->writeln(
+                sprintf(
+                    '<info>Object with ID %s could not be add to database %s</info>',
+                    $objectIdentifier,
+                    $database->getIdentifier()
+                )
+            );
         }
     }
 } 

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 13.10.14
- * Time: 12:03
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
@@ -15,8 +10,6 @@ use JsonSerializable;
 
 /**
  * Class to describe server statistics
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
 class Statistics implements Immutable, JsonSerializable
 {
@@ -64,11 +57,11 @@ class Statistics implements Immutable, JsonSerializable
      */
     public function __construct($version, $guid, $startTime, $memoryUsage, $memoryPeakUsage)
     {
-        $this->guid            = $guid;
+        $this->guid = $guid;
         $this->memoryPeakUsage = $memoryPeakUsage;
-        $this->memoryUsage     = $memoryUsage;
-        $this->startTime       = $startTime ?: new DateTime();
-        $this->version         = $version;
+        $this->memoryUsage = $memoryUsage;
+        $this->startTime = $startTime ?: new DateTime();
+        $this->version = $version;
     }
 
     /**
@@ -76,15 +69,15 @@ class Statistics implements Immutable, JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        return [
             'version'         => $this->getVersion(),
             'guid'            => $this->getGuid(),
-            'host'   => php_uname('n'),
+            'host'            => php_uname('n'),
             'startTime'       => $this->getStartTime() ? $this->getStartTime()->format('r') : 'undefined',
-            'upTime' => $this->getUpTime() ? $this->getUpTime()->format('%a days %H:%I:%S') : 'undefined',
+            'upTime'          => $this->getUpTime() ? $this->getUpTime()->format('%a days %H:%I:%S') : 'undefined',
             'memoryUsage'     => GeneralUtility::formatBytes($this->getMemoryUsage()),
             'memoryPeakUsage' => GeneralUtility::formatBytes($this->getMemoryPeakUsage()),
-        );
+        ];
     }
 
     /**
@@ -125,6 +118,7 @@ class Statistics implements Immutable, JsonSerializable
     public function getUpTime()
     {
         $now = new DateTime();
+
         return $now->diff($this->getStartTime());
     }
 

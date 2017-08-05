@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11.10.14
- * Time: 13:00
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server;
 
 /**
  * Content types taken from http://en.wikipedia.org/wiki/Internet_media_type#List_of_common_media_types
- *
- * @package Cundd\PersistentObjectStore\Server
  */
 interface ContentType
 {

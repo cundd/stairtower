@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 02.04.15
- * Time: 20:48
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
@@ -12,10 +7,8 @@ use Cundd\PersistentObjectStore\Server\ContentType;
 
 /**
  * Test for Controller Results
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class ControllerResultTest extends \PHPUnit_Framework_TestCase
+class ControllerResultTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ControllerResult
@@ -58,7 +51,7 @@ class ControllerResultTest extends \PHPUnit_Framework_TestCase
     public function getDefaultContentTypeTest()
     {
         $this->fixture = new ControllerResult(200, 'my data');
-        $this->assertSame(ContentType::HTML_TEXT.'; charset=utf-8', $this->fixture->getContentType());
+        $this->assertSame(ContentType::HTML_TEXT . '; charset=utf-8', $this->fixture->getContentType());
     }
 
     /**
@@ -80,9 +73,11 @@ class ControllerResultTest extends \PHPUnit_Framework_TestCase
      */
     public function getHeadersWithoutSetContentTypeTest()
     {
-        $this->fixture = new ControllerResult(200, 'my data', null, [
-            'Content-Type' => 'My content type'
-        ]);
+        $this->fixture = new ControllerResult(
+            200, 'my data', null, [
+                'Content-Type' => 'My content type',
+            ]
+        );
 
         $this->assertInternalType('array', $this->fixture->getHeaders());
         $this->assertArrayHasKey('Content-Type', $this->fixture->getHeaders());

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 01.11.14
- * Time: 10:45
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server;
 
@@ -13,10 +8,8 @@ use Cundd\PersistentObjectStore\Constants;
 
 /**
  * Test for REST commands
- *
- * @package Cundd\PersistentObjectStore\Server
  */
-class RestServerTest extends \PHPUnit_Framework_TestCase
+class RestServerTest extends \PHPUnit\Framework\TestCase
 {
     protected $databaseIdentifier;
     protected $expectedPath;
@@ -26,11 +19,11 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->databaseIdentifier = $databaseIdentifier = 'test-db-'.time();
-        $this->expectedPath       = ConfigurationManager::getSharedInstance()
+        $this->databaseIdentifier = $databaseIdentifier = 'test-db-' . time();
+        $this->expectedPath = ConfigurationManager::getSharedInstance()
                 ->getConfigurationForKeyPath('writeDataPath')
-            .$databaseIdentifier.'.json';
-        $this->expectedPath       = __DIR__.'/../../var/Data/'.$databaseIdentifier.'.json';
+            . $databaseIdentifier . '.json';
+        $this->expectedPath = __DIR__ . '/../../var/Data/' . $databaseIdentifier . '.json';
     }
 
     protected function tearDown()
@@ -41,7 +34,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
         $writeDataPath = ConfigurationManager::getSharedInstance()
                 ->getConfigurationForKeyPath('writeDataPath')
-            .$this->databaseIdentifier.'.json';
+            . $this->databaseIdentifier . '.json';
         if (file_exists($writeDataPath)) {
             unlink($writeDataPath);
         }
@@ -58,28 +51,28 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
         $databaseIdentifier = $this->databaseIdentifier;
 
-        $document1HostName   = 'database01.my-servers.local';
+        $document1HostName = 'database01.my-servers.local';
         $documentIdentifier1 = md5($document1HostName);
 
-        $document2HostName   = 'web01.my-servers.local';
+        $document2HostName = 'web01.my-servers.local';
         $documentIdentifier2 = md5($document2HostName);
 
-        $expectedPath = __DIR__.'/../../var/Data/'.$databaseIdentifier.'.json';
+        $expectedPath = __DIR__ . '/../../var/Data/' . $databaseIdentifier . '.json';
 
-        $testDocument1 = array(
+        $testDocument1 = [
             Constants::DATA_ID_KEY => $documentIdentifier1,
             'host'                 => $document1HostName,
             'name'                 => 'Database 01',
             'ip'                   => '192.168.45.107',
             'os'                   => 'CunddOS',
-        );
-        $testDocument2 = array(
+        ];
+        $testDocument2 = [
             Constants::DATA_ID_KEY => $documentIdentifier2,
             'host'                 => $document2HostName,
             'name'                 => 'Database 02',
             'ip'                   => '192.168.40.127',
             'os'                   => 'CunddOS',
-        );
+        ];
 
         $this->startServer();
 
@@ -161,15 +154,15 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
 
         // Count Documents in that database
-        $response = $this->performRestRequest($databaseIdentifier.'/_count');
+        $response = $this->performRestRequest($databaseIdentifier . '/_count');
         $this->assertNotEmpty($response, 'Could not count the Documents in the Database');
         $this->assertEquals(2, $response['count']);
 
 
         // Update a Document
         $testDocument1['os'] = 'Cundbuntu';
-        $response            = $this->performRestRequest(
-            $databaseIdentifier.'/'.$documentIdentifier1,
+        $response = $this->performRestRequest(
+            $databaseIdentifier . '/' . $documentIdentifier1,
             'PUT',
             $testDocument1
         );
@@ -198,7 +191,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
 
         // Find a Document
-        $response = $this->performRestRequest($databaseIdentifier.'/?os='.$testDocument1['os']);
+        $response = $this->performRestRequest($databaseIdentifier . '/?os=' . $testDocument1['os']);
         $this->assertNotEmpty($response);
         $responseFirstDocument = $response[0];
         $this->assertEquals(
@@ -213,7 +206,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
         // Delete a Document
         $response = $this->performRestRequest(
-            $databaseIdentifier.'/'.$documentIdentifier1,
+            $databaseIdentifier . '/' . $documentIdentifier1,
             'DELETE',
             $testDocument1
         );
@@ -233,7 +226,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
         // Delete a Document
         $response = $this->performRestRequest(
-            $databaseIdentifier.'/'.$documentIdentifier2,
+            $databaseIdentifier . '/' . $documentIdentifier2,
             'DELETE',
             $testDocument1
         );
@@ -244,11 +237,20 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
         // Delete a Document again should fail
         $response = $this->performRestRequest(
-            $databaseIdentifier.'/'.$documentIdentifier2,
+            $databaseIdentifier . '/' . $documentIdentifier2,
             'DELETE',
             $testDocument1
         );
-        $this->assertSame(false, $response);
+        $this->assertSame(
+            [
+                'message' => sprintf(
+                    'Document with identifier "%s" not found in database "%s"',
+                    $documentIdentifier2,
+                    $databaseIdentifier
+                ),
+            ],
+            $response
+        );
 
 
         // List Documents in that database
@@ -264,7 +266,13 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
 
         // The database should not exist anymore
         $response = $this->performRestRequest($databaseIdentifier);
-        $this->assertSame(false, $response, 'Database should not exist anymore');
+        $this->assertSame(
+            [
+                'message' => sprintf('Database with identifier "%s" not found', $databaseIdentifier),
+            ],
+            $response,
+            'Database should not exist anymore'
+        );
 
 
         // Shutdown the server
@@ -304,16 +312,16 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
         // Create Documents
         $i = 0;
         while (++$i < 1000) {
-            $documentHostName   = 'database'.$i.'.my-servers.local';
+            $documentHostName = 'database' . $i . '.my-servers.local';
             $documentIdentifier = md5($documentHostName);
 
-            $testDocument = array(
+            $testDocument = [
                 'id'   => $documentIdentifier,
                 'host' => $documentHostName,
-                'name' => 'Database 0'.$i,
+                'name' => 'Database 0' . $i,
                 'ip'   => '192.168.45.107',
                 'os'   => 'CunddOS',
-            );
+            ];
 
             $response = $this->performRestRequest($databaseIdentifier, 'POST', $testDocument);
             $this->assertEquals($testDocument['name'], $response['name']);
@@ -321,7 +329,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($testDocument['ip'], $response['ip']);
             $this->assertEquals($testDocument['os'], $response['os']);
 
-            $response = $this->performRestRequest($databaseIdentifier.'/'.$documentIdentifier, 'GET');
+            $response = $this->performRestRequest($databaseIdentifier . '/' . $documentIdentifier, 'GET');
             $this->assertTrue($response !== false);
             $this->assertEquals($testDocument['id'], $response['id']);
         }
@@ -351,22 +359,22 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
      *
      * @return mixed|string
      */
-    protected function performRestRequest($request, $method = 'GET', $arguments = array(), $jsonContent = false)
+    protected function performRestRequest($request, $method = 'GET', $arguments = [], $jsonContent = false)
     {
         $url = sprintf('http://127.0.0.1:%d/%s', $this->portForTestServer, $request);
 
         if ($jsonContent) {
-            $content     = json_encode($jsonContent);
+            $content = json_encode($jsonContent);
             $contentType = 'application/json';
         } else {
-            $content     = http_build_query($arguments);
+            $content = http_build_query($arguments);
             $contentType = 'application/x-www-form-urlencoded';
         }
 
-        $headers = array(
-            'Content-Type: '.$contentType,
-            'Content-Length: '.strlen($content),
-        );
+        $headers = [
+            'Content-Type: ' . $contentType,
+            'Content-Length: ' . strlen($content),
+        ];
 
         //printf('Request %s %d %s' . PHP_EOL, $method, strlen($content), $url);
 
@@ -388,7 +396,7 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
      *
      * @return mixed
      */
-    protected function performRestRequestCurl($request, $method = 'GET', $headers = array(), $content = '')
+    protected function performRestRequestCurl($request, $method = 'GET', $headers = [], $content = '')
     {
         $ch = curl_init($request);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
@@ -417,16 +425,16 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
      *
      * @return mixed
      */
-    protected function performRestRequestFopen($request, $method = 'GET', $headers = array(), $content = '')
+    protected function performRestRequestFopen($request, $method = 'GET', $headers = [], $content = '')
     {
-        $options  = array(
-            'http' => array(
+        $options = [
+            'http' => [
                 'header'  => implode("\r\n", $headers),
                 'method'  => $method,
                 'content' => $content,
-            ),
-        );
-        $context  = stream_context_create($options);
+            ],
+        ];
+        $context = stream_context_create($options);
         $response = @file_get_contents($request, false, $context);
         if ($response) {
             return json_decode($response, true);
@@ -444,17 +452,17 @@ class RestServerTest extends \PHPUnit_Framework_TestCase
     {
         // Start the server
         $configurationManager = ConfigurationManager::getSharedInstance();
-        $serverBinPath        = $configurationManager->getConfigurationForKeyPath('binPath').'server';
-        $phpBinPath           = $configurationManager->getConfigurationForKeyPath('phpBinPath');
-        $phpIniFile           = php_ini_loaded_file();
-        $commandParts         = array(
+        $serverBinPath = $configurationManager->getConfigurationForKeyPath('binPath') . 'server';
+        $phpBinPath = $configurationManager->getConfigurationForKeyPath('phpBinPath');
+        $phpIniFile = php_ini_loaded_file();
+        $commandParts = [
             $phpBinPath,
-            $phpIniFile ? '-c'.$phpIniFile : '',
+            $phpIniFile ? '-c' . $phpIniFile : '',
             escapeshellcmd(sprintf('"%s"', $serverBinPath)),
             sprintf('--port=%d', $this->portForTestServer),
-        );
+        ];
         if ($autoShutdownTime > -1) {
-            $commandParts[] = '--test='.$autoShutdownTime; // Run the server in test mode
+            $commandParts[] = '--test=' . $autoShutdownTime; // Run the server in test mode
         }
         $commandParts[] = '> /dev/null &'; // Run the server in the background
 

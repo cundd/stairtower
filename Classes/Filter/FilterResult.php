@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 04.09.14
- * Time: 21:01
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Filter;
 
@@ -25,8 +20,6 @@ use SplFixedArray;
 
 /**
  * Result of a filtered collection
- *
- * @package Cundd\PersistentObjectStore\Filter
  */
 class FilterResult extends IndexArray implements FilterResultInterface, Immutable
 {
@@ -58,15 +51,16 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      */
     public function __construct($originalCollection, $filter)
     {
+        parent::__construct(null);
         $this->collection = $this->cloneCollection($originalCollection);
-        $this->filter     = $filter;
+        $this->filter = $filter;
     }
 
     /**
      * Creates a deep clone of the given collection
      *
      * @param Database|Iterator $originalCollection
-     * @return \SplObjectStorage
+     * @return \Traversable
      */
     protected function cloneCollection($originalCollection)
     {
@@ -78,7 +72,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
             return clone $originalCollection;
         }
 
-        $i     = 0;
+        $i = 0;
         $count = $originalCollection->count();
         if ($count === 0) {
             return new SplFixedArray();
@@ -97,6 +91,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
             }
         }
         $collection->rewind();
+
         return $collection;
     }
 
@@ -114,9 +109,15 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
             if ($this->length === 0) {
                 throw new IndexOutOfRangeException('Filter has an empty result', 1420043991);
             }
-            throw new IndexOutOfRangeException(sprintf('Current Filter Result index %d is out of range',
-                $this->currentIndex), 1420043992);
+            throw new IndexOutOfRangeException(
+                sprintf(
+                    'Current Filter Result index %d is out of range',
+                    $this->currentIndex
+                ),
+                1420043992
+            );
         }
+
         return parent::current();
     }
 
@@ -144,6 +145,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
             if (!parent::valid()) {
                 return null;
             }
+
             return parent::current();
         }
         $foundObject = null;
@@ -188,6 +190,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
         if ($foundObject) {
             parent::push($foundObject);
         }
+
         return $foundObject;
     }
 
@@ -216,6 +219,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
     public function key()
     {
         $this->initFilteredCollection();
+
         return parent::key();
     }
 
@@ -231,6 +235,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
     {
 //		DebugUtility::var_dump('valid', parent::valid(), parent::valid(), parent::valid());
         $this->initFilteredCollection();
+
         return parent::valid();
     }
 
@@ -261,6 +266,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
         if (!$this->fullyFiltered) {
             $this->findAll();
         }
+
         return parent::count();
     }
 
@@ -281,7 +287,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      * @param Database|\Iterator  $dataCollection      Database instance to filter
      * @param ComparisonInterface $comparison          Filter condition
      * @param bool                $pushMatchesToResult If set to TRUE the matching objects will be added to the result through calling parent::push()
-     * @return SplFixedArray
+     * @return \Traversable
      */
     protected function filterCollectionWithComparison(
         $dataCollection,
@@ -310,7 +316,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
 
         $resultArray = new SplFixedArray($dataCollectionCount);
 
-        $i            = 0;
+        $i = 0;
         $matchesIndex = 0;
         while ($i < $dataCollectionCount) {
             $item = $fixedDataCollection[$i];
@@ -331,6 +337,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
             $i++;
         }
         $resultArray->setSize($matchesIndex);
+
         return SplFixedArray::fromArray($resultArray->toArray());
     }
 
@@ -354,6 +361,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
         if (!$this->fullyFiltered) {
             $this->findAll();
         }
+
         return $this->elements;
     }
 
@@ -427,7 +435,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
     {
         $foundObjects = null;
         if ($comparison instanceof PropertyComparisonInterface) {
-            $comparisonValue    = $comparison->getValue();
+            $comparisonValue = $comparison->getValue();
             $comparisonProperty = $comparison->getProperty();
 
             if ($comparison->getOperator() === ComparisonInterface::TYPE_EQUAL_TO
@@ -443,6 +451,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
                 }
             }
         }
+
         return $foundObjects;
     }
 
@@ -465,6 +474,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
         } else {
             $fixedCollection = new SplFixedArray(0);
         }
+
         return $fixedCollection;
     }
 

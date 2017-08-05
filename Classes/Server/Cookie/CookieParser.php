@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 13.10.14
- * Time: 17:11
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Cookie;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 
 /**
  * Implementation of cookie parsers
- *
- * @package Cundd\PersistentObjectStore\Server\BodyParser
  */
 class CookieParser implements CookieParserInterface
 {
@@ -26,19 +19,19 @@ class CookieParser implements CookieParserInterface
      *
      * @var array
      */
-    protected static $cookieParts = array(
-        'domain' => 'Domain',
-        'path' => 'Path',
-        'max_age' => 'Max-Age',
-        'expires' => 'Expires',
-        'version' => 'Version',
-        'secure' => 'Secure',
-        'port' => 'Port',
-        'discard' => 'Discard',
-        'comment' => 'Comment',
+    protected static $cookieParts = [
+        'domain'      => 'Domain',
+        'path'        => 'Path',
+        'max_age'     => 'Max-Age',
+        'expires'     => 'Expires',
+        'version'     => 'Version',
+        'secure'      => 'Secure',
+        'port'        => 'Port',
+        'discard'     => 'Discard',
+        'comment'     => 'Comment',
         'comment_url' => 'Comment-Url',
-        'http_only' => 'HttpOnly'
-    );
+        'http_only'   => 'HttpOnly',
+    ];
 
     /**
      * Parse the cookie data from the given request and transform it into objects
@@ -72,10 +65,10 @@ class CookieParser implements CookieParserInterface
                 $cookieName,
                 $cookieValue,
                 $parsedCookies['expires'],
-                $parsedCookies['path'],
-                $parsedCookies['domain'],
-                $parsedCookies['secure'],
-                $parsedCookies['http_only']
+                (string)$parsedCookies['path'],
+                (string)$parsedCookies['domain'],
+                (bool)$parsedCookies['secure'],
+                (bool)($parsedCookies['http_only'] ?? false)
             );
         }
 
@@ -89,7 +82,7 @@ class CookieParser implements CookieParserInterface
      * @param string $cookie
      * @param string $host
      * @param string $path
-     * @param bool $decode
+     * @param bool   $decode
      * @return array|bool
      */
     protected function parseCookie($cookie, $host = null, $path = null, $decode = false)
@@ -103,14 +96,17 @@ class CookieParser implements CookieParserInterface
         }
 
         // Create the default return array
-        $data = array_merge(array_fill_keys(array_keys(self::$cookieParts), null), array(
-            'cookies' => array(),
-            'data' => array(),
-            'path' => null,
-            'http_only' => false,
-            'discard' => false,
-            'domain' => $host
-        ));
+        $data = array_merge(
+            array_fill_keys(array_keys(self::$cookieParts), null),
+            [
+                'cookies'   => [],
+                'data'      => [],
+                'path'      => null,
+                'http_only' => false,
+                'discard'   => false,
+                'domain'    => $host,
+            ]
+        );
         $foundNonCookies = 0;
 
         // Add the cookie pieces into the parsed data array

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 03.04.15
- * Time: 19:02
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Cookie;
 
@@ -14,8 +9,6 @@ use stdClass;
 
 /**
  * Test for cookie parsers
- *
- * @package Cundd\PersistentObjectStore\Server\Cookie
  */
 class CookieParserTest extends AbstractCase
 {
@@ -30,7 +23,9 @@ class CookieParserTest extends AbstractCase
     public function parseTest()
     {
         /** @var RequestInterface $request */
-        $request = $this->getMockForAbstractClass('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface');
+        $request = $this->getMockForAbstractClass(
+            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface'
+        );
         $request
             ->expects($this->any())
             ->method('getHeader')

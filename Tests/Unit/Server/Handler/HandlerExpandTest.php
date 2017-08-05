@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 11.10.14
- * Time: 20:18
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
@@ -19,8 +14,6 @@ use React\Http\Request;
 
 /**
  * Handler test
- *
- * @package Cundd\PersistentObjectStore\Server\Handler
  */
 class HandlerExpandTest extends AbstractCase
 {
@@ -45,13 +38,16 @@ class HandlerExpandTest extends AbstractCase
     public function readDatabaseWithExpandTest()
     {
         // Query '$expand=person/contacts/email'
-        $queryString = vsprintf('%s=person%scontacts%semail', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%semail',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -78,14 +74,17 @@ class HandlerExpandTest extends AbstractCase
     public function readDatabaseWithExpandIdTest()
     {
         // Query '$expand=person/contacts/email'
-        $queryString = vsprintf('%s=person%scontacts%s%s', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::DATA_ID_KEY,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%s%s',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::DATA_ID_KEY,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -112,16 +111,19 @@ class HandlerExpandTest extends AbstractCase
     public function readDatabaseWithMoreThanOneExpandsTest()
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
-        $queryString = vsprintf('%s=person%scontacts%semail%sbook%sbook%sisbn_10', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_DELIMITER,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%semail%sbook%sbook%sisbn_10',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_DELIMITER,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -152,14 +154,21 @@ class HandlerExpandTest extends AbstractCase
     public function readDocumentWithExpandTest()
     {
         // Query '$expand=person/contacts/email'
-        $queryString = vsprintf('%s=person%scontacts%semail', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%semail',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
-            $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            new Request(
+                'GET', '/loaned/L1420194884',
+                $query
+            )
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -183,15 +192,22 @@ class HandlerExpandTest extends AbstractCase
     public function readDocumentWithExpandIdTest()
     {
         // Query '$expand=person/contacts/email'
-        $queryString = vsprintf('%s=person%scontacts%s%s', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::DATA_ID_KEY,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%s%s',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::DATA_ID_KEY,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
-            $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            new Request(
+                'GET', '/loaned/L1420194884',
+                $query
+            )
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -215,17 +231,24 @@ class HandlerExpandTest extends AbstractCase
     public function readDocumentWithMoreThanOneExpandsTest()
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
-        $queryString = vsprintf('%s=person%scontacts%semail%sbook%sbook%sisbn_10', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_DELIMITER,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%semail%sbook%sbook%sisbn_10',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_DELIMITER,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
-            $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            new Request(
+                'GET', '/loaned/L1420194884',
+                $query
+            )
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -251,13 +274,16 @@ class HandlerExpandTest extends AbstractCase
     public function readWithSearchAndExpandTest()
     {
         // Query 'title=The Hobbit&$expand=person/contacts/email'
-        $queryString = vsprintf('title=The Hobbit&%s=person%scontacts%semail', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            'title=The Hobbit&%s=person%scontacts%semail',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -276,13 +302,16 @@ class HandlerExpandTest extends AbstractCase
 
 
         // Query '$expand=person/contacts/email&title=The Hobbit'
-        $queryString = vsprintf('%s=person%scontacts%semail&title=The Hobbit', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%semail&title=The Hobbit',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -306,13 +335,16 @@ class HandlerExpandTest extends AbstractCase
     public function readWithEmptyResultSearchAndExpandTest()
     {
         // Query 'firstName=Some-thing-not-existing&$expand=person/contacts/email'
-        $queryString = vsprintf('firstName=Some-thing-not-existing&%s=person%scontacts%semail', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            'firstName=Some-thing-not-existing&%s=person%scontacts%semail',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -328,13 +360,16 @@ class HandlerExpandTest extends AbstractCase
 
 
         // Query 'some-thing-not-existing=Daniel&$expand=person/contacts/email'
-        $queryString = vsprintf('some-thing-not-existing=Daniel&%s=person%scontacts%semail', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            'some-thing-not-existing=Daniel&%s=person%scontacts%semail',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -356,14 +391,17 @@ class HandlerExpandTest extends AbstractCase
     public function readDatabaseWithExpandAndAsPropertyTest()
     {
         // Query '$expand=person/contacts/email'
-        $queryString = vsprintf('%s=person%scontacts%semail%sperson-data', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%semail%sperson-data',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -392,15 +430,18 @@ class HandlerExpandTest extends AbstractCase
     public function readDatabaseWithExpandIdAndAsPropertyTest()
     {
         // Query '$expand=person/contacts/email'
-        $queryString = vsprintf('%s=person%scontacts%s%s%sperson-data', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::DATA_ID_KEY,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%s%s%sperson-data',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::DATA_ID_KEY,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -429,17 +470,20 @@ class HandlerExpandTest extends AbstractCase
     public function readDatabaseWithMoreThanOneExpandsAndAsPropertyTest()
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
-        $queryString = vsprintf('%s=person%scontacts%semail%sperson-data%sbook%sbook%sisbn_10', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_DELIMITER,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%semail%sperson-data%sbook%sbook%sisbn_10',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_DELIMITER,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -472,15 +516,22 @@ class HandlerExpandTest extends AbstractCase
     public function readDocumentWithExpandAndAsPropertyTest()
     {
         // Query '$expand=person/contacts/email'
-        $queryString = vsprintf('%s=person%scontacts%semail%sperson-data', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%semail%sperson-data',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
-            $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            new Request(
+                'GET', '/loaned/L1420194884',
+                $query
+            )
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -505,16 +556,23 @@ class HandlerExpandTest extends AbstractCase
     public function readDocumentWithExpandIdAndAsPropertyTest()
     {
         // Query '$expand=person/contacts/email'
-        $queryString = vsprintf('%s=person%scontacts%s%s%sperson-data', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::DATA_ID_KEY,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%s%s%sperson-data',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::DATA_ID_KEY,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
-            $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            new Request(
+                'GET', '/loaned/L1420194884',
+                $query
+            )
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -539,18 +597,25 @@ class HandlerExpandTest extends AbstractCase
     public function readDocumentWithMoreThanOneExpandsAndAsPropertyTest()
     {
         // Query '$expand=person/contacts/email/-/book/book/isbn_10'
-        $queryString = vsprintf('%s=person%scontacts%semail%sperson-data%sbook%sbook%sisbn_10', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_DELIMITER,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%semail%sperson-data%sbook%sbook%sisbn_10',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_DELIMITER,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/L1420194884',
-            $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            new Request(
+                'GET', '/loaned/L1420194884',
+                $query
+            )
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -577,14 +642,17 @@ class HandlerExpandTest extends AbstractCase
     public function readWithSearchAndExpandAndAsPropertyTest()
     {
         // Query 'title=The Hobbit&$expand=person/contacts/email'
-        $queryString = vsprintf('title=The Hobbit&%s=person%scontacts%semail%sperson-data', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            'title=The Hobbit&%s=person%scontacts%semail%sperson-data',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -604,14 +672,17 @@ class HandlerExpandTest extends AbstractCase
 
 
         // Query '$expand=person/contacts/email&title=The Hobbit'
-        $queryString = vsprintf('%s=person%scontacts%semail%sperson-data&title=The Hobbit', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            '%s=person%scontacts%semail%sperson-data&title=The Hobbit',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -636,14 +707,17 @@ class HandlerExpandTest extends AbstractCase
     public function readWithEmptyResultSearchAndExpandAndAsPropertyTest()
     {
         // Query 'firstName=Some-thing-not-existing&$expand=person/contacts/email'
-        $queryString = vsprintf('firstName=Some-thing-not-existing&%s=person%scontacts%semail%sperson-data', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            'firstName=Some-thing-not-existing&%s=person%scontacts%semail%sperson-data',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -659,14 +733,17 @@ class HandlerExpandTest extends AbstractCase
 
 
         // Query 'some-thing-not-existing=Daniel&$expand=person/contacts/email'
-        $queryString = vsprintf('some-thing-not-existing=Daniel&%s=person%scontacts%semail%sperson-data', [
-            Constants::EXPAND_KEYWORD,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-            Constants::EXPAND_REQUEST_SPLIT_CHAR,
-        ]);
+        $queryString = vsprintf(
+            'some-thing-not-existing=Daniel&%s=person%scontacts%semail%sperson-data',
+            [
+                Constants::EXPAND_KEYWORD,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+                Constants::EXPAND_REQUEST_SPLIT_CHAR,
+            ]
+        );
         parse_str($queryString, $query);
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
@@ -689,16 +766,18 @@ class HandlerExpandTest extends AbstractCase
 
         $diContainer = $this->getDiContainer();
 
-        $this->requestInfoFactory = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory');
-            
-        $server      = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\DummyServer');
+        $this->requestInfoFactory = $diContainer->get(
+            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory'
+        );
+
+        $server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\DummyServer');
         $diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $server);
 
         $coordinator = $diContainer->get('Cundd\\PersistentObjectStore\\DataAccess\\CoordinatorInterface');
 
         $this->setUpXhprof();
 
-        $this->fixture  = $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Server\\Handler\\Handler');
+        $this->fixture = $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Server\\Handler\\Handler');
         $this->database = $coordinator->getDatabase('contacts');
     }
 

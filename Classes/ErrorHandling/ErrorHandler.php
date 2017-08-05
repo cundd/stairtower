@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.02.15
- * Time: 12:09
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\ErrorHandling;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\ErrorException;
 
 /**
  * Error Handler
- *
- * @package Cundd\PersistentObjectStore\ErrorHandling
  */
 class ErrorHandler implements HandlerInterface
 {
@@ -22,18 +15,18 @@ class ErrorHandler implements HandlerInterface
      *
      * @var array
      */
-    protected $errorMessageSignatures = array(
+    protected $errorMessageSignatures = [
         // Exception class name => Signature
         'Object of class %s could not be converted to string'          => 'Cundd\\PersistentObjectStore\\Exception\\StringTransformationException',
         'Argument %d passed to %s must be an instance of %s, %s given' => 'Cundd\\PersistentObjectStore\\Exception\\InvalidArgumentError',
-    );
+    ];
 
     /**
      * Registers the handler
      */
     public function register()
     {
-        set_error_handler(array($this, 'handle'));
+        set_error_handler([$this, 'handle']);
     }
 
     /**
@@ -47,7 +40,7 @@ class ErrorHandler implements HandlerInterface
      * @return bool
      * @throws ErrorException
      */
-    public function handle($errno, $errstr, $errfile = '', $errline = 0, $errcontext = array())
+    public function handle(int $errno, string $errstr, string $errfile = '', int $errline = 0, $errcontext = [])
     {
         if (E_RECOVERABLE_ERROR === $errno) {
             foreach ($this->errorMessageSignatures as $errorMessageSignature => $exceptionClassName) {
@@ -58,6 +51,7 @@ class ErrorHandler implements HandlerInterface
             }
             throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
         }
+
         return false;
     }
 }

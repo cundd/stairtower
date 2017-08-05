@@ -3,16 +3,17 @@
     "description": "A document storage entirely written in PHP",
     "homepage": "http://stairtower.cundd.net",
     "require": {
-        "doctrine/annotations": "^1.2.7",
-        "doctrine/cache": "^1.6.0",
-        "monolog/monolog": "1.17",
+        "php": "^7.1",
+        "doctrine/annotations": "^1.5.0",
+        "doctrine/cache": "^1.7.0",
+        "monolog/monolog": "^1.23",
         "php-di/php-di": "^5.4.0",
-        "react/react": "0.4.2",
-        "symfony/console": "2.6",
-        "symfony/process": "2.6"
+        "react/react": "~0.4.2",
+        "symfony/console": "^3.3.6",
+        "symfony/process": "^3.3.6"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.6.*"
+        "phpunit/phpunit": "^6.3.0"
     },
     "license": "MIT",
     "authors": [

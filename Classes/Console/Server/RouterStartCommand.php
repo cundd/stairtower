@@ -1,25 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.10.14
- * Time: 16:58
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Console\Server;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Console\Exception\InvalidArgumentsException;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 /**
  * Console command to start PHP's built-in server
- *
- * @package Cundd\PersistentObjectStore\Console
  */
 class RouterStartCommand extends AbstractServerCommand
 {
@@ -58,7 +49,7 @@ class RouterStartCommand extends AbstractServerCommand
 
 
         // Prepare the environment variables
-        $environmentVariables = array();
+        $environmentVariables = [];
         if ($input->hasArgument('data-path') && $input->getArgument('data-path')) {
             $dataPath = $input->getArgument('data-path');
             if ($dataPath === filter_var($dataPath, FILTER_SANITIZE_STRING)) {
@@ -97,7 +88,7 @@ class RouterStartCommand extends AbstractServerCommand
         if ($input->hasArgument('port') && $input->getArgument('port')) {
             $port = $input->getArgument('port');
             if (is_numeric($port) && ctype_alnum($port)) {
-                $address .= ':'.$port;
+                $address .= ':' . $port;
             } else {
                 throw new InvalidArgumentsException('Invalid input for argument "port"', 1420812212);
             }
@@ -105,10 +96,10 @@ class RouterStartCommand extends AbstractServerCommand
             $address .= ':1338';
         }
 
-        $routerPath = $configurationManager->getConfigurationForKeyPath('binPath').'router.php';
+        $routerPath = $configurationManager->getConfigurationForKeyPath('binPath') . 'router.php';
         $arguments = ['-S', $address, $routerPath];
         $process = $this->processBuilder
-            ->setPrefix(array('exec', $phpBinPath))
+            ->setPrefix(['exec', $phpBinPath])
             ->setArguments($arguments)
             ->setTimeout(null)
             ->setWorkingDirectory($documentRoot)

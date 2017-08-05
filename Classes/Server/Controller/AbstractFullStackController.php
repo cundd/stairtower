@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.01.15
- * Time: 11:04
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Controller;
 
@@ -14,8 +9,6 @@ use Cundd\PersistentObjectStore\View\ViewControllerTrait;
 
 /**
  * An abstract Controller merging the different features
- *
- * @package Cundd\PersistentObjectStore\Server\Controller
  */
 abstract class AbstractFullStackController extends AbstractDocumentController implements ViewControllerInterface
 {

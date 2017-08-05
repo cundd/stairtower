@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 20.09.14
- * Time: 12:47
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
@@ -51,7 +46,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
         $this->assertSame('male', $person->valueForKeyPath('gender'));
 
         $this->fixture = $this->coordinator->getDatabase('contacts');
-        $person        = $this->fixture->findByIdentifier('paul@mckenzy.net');
+        $person = $this->fixture->findByIdentifier('paul@mckenzy.net');
         $this->assertNotNull($person);
 
         $this->assertSame('McKenzy', $person->valueForKeyPath('lastName'));
@@ -72,19 +67,19 @@ class DatabaseTest extends AbstractDatabaseBasedCase
     {
         $this->fixture = $this->coordinator->getDatabase('contacts');
 
-        $dataInstance = new Document(array('email' => 'info@cundd.net'), $this->fixture->getIdentifier());
+        $dataInstance = new Document(['email' => 'info@cundd.net'], $this->fixture->getIdentifier());
         $this->assertTrue($this->fixture->contains($dataInstance));
         $this->assertTrue($this->fixture->contains('info@cundd.net'));
 
-        $dataInstance = new Document(array('email' => 'paul@mckenzy.net'), $this->fixture->getIdentifier());
+        $dataInstance = new Document(['email' => 'paul@mckenzy.net'], $this->fixture->getIdentifier());
         $this->assertTrue($this->fixture->contains($dataInstance));
         $this->assertTrue($this->fixture->contains('paul@mckenzy.net'));
 
-        $dataInstance = new Document(array('email' => 'rob@ells.on'), $this->fixture->getIdentifier());
+        $dataInstance = new Document(['email' => 'rob@ells.on'], $this->fixture->getIdentifier());
         $this->assertTrue($this->fixture->contains($dataInstance));
         $this->assertTrue($this->fixture->contains('rob@ells.on'));
 
-        $dataInstance = new Document(array('email' => 'info-not-found@cundd.net'), $this->fixture->getIdentifier());
+        $dataInstance = new Document(['email' => 'info-not-found@cundd.net'], $this->fixture->getIdentifier());
         $this->assertFalse($this->fixture->contains($dataInstance));
         $this->assertFalse($this->fixture->contains('info-not-found@cundd.net'));
     }
@@ -112,13 +107,13 @@ class DatabaseTest extends AbstractDatabaseBasedCase
     {
         $this->fixture = $this->coordinator->getDatabase('contacts');
 
-        $testEmail    = 'mail' . time() . '@test.com';
+        $testEmail = 'mail' . time() . '@test.com';
         $dataInstance = new Document(
-            array(
+            [
                 'email'    => $testEmail,
                 'age'      => 31,
-                'eyeColor' => 'green'
-            ),
+                'eyeColor' => 'green',
+            ],
             $this->fixture->getIdentifier()
         );
 
@@ -135,8 +130,8 @@ class DatabaseTest extends AbstractDatabaseBasedCase
     {
         $this->fixture = $this->coordinator->getDatabase('contacts');
 
-        $testEmail    = 'alice@mckenzy.net';
-        $dataInstance = new Document(array('email' => $testEmail), $this->fixture->getIdentifier());
+        $testEmail = 'alice@mckenzy.net';
+        $dataInstance = new Document(['email' => $testEmail], $this->fixture->getIdentifier());
 
         $this->fixture->remove($dataInstance);
 
@@ -152,28 +147,32 @@ class DatabaseTest extends AbstractDatabaseBasedCase
         $this->fixture = $this->coordinator->getDatabase('contacts');
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
 
-        $this->fixture->add(new Document(
-            array(
-                'email'    => 'mail' . time() . '@test.com',
-                'age'      => 31,
-                'eyeColor' => 'green'
-            ),
-            $this->fixture->getIdentifier()
-        ));
+        $this->fixture->add(
+            new Document(
+                [
+                    'email'    => 'mail' . time() . '@test.com',
+                    'age'      => 31,
+                    'eyeColor' => 'green',
+                ],
+                $this->fixture->getIdentifier()
+            )
+        );
 
         $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
         $this->coordinator->commitDatabase($this->fixture);
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
 
 
-        $this->fixture->add(new Document(
-            array(
-                'email'    => 'mail-2-' . time() . '@test.com',
-                'age'      => 32,
-                'eyeColor' => 'brown'
-            ),
-            $this->fixture->getIdentifier()
-        ));
+        $this->fixture->add(
+            new Document(
+                [
+                    'email'    => 'mail-2-' . time() . '@test.com',
+                    'age'      => 32,
+                    'eyeColor' => 'brown',
+                ],
+                $this->fixture->getIdentifier()
+            )
+        );
 
         $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
         $this->coordinator->commitDatabases();
@@ -188,13 +187,13 @@ class DatabaseTest extends AbstractDatabaseBasedCase
         $this->fixture = $this->coordinator->getDatabase('contacts');
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
 
-        $this->fixture->remove(new Document(array('email' => 'alice@mckenzy.net'), $this->fixture->getIdentifier()));
+        $this->fixture->remove(new Document(['email' => 'alice@mckenzy.net'], $this->fixture->getIdentifier()));
         $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
         $this->coordinator->commitDatabase($this->fixture);
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
 
 
-        $this->fixture->remove(new Document(array('email' => 'paul@mckenzy.net'), $this->fixture->getIdentifier()));
+        $this->fixture->remove(new Document(['email' => 'paul@mckenzy.net'], $this->fixture->getIdentifier()));
         $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
         $this->coordinator->commitDatabases();
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
@@ -205,13 +204,13 @@ class DatabaseTest extends AbstractDatabaseBasedCase
      */
     public function addAndFindByIdentifierTest()
     {
-        $testEmail    = 'mail' . time() . '@test.com';
+        $testEmail = 'mail' . time() . '@test.com';
         $dataInstance = new Document(
-            array(
+            [
                 'email'    => $testEmail,
                 'age'      => 31,
-                'eyeColor' => 'green'
-            ),
+                'eyeColor' => 'green',
+            ],
             $this->fixture->getIdentifier()
         );
 
@@ -228,13 +227,13 @@ class DatabaseTest extends AbstractDatabaseBasedCase
      */
     public function addAndFilterTest()
     {
-        $testEmail    = 'my-mail-' . time() . '@test.com';
+        $testEmail = 'my-mail-' . time() . '@test.com';
         $dataInstance = new Document(
-            array(
+            [
                 'email'    => $testEmail,
                 'age'      => 31,
-                'eyeColor' => 'green'
-            ),
+                'eyeColor' => 'green',
+            ],
             $this->fixture->getIdentifier()
         );
 
@@ -287,7 +286,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
         $this->assertEquals($personFromDatabase2, $personFromFixture);
 
         $movie = 'Star Wars';
-        $key   = 'favorite_movie';
+        $key = 'favorite_movie';
 
         $personFromDatabase2->setValueForKey($movie, $key);
 
@@ -323,10 +322,14 @@ class DatabaseTest extends AbstractDatabaseBasedCase
      */
     public function queryIndexesForValueOfPropertyTest()
     {
-        $this->assertSame(IndexInterface::NO_RESULT,
-            $this->fixture->queryIndexesForValueOfProperty('Cundd Lane 1', 'address'));
-        $this->assertSame(IndexInterface::NOT_FOUND,
-            $this->fixture->queryIndexesForValueOfProperty('not-existing-identifier', Constants::DATA_ID_KEY));
+        $this->assertSame(
+            IndexInterface::NO_RESULT,
+            $this->fixture->queryIndexesForValueOfProperty('Cundd Lane 1', 'address')
+        );
+        $this->assertSame(
+            IndexInterface::NOT_FOUND,
+            $this->fixture->queryIndexesForValueOfProperty('not-existing-identifier', Constants::DATA_ID_KEY)
+        );
 
         $documents = $this->fixture->queryIndexesForValueOfProperty(
             'beasleywatts@geekol.com',

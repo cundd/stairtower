@@ -1,17 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 21.03.15
- * Time: 20:35
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\View;
 
 /**
  * Interface for views
- *
- * @package Cundd\PersistentObjectStore\View
  */
 interface ViewInterface
 {
@@ -20,37 +13,37 @@ interface ViewInterface
      *
      * @return string
      */
-    public function render();
+    public function render(): string;
 
     /**
      * Assign value for variable key
      *
      * @param string $key
      * @param mixed  $value
-     * @return $this
+     * @return ViewInterface
      */
-    public function assign($key, $value);
+    public function assign(string $key, $value): ViewInterface;
 
     /**
      * Assign multiple values
      *
      * @param array $values
-     * @return $this
+     * @return ViewInterface
      */
-    public function assignMultiple($values);
+    public function assignMultiple(array $values): ViewInterface;
 
     /**
      * Returns the path to the template
      *
      * @return string
      */
-    public function getTemplatePath();
+    public function getTemplatePath(): string;
 
     /**
      * Sets the path to the template
      *
      * @param string $templatePath
-     * @return $this
+     * @return ViewInterface
      */
-    public function setTemplatePath($templatePath);
+    public function setTemplatePath(string $templatePath): ViewInterface;
 }

@@ -1,26 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 08.04.15
- * Time: 19:42
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Asset;
 
 /**
  * Interface for Asset Providers
- *
- * @package Cundd\PersistentObjectStore\Asset
  */
-interface AssetProviderInterface {
+interface AssetProviderInterface
+{
     /**
      * Returns if an Asset for the given URI exists
      *
      * @param string $uri
      * @return bool
      */
-    public function hasAssetForUri($uri);
+    public function hasAssetForUri(string $uri):bool;
 
     /**
      * Returns the Asset for the given URI
@@ -29,5 +23,5 @@ interface AssetProviderInterface {
      * @param bool   $noCache
      * @return AssetInterface|null
      */
-    public function getAssetForUri($uri, $noCache = false);
+    public function getAssetForUri(string $uri, bool $noCache = false): ?AssetInterface;
 }

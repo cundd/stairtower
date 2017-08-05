@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 31.08.14
- * Time: 16:13
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 
@@ -16,8 +11,6 @@ use Cundd\PersistentObjectStore\Domain\Model\Document;
 
 /**
  * Test for Cundd\PersistentObjectStore\DataAccess\Coordinator
- *
- * @package Cundd\PersistentObjectStore\DataAccess
  */
 class CoordinatorTest extends AbstractDataBasedCase
 {
@@ -50,9 +43,9 @@ class CoordinatorTest extends AbstractDataBasedCase
      */
     public function listDatabasesTest()
     {
-        $allDatabases       = $this->fixture->listDatabases();
+        $allDatabases = $this->fixture->listDatabases();
         $persistedDatabases = $this->fixture->listPersistedDatabases();
-        $inMemoryDatabases  = $this->fixture->listInMemoryDatabases();
+        $inMemoryDatabases = $this->fixture->listInMemoryDatabases();
         $this->assertNotEmpty($allDatabases);
         $this->assertNotEmpty($persistedDatabases);
         $this->assertEmpty($inMemoryDatabases);
@@ -64,7 +57,9 @@ class CoordinatorTest extends AbstractDataBasedCase
     public function createDatabaseTest()
     {
         $databaseIdentifier = 'test-db-' . time();
-        $expectedPath       = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
+                'writeDataPath'
+            ) . $databaseIdentifier . '.json';
 
         $this->fixture->createDatabase($databaseIdentifier);
 
@@ -78,7 +73,9 @@ class CoordinatorTest extends AbstractDataBasedCase
     public function dropDatabaseTest()
     {
         $databaseIdentifier = 'test-db-' . time();
-        $expectedPath       = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
+                'dataPath'
+            ) . $databaseIdentifier . '.json';
 
         file_put_contents($expectedPath, '[]');
         $this->assertFileExists($expectedPath);
@@ -153,7 +150,7 @@ class CoordinatorTest extends AbstractDataBasedCase
         /** @var Database $database */
         $database = $this->fixture->getDatabase('contacts');
 
-        $loadCars   = function () {
+        $loadCars = function () {
             $this->fixture->getDatabase('cars');
         };
         $loadPeople = function () {
@@ -177,15 +174,19 @@ class CoordinatorTest extends AbstractDataBasedCase
         $database = $this->fixture->getDatabase('contacts');
 
         $dataInstance = new Document();
-        $dataInstance->setData(array(
-            'firstName' => 'Oliver',
-            'lastName'  => 'Kane',
-            'email'     => 'o@kane.net'
-        ));
+        $dataInstance->setData(
+            [
+                'firstName' => 'Oliver',
+                'lastName'  => 'Kane',
+                'email'     => 'o@kane.net',
+            ]
+        );
         $database->add($dataInstance);
         $this->fixture->commitDatabase($database);
 
-        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'contacts.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
+                'writeDataPath'
+            ) . 'contacts.json';
         $this->assertTrue(file_exists($expectedPath));
         unlink($expectedPath);
     }
@@ -201,57 +202,61 @@ class CoordinatorTest extends AbstractDataBasedCase
         $database = $this->fixture->getDatabase('people');
 
         $dataInstance = new Document();
-        $dataInstance->setData(array(
-            '_id'           => '541f004ef8f4d2df32ca60c2',
-            'index'         => 5000,
-            'isActive'      => false,
-            'balance'       => '$2,925.56',
-            'picture'       => 'http://placehold.it/32x32',
-            'age'           => 31,
-            'eyeColor'      => 'brown',
-            'name'          => 'Daniel Corn',
-            'gender'        => 'male',
-            'company'       => 'FARMEX',
-            'email'         => 'info@cundd.net',
-            'phone'         => '+1 (973) 480-3194',
-            'address'       => '125 Stone Avenue, Worton, Alabama, 6669',
-            'about'         => 'Dolore in excepteur nisi dolor laboris ipsum proident cupidatat proident. Aliquip commodo culpa adipisicing ullamco ad. Ut ex duis tempor do id enim. Proident exercitation officia veniam magna mollit nostrud duis do qui reprehenderit. Ea culpa anim ullamco aliqua culpa nulla ex nisi irure qui incididunt reprehenderit. Labore do velit amet duis aute occaecat. Et sunt ex Lorem qui do deserunt ullamco labore.\r\n',
-            'registered'    => '2014-06-29T15:29:47 -02:00',
-            'latitude'      => 51.372838,
-            'longitude'     => -71.88925,
-            'tags'          => [
-                'id',
-                'consequat',
-                'aute',
-                'deserunt',
-                'in',
-                'enim',
-                'veniam'
-            ],
-            'friends'       => [
-                array(
-                    'id'   => 0,
-                    'name' => 'Bray Ruiz'
-                ),
-                array(
-                    'id'   => 1,
-                    'name' => 'Carr Kerr'
-                ),
-                array(
-                    'id'   => 2,
-                    'name' => 'Carter Dejesus'
-                )
-            ],
-            'greeting'      => 'Hello, Conway Burch! You have 3 unread messages.',
-            'favoriteFruit' => 'apple'
-        ));
+        $dataInstance->setData(
+            [
+                '_id'           => '541f004ef8f4d2df32ca60c2',
+                'index'         => 5000,
+                'isActive'      => false,
+                'balance'       => '$2,925.56',
+                'picture'       => 'http://placehold.it/32x32',
+                'age'           => 31,
+                'eyeColor'      => 'brown',
+                'name'          => 'Daniel Corn',
+                'gender'        => 'male',
+                'company'       => 'FARMEX',
+                'email'         => 'info@cundd.net',
+                'phone'         => '+1 (973) 480-3194',
+                'address'       => '125 Stone Avenue, Worton, Alabama, 6669',
+                'about'         => 'Dolore in excepteur nisi dolor laboris ipsum proident cupidatat proident. Aliquip commodo culpa adipisicing ullamco ad. Ut ex duis tempor do id enim. Proident exercitation officia veniam magna mollit nostrud duis do qui reprehenderit. Ea culpa anim ullamco aliqua culpa nulla ex nisi irure qui incididunt reprehenderit. Labore do velit amet duis aute occaecat. Et sunt ex Lorem qui do deserunt ullamco labore.\r\n',
+                'registered'    => '2014-06-29T15:29:47 -02:00',
+                'latitude'      => 51.372838,
+                'longitude'     => -71.88925,
+                'tags'          => [
+                    'id',
+                    'consequat',
+                    'aute',
+                    'deserunt',
+                    'in',
+                    'enim',
+                    'veniam',
+                ],
+                'friends'       => [
+                    [
+                        'id'   => 0,
+                        'name' => 'Bray Ruiz',
+                    ],
+                    [
+                        'id'   => 1,
+                        'name' => 'Carr Kerr',
+                    ],
+                    [
+                        'id'   => 2,
+                        'name' => 'Carter Dejesus',
+                    ],
+                ],
+                'greeting'      => 'Hello, Conway Burch! You have 3 unread messages.',
+                'favoriteFruit' => 'apple',
+            ]
+        );
 
         $database->add($dataInstance);
         $this->assertEquals($this->numberOfPersons + 1, $database->count());
 
         $this->fixture->commitDatabase($database);
 
-        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . 'people.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
+                'writeDataPath'
+            ) . 'people.json';
         $this->assertTrue(file_exists($expectedPath));
         unlink($expectedPath);
     }
@@ -267,50 +272,52 @@ class CoordinatorTest extends AbstractDataBasedCase
         $database = $this->fixture->getDatabase('people');
 
         $dataInstance = new Document();
-        $dataInstance->setData(array(
-            '_id'           => '541f004ef8f4d2df32ca60c2',
-            'index'         => 5000,
-            'isActive'      => false,
-            'balance'       => '$2,925.56',
-            'picture'       => 'http://placehold.it/32x32',
-            'age'           => 31,
-            'eyeColor'      => 'brown',
-            'name'          => 'Daniel Corn',
-            'gender'        => 'male',
-            'company'       => 'FARMEX',
-            'email'         => 'support@cundd.net',
-            'phone'         => '+1 (973) 480-3194',
-            'address'       => '125 Stone Avenue, Worton, Alabama, 6669',
-            'about'         => 'Dolore in excepteur nisi dolor laboris ipsum proident cupidatat proident. Aliquip commodo culpa adipisicing ullamco ad. Ut ex duis tempor do id enim. Proident exercitation officia veniam magna mollit nostrud duis do qui reprehenderit. Ea culpa anim ullamco aliqua culpa nulla ex nisi irure qui incididunt reprehenderit. Labore do velit amet duis aute occaecat. Et sunt ex Lorem qui do deserunt ullamco labore.\r\n',
-            'registered'    => '2014-06-29T15:29:47 -02:00',
-            'latitude'      => 52.372848,
-            'longitude'     => -70.88935,
-            'tags'          => [
-                'id',
-                'consequat',
-                'aute',
-                'deserunt',
-                'in',
-                'enim',
-                'veniam'
-            ],
-            'friends'       => [
-                array(
-                    'id'   => 0,
-                    'name' => 'Bray Ruiz'
-                ),
-                array(
-                    'id'   => 1,
-                    'name' => 'Carr Kerr'
-                ),
-                array(
-                    'id'   => 2,
-                    'name' => 'Carter Dejesus'
-                )
-            ],
-            'greeting'      => 'Hello, Conway Burch! You have 3 unread messages.',
-            'favoriteFruit' => 'apple'
-        ));
+        $dataInstance->setData(
+            [
+                '_id'           => '541f004ef8f4d2df32ca60c2',
+                'index'         => 5000,
+                'isActive'      => false,
+                'balance'       => '$2,925.56',
+                'picture'       => 'http://placehold.it/32x32',
+                'age'           => 31,
+                'eyeColor'      => 'brown',
+                'name'          => 'Daniel Corn',
+                'gender'        => 'male',
+                'company'       => 'FARMEX',
+                'email'         => 'support@cundd.net',
+                'phone'         => '+1 (973) 480-3194',
+                'address'       => '125 Stone Avenue, Worton, Alabama, 6669',
+                'about'         => 'Dolore in excepteur nisi dolor laboris ipsum proident cupidatat proident. Aliquip commodo culpa adipisicing ullamco ad. Ut ex duis tempor do id enim. Proident exercitation officia veniam magna mollit nostrud duis do qui reprehenderit. Ea culpa anim ullamco aliqua culpa nulla ex nisi irure qui incididunt reprehenderit. Labore do velit amet duis aute occaecat. Et sunt ex Lorem qui do deserunt ullamco labore.\r\n',
+                'registered'    => '2014-06-29T15:29:47 -02:00',
+                'latitude'      => 52.372848,
+                'longitude'     => -70.88935,
+                'tags'          => [
+                    'id',
+                    'consequat',
+                    'aute',
+                    'deserunt',
+                    'in',
+                    'enim',
+                    'veniam',
+                ],
+                'friends'       => [
+                    [
+                        'id'   => 0,
+                        'name' => 'Bray Ruiz',
+                    ],
+                    [
+                        'id'   => 1,
+                        'name' => 'Carr Kerr',
+                    ],
+                    [
+                        'id'   => 2,
+                        'name' => 'Carter Dejesus',
+                    ],
+                ],
+                'greeting'      => 'Hello, Conway Burch! You have 3 unread messages.',
+                'favoriteFruit' => 'apple',
+            ]
+        );
 
         $database->add($dataInstance);
         $this->assertEquals($this->numberOfPersons + 1, $database->count());
@@ -336,17 +343,19 @@ class CoordinatorTest extends AbstractDataBasedCase
     public function removeFromDatabaseTest()
     {
         $databaseIdentifier = 'contacts';
-        $testEmail          = 'paul@mckenzy.net';
+        $testEmail = 'paul@mckenzy.net';
 
         /** @var Database $database */
         $database = $this->fixture->getDatabase($databaseIdentifier);
 
         $dataInstance = new Document();
-        $dataInstance->setData(array(
-            'firstName' => 'Paul',
-            'lastName'  => 'McKenzy',
-            'email'     => $testEmail,
-        ));
+        $dataInstance->setData(
+            [
+                'firstName' => 'Paul',
+                'lastName'  => 'McKenzy',
+                'email'     => $testEmail,
+            ]
+        );
 
         $database->remove($dataInstance);
         $this->assertEquals($this->numberOfContacts - 1, $database->count());
@@ -365,7 +374,9 @@ class CoordinatorTest extends AbstractDataBasedCase
         $this->assertEquals($database->count(), $databaseRetrievedFromTheCoordinator->count());
 
 
-        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
+                'writeDataPath'
+            ) . $databaseIdentifier . '.json';
         $this->fixture->commitDatabase($database);
         $this->assertFileExists($expectedPath);
 

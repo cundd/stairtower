@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 05.04.15
- * Time: 21:44
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Session;
 
@@ -18,8 +13,6 @@ use Test_Session_Controller;
 
 /**
  * Tests for the Session Controller trait
- *
- * @package Cundd\PersistentObjectStore\Server\Session
  */
 class SessionControllerTraitTest extends AbstractCase
 {
@@ -50,7 +43,10 @@ class SessionControllerTraitTest extends AbstractCase
     {
         $response = $this->fixture->buildResponse();
         $this->assertNotNull($response);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Controller\\MutableControllerResultInterface', $response);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Controller\\MutableControllerResultInterface',
+            $response
+        );
 
         $headers = $response->getHeaders();
         $this->assertArrayHasKey(CookieConstants::SET_COOKIE_HEADER_NAME, $headers);
@@ -65,12 +61,15 @@ class SessionControllerTraitTest extends AbstractCase
         $statusCode = 200;
         $data = 'my-data';
         $contentType = 'my-content-type';
-        $headers = array(
-            'my-header' => 'my-header-value'
-        );
+        $headers = [
+            'my-header' => 'my-header-value',
+        ];
         $response = $this->fixture->buildResponse($statusCode, $data, $contentType, $headers);
         $this->assertNotNull($response);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Controller\\MutableControllerResultInterface', $response);
+        $this->assertInstanceOf(
+            'Cundd\\PersistentObjectStore\\Server\\Controller\\MutableControllerResultInterface',
+            $response
+        );
 
         $this->assertSame($statusCode, $response->getStatusCode());
         $this->assertSame($data, $response->getData());
@@ -89,7 +88,9 @@ class SessionControllerTraitTest extends AbstractCase
         parent::setUp();
 
         /** @var RequestInterface $request */
-        $request = $this->getMockForAbstractClass('Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface');
+        $request = $this->getMockForAbstractClass(
+            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface'
+        );
         $request
             ->expects($this->any())
             ->method('getCookie')

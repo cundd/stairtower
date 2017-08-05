@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 24.08.14
- * Time: 16:36
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Serializer;
 

@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 13.10.14
- * Time: 17:12
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\Cookie;
 
@@ -12,8 +7,6 @@ use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 
 /**
  * Interface for classes that can parse and transform request cookies
- *
- * @package Cundd\PersistentObjectStore\Server\BodyParser
  */
 interface CookieParserInterface
 {

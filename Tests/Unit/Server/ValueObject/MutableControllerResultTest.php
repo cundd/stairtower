@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 02.04.15
- * Time: 20:48
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
@@ -12,10 +7,8 @@ use Cundd\PersistentObjectStore\Server\ContentType;
 
 /**
  * Test for Controller Results
- *
- * @package Cundd\PersistentObjectStore\Server\ValueObject
  */
-class MutableControllerResultTest extends \PHPUnit_Framework_TestCase
+class MutableControllerResultTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var MutableControllerResult
@@ -72,9 +65,11 @@ class MutableControllerResultTest extends \PHPUnit_Framework_TestCase
      */
     public function getHeadersWithoutSetContentTypeTest()
     {
-        $this->fixture = new ControllerResult(200, 'my data', null, [
-            'Content-Type' => 'My content type'
-        ]);
+        $this->fixture = new ControllerResult(
+            200, 'my data', null, [
+                'Content-Type' => 'My content type',
+            ]
+        );
 
         $this->assertInternalType('array', $this->fixture->getHeaders());
         $this->assertArrayHasKey('Content-Type', $this->fixture->getHeaders());
@@ -109,9 +104,9 @@ class MutableControllerResultTest extends \PHPUnit_Framework_TestCase
             $this->fixture->getHeaders()['Content-Type']
         );
 
-        $headers = array(
-            'Test-Header' => 'my test header value'
-        );
+        $headers = [
+            'Test-Header' => 'my test header value',
+        ];
         $this->fixture->setHeaders($headers);
 
         $this->assertInternalType('array', $this->fixture->getHeaders());

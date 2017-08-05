@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: daniel
- * Date: 15.08.14
- * Time: 20:11
- */
+declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\DataAccess;
 
@@ -19,8 +14,6 @@ use Cundd\PersistentObjectStore\System\Lock\Factory;
 
 /**
  * Class to write data to it's source
- *
- * @package Cundd\PersistentObjectStore\DataAccess
  */
 class Writer
 {
@@ -45,7 +38,7 @@ class Writer
     {
         $this->prepareWriteDirectory();
         $databaseIdentifier = $database->getIdentifier();
-        $path               = $this->getWriteDirectory() . $databaseIdentifier . '.json';
+        $path = $this->getWriteDirectory() . $databaseIdentifier . '.json';
 
         $result = $this->writeData($this->getDataToWrite($database), $path, $databaseIdentifier);
         if ($result === false) {
@@ -113,7 +106,8 @@ class Writer
             throw new WriterException(
                 sprintf(
                     'Unable to acquire an exclusive lock for file "%s"',
-                    $file),
+                    $file
+                ),
                 1410290540
             );
         }
@@ -142,7 +136,8 @@ class Writer
     protected function getDataToWrite($database)
     {
         $objectsToWrite = $this->getObjectsWrite($database);
-        $serializer     = new JsonSerializer();
+        $serializer = new JsonSerializer();
+
         return $serializer->serialize($objectsToWrite);
     }
 
@@ -154,7 +149,7 @@ class Writer
      */
     protected function getObjectsWrite($database)
     {
-        $objectsToWrite = array();
+        $objectsToWrite = [];
         $database->rewind();
         while ($database->valid()) {
             /** @var DocumentInterface $item */
@@ -166,6 +161,7 @@ class Writer
             }
             $database->next();
         }
+
         return $objectsToWrite;
     }
 
@@ -174,16 +170,17 @@ class Writer
      *
      * @param string $databaseIdentifier Unique identifier of the database
      * @param array  $options            Additional options for the created database
-     * @return DatabaseInterface
      */
-    public function createDatabase($databaseIdentifier, $options = array())
+    public function createDatabase($databaseIdentifier, $options = [])
     {
         $this->prepareWriteDirectory();
         $path = $this->getWriteDirectory() . $databaseIdentifier . '.json';
 
         if (file_exists($path)) {
-            throw new WriterException(sprintf('Database with identifier %s already exists', $databaseIdentifier),
-                1412509808);
+            throw new WriterException(
+                sprintf('Database with identifier %s already exists', $databaseIdentifier),
+                1412509808
+            );
         }
         if (!is_writable($path) && !is_writable(dirname($path))) {
             throw new WriterException(
@@ -216,8 +213,10 @@ class Writer
         $path = $this->getReadDirectory() . $databaseIdentifier . '.json';
 
         if (!file_exists($path)) {
-            throw new WriterException(sprintf('Database with identifier %s does not exist', $databaseIdentifier),
-                1412526598);
+            throw new WriterException(
+                sprintf('Database with identifier %s does not exist', $databaseIdentifier),
+                1412526598
+            );
         }
         if (!is_writable($path) && !is_writable(dirname($path))) {
             throw new WriterException(
@@ -242,7 +241,8 @@ class Writer
             throw new WriterException(
                 sprintf(
                     'Unable to acquire an exclusive lock for file "%s"',
-                    $path),
+                    $path
+                ),
                 1412526613
             );
         }
