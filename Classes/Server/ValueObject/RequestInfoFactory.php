@@ -80,23 +80,6 @@ class RequestInfoFactory
     }
 
     /**
-     * Builds a Request instance for the given request
-     *
-     * @param BaseRequest|Request $request
-     * @return RequestInterface
-     * @deprecated
-     */
-    public static function buildRequestInfoFromRequest($request): RequestInterface
-    {
-        static $factoryInstance = null;
-        if (!$factoryInstance) {
-            $factoryInstance = new self();
-        }
-
-        return $factoryInstance->buildRequestFromRawRequest($request);
-    }
-
-    /**
      * Returns the handler class if the path contains a special information identifier, otherwise the Handler interface
      * name
      *

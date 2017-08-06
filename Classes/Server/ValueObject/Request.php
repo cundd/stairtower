@@ -154,17 +154,6 @@ class Request implements Immutable, RequestInterface
     }
 
     /**
-     * Returns the special handler action
-     *
-     * @deprecated
-     * @return string
-     */
-    public function getSpecialHandlerAction()
-    {
-        return $this->getAction();
-    }
-
-    /**
      * Returns the controller or special handler action
      *
      * @return string
