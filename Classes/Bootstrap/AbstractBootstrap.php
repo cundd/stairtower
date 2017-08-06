@@ -62,17 +62,7 @@ abstract class AbstractBootstrap
     public function execute()
     {
         $this->configureErrorHandling();
-        try {
-            $this->doExecute();
-        } catch (\Error $error) {
-            $this->errorHandler->handle(
-                $error->getCode(),
-                $error->getMessage(),
-                $error->getFile(),
-                $error->getLine(),
-                [$error]
-            );
-        }
+        $this->doExecute();
         $this->crashHandler->unregister();
     }
 

@@ -25,9 +25,9 @@ class DeferredResult implements HandlerResultInterface, Immutable
     /**
      * Returns the status code for the response
      *
-     * @return integer
+     * @return int
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return 204;
     }

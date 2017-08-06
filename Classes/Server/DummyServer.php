@@ -5,6 +5,7 @@ namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
+use Cundd\PersistentObjectStore\Formatter\JsonFormatter;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
@@ -13,9 +14,12 @@ use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use DateTime;
+use DateTimeInterface;
 use Exception;
+use React\EventLoop\LoopInterface;
 use React\Http\Response;
 use React\Stream\WritableStreamInterface;
 
@@ -90,15 +94,21 @@ class DummyServer implements ServerInterface
      */
     protected $startTime;
 
+    public function __construct()
+    {
+        $this->startTime = new DateTime();
+    }
+
+
     /**
      * Handles the given exception
      *
      * @param Exception                        $error
-     * @param Request                          $request
+     * @param RequestInterface                 $request
      * @param WritableStreamInterface|Response $response
      * @throws Exception
      */
-    public function handleError($error, $request, $response)
+    public function handleError(Exception $error, RequestInterface $request, WritableStreamInterface $response): void
     {
         throw $error;
     }
@@ -127,13 +137,7 @@ class DummyServer implements ServerInterface
         return $this->eventLoop;
     }
 
-    /**
-     * Sets the event loop
-     *
-     * @param \React\EventLoop\LoopInterface $eventLoop
-     * @return $this
-     */
-    public function setEventLoop($eventLoop)
+    public function setEventLoop(LoopInterface $eventLoop): ServerInterface
     {
         if ($this->_isRunning) {
             throw new InvalidServerChangeException('Can not change the event loop when server is running', 1412956592);
@@ -148,18 +152,20 @@ class DummyServer implements ServerInterface
      *
      * @return int
      */
-    public function getMode()
+    public function getMode(): int
     {
+        return ServerInterface::SERVER_MODE_TEST;
     }
 
     /**
      * Sets the mode of the server
      *
      * @param int $mode
-     * @return $this
+     * @return ServerInterface
      */
-    public function setMode($mode)
+    public function setMode(int $mode): ServerInterface
     {
+        return $this;
     }
 
     /**
@@ -167,27 +173,29 @@ class DummyServer implements ServerInterface
      *
      * @return int
      */
-    public function getAutoShutdownTime()
+    public function getAutoShutdownTime(): int
     {
+        return 0;
     }
 
     /**
      * Sets the number of seconds after which to stop the server if run in test mode
      *
      * @param int $autoShutdownTime
-     * @return $this
+     * @return ServerInterface
      */
-    public function setAutoShutdownTime($autoShutdownTime)
+    public function setAutoShutdownTime(int $autoShutdownTime): ServerInterface
     {
+        return $this;
     }
 
     /**
      * Collects and returns the current server statistics
      *
      * @param bool $detailed If detailed is TRUE more data will be collected and an array will be returned
-     * @return Statistics|array
+     * @return array|Statistics
      */
-    public function collectStatistics($detailed = false)
+    public function collectStatistics(bool $detailed = false)
     {
         return new Statistics(
             Constants::VERSION, $this->getGuid(), $this->getStartTime(), memory_get_usage(true),
@@ -216,7 +224,7 @@ class DummyServer implements ServerInterface
      *
      * @return string
      */
-    public function getIp()
+    public function getIp(): string
     {
         return $this->ip;
     }
@@ -242,7 +250,7 @@ class DummyServer implements ServerInterface
      *
      * @return int
      */
-    public function getPort()
+    public function getPort(): int
     {
         return $this->port;
     }
@@ -253,7 +261,7 @@ class DummyServer implements ServerInterface
      * @param int $port
      * @return $this
      */
-    public function setPort($port)
+    public function setPort(int $port)
     {
         if ($this->_isRunning) {
             throw new InvalidServerChangeException('Can not change port when server is running', 1412956591);
@@ -266,9 +274,9 @@ class DummyServer implements ServerInterface
     /**
      * Returns the servers start time
      *
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    public function getStartTime()
+    public function getStartTime(): DateTimeInterface
     {
         return $this->startTime;
     }
@@ -276,42 +284,42 @@ class DummyServer implements ServerInterface
     /**
      * Handle the given request
      *
-     * @param \React\Http\Request  $request
-     * @param \React\Http\Response $response
+     * @param RequestInterface|\React\Http\Request $request
+     * @param Response|WritableStreamInterface     $response
      */
-    public function handle($request, $response)
+    public function handle(RequestInterface $request, WritableStreamInterface $response): void
     {
     }
 
     /**
      * Returns the formatter for the given request
      *
-     * @param Request $request
+     * @param RequestInterface|Request $request
      * @return FormatterInterface
      */
-    public function getFormatterForRequest(Request $request)
+    public function getFormatterForRequest(RequestInterface $request): FormatterInterface
     {
-        return $this->diContainer->get('Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter');
+        return $this->diContainer->get(JsonFormatter::class);
     }
 
     /**
      * Returns the handler for the given request
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerInterface
      */
-    public function getHandlerForRequest(Request $request)
+    public function getHandlerForRequest(RequestInterface $request)
     {
-        return $this->diContainer->get('Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface');
+        return $this->diContainer->get(HandlerInterface::class);
     }
 
     /**
      * Returns the requested content type
      *
-     * @param Request $request
+     * @param RequestInterface|Request $request
      * @return string
      */
-    public function getContentTypeForRequest(Request $request)
+    public function getContentTypeForRequest(RequestInterface $request): string
     {
         return ContentType::JSON_APPLICATION;
     }
@@ -319,19 +327,19 @@ class DummyServer implements ServerInterface
     /**
      * Returns the body parser for the given request
      *
-     * @param Request $request
+     * @param RequestInterface|Request $request
      * @return BodyParserInterface
      */
-    public function getBodyParserForRequest(Request $request)
+    public function getBodyParserForRequest(RequestInterface $request): BodyParserInterface
     {
-        return $this->diContainer->get('Cundd\\PersistentObjectStore\\Server\\BodyParser\\BodyParserInterface');
+        return $this->diContainer->get(BodyParserInterface::class);
     }
 
     /**
      * Inform the client and restart the server
      *
-     * @param \React\Http\Request  $request
-     * @param \React\Http\Response $response
+     * @param \React\Http\Request|RequestInterface $request
+     * @param \React\Http\Response                 $response
      */
     protected function restartWithParameters($request, $response)
     {
@@ -347,7 +355,7 @@ class DummyServer implements ServerInterface
      *
      * @return bool
      */
-    public function isRunning()
+    public function isRunning(): bool
     {
         return $this->_isRunning;
     }
@@ -355,12 +363,15 @@ class DummyServer implements ServerInterface
     /**
      * Handle the given request result
      *
-     * @param HandlerResultInterface $result
-     * @param Request                $request
-     * @param Response               $response
+     * @param HandlerResultInterface           $result
+     * @param RequestInterface|Request         $request
+     * @param Response|WritableStreamInterface $response
      */
-    public function handleResult($result, $request, $response)
-    {
+    public function handleResult(
+        HandlerResultInterface $result,
+        RequestInterface $request,
+        WritableStreamInterface $response
+    ): void {
     }
 
     /**

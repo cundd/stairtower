@@ -5,12 +5,12 @@ namespace Cundd\PersistentObjectStore\Server\ValueObject;
 
 
 use Cundd\PersistentObjectStore\Immutable;
-use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
+use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
 
 /**
  * Empty result implementation
  */
-class NullResult implements HandlerResultInterface, Immutable
+class NullResult implements ControllerResultInterface, Immutable
 {
     /**
      * Returns the request's response data
@@ -25,10 +25,23 @@ class NullResult implements HandlerResultInterface, Immutable
     /**
      * Returns the status code for the response
      *
-     * @return integer
+     * @return int
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return 204;
     }
+
+    public function getContentType(): string
+    {
+        return '';
+    }
+
+    public function getHeaders(): array
+    {
+        return [
+            'Content-Length' => 0,
+        ];
+    }
+
 }

@@ -73,7 +73,7 @@ class SimpleResponse extends EventEmitter implements WritableStreamInterface
      * Write the data
      *
      * @param $data
-     * @return bool
+     * @return void
      * @throws \Exception
      */
     public function write($data)
@@ -91,12 +91,10 @@ class SimpleResponse extends EventEmitter implements WritableStreamInterface
         if ($this->chunkedEncoding) {
             $len = strlen($data);
             $chunk = dechex($len) . "\r\n" . $data . "\r\n";
-            $flushed = $this->doWrite($chunk);
+            $this->doWrite($chunk);
         } else {
-            $flushed = $this->doWrite($data);
+            $this->doWrite($data);
         }
-
-        return $flushed;
     }
 
     /**
@@ -152,18 +150,15 @@ class SimpleResponse extends EventEmitter implements WritableStreamInterface
      * Write the data to the output
      *
      * @param $data
-     * @return bool
      */
-    protected function doWrite($data)
+    protected function doWrite($data): void
     {
-        stream_set_blocking($this->stream, 0);
+        stream_set_blocking($this->stream, false);
         $sent = fwrite($this->stream, $data);
 
         if (0 === $sent && feof($this->stream)) {
             throw new \RuntimeException('Tried to write to closed stream.');
         }
-
-        return true;
     }
 
     /**

@@ -6,6 +6,7 @@ namespace Cundd\PersistentObjectStore\Server;
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
+use Cundd\PersistentObjectStore\Formatter\JsonFormatter;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
@@ -33,6 +34,7 @@ use React\Http\Response;
 use React\Http\Server as HttpServer;
 use React\Socket\Server as SocketServer;
 use React\Stream\BufferedSink;
+use React\Stream\WritableStreamInterface;
 use ReflectionClass;
 
 /**
@@ -65,10 +67,10 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handle the given request
      *
-     * @param Request              $request
-     * @param \React\Http\Response $response
+     * @param RequestInterface        $request
+     * @param WritableStreamInterface $response
      */
-    public function handle($request, $response)
+    public function handle(RequestInterface $request, WritableStreamInterface $response): void
     {
         // If the configured log level is DEBUG log all requests
         static $debugLog = -1;
@@ -91,35 +93,39 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         }
 
         try {
-            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            // SERVER ACTION
-            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            $serverAction = RequestInfoFactory::getServerActionForRequest($request);
-            if ($serverAction) { // Handle a very special server action
-                $this->handleServerAction($serverAction, $request, $response);
+            switch (true) {
+                // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+                // SERVER ACTION
+                // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+                case false !== RequestInfoFactory::getServerActionForRequest($request):
+                    // Handle a very special server action
+                    $this->handleServerAction(
+                        RequestInfoFactory::getServerActionForRequest($request),
+                        $request,
+                        $response
+                    );
 
-                return;
-            }
+                    return;
 
-            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            // CONTROLLER ACTION
-            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            if ($request->getControllerClass()) {
-                $requestResult = $this->dispatchControllerAction($request, $response);
-            }
+                // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+                // CONTROLLER ACTION
+                // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+                case $request->getControllerClass():
+                    $requestResult = $this->dispatchControllerAction($request, $response);
+                    break;
 
-            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            // SPECIAL HANDLER ACTION
-            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            elseif ($request->getAction()) {
-                $requestResult = $this->dispatchSpecialHandlerAction($request, $response);
-            }
+                // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+                // SPECIAL HANDLER ACTION
+                // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+                case $request->getAction():
+                    $requestResult = $this->dispatchSpecialHandlerAction($request, $response);
+                    break;
 
-            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            // STANDARD ACTION
-            // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
-            else {
-                $requestResult = $this->dispatchStandardAction($request, $response);
+                // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+                // STANDARD ACTION
+                // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWM
+                default:
+                    $requestResult = $this->dispatchStandardAction($request, $response);
             }
 
             if ($requestResult !== null && $requestResult !== DeferredResult::instance()) {
@@ -147,11 +153,11 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the standard action
      *
-     * @param Request              $request
-     * @param \React\Http\Response $response
+     * @param Request|RequestInterface         $request
+     * @param WritableStreamInterface|Response $response
      * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
      */
-    public function dispatchStandardAction($request, $response)
+    public function dispatchStandardAction(RequestInterface $request, WritableStreamInterface $response)
     {
         $requestResult = null;
         $method = $request->getMethod();
@@ -191,11 +197,14 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param Request              $request
-     * @param \React\Http\Response $response
-     * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
+     * @param Request|RequestInterface         $request
+     * @param WritableStreamInterface|Response $response
+     * @return ControllerResultInterface|null Returns the Handler Result if the request is not delayed
      */
-    public function dispatchControllerAction($request, $response)
+    public function dispatchControllerAction(
+        RequestInterface $request,
+        WritableStreamInterface $response
+    ): ?ControllerResultInterface
     {
         $self = $this;
         $contentLength = 0;
@@ -211,7 +220,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
                 $this->waitForBodyAndPerformCallback(
                     $request,
                     $response,
-                    function ($originalRequest, $requestBody) use ($self, $controller, $request, $response) {
+                    function ($_, $requestBody) use ($self, $controller, $request, $response) {
                         $request = RequestInfoFactory::copyWithBody($request, $requestBody);
 
                         return $self->invokeControllerActionWithRequest($request, $response, $controller);
@@ -231,12 +240,14 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param Request              $request
-     * @param \React\Http\Response $response
-     * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
+     * @param RequestInterface                 $request
+     * @param WritableStreamInterface|Response $response
+     * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
      */
-    public function dispatchSpecialHandlerAction($request, $response)
-    {
+    public function dispatchSpecialHandlerAction(
+        RequestInterface $request,
+        WritableStreamInterface $response
+    ): HandlerResultInterface {
         $handler = $this->getHandlerForRequest($request);
 
         return call_user_func([$handler, $request->getAction()], $request);
@@ -245,13 +256,16 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handles the given Controller/Action request action
      *
-     * @param Request             $request
-     * @param Response            $response
-     * @param ControllerInterface $controller
+     * @param Request|RequestInterface         $request
+     * @param WritableStreamInterface|Response $response
+     * @param ControllerInterface              $controller
      * @return ControllerResultInterface Returns the Handler Result
      */
-    public function invokeControllerActionWithRequest($request, $response, $controller)
-    {
+    public function invokeControllerActionWithRequest(
+        RequestInterface $request,
+        WritableStreamInterface $response,
+        ControllerInterface $controller
+    ): ControllerResultInterface {
         try {
             $result = $controller->processRequest($request, $response);
         } catch (\Exception $exception) {
@@ -294,24 +308,30 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Dispatches the given server action
      *
-     * @param string               $serverAction
-     * @param Request              $request
-     * @param \React\Http\Response $response
+     * @param string                           $serverAction
+     * @param Request|RequestInterface         $request
+     * @param WritableStreamInterface|Response $response
      */
-    public function dispatchServerAction($serverAction, $request, $response)
-    {
+    public function dispatchServerAction(
+        string $serverAction,
+        RequestInterface $request,
+        WritableStreamInterface $response
+    ) {
         $this->handleServerAction($serverAction, $request, $response);
     }
 
     /**
      * Handle the given request result
      *
-     * @param HandlerResultInterface $result
-     * @param Request                $request
-     * @param Response               $response
+     * @param HandlerResultInterface           $result
+     * @param RequestInterface                 $request
+     * @param Response|WritableStreamInterface $response
      */
-    public function handleResult($result, $request, $response)
-    {
+    public function handleResult(
+        HandlerResultInterface $result,
+        RequestInterface $request,
+        WritableStreamInterface $response
+    ): void {
         if ($result instanceof RawResultInterface) {
             $response->writeHead(
                 $result->getStatusCode(),
@@ -343,9 +363,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             $response->writeHead(
                 $result->getStatusCode(),
                 [
-                    'Content-Type' => ContentTypeUtility::convertSuffixToContentType(
-                            $formatter->getContentSuffix()
-                        ) . '; charset=utf-8',
+                    'Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix())
+                        . '; charset=utf-8',
                 ]
             );
             $responseData = $result->getData();
@@ -360,9 +379,8 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             $response->writeHead(
                 204,
                 [
-                    'Content-Type' => ContentTypeUtility::convertSuffixToContentType(
-                            $formatter->getContentSuffix()
-                        ) . '; charset=utf-8',
+                    'Content-Type' => ContentTypeUtility::convertSuffixToContentType($formatter->getContentSuffix())
+                        . '; charset=utf-8',
                 ]
             );
             $response->end($formatter->format('No content'));
@@ -527,10 +545,10 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Returns the handler for the given request
      *
-     * @param Request $request
+     * @param Request|RequestInterface $request
      * @return HandlerInterface
      */
-    public function getHandlerForRequest(Request $request)
+    public function getHandlerForRequest(RequestInterface $request)
     {
         return $this->diContainer->get(RequestInfoFactory::getHandlerClassForRequest($request));
     }
@@ -538,10 +556,10 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Returns the body parser for the given request
      *
-     * @param Request $request
+     * @param Request|RequestInterface $request
      * @return BodyParserInterface
      */
-    public function getBodyParserForRequest(Request $request)
+    public function getBodyParserForRequest(RequestInterface $request): BodyParserInterface
     {
         $header = $request->getHeaders();
         $bodyParser = 'Cundd\\PersistentObjectStore\\Server\\BodyParser\\JsonBodyParser';
@@ -560,10 +578,10 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Returns the requested content type
      *
-     * @param Request $request
+     * @param Request|RequestInterface $request
      * @return string
      */
-    public function getContentTypeForRequest(Request $request)
+    public function getContentTypeForRequest(RequestInterface $request): string
     {
         return $request->getContentType();
     }
@@ -571,30 +589,25 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Returns the formatter for the given request
      *
-     * @param Request $request
+     * @param Request|RequestInterface $request
      * @return FormatterInterface
      */
-    public function getFormatterForRequest(Request $request)
+    public function getFormatterForRequest(RequestInterface $request): FormatterInterface
     {
         if ($this->getContentTypeForRequest($request) === ContentType::XML_TEXT) {
+            // TODO: Implement the XML formatter
             $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\XmlFormatter';
         } else {
-            $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\JsonFormatter';
+            $formatter = JsonFormatter::class;
         }
 
         return $this->diContainer->get($formatter);
     }
 
-    /**
-     * Returns the Controller instance for the given request or false if none will be used
-     *
-     * @param Request $request
-     * @return ControllerInterface
-     */
-    public function getControllerForRequest($request)
+    public function getControllerForRequest(RequestInterface $request): ?ControllerInterface
     {
         if (!$request->getControllerClass()) {
-            return false;
+            return null;
         }
         $controller = $this->diContainer->get($request->getControllerClass());
         if (!$controller) {
@@ -641,7 +654,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     {
         $this->socketServer = new SocketServer($this->getEventLoop());
 
-        $httpServer = new HttpServer($this->socketServer, $this->getEventLoop());
+        $httpServer = new HttpServer($this->socketServer);
         $httpServer->on('request', [$this, 'prepareAndHandle']);
         $this->socketServer->listen($this->port, $this->ip);
 
@@ -653,10 +666,10 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Handle the given request
      *
-     * @param \React\Http\Request  $request
-     * @param \React\Http\Response $response
+     * @param \React\Http\Request|RequestInterface $request
+     * @param WritableStreamInterface              $response
      */
-    public function prepareAndHandle($request, $response)
+    public function prepareAndHandle($request, WritableStreamInterface $response)
     {
         // Immediately close ignored requests
         if ($this->getIgnoreRequest($request)) {

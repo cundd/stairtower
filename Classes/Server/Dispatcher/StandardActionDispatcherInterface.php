@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Cundd\PersistentObjectStore\Server\Dispatcher;
 
 use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use React\Stream\WritableStreamInterface;
 
 /**
  * Interface for classes that can dispatch standard actions that will be handled by a Handler implementation
@@ -13,9 +15,9 @@ interface StandardActionDispatcherInterface extends HandlerBasedActionDispatcher
     /**
      * Dispatches the standard action
      *
-     * @param \React\Http\Request  $request
-     * @param \React\Http\Response $response
+     * @param RequestInterface        $request
+     * @param WritableStreamInterface $response
      * @return HandlerResultInterface Returns the Handler Result if the request is not delayed
      */
-    public function dispatchStandardAction($request, $response);
+    public function dispatchStandardAction(RequestInterface $request, WritableStreamInterface $response);
 }

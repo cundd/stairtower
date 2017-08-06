@@ -7,7 +7,6 @@ use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
 use Cundd\PersistentObjectStore\Exception\SecurityException;
 use Cundd\PersistentObjectStore\Memory\Manager;
-use Cundd\PersistentObjectStore\RuntimeException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestActionException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
@@ -15,10 +14,14 @@ use Cundd\PersistentObjectStore\Server\Exception\ServerException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RawResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\Request as Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
 use Cundd\PersistentObjectStore\System\Lock\Factory;
+use Cundd\PersistentObjectStore\System\Lock\TransientLock;
 use DateTime;
+use DateTimeInterface;
 use Exception;
+use React\EventLoop\LoopInterface;
 use React\EventLoop\Timer\TimerInterface;
 use React\Http\Response;
 use React\Stream\WritableStreamInterface;
@@ -134,9 +137,9 @@ abstract class AbstractServer implements ServerInterface
      * Collects and returns the current server statistics
      *
      * @param bool $detailed If detailed is TRUE more data will be collected and an array will be returned
-     * @return Statistics|array
+     * @return array|Statistics
      */
-    public function collectStatistics($detailed = false)
+    public function collectStatistics(bool $detailed = false)
     {
         $statistics = new Statistics(
             Constants::VERSION, $this->getGuid(), $this->getStartTime(),
@@ -180,7 +183,7 @@ abstract class AbstractServer implements ServerInterface
      *
      * @return string
      */
-    public function getIp()
+    public function getIp(): string
     {
         return $this->ip;
     }
@@ -206,7 +209,7 @@ abstract class AbstractServer implements ServerInterface
      *
      * @return int
      */
-    public function getPort()
+    public function getPort(): int
     {
         return $this->port;
     }
@@ -217,7 +220,7 @@ abstract class AbstractServer implements ServerInterface
      * @param int $port
      * @return $this
      */
-    public function setPort($port)
+    public function setPort(int $port)
     {
         if ($this->isRunningFlag) {
             throw new InvalidServerChangeException('Can not change port when server is running', 1412956591);
@@ -230,9 +233,9 @@ abstract class AbstractServer implements ServerInterface
     /**
      * Returns the servers start time
      *
-     * @return DateTime
+     * @return DateTimeInterface
      */
-    public function getStartTime()
+    public function getStartTime(): DateTimeInterface
     {
         return $this->startTime;
     }
@@ -241,11 +244,10 @@ abstract class AbstractServer implements ServerInterface
      * Handles the given exception
      *
      * @param Exception                        $error
-     * @param Request                          $request
+     * @param RequestInterface                 $request
      * @param WritableStreamInterface|Response $response
-     * @throws Exception
      */
-    public function handleError($error, $request, $response)
+    public function handleError(Exception $error, RequestInterface $request, WritableStreamInterface $response): void
     {
         $this->writeln('Caught exception #%d: %s', $error->getCode(), $error->getMessage());
         $this->writeln($error->getTraceAsString());
@@ -343,12 +345,15 @@ abstract class AbstractServer implements ServerInterface
     /**
      * Handles the given server action
      *
-     * @param string               $serverAction
-     * @param Request              $request
-     * @param \React\Http\Response $response
+     * @param string                  $serverAction
+     * @param RequestInterface        $request
+     * @param WritableStreamInterface $response
      */
-    public function handleServerAction($serverAction, $request, $response)
-    {
+    public function handleServerAction(
+        string $serverAction,
+        RequestInterface $request,
+        WritableStreamInterface $response
+    ) {
         switch ($serverAction) {
             case 'restart':
                 if (!$this->isRunning()) {
@@ -376,7 +381,7 @@ abstract class AbstractServer implements ServerInterface
      *
      * @return bool
      */
-    public function isRunning()
+    public function isRunning(): bool
     {
         return $this->isRunningFlag;
     }
@@ -422,7 +427,7 @@ abstract class AbstractServer implements ServerInterface
             );
             $this->eventLoop->addTimer(
                 $this->getAutoShutdownTime(),
-                function ($timer) {
+                function () {
                     $this->writeln('Auto shutdown time reached');
                     $this->shutdown();
                 }
@@ -440,7 +445,7 @@ abstract class AbstractServer implements ServerInterface
         }
         $this->maintenanceTimer = $this->eventLoop->addTimer(
             $this->maintenanceInterval,
-            function ($timer) {
+            function () {
                 $this->runMaintenance();
                 $this->postponeMaintenance();
             }
@@ -452,7 +457,7 @@ abstract class AbstractServer implements ServerInterface
      *
      * @return int
      */
-    public function getMode()
+    public function getMode(): int
     {
         return $this->mode;
     }
@@ -461,9 +466,9 @@ abstract class AbstractServer implements ServerInterface
      * Sets the mode of the server
      *
      * @param int $mode
-     * @return $this
+     * @return ServerInterface
      */
-    public function setMode($mode)
+    public function setMode(int $mode): ServerInterface
     {
         if ($this->isRunningFlag) {
             throw new InvalidServerChangeException('Can not change the mode when server is running', 1414835788);
@@ -479,7 +484,7 @@ abstract class AbstractServer implements ServerInterface
         }
         $this->mode = $mode;
         ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('serverMode', $mode);
-        Factory::setLockImplementationClass('Cundd\\PersistentObjectStore\\System\\Lock\\TransientLock');
+        Factory::setLockImplementationClass(TransientLock::class);
 
         return $this;
     }
@@ -489,7 +494,7 @@ abstract class AbstractServer implements ServerInterface
      *
      * @return int
      */
-    public function getAutoShutdownTime()
+    public function getAutoShutdownTime(): int
     {
         return $this->autoShutdownTime;
     }
@@ -498,9 +503,9 @@ abstract class AbstractServer implements ServerInterface
      * Sets the number of seconds after which to stop the server if run in test mode
      *
      * @param int $autoShutdownTime
-     * @return $this
+     * @return ServerInterface
      */
-    public function setAutoShutdownTime($autoShutdownTime)
+    public function setAutoShutdownTime(int $autoShutdownTime): ServerInterface
     {
         $this->autoShutdownTime = $autoShutdownTime;
 
@@ -546,10 +551,10 @@ abstract class AbstractServer implements ServerInterface
     /**
      * Sets the event loop
      *
-     * @param \React\EventLoop\LoopInterface $eventLoop
-     * @return $this
+     * @param LoopInterface|\React\EventLoop\LoopInterface $eventLoop
+     * @return ServerInterface
      */
-    public function setEventLoop($eventLoop)
+    public function setEventLoop(LoopInterface $eventLoop): ServerInterface
     {
         if ($this->isRunningFlag) {
             throw new InvalidServerChangeException('Can not change the event loop when server is running', 1412956592);
@@ -575,12 +580,11 @@ abstract class AbstractServer implements ServerInterface
      * Outputs the given value for information
      *
      * @param string $format
-     * @param mixed  $vars …
+     * @param array  ...$vars
      */
-    protected function writeln($format, $vars = null)
+    protected function writeln(string $format, ...$vars)
     {
-        $arguments = func_get_args();
-        call_user_func_array([$this, 'formatAndWrite'], $arguments);
+        $this->formatAndWrite($format, ...$vars);
         $this->formatAndWrite(PHP_EOL);
     }
 
@@ -588,26 +592,23 @@ abstract class AbstractServer implements ServerInterface
      * Outputs the given value for information
      *
      * @param string $format
-     * @param mixed  $vars …
+     * @param array  ...$vars
      */
-    protected function write($format, $vars = null)
+    protected function write(string $format, ...$vars)
     {
-        $arguments = func_get_args();
-        call_user_func_array([$this, 'formatAndWrite'], $arguments);
+        $this->formatAndWrite($format, ...$vars);
     }
 
     /**
      * Outputs the given value for information
      *
      * @param string $format
-     * @param mixed  $vars …
+     * @param array  ...$vars
      */
-    protected function formatAndWrite($format, $vars = null)
+    protected function formatAndWrite(string $format, ...$vars)
     {
-        if (func_num_args() > 1) {
-            $arguments = func_get_args();
-            array_shift($arguments);
-            $format = vsprintf($format, $arguments);
+        if (!empty($vars)) {
+            $format = vsprintf($format, $vars);
         }
         fwrite(STDOUT, $format);
     }
@@ -618,15 +619,12 @@ abstract class AbstractServer implements ServerInterface
      * @experimental
      *
      * @param string $format
-     * @param null   $vars
-     * @throws RuntimeException
+     * @param array  ...$vars
      */
-    protected function log($format, $vars = null)
+    protected function log(string $format, ...$vars)
     {
-        if (func_num_args() > 1) {
-            $arguments = func_get_args();
-            array_shift($arguments);
-            $writeData = vsprintf($format, $arguments);
+        if (!empty($vars)) {
+            $writeData = vsprintf($format, ...$vars);
         } else {
             $writeData = $format;
         }

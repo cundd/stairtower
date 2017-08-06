@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Cundd\PersistentObjectStore\Server\Handler;
 
 use Cundd\PersistentObjectStore\Server\ValueObject\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 
 /**
  * Interface for classes that handle the actions from incoming requests
@@ -13,74 +14,74 @@ interface HandlerInterface
     /**
      * Invoked if no route is given (e.g. if the request path is empty)
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function noRoute(Request $request);
+    public function noRoute(RequestInterface $request);
 
     /**
      * Creates a new Document instance or Database with the given data for the given Request
      *
-     * @param Request $request
-     * @param mixed   $data
+     * @param RequestInterface $request
+     * @param mixed            $data
      * @return HandlerResultInterface
      */
-    public function create(Request $request, $data);
+    public function create(RequestInterface $request, $data);
 
     /**
      * Read Document instances for the given Request
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function read(Request $request);
+    public function read(RequestInterface $request);
 
     /**
      * Update a Document instance with the given data for the given Request
      *
-     * @param Request $request
-     * @param mixed   $data
+     * @param RequestInterface $request
+     * @param mixed            $data
      * @return HandlerResultInterface
      */
-    public function update(Request $request, $data);
+    public function update(RequestInterface $request, $data);
 
     /**
      * Deletes a Document instance for the given Request
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function delete(Request $request);
+    public function delete(RequestInterface $request);
 
     /**
      * Action to display server statistics
      *
-     * @param Request $request
+     * @param RequestInterface|Request $request
      * @return HandlerResultInterface
      */
-    public function getStatsAction(Request $request);
+    public function getStatsAction(RequestInterface $request);
 
     /**
      * Action to deliver assets
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function getAssetAction(Request $request);
+    public function getAssetAction(RequestInterface $request);
 
     /**
      * Action to display all databases
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function getAllDbsAction(Request $request);
+    public function getAllDbsAction(RequestInterface $request);
 
     /**
      * Returns the count of the result set
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function getCountAction(Request $request);
+    public function getCountAction(RequestInterface $request);
 }

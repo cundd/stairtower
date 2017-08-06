@@ -47,9 +47,9 @@ abstract class AbstractHandlerResult implements HandlerResultInterface
     /**
      * Returns the status code for the response
      *
-     * @return integer
+     * @return int
      */
-    public function getStatusCode():int
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }

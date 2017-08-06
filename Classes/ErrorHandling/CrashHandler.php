@@ -68,23 +68,23 @@ class CrashHandler implements HandlerInterface
     /**
      * Perform the actions to handle the problem
      *
-     * @param int    $errno
-     * @param string $errstr
-     * @param string $errfile
-     * @param int    $errline
-     * @param array  $errcontext
+     * @param int    $code
+     * @param string $message
+     * @param string $file
+     * @param int    $line
+     * @param array  $context
      * @return bool
      */
-    public function handle(int $errno, string $errstr, string $errfile = '', int $errline = 0, $errcontext = [])
+    public function handle(int $code, string $message, string $file = '', int $line = 0, $context = [])
     {
         // Construct a helpful crash message
         $errorReport = [];
         $errorReport[] = sprintf(
             'Server crashed with code %d and message "%s" in %s at %s',
-            $errno,
-            $errstr,
-            $errfile,
-            $errline
+            $code,
+            $message,
+            $file,
+            $line
         );
         $errorReport[] = sprintf('Date/time: %s', $this->getTimeWithMicroseconds()->format('Y-m-d H:i:s.u'));
         $errorReport[] = sprintf('Current memory usage: %s', GeneralUtility::formatBytes(memory_get_usage(true)));
@@ -98,6 +98,8 @@ class CrashHandler implements HandlerInterface
         $errorReportPath = static::getRescueDirectory() . 'CRASH_REPORT.txt';
         file_put_contents($errorReportPath, $errorReport);
         print $errorReport;
+
+        return true;
     }
 
     /**

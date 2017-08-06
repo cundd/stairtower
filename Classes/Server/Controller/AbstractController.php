@@ -63,11 +63,11 @@ abstract class AbstractController implements ControllerInterface
         }
     }
 
-    public function didInvokeAction(string $action, ControllerResultInterface $result)
+    public function didInvokeAction(string $action, ControllerResultInterface $result): void
     {
     }
 
-    public function processRequest(RequestInterface $request, WritableStreamInterface $response)
+    public function processRequest(RequestInterface $request, WritableStreamInterface $response): ControllerResultInterface
     {
         if (!method_exists($this, $request->getAction())) {
             throw new RequestMethodNotImplementedException(

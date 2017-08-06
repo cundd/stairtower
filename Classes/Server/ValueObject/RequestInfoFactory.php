@@ -24,11 +24,11 @@ class RequestInfoFactory
     /**
      * Builds a Request instance for the given raw request
      *
-     * @param BaseRequest|Request $request
-     * @param bool                $parseCookies Define if the cookies should be parsed
-     * @return Request
+     * @param BaseRequest|RequestInterface $request
+     * @param bool                         $parseCookies Define if the cookies should be parsed
+     * @return RequestInterface
      */
-    public function buildRequestFromRawRequest($request, $parseCookies = false)
+    public function buildRequestFromRawRequest($request, $parseCookies = false): RequestInterface
     {
         if ($request instanceof Request) {
             return $request;
@@ -83,10 +83,10 @@ class RequestInfoFactory
      * Builds a Request instance for the given request
      *
      * @param BaseRequest|Request $request
-     * @return Request
+     * @return RequestInterface
      * @deprecated
      */
-    public static function buildRequestInfoFromRequest($request)
+    public static function buildRequestInfoFromRequest($request): RequestInterface
     {
         static $factoryInstance = null;
         if (!$factoryInstance) {
@@ -103,7 +103,7 @@ class RequestInfoFactory
      * @param Request|BaseRequest $request
      * @return string
      */
-    public static function getHandlerClassForRequest($request)
+    public static function getHandlerClassForRequest($request): string
     {
         $default = 'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface';
         $path = $request->getPath();
@@ -145,7 +145,7 @@ class RequestInfoFactory
      * Returns the controller class and action name as array if the path contains a special information identifier. If
      * no special information identifier is given, or the controller class does not exist false is returned.
      *
-     * @param Request $request
+     * @param BaseRequest|RequestInterface $request
      * @return array|boolean
      */
     public function getControllerAndActionForRequest($request)
@@ -251,7 +251,7 @@ class RequestInfoFactory
     /**
      * Returns the special server action if the path contains a special information identifier, otherwise FALSE
      *
-     * @param Request|BaseRequest $request
+     * @param RequestInterface|BaseRequest $request
      * @return string|bool
      */
     public static function getServerActionForRequest($request)

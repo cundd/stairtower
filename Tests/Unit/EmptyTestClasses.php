@@ -2,7 +2,9 @@
 declare(strict_types=1);
 
 
+use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
 use Cundd\PersistentObjectStore\Server\Session\SessionControllerTrait;
+use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 use Evenement\EventEmitter;
 use React\Socket\ConnectionInterface;
@@ -41,7 +43,8 @@ class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server
     public function didInvokeAction(
         string $action,
         \Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface $result
-    ) {
+    ): void {
+
     }
 
     public function getMyMethodAction()
@@ -67,7 +70,8 @@ class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server
     public function processRequest(
         RequestInterface $request,
         WritableStreamInterface $response
-    ) {
+    ): ControllerResultInterface {
+        return new ControllerResult(0);
     }
 
 

@@ -187,10 +187,10 @@ abstract class AbstractDocumentController extends AbstractController implements 
                 continue;
             }
             if (
-                $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\Document'
-                || $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface'
+                $argumentClassName === Document::class
+                || $argumentClassName === DocumentInterface::class
                 || in_array(
-                    'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+                    DocumentInterface::class,
                     (array)class_implements($argumentClassName, true)
                 )
             ) {

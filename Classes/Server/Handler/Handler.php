@@ -15,7 +15,7 @@ use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
 use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
 use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
 use Cundd\PersistentObjectStore\Server\ValueObject\RawResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
 use Cundd\PersistentObjectStore\Utility\DebugUtility;
 use SplFixedArray;
 
@@ -83,10 +83,10 @@ class Handler implements HandlerInterface
     /**
      * Invoked if no route is given (e.g. if the request path is empty)
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function noRoute(Request $request)
+    public function noRoute(RequestInterface $request)
     {
         return new HandlerResult(200, Constants::MESSAGE_JSON_WELCOME);
     }
@@ -95,11 +95,11 @@ class Handler implements HandlerInterface
     /**
      * Creates a new Document instance or Database with the given data for the given Request
      *
-     * @param Request $request
-     * @param mixed   $data
+     * @param RequestInterface $request
+     * @param mixed            $data
      * @return HandlerResultInterface
      */
-    public function create(Request $request, $data)
+    public function create(RequestInterface $request, $data)
     {
         if ($request->getMethod() === 'POST') { // Create a Document instance
             return $this->createDataInstance($request, $data);
@@ -115,11 +115,11 @@ class Handler implements HandlerInterface
     /**
      * Creates and returns a new Document instance
      *
-     * @param Request $request
-     * @param mixed   $data
+     * @param RequestInterface $request
+     * @param mixed            $data
      * @return HandlerResult
      */
-    protected function createDataInstance(Request $request, $data)
+    protected function createDataInstance(RequestInterface $request, $data)
     {
         $database = $this->getDatabaseForRequest($request);
         if (!$database) {
@@ -162,10 +162,10 @@ class Handler implements HandlerInterface
     /**
      * Returns the database for the given request or NULL if it is not specified
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return DatabaseInterface|NULL
      */
-    public function getDatabaseForRequest(Request $request)
+    public function getDatabaseForRequest(RequestInterface $request)
     {
         if (!$request->getDatabaseIdentifier()) {
             return null;
@@ -184,11 +184,11 @@ class Handler implements HandlerInterface
     /**
      * Creates and returns a new Database
      *
-     * @param Request $request
-     * @param mixed   $data
+     * @param RequestInterface $request
+     * @param mixed            $data
      * @return HandlerResult
      */
-    protected function createDatabase(Request $request, $data)
+    protected function createDatabase(RequestInterface $request, $data)
     {
         if ($request->getDataIdentifier()) {
             throw new InvalidRequestParameterException(
@@ -214,10 +214,10 @@ class Handler implements HandlerInterface
     /**
      * Read Document instances for the given Request
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function read(Request $request)
+    public function read(RequestInterface $request)
     {
         $query = $request->getQuery();
 
@@ -295,10 +295,10 @@ class Handler implements HandlerInterface
     /**
      * Returns the Document for the given request or NULL if it is not specified
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return DocumentInterface|NULL
      */
-    public function getDataForRequest(Request $request)
+    public function getDataForRequest(RequestInterface $request)
     {
         if (!$request->getDataIdentifier()) {
             return null;
@@ -311,11 +311,11 @@ class Handler implements HandlerInterface
     /**
      * Update a Document instance with the given data for the given Request
      *
-     * @param Request $request
-     * @param mixed   $data
+     * @param RequestInterface $request
+     * @param mixed            $data
      * @return HandlerResultInterface
      */
-    public function update(Request $request, $data)
+    public function update(RequestInterface $request, $data)
     {
         if (!$request->getDataIdentifier()) {
             throw new InvalidRequestParameterException('Document identifier is missing', 1413292389);
@@ -344,10 +344,10 @@ class Handler implements HandlerInterface
     /**
      * Deletes a Document instance for the given Request
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function delete(Request $request)
+    public function delete(RequestInterface $request)
     {
         $database = $this->getDatabaseForRequest($request);
         if (!$database) {
@@ -391,10 +391,10 @@ class Handler implements HandlerInterface
     /**
      * Action to display server statistics
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function getStatsAction(Request $request)
+    public function getStatsAction(RequestInterface $request)
     {
         $detailedStatistics = $request->getDataIdentifier() === 'detailed';
 
@@ -404,10 +404,10 @@ class Handler implements HandlerInterface
     /**
      * Action to deliver assets
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function getAssetAction(Request $request)
+    public function getAssetAction(RequestInterface $request)
     {
         $uri = $request->getPath();
         $uri = substr($uri, 8); // Remove "/_asset/"
@@ -428,10 +428,10 @@ class Handler implements HandlerInterface
     /**
      * Action to display all databases
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function getAllDbsAction(Request $request)
+    public function getAllDbsAction(RequestInterface $request)
     {
         return new HandlerResult(200, $this->coordinator->listDatabases());
     }
@@ -439,10 +439,10 @@ class Handler implements HandlerInterface
     /**
      * Returns the count of the result set
      *
-     * @param Request $request
+     * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function getCountAction(Request $request)
+    public function getCountAction(RequestInterface $request)
     {
         $count = null;
         $readResult = $this->read($request);

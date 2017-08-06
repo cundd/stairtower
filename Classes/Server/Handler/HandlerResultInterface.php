@@ -11,9 +11,9 @@ interface HandlerResultInterface
     /**
      * Returns the status code for the response
      *
-     * @return integer
+     * @return int
      */
-    public function getStatusCode();
+    public function getStatusCode(): int;
 
     /**
      * Returns the request's response data

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Cundd\PersistentObjectStore\Server\Controller;
 
 use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
-use React\Http\Response;
 use React\Stream\WritableStreamInterface;
 
 /**
@@ -57,16 +56,19 @@ interface ControllerInterface
      * @param string                    $action
      * @param ControllerResultInterface $result
      */
-    public function didInvokeAction(string $action, ControllerResultInterface $result);
+    public function didInvokeAction(string $action, ControllerResultInterface $result): void;
 
     /**
      * Process the given request
      *
      * The result output is returned by altering the given response.
      *
-     * @param RequestInterface                 $request
-     * @param WritableStreamInterface|Response $response The response, modified by this handler
-     * @return mixed Returns the result of the processing
+     * @param RequestInterface        $request
+     * @param WritableStreamInterface $response The response, modified by this handler
+     * @return ControllerResultInterface Returns the result of the processing
      */
-    public function processRequest(RequestInterface $request, WritableStreamInterface $response);
+    public function processRequest(
+        RequestInterface $request,
+        WritableStreamInterface $response
+    ): ControllerResultInterface;
 }

@@ -70,7 +70,7 @@ class Server extends AbstractBootstrap
             $this->server->setIp($ip);
         }
         if ($port) {
-            $this->server->setPort($port);
+            $this->server->setPort((int)$port);
         }
 
         // Set the server mode

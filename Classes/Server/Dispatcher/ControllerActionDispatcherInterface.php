@@ -6,8 +6,8 @@ namespace Cundd\PersistentObjectStore\Server\Dispatcher;
 
 use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
 use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
-use React\Http\Response;
+use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use React\Stream\WritableStreamInterface;
 
 /**
  * Interface for classes that can dispatch controller actions that will be handled by a custom Controller
@@ -17,27 +17,34 @@ interface ControllerActionDispatcherInterface
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param Request              $request
-     * @param \React\Http\Response $response
-     * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
+     * @param RequestInterface        $request
+     * @param WritableStreamInterface $response
+     * @return ControllerResultInterface|null Returns the Handler Result if the request is not delayed
      */
-    public function dispatchControllerAction($request, $response);
+    public function dispatchControllerAction(
+        RequestInterface $request,
+        WritableStreamInterface $response
+    ): ?ControllerResultInterface;
 
     /**
      * Handles the given Controller/Action request action
      *
-     * @param Request             $request
-     * @param Response            $response
-     * @param ControllerInterface $controller
+     * @param RequestInterface        $request
+     * @param WritableStreamInterface $response
+     * @param ControllerInterface     $controller
      * @return ControllerResultInterface Returns the Handler Result
      */
-    public function invokeControllerActionWithRequest($request, $response, $controller);
+    public function invokeControllerActionWithRequest(
+        RequestInterface $request,
+        WritableStreamInterface $response,
+        ControllerInterface $controller
+    ): ControllerResultInterface;
 
     /**
-     * Returns the Controller instance for the given request or false if none will be used
+     * Returns the Controller instance for the given request or NULL if none will be used
      *
-     * @param Request $request
-     * @return ControllerInterface
+     * @param RequestInterface $request
+     * @return ControllerInterface|null
      */
-    public function getControllerForRequest($request);
+    public function getControllerForRequest(RequestInterface $request): ?ControllerInterface;
 }

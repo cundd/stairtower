@@ -6,6 +6,7 @@ namespace Cundd\PersistentObjectStore\Server\ValueObject;
 use Cundd\PersistentObjectStore\Immutable;
 use Cundd\PersistentObjectStore\Utility\GeneralUtility;
 use DateTime;
+use DateTimeInterface;
 use JsonSerializable;
 
 /**
@@ -49,14 +50,19 @@ class Statistics implements Immutable, JsonSerializable
     protected $memoryPeakUsage;
 
     /**
-     * @param string   $version
-     * @param string   $guid
-     * @param DateTime $startTime
-     * @param float    $memoryUsage
-     * @param float    $memoryPeakUsage
+     * @param string            $version
+     * @param string            $guid
+     * @param DateTimeInterface $startTime
+     * @param float             $memoryUsage
+     * @param float             $memoryPeakUsage
      */
-    public function __construct($version, $guid, $startTime, $memoryUsage, $memoryPeakUsage)
-    {
+    public function __construct(
+        string $version,
+        string $guid,
+        DateTimeInterface $startTime,
+        $memoryUsage,
+        $memoryPeakUsage
+    ) {
         $this->guid = $guid;
         $this->memoryPeakUsage = $memoryPeakUsage;
         $this->memoryUsage = $memoryUsage;
