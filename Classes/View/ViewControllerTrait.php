@@ -101,22 +101,23 @@ trait ViewControllerTrait
     protected function initializeViewAdditions()
     {
         if ($this->view instanceof ExpandableViewInterface) {
-            $this->view->addFunction(
+            $this->view->addFilterAndFunction(
                 'action',
-                function ($action = null, $controller = null, $database = null, $document = null, $actionName = null) {
+                function (
+                    string $action,
+                    string $controller = null,
+                    string $database = null,
+                    string $document = null,
+                    array $query = []
+                ) {
                     if ($controller === null) {
                         $controller = $this;
                     }
 
-                    // TODO: Warn if the @deprecated argument actionName is used
-                    if ($action === null) {
-                        $action = $actionName;
-                    }
-
-                    return $this->getUriBuilder()->buildUriFor($action, $controller, $database, $document);
+                    return $this->getUriBuilder()->buildUriFor($action, $controller, $database, $document, $query);
                 }
             );
-            $this->view->addFunction(
+            $this->view->addFilterAndFunction(
                 'assetUri',
                 function ($assetUri, $noCache = false) {
                     $uri = '/_asset/' . ltrim($assetUri);

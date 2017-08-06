@@ -27,4 +27,14 @@ interface ExpandableViewInterface
      * @return ExpandableViewInterface
      */
     public function addFilter(string $key, callable $callback, array $options = []): ExpandableViewInterface;
+
+    /**
+     * Add the given key and callback as filter and as function
+     *
+     * @param string   $key      Key under which the filter and function will be available inside the template
+     * @param Callable $callback Callback
+     * @param array    $options  Additional options (dependent on the actual view implementation)
+     * @return ExpandableViewInterface
+     */
+    public function addFilterAndFunction(string $key, callable $callback, array $options = []): ExpandableViewInterface;
 }

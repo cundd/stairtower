@@ -122,14 +122,6 @@ class View extends AbstractView implements ExpandableViewInterface
         return $this->loader;
     }
 
-    /**
-     * Add the function with the given key
-     *
-     * @param string   $key      Key under which the function will be available inside the template
-     * @param Callable $callback Callback for this template function
-     * @param array    $options  Additional options (dependent on the actual view implementation)
-     * @return ExpandableViewInterface
-     */
     public function addFunction(string $key, callable $callback, array $options = []): ExpandableViewInterface
     {
         $this->getEngine()->addFunction(new Twig_SimpleFunction($key, $callback, $options));
@@ -137,17 +129,17 @@ class View extends AbstractView implements ExpandableViewInterface
         return $this;
     }
 
-    /**
-     * Add the filter with the given key
-     *
-     * @param string   $key      Key under which the filter will be available inside the template
-     * @param Callable $callback Callback for this filter
-     * @param array    $options  Additional options (dependent on the actual view implementation)
-     * @return ExpandableViewInterface
-     */
     public function addFilter(string $key, callable $callback, array $options = []): ExpandableViewInterface
     {
         $this->getEngine()->addFilter(new Twig_SimpleFilter($key, $callback, $options));
+
+        return $this;
+    }
+
+    public function addFilterAndFunction(string $key, callable $callback, array $options = []): ExpandableViewInterface
+    {
+        $this->addFilter($key, $callback, $options);
+        $this->addFunction($key, $callback, $options);
 
         return $this;
     }
