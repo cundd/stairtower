@@ -105,9 +105,9 @@ trait ViewControllerTrait
                 'action',
                 function (
                     string $action,
-                    string $controller = null,
-                    string $database = null,
-                    string $document = null,
+                    $controller = null,
+                    $database = null,
+                    $document = null,
                     array $query = []
                 ) {
                     if ($controller === null) {
@@ -119,7 +119,7 @@ trait ViewControllerTrait
             );
             $this->view->addFilterAndFunction(
                 'assetUri',
-                function ($assetUri, $noCache = false) {
+                function (string $assetUri, $noCache = false) {
                     $uri = '/_asset/' . ltrim($assetUri);
                     if ($noCache) {
                         return $uri . '?v=' . time();
