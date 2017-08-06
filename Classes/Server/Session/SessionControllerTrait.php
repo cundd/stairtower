@@ -50,7 +50,7 @@ trait SessionControllerTrait
      * @param array   $headers
      * @return MutableControllerResultInterface
      */
-    public function buildResponse($statusCode = 0, $data = null, $contentType = '', $headers = [])
+    public function buildResponse(int $statusCode = 0, $data = null, string $contentType = '', array $headers = [])
     {
         $response = new MutableControllerResult($statusCode, $data, $contentType, $headers);
         $sessionCookie = new Cookie(SessionConstants::SESSION_ID_COOKIE_NAME, $this->getSession()->getIdentifier());
