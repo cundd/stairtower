@@ -15,12 +15,12 @@ interface ArrayableInterface
      *
      * @return array
      */
-    public function toArray();
+    public function toArray(): array;
 
     /**
      * Returns the filtered items as fixed array
      *
      * @return SplFixedArray
      */
-    public function toFixedArray();
-} 
+    public function toFixedArray(): SplFixedArray;
+}

@@ -18,7 +18,7 @@ interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, 
      *
      * @return string
      */
-    public function getIdentifier();
+    public function getIdentifier(): string;
 
     /**
      * Filters the database using the given comparison
@@ -26,15 +26,15 @@ interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, 
      * @param ComparisonInterface $comparison
      * @return \Cundd\PersistentObjectStore\Filter\FilterResultInterface
      */
-    public function filter($comparison);
+    public function filter(ComparisonInterface $comparison): \Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 
     /**
      * Returns the object with the given identifier
      *
      * @param string $identifier
-     * @return DocumentInterface
+     * @return DocumentInterface|null
      */
-    public function findByIdentifier($identifier): ?DocumentInterface;
+    public function findByIdentifier(string $identifier): ?DocumentInterface;
 
     /**
      * Sets the raw data
@@ -53,29 +53,32 @@ interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, 
      * Adds the given Document to the database
      *
      * @param DocumentInterface $document
+     * @return DatabaseInterface
      */
-    public function add($document);
+    public function add(DocumentInterface $document): self;
 
     /**
      * Updates the given Document in the database
      *
      * @param DocumentInterface $document
+     * @return DatabaseInterface
      */
-    public function update($document);
+    public function update(DocumentInterface $document): self;
 
     /**
      * Removes the given Document from the database
      *
      * @param DocumentInterface $document
+     * @return DatabaseInterface
      */
-    public function remove($document);
+    public function remove(DocumentInterface $document): self;
 
     /**
      * Returns if the database contains the given Document
      *
      * @param DocumentInterface|string $document Actual Document instance or it's GUID
-     * @return boolean
+     * @return bool
      */
-    public function contains($document);
+    public function contains($document): bool;
 
 } 

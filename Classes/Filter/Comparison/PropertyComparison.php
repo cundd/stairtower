@@ -65,7 +65,7 @@ class PropertyComparison implements PropertyComparisonInterface
      * @param mixed $testValue
      * @return bool
      */
-    public function perform($testValue)
+    public function perform($testValue): bool
     {
         if ($testValue instanceof KeyValueCodingInterface) {
             $propertyValue = $testValue->valueForKeyPath($this->property);
@@ -120,7 +120,7 @@ class PropertyComparison implements PropertyComparisonInterface
      *
      * @return string one of the TYPE constants
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return $this->operator;
     }

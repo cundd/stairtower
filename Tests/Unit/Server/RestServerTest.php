@@ -47,6 +47,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
      */
     public function fullServerTest()
     {
+        $this->markTestSkipped('expensive');
         // $start = microtime(1);
 
         $databaseIdentifier = $this->databaseIdentifier;
@@ -297,6 +298,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
      */
     public function letItRockTest()
     {
+        $this->markTestSkipped('expensive');
         $databaseIdentifier = $this->databaseIdentifier;
 
 

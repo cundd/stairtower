@@ -39,30 +39,44 @@ class LogicalComparison implements LogicalComparisonInterface
     /**
      * Creates a new comparison
      *
-     * @param string                    $operator One of the ComparisonInterface::TYPE constants
-     * @param array|ComparisonInterface $constraints
+     * @param string                $operator One of the ComparisonInterface::TYPE constants
+     * @param ComparisonInterface[] ...$constraints
      */
-    public function __construct($operator, $constraints)
+    public function __construct(string $operator, ComparisonInterface...$constraints)
     {
         $this->operator = $operator;
+        $this->constraints = $constraints;
+    }
 
-        if (func_num_args() > 2) {
-            $arguments = func_get_args();
-            array_shift($arguments);
-            $this->constraints = $arguments;
-        } elseif ($constraints) {
-            $this->constraints = $constraints;
-        }
+    /**
+     * Build a new 'and' comparison
+     *
+     * @param ComparisonInterface[] ...$constraints
+     * @return LogicalComparison
+     */
+    public static function and (ComparisonInterface...$constraints): LogicalComparison
+    {
+        return new static(self::TYPE_AND, ...$constraints);
+    }
+
+    /**
+     * Build a new 'or' comparison
+     *
+     * @param ComparisonInterface[] ...$constraints
+     * @return LogicalComparison
+     */
+    public static function or (ComparisonInterface...$constraints): LogicalComparison
+    {
+        return new static(self::TYPE_OR, ...$constraints);
     }
 
     /**
      * Performs the comparison against the given test value
      *
      * @param mixed $testValue
-     * @throws \Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException
      * @return bool
      */
-    public function perform($testValue)
+    public function perform($testValue): bool
     {
         $strict = $this->isStrict();
         $operator = $this->getOperator();
@@ -116,7 +130,7 @@ class LogicalComparison implements LogicalComparisonInterface
      *
      * @return string one of the TYPE constants
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return $this->operator;
     }
@@ -131,14 +145,13 @@ class LogicalComparison implements LogicalComparisonInterface
         return $this->constraints;
     }
 
-
     /**
      * If strict is true the perform method will throw an InvalidComparisonException if one of the constraints is not an
      * instance of ComparisonInterface
      *
      * @return boolean
      */
-    public function isStrict()
+    public function isStrict(): bool
     {
         return $this->strict;
     }
@@ -148,9 +161,9 @@ class LogicalComparison implements LogicalComparisonInterface
      * instance of ComparisonInterface
      *
      * @param boolean $strict
-     * @return $this
+     * @return LogicalComparison
      */
-    public function setStrict($strict)
+    public function setStrict(bool $strict): LogicalComparison
     {
         $this->strict = $strict;
 

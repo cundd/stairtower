@@ -11,9 +11,9 @@ use Cundd\PersistentObjectStore\Domain\Model\Exception\DatabaseMismatchException
 use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
 use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
 use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
 use Cundd\PersistentObjectStore\Filter\Filter;
+use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 use Cundd\PersistentObjectStore\Index\IdentifierIndex;
 use Cundd\PersistentObjectStore\Index\IndexableTrait;
 use Cundd\PersistentObjectStore\Index\IndexInterface;
@@ -73,7 +73,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
      * @param string $identifier
      * @param array  $rawData
      */
-    public function __construct($identifier, $rawData = [])
+    public function __construct(string $identifier, $rawData = [])
     {
         GeneralUtility::assertDatabaseIdentifier($identifier);
         $this->identifier = $identifier;
@@ -93,7 +93,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
      *
      * @return string
      */
-    public function getIdentifier()
+    public function getIdentifier(): string
     {
         return $this->identifier;
     }
@@ -106,9 +106,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
      * Returns the object with the given identifier
      *
      * @param string $identifier
-     * @return DocumentInterface
+     * @return DocumentInterface|null
      */
-    public function findByIdentifier($identifier): ?DocumentInterface
+    public function findByIdentifier(string $identifier): ?DocumentInterface
     {
         // Query the Indexes and return the result if it is not an error
         $indexLookupResult = $this->queryIndexesForValueOfProperty($identifier, Constants::DATA_ID_KEY);
@@ -150,9 +150,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
      * Returns if the database contains the given Document
      *
      * @param DocumentInterface|string $document Actual Document instance or it's GUID
-     * @return boolean
+     * @return bool
      */
-    public function contains($document)
+    public function contains($document): bool
     {
         if (is_string($document)) {
             $identifier = $document;
@@ -171,31 +171,20 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
      * Filters the database using the given comparison
      *
      * @param ComparisonInterface $comparison
-     * @return \Cundd\PersistentObjectStore\Filter\FilterResultInterface
+     * @return FilterResultInterface
      */
-    public function filter($comparison)
+    public function filter(ComparisonInterface $comparison): FilterResultInterface
     {
-        if (is_array($comparison) || func_num_args() > 1) {
-            DebugUtility::$backtraceOffset++;
-            DebugUtility::pl('Deprecated arguments passed. Use only one comparison as argument');
-            DebugUtility::$backtraceOffset--;
-            if (is_array($comparison)) {
-                $comparison = new LogicalComparison(ComparisonInterface::TYPE_AND, $comparison);
-            } else {
-                $comparison = new LogicalComparison(ComparisonInterface::TYPE_AND, func_get_args());
-            }
-        }
-        $filter = new Filter($comparison);
-
-        return $filter->filterCollection($this);
+        return (new Filter($comparison))->filterCollection($this);
     }
 
     /**
      * Adds the given Document to the database
      *
      * @param DocumentInterface $document
+     * @return DatabaseInterface
      */
-    public function add($document)
+    public function add(DocumentInterface $document): DatabaseInterface
     {
         $this->assertDataInstancesDatabaseIdentifier($document);
         DocumentUtility::assertDocumentIdentifier($document);
@@ -221,14 +210,17 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
 
         $this->state = self::STATE_DIRTY;
         SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_ADDED, [$document]);
+
+        return $this;
     }
 
     /**
      * Updates the given Document in the database
      *
      * @param DocumentInterface $document
+     * @return DatabaseInterface
      */
-    public function update($document)
+    public function update(DocumentInterface $document): DatabaseInterface
     {
         $this->assertDataInstancesDatabaseIdentifier($document);
         DocumentUtility::assertDocumentIdentifier($document);
@@ -266,6 +258,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
 
         $this->state = self::STATE_DIRTY;
         SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_UPDATED, [$document]);
+
+        return $this;
     }
 
 
@@ -273,8 +267,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
      * Removes the given Document from the database
      *
      * @param DocumentInterface $document
+     * @return DatabaseInterface
      */
-    public function remove($document)
+    public function remove(DocumentInterface $document): DatabaseInterface
     {
         $this->assertDataInstancesDatabaseIdentifier($document);
         DocumentUtility::assertDocumentIdentifier($document);
@@ -307,6 +302,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
         }
         $this->state = self::STATE_DIRTY;
         SharedEventEmitter::emit(Event::DATABASE_DOCUMENT_REMOVED, [$document]);
+
+        return $this;
     }
 
     /**
@@ -376,7 +373,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
     /**
      * Sets the raw data
      *
-     * @param \SplFixedArray|array|\Iterator $rawData
+     * @param \SplFixedArray|array|\Traversable $rawData
      */
     public function setRawData($rawData)
     {
@@ -384,7 +381,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
             // Use the fixed array as is
         } elseif (is_array($rawData)) {
             $rawData = SplFixedArray::fromArray($rawData);
-        } elseif ($rawData instanceof \Iterator) {
+        } elseif ($rawData instanceof \Traversable) {
             $rawData = SplFixedArray::fromArray(iterator_to_array($rawData));
         } else {
             throw new InvalidCollectionException('Could not set raw data', 1412017652);
@@ -594,9 +591,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
     /**
      * Returns all Document instances of this database
      *
-     * @return DatabaseInterface[]
+     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return $this->toFixedArray()->toArray();
     }
@@ -604,9 +601,9 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
     /**
      * Returns all Document instances of this database
      *
-     * @return \SplFixedArray<DatabaseInterface>
+     * @return SplFixedArray|DatabaseInterface[]
      */
-    public function toFixedArray()
+    public function toFixedArray(): SplFixedArray
     {
         $count = $this->count();
         $i = 0;

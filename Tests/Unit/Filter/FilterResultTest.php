@@ -56,10 +56,9 @@ class FilterResultTest extends AbstractDatabaseBasedCase
 
         $filter = new Filter(
             new LogicalComparison(
-                ComparisonInterface::TYPE_AND, [
-                    new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'),
-                    new PropertyComparison('name', ComparisonInterface::TYPE_EQUAL_TO, 'Booker Oneil'),
-                ]
+                ComparisonInterface::TYPE_AND,
+                new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'),
+                new PropertyComparison('name', ComparisonInterface::TYPE_EQUAL_TO, 'Booker Oneil')
             )
         );
 
@@ -121,16 +120,12 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         $filter = new Filter(
             new LogicalComparison(
                 ComparisonInterface::TYPE_AND,
-                [
-                    new LogicalComparison(
-                        ComparisonInterface::TYPE_OR,
-                        [
-                            new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
-                            new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green'),
-                        ]
-                    ),
-                    new PropertyComparison('age', ComparisonInterface::TYPE_LESS_THAN, 25),
-                ]
+                new LogicalComparison(
+                    ComparisonInterface::TYPE_OR,
+                    new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
+                    new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'green')
+                ),
+                new PropertyComparison('age', ComparisonInterface::TYPE_LESS_THAN, 25)
             )
         );
 

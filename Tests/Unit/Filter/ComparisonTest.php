@@ -240,6 +240,24 @@ class ComparisonTest extends AbstractCase
     /**
      * @test
      */
+    public function andFactoryTest()
+    {
+        $testObject = new stdClass();
+        $testObject->name = 'Yvonne';
+        $testObject->status = 'Girlfriend';
+
+        $this->fixture = LogicalComparison:: and (
+            new PropertyComparison('name', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Yvonne'),
+            new PropertyComparison('status', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Girlfriend')
+        );
+
+        $testObject->status = 'Ex';
+        $this->assertFalse($this->fixture->perform($testObject));
+    }
+
+    /**
+     * @test
+     */
     public function orTest()
     {
         $testObject = new stdClass();
@@ -248,6 +266,30 @@ class ComparisonTest extends AbstractCase
 
         $this->fixture = new LogicalComparison(
             PropertyComparisonInterface::TYPE_OR,
+            new PropertyComparison('name', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Yvonne'),
+            new PropertyComparison('status', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Girlfriend')
+        );
+
+        $this->assertTrue($this->fixture->perform($testObject));
+
+        $testObject->status = 'Ex';
+        $this->assertTrue($this->fixture->perform($testObject));
+
+        $testObject->name = 'Bob';
+        $testObject->status = 'Son';
+        $this->assertFalse($this->fixture->perform($testObject));
+    }
+
+    /**
+     * @test
+     */
+    public function orFactoryTest()
+    {
+        $testObject = new stdClass();
+        $testObject->name = 'Yvonne';
+        $testObject->status = 'Girlfriend';
+
+        $this->fixture = LogicalComparison:: or (
             new PropertyComparison('name', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Yvonne'),
             new PropertyComparison('status', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Girlfriend')
         );

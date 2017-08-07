@@ -71,7 +71,7 @@ class FilterBuilder implements FilterBuilderInterface
             $comparisons[] = $this->getComparisonForValueAndKey($value, $key);
         }
 
-        return new LogicalComparison(ComparisonInterface::TYPE_AND, $comparisons);
+        return new LogicalComparison(ComparisonInterface::TYPE_AND, ...$comparisons);
     }
 
     /**
@@ -170,7 +170,7 @@ class FilterBuilder implements FilterBuilderInterface
                         $logicalComparisonConstraints[] = $this->getComparisonForValueAndKey($subValue, $subKey);
                     }
                 }
-                $comparison = new LogicalComparison($comparisonType, $logicalComparisonConstraints);
+                $comparison = new LogicalComparison($comparisonType, ...$logicalComparisonConstraints);
                 $comparison->setStrict(true);
                 break;
 

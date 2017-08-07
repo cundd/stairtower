@@ -105,12 +105,12 @@ interface ComparisonInterface
      * @param mixed $testValue
      * @return bool
      */
-    public function perform($testValue);
+    public function perform($testValue): bool;
 
     /**
      * Returns the type of the comparison from the comparison value against the given test data's property
      *
      * @return string one of the TYPE constants
      */
-    public function getOperator();
+    public function getOperator(): string;
 }

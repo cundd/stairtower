@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Cundd\PersistentObjectStore\Index;
 
 use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Traversable;
 
 /**
  * Abstract Index implementation
@@ -20,10 +21,10 @@ abstract class AbstractIndex implements IndexInterface
     /**
      * Returns a new Index for the given Database and property
      *
-     * @param DatabaseInterface|\Iterator $database
-     * @param string                      $property
+     * @param DatabaseInterface|Traversable $database
+     * @param string                        $property
      */
-    public function __construct($database = null, $property = '')
+    public function __construct(Traversable $database = null, string $property = '')
     {
         if ($database) {
             $this->indexDatabase($database);
@@ -38,7 +39,7 @@ abstract class AbstractIndex implements IndexInterface
      *
      * @return string
      */
-    public function getProperty()
+    public function getProperty(): string
     {
         return $this->property;
     }
@@ -49,7 +50,7 @@ abstract class AbstractIndex implements IndexInterface
      * @param string $key
      * @return $this
      */
-    public function setProperty($key)
+    public function setProperty(string $key)
     {
         $this->property = $key;
 

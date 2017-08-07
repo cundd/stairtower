@@ -64,10 +64,8 @@ class ExampleTest extends AbstractDataBasedCase
         $filterResult = $database->filter(
             new Filter\Comparison\LogicalComparison(
                 ComparisonInterface::TYPE_AND,
-                [
-                    new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
-                    new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'female'),
-                ]
+                new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
+                new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'female')
             )
         );
 
@@ -138,26 +136,13 @@ class ExampleTest extends AbstractDataBasedCase
                 ComparisonInterface::TYPE_OR,
                 new Filter\Comparison\LogicalComparison(
                     ComparisonInterface::TYPE_AND,
-                    [
-                        new Filter\Comparison\PropertyComparison(
-                            'eyeColor', ComparisonInterface::TYPE_EQUAL_TO,
-                            'brown'
-                        ),
-                        new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'male'),
-                    ]
+                    new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'brown'),
+                    new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'male')
                 ),
                 new Filter\Comparison\LogicalComparison(
                     ComparisonInterface::TYPE_AND,
-                    [
-                        new Filter\Comparison\PropertyComparison(
-                            'eyeColor', ComparisonInterface::TYPE_EQUAL_TO,
-                            'blue'
-                        ),
-                        new Filter\Comparison\PropertyComparison(
-                            'gender', ComparisonInterface::TYPE_EQUAL_TO,
-                            'female'
-                        ),
-                    ]
+                    new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
+                    new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'female')
                 )
             )
         );

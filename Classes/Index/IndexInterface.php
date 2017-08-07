@@ -53,7 +53,7 @@ interface IndexInterface
      * @param int                     $position
      * @return IndexInterface
      */
-    public function addEntryWithPosition($document, $position): IndexInterface;
+    public function addEntryWithPosition($document, int $position): IndexInterface;
 
     /**
      * Updates the given entry in the Index
@@ -62,7 +62,7 @@ interface IndexInterface
      * @param int                     $position
      * @return IndexInterface
      */
-    public function updateEntryForPosition($document, $position): IndexInterface;
+    public function updateEntryForPosition($document, int $position): IndexInterface;
 
     /**
      * Removes the given entry in the Index
@@ -75,15 +75,15 @@ interface IndexInterface
     /**
      * Builds the index for the given collection
      *
-     * @param DatabaseInterface|\Iterator $database
+     * @param DatabaseInterface|\Traversable $database
      * @return IndexInterface
      */
-    public function indexDatabase($database): IndexInterface;
+    public function indexDatabase(\Traversable $database): IndexInterface;
 
     /**
      * Returns the property key to be indexed
      *
      * @return string
      */
-    public function getProperty();
-} 
+    public function getProperty(): string;
+}

@@ -49,10 +49,10 @@ class Key extends AbstractIndex
     /**
      * Builds the index for the given collection
      *
-     * @param DatabaseInterface|\Iterator $database
+     * @param DatabaseInterface|\Iterator|\Traversable $database
      * @return IndexInterface
      */
-    public function indexDatabase($database): IndexInterface
+    public function indexDatabase(\Traversable $database): IndexInterface
     {
         // Clear the map
         $this->map = [];
@@ -98,7 +98,7 @@ class Key extends AbstractIndex
      * @param  int                    $position
      * @return IndexInterface
      */
-    public function addEntryWithPosition($document, $position): IndexInterface
+    public function addEntryWithPosition($document, int $position): IndexInterface
     {
         $key = ObjectUtility::valueForKeyPathOfObject($this->getProperty(), $document);
         if (isset($this->map[$key])) {
@@ -119,7 +119,7 @@ class Key extends AbstractIndex
      * @param int                     $position
      * @return IndexInterface
      */
-    public function updateEntryForPosition($document, $position): IndexInterface
+    public function updateEntryForPosition($document, int $position): IndexInterface
     {
         $key = ObjectUtility::valueForKeyPathOfObject($this->getProperty(), $document);
         if (!isset($this->map[$key])) {

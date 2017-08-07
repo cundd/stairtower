@@ -346,7 +346,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      *
      * @return SplFixedArray
      */
-    public function toFixedArray()
+    public function toFixedArray(): \SplFixedArray
     {
         return SplFixedArray::fromArray($this->toArray());
     }
@@ -356,7 +356,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         if (!$this->fullyFiltered) {
             $this->findAll();
