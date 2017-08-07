@@ -246,7 +246,7 @@ class ComparisonTest extends AbstractCase
         $testObject->name = 'Yvonne';
         $testObject->status = 'Girlfriend';
 
-        $this->fixture = LogicalComparison:: and (
+        $this->fixture = LogicalComparison::logicalAnd(
             new PropertyComparison('name', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Yvonne'),
             new PropertyComparison('status', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Girlfriend')
         );
@@ -289,7 +289,7 @@ class ComparisonTest extends AbstractCase
         $testObject->name = 'Yvonne';
         $testObject->status = 'Girlfriend';
 
-        $this->fixture = LogicalComparison:: or (
+        $this->fixture = LogicalComparison::logicalOr(
             new PropertyComparison('name', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Yvonne'),
             new PropertyComparison('status', PropertyComparisonInterface::TYPE_EQUAL_TO, 'Girlfriend')
         );

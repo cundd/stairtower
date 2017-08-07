@@ -54,7 +54,7 @@ class LogicalComparison implements LogicalComparisonInterface
      * @param ComparisonInterface[] ...$constraints
      * @return LogicalComparison
      */
-    public static function and (ComparisonInterface...$constraints): LogicalComparison
+    public static function logicalAnd(ComparisonInterface...$constraints): LogicalComparison
     {
         return new static(self::TYPE_AND, ...$constraints);
     }
@@ -65,7 +65,7 @@ class LogicalComparison implements LogicalComparisonInterface
      * @param ComparisonInterface[] ...$constraints
      * @return LogicalComparison
      */
-    public static function or (ComparisonInterface...$constraints): LogicalComparison
+    public static function logicalOr(ComparisonInterface...$constraints): LogicalComparison
     {
         return new static(self::TYPE_OR, ...$constraints);
     }
