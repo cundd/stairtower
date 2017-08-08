@@ -303,7 +303,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
         // Create a database
         $response = $this->performRestRequest($databaseIdentifier, 'PUT');
-        $this->assertNotEquals(false, $response);
+        $this->assertNotFalse($response, "Could not create database $databaseIdentifier");
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
 
@@ -402,14 +402,26 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
         curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_HEADER, 1);
+
 
         $response = curl_exec($ch);
+        if (false === $response) {
+            return $response;
+        }
+
+        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
 
         curl_close($ch);
 
-        if ($response) {
-            return json_decode($response, true);
+        if ($body) {
+            return json_decode($body, true);
         }
+
+        echo 'Header: ' . PHP_EOL . $header . PHP_EOL;
+
 
         return $response;
     }

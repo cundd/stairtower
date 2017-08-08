@@ -25,7 +25,7 @@ before_script:
   - composer install --prefer-source --ignore-platform-reqs
   - >
     if [[ "$WITH_TWIG" == "yes" ]]; then
-      composer require twig/twig;
+      composer require twig/twig '^1.23';
     fi
 
 

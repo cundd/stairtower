@@ -4,11 +4,12 @@ declare(strict_types=1);
 namespace Cundd\PersistentObjectStore\View\Twig;
 
 use Cundd\PersistentObjectStore\View\ViewInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for the Twig based View
  */
-class ViewTest extends \PHPUnit\Framework\TestCase
+class ViewTest extends TestCase
 {
     /**
      * @var ViewInterface
@@ -21,8 +22,6 @@ class ViewTest extends \PHPUnit\Framework\TestCase
         if (class_exists('Twig_Environment')) {
             $this->fixture = new View();
         }
-
-
     }
 
     protected function tearDown()
