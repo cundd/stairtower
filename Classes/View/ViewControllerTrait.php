@@ -108,13 +108,21 @@ trait ViewControllerTrait
                     $controller = null,
                     $database = null,
                     $document = null,
-                    array $query = []
+                    array $query = [],
+                    $fragment = ''
                 ) {
                     if ($controller === null) {
                         $controller = $this;
                     }
 
-                    return $this->getUriBuilder()->buildUriFor($action, $controller, $database, $document, $query);
+                    return $this->getUriBuilder()->buildUriFor(
+                        $action,
+                        $controller,
+                        $database,
+                        $document,
+                        $query,
+                        (string)$fragment
+                    );
                 }
             );
             $this->view->addFilterAndFunction(

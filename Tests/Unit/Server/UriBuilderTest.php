@@ -232,6 +232,17 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
                 ['a' => 1, 'b' => 2]
             )
         );
+        $this->assertEquals(
+            '/_cundd-stair_way-application/blur/people-small/0b5e3637477c?a=1&b=2#a/uri/fragment',
+            $this->fixture->buildUriFor(
+                'blur',
+                'Cundd\\StairWay\\Controller\\ApplicationController',
+                $database,
+                $document,
+                ['a' => 1, 'b' => 2],
+                'a/uri/fragment'
+            )
+        );
     }
 
     /**

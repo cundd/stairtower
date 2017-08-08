@@ -25,9 +25,17 @@ interface UriBuilderInterface
      * @param DatabaseInterface|string   $database   Database instance or identifier
      * @param DocumentInterface|string   $document   Document instance or identifier
      * @param string[]                   $query      Additional GET query parameters
+     * @param string                     $fragment
      * @return string
      */
-    public function buildUriFor($action, $controller, $database = null, $document = null, array $query = []);
+    public function buildUriFor(
+        $action,
+        $controller,
+        $database = null,
+        $document = null,
+        array $query = [],
+        string $fragment = ''
+    );
 
     /**
      * Creates the request namespace for the given controller

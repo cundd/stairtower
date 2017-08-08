@@ -15,6 +15,9 @@ use Cundd\PersistentObjectStore\Utility\GeneralUtility;
  */
 class UriBuilder implements UriBuilderInterface
 {
+    private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
+    private static $charSubDelims = '!\$&\'\(\)\*\+,;=';
+
     /**
      * Build the URI with the given arguments
      *
@@ -23,10 +26,17 @@ class UriBuilder implements UriBuilderInterface
      * @param DatabaseInterface|string   $database   Database instance or identifier
      * @param DocumentInterface|string   $document   Document instance or identifier
      * @param array                      $query
+     * @param string                     $fragment
      * @return string
      */
-    public function buildUriFor($action, $controller, $database = null, $document = null, array $query = [])
-    {
+    public function buildUriFor(
+        $action,
+        $controller,
+        $database = null,
+        $document = null,
+        array $query = [],
+        string $fragment = ''
+    ) {
         if (!$action) {
             throw new InvalidUriBuilderArgumentException('Action name must not be empty', 1422475362);
         }
@@ -65,7 +75,11 @@ class UriBuilder implements UriBuilderInterface
 
         $uri = '/' . implode('/', $uriParts);
         if (!empty($query)) {
-            return $uri . '?' . http_build_query($query);
+            $uri .= '?' . $this->filterQueryAndFragment(http_build_query($query));
+        }
+
+        if ($fragment) {
+            $uri .= '#' . $this->filterQueryAndFragment($fragment);
         }
 
         return $uri;
@@ -197,4 +211,26 @@ class UriBuilder implements UriBuilderInterface
         }
     }
 
+    /**
+     * Filters the query string or fragment of a URI
+     *
+     * Taken from https://github.com/guzzle/psr7
+     *
+     * @param string $input
+     *
+     * @return string
+     */
+    private function filterQueryAndFragment(string $input)
+    {
+        return preg_replace_callback(
+            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawUrlEncodeMatchZero'],
+            $input
+        );
+    }
+
+    private function rawUrlEncodeMatchZero(array $match)
+    {
+        return rawurlencode($match[0]);
+    }
 }
