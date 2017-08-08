@@ -5,6 +5,8 @@ namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\Domain\Model\Document;
+use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
 use Cundd\PersistentObjectStore\Formatter\JsonFormatter;
 use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
@@ -678,7 +680,6 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
             try {
                 $requestInfo = $this->requestFactory->buildRequestFromRawRequest($request, true);
                 $this->handle($requestInfo, $response);
-
             } catch (\Exception $error) {
                 $this->handleError($error, $request, $response);
             }
@@ -727,15 +728,17 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
         $methodReflection = $classReflection->getMethod($actionMethod);
         $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = 0;
         foreach ($methodReflection->getParameters() as $parameter) {
-            $argumentClassName = $parameter->getClass() ? trim($parameter->getClass()->getName()) : null;
-            if ($argumentClassName && $argumentClassName === 'Cundd\\PersistentObjectStore\\Domain\\Model\\Document') {
-                $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = ($parameter->isOptional(
-                ) ? 2 : 1);
-                break;
+            if ($parameter->getClass()) {
+                $argumentClassName = trim($parameter->getClass()->getName());
+                if ($argumentClassName === Document::class || $argumentClassName === DocumentInterface::class) {
+                    $controllerActionRequiresDocumentCache[$controllerActionIdentifier] = ($parameter->isOptional()
+                        ? 2
+                        : 1);
+                    break;
+                }
             }
         }
 
         return $controllerActionRequiresDocumentCache[$controllerActionIdentifier];
     }
-
 }

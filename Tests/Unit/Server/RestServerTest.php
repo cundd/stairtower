@@ -312,7 +312,7 @@ class RestServerTest extends TestCase
 
         // Create Documents
         $i = 0;
-        while (++$i < 10000) {
+        while (++$i < 1000) {
             $documentHostName = 'database' . $i . '.my-servers.local';
             $documentIdentifier = md5($documentHostName);
 
@@ -325,7 +325,7 @@ class RestServerTest extends TestCase
             ];
 
             $response = $httpClient->performRestRequest($databaseIdentifier, 'POST', $testDocument);
-            $this->assertInternalType('array', $response, 'Post request failed');
+            $this->assertInternalType('array', $response, sprintf('Post request #%d failed', $i));
             $this->assertEquals($testDocument['name'], $response['name']);
             $this->assertEquals($testDocument['id'], $response['id']);
             $this->assertEquals($testDocument['ip'], $response['ip']);
@@ -391,6 +391,6 @@ class RestServerTest extends TestCase
      */
     private function getPortForTestServer()
     {
-        return (int)getenv('STAIRTOWER_TEST_SERVER_PORT') ?: 1338;
+        return (int)getenv('STAIRTOWER_TEST_SERVER_PORT') ?: 7700;
     }
 }
