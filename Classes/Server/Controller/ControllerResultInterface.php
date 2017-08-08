@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Controller;
+namespace Cundd\Stairtower\Server\Controller;
 
-use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
+use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
 
 /**
  * Interface for classes that describe a Controller response

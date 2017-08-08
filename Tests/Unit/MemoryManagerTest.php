@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore;
+namespace Cundd\Stairtower;
 
-use Cundd\PersistentObjectStore\Domain\Model\Document;
-use Cundd\PersistentObjectStore\Memory\Manager;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Memory\Manager;
 use stdClass;
 
 /**
@@ -104,7 +104,7 @@ class MemoryManagerTest extends AbstractCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Memory\Exception\ManagerException
+     * @expectedException \Cundd\Stairtower\Memory\Exception\ManagerException
      */
     public function failedFreeTest()
     {
@@ -135,7 +135,7 @@ class MemoryManagerTest extends AbstractCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Memory\Exception\ManagerException
+     * @expectedException \Cundd\Stairtower\Memory\Exception\ManagerException
      */
     public function getIdentifierNotExists()
     {

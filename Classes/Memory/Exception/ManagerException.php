@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Memory\Exception;
+namespace Cundd\Stairtower\Memory\Exception;
 
 
 /**

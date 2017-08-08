@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Core;
+namespace Cundd\Stairtower\Core;
 
-use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
-use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
+use Cundd\Stairtower\Core\ArrayException\IndexOutOfRangeException;
+use Cundd\Stairtower\Core\ArrayException\InvalidIndexException;
 
 /**
  * The IndexArray class provides the main functions of array

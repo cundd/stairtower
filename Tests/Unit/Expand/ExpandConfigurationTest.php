@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Expand;
+namespace Cundd\Stairtower\Expand;
 
-use Cundd\PersistentObjectStore\Constants;
+use Cundd\Stairtower\Constants;
 
 /**
  * ExpandConfiguration test
@@ -42,7 +42,7 @@ class ExpandConfigurationTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Expand\Exception\InvalidConfigurationException
+     * @expectedException \Cundd\Stairtower\Expand\Exception\InvalidConfigurationException
      */
     public function expandConfigurationDatabaseMustNotBeEmptyTest()
     {
@@ -51,7 +51,7 @@ class ExpandConfigurationTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Expand\Exception\InvalidConfigurationException
+     * @expectedException \Cundd\Stairtower\Expand\Exception\InvalidConfigurationException
      */
     public function expandConfigurationLocalKeyMustNotBeEmptyTest()
     {
@@ -60,7 +60,7 @@ class ExpandConfigurationTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Expand\Exception\InvalidConfigurationException
+     * @expectedException \Cundd\Stairtower\Expand\Exception\InvalidConfigurationException
      */
     public function expandConfigurationForeignKeyMustNotBeEmptyTest()
     {

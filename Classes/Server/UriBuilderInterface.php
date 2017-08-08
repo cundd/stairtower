@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server;
+namespace Cundd\Stairtower\Server;
 
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Server\Controller\ControllerInterface;
 
 /**
  * Interface for UriBuilder instances

@@ -1,23 +1,23 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Expand;
+namespace Cundd\Stairtower\Expand;
 
 use ArrayObject;
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\DataAccess\Exception\DataAccessException;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Expand\Exception\ExpandException;
-use Cundd\PersistentObjectStore\Expand\Exception\InvalidExpandInputException;
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
-use Cundd\PersistentObjectStore\Filter\Filter;
-use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
-use Cundd\PersistentObjectStore\Index\IndexableInterface;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\DataAccess\Exception\DataAccessException;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Expand\Exception\ExpandException;
+use Cundd\Stairtower\Expand\Exception\InvalidExpandInputException;
+use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\Filter\Comparison\PropertyComparison;
+use Cundd\Stairtower\Filter\Filter;
+use Cundd\Stairtower\Filter\FilterResultInterface;
+use Cundd\Stairtower\Index\IndexableInterface;
+use Cundd\Stairtower\Utility\DebugUtility;
+use Cundd\Stairtower\Utility\GeneralUtility;
+use Cundd\Stairtower\Utility\ObjectUtility;
 use SplFixedArray;
 
 /**
@@ -28,7 +28,7 @@ class ExpandResolver implements ExpandResolverInterface
     /**
      * Document Access Coordinator
      *
-     * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
+     * @var \Cundd\Stairtower\DataAccess\CoordinatorInterface
      * @Inject
      */
     protected $coordinator;

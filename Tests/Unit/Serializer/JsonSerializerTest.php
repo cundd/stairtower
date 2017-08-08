@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Serializer;
+namespace Cundd\Stairtower\Serializer;
 
 
 class JsonSerializerTest extends \PHPUnit\Framework\TestCase

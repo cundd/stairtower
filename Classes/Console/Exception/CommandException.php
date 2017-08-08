@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Console\Exception;
+namespace Cundd\Stairtower\Console\Exception;
 
 
-use Cundd\PersistentObjectStore\RuntimeException;
+use Cundd\Stairtower\RuntimeException;
 
 /**
  * Wrapper for command line related exceptions

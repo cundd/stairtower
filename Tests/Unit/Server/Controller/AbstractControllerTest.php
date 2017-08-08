@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace Server\Controller;
 
-use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
+use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Server\Controller\AbstractController;
+use Cundd\Stairtower\Server\Controller\ControllerInterface;
+use Cundd\Stairtower\Server\ValueObject\ControllerResult;
+use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
 use React\Http\Request;
 use React\Http\Response;
 use React_ConnectionStub;
@@ -31,11 +32,11 @@ class AbstractControllerTest extends AbstractCase
         parent::setUp();
 
         $this->fixture = $this->getMockForAbstractClass(
-            'Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController'
+            AbstractController::class
         );
 
         $this->requestInfoFactory = $this->getDiContainer()->get(
-            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory'
+            RequestInfoFactory::class
         );
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/my_method')
@@ -66,7 +67,7 @@ class AbstractControllerTest extends AbstractCase
     public function getRequestTest()
     {
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\Request',
+            \Cundd\Stairtower\Server\ValueObject\Request::class,
             $this->fixture->getRequest()
         );
     }
@@ -122,7 +123,7 @@ class AbstractControllerTest extends AbstractCase
     {
 
         /** @var ControllerInterface $controller */
-        $controller = $this->getMockBuilder('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController')
+        $controller = $this->getMockBuilder(AbstractController::class)
             ->setMethods(['getHelloAction'])
             ->getMock();
         $controller
@@ -135,10 +136,10 @@ class AbstractControllerTest extends AbstractCase
         );
         $response = new Response(new React_ConnectionStub());
 
-        /** @var \Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult $result */
+        /** @var \Cundd\Stairtower\Server\ValueObject\ControllerResult $result */
         $result = $controller->processRequest($requestInfo, $response);
         $this->assertNotNull($result);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\ValueObject\\ControllerResult', $result);
+        $this->assertInstanceOf(ControllerResult::class, $result);
         $this->assertSame(true, $result->getData());
     }
 
@@ -148,7 +149,7 @@ class AbstractControllerTest extends AbstractCase
     public function processRequestWithLongerActionNameTest()
     {
         /** @var ControllerInterface $controller */
-        $controller = $this->getMockBuilder('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController')
+        $controller = $this->getMockBuilder(AbstractController::class)
             ->setMethods(['getHelloWorldAction'])
             ->getMock();
         $controller
@@ -161,10 +162,10 @@ class AbstractControllerTest extends AbstractCase
         );
         $response = new Response(new React_ConnectionStub());
 
-        /** @var \Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult $result */
+        /** @var \Cundd\Stairtower\Server\ValueObject\ControllerResult $result */
         $result = $controller->processRequest($requestInfo, $response);
         $this->assertNotNull($result);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\ValueObject\\ControllerResult', $result);
+        $this->assertInstanceOf(ControllerResult::class, $result);
         $this->assertSame(true, $result->getData());
     }
 
@@ -174,7 +175,7 @@ class AbstractControllerTest extends AbstractCase
     public function processRequestWithMultipleArgumentsTest()
     {
         /** @var ControllerInterface $controller */
-        $controller = $this->getMockBuilder('Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractController')
+        $controller = $this->getMockBuilder(AbstractController::class)
             ->setMethods(['getHelloWorldAction'])
             ->getMock();
         $controller
@@ -187,16 +188,16 @@ class AbstractControllerTest extends AbstractCase
         );
         $response = new Response(new React_ConnectionStub());
 
-        /** @var \Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult $result */
+        /** @var \Cundd\Stairtower\Server\ValueObject\ControllerResult $result */
         $result = $controller->processRequest($requestInfo, $response);
         $this->assertNotNull($result);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\ValueObject\\ControllerResult', $result);
+        $this->assertInstanceOf(ControllerResult::class, $result);
         $this->assertSame(true, $result->getData());
     }
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\RequestMethodNotImplementedException
+     * @expectedException \Cundd\Stairtower\Server\Exception\RequestMethodNotImplementedException
      */
     public function processRequestNotImplementedMethodTest()
     {

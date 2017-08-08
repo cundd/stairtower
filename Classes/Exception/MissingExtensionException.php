@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Exception;
+namespace Cundd\Stairtower\Exception;
 
-use Cundd\PersistentObjectStore\LogicException;
+use Cundd\Stairtower\LogicException;
 
 /**
  * Exception thrown if a required PHP extension is not available

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\DataAccess\Exception;
+namespace Cundd\Stairtower\DataAccess\Exception;
 
 /**
  * Exception thrown on write errors

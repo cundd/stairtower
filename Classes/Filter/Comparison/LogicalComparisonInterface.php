@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter\Comparison;
+namespace Cundd\Stairtower\Filter\Comparison;
 
 /**
  * Interface for logical comparison

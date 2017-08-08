@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\ErrorHandling;
+namespace Cundd\Stairtower\ErrorHandling;
 
-use Cundd\PersistentObjectStore\ErrorException;
-use Cundd\PersistentObjectStore\Exception\InvalidArgumentError;
-use Cundd\PersistentObjectStore\Exception\StringTransformationException;
+use Cundd\Stairtower\ErrorException;
+use Cundd\Stairtower\Exception\InvalidArgumentError;
+use Cundd\Stairtower\Exception\StringTransformationException;
 
 /**
  * Error Handler

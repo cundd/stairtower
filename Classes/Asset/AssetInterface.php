@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Asset;
+namespace Cundd\Stairtower\Asset;
 
 /**
  * Interface for Assets

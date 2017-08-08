@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Bootstrap;
+namespace Cundd\Stairtower\Bootstrap;
 
-use Cundd\PersistentObjectStore\ErrorHandling\CrashHandler;
-use Cundd\PersistentObjectStore\ErrorHandling\ErrorHandler;
+use Cundd\Stairtower\ErrorHandling\CrashHandler;
+use Cundd\Stairtower\ErrorHandling\ErrorHandler;
 
 /**
  * Abstract bootstrapping class for the server and router
@@ -14,7 +14,7 @@ abstract class AbstractBootstrap
     /**
      * Server instance
      *
-     * @var \Cundd\PersistentObjectStore\Server\RestServer
+     * @var \Cundd\Stairtower\Server\RestServer
      */
     protected $server;
 

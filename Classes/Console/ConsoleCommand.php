@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Console;
+namespace Cundd\Stairtower\Console;
 
 
-use Cundd\PersistentObjectStore\Constants;
+use Cundd\Stairtower\Constants;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,7 +17,7 @@ class ConsoleCommand extends Command
     /**
      * Document Access Coordinator
      *
-     * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
+     * @var \Cundd\Stairtower\DataAccess\CoordinatorInterface
      * @Inject
      */
     protected $coordinator;

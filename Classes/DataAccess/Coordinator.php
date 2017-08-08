@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\DataAccess;
+namespace Cundd\Stairtower\DataAccess;
 
-use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseStateInterface;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException;
-use Cundd\PersistentObjectStore\Memory\Manager;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Cundd\Stairtower\Domain\Model\Database;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseStateInterface;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseException;
+use Cundd\Stairtower\Memory\Manager;
+use Cundd\Stairtower\Utility\GeneralUtility;
 
 /**
  * Coordinator responsible for managing the data
@@ -18,13 +18,13 @@ class Coordinator implements CoordinatorInterface
     const MEMORY_MANAGER_TAG = 'databases';
 
     /**
-     * @var \Cundd\PersistentObjectStore\DataAccess\Reader
+     * @var \Cundd\Stairtower\DataAccess\Reader
      * @Inject
      */
     protected $dataReader;
 
     /**
-     * @var \Cundd\PersistentObjectStore\DataAccess\Writer
+     * @var \Cundd\Stairtower\DataAccess\Writer
      * @Inject
      */
     protected $dataWriter;

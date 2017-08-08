@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Cookie;
+namespace Cundd\Stairtower\Server\Cookie;
 
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 
 /**
  * Interface for classes that can parse and transform request cookies

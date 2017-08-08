@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Session;
+namespace Cundd\Stairtower\Server\Session;
 
-use Cundd\PersistentObjectStore\KeyValueCodingInterface;
+use Cundd\Stairtower\KeyValueCodingInterface;
 
 /**
  * Interface for session based classes

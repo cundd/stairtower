@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Expand;
+namespace Cundd\Stairtower\Expand;
 
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
 
 /**
  * Interface for the class that will fetch the Documents and set the property according to a Expand configuration

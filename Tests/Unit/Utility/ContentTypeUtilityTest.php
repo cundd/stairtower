@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Utility;
+namespace Cundd\Stairtower\Utility;
 
-use Cundd\PersistentObjectStore\Server\ContentType;
+use Cundd\Stairtower\Server\ContentType;
 
 /**
  * Tests for the ContentType Utility

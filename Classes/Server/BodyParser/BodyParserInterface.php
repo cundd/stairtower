@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\BodyParser;
+namespace Cundd\Stairtower\Server\BodyParser;
 
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 
 /**
  * Interface for classes that can parse a given request body

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\Stairtower\Server\ValueObject;
 
 
-use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
+use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
 
 /**
  * Abstract result implementation

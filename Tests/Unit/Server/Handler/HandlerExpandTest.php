@@ -1,15 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Handler;
+namespace Cundd\Stairtower\Server\Handler;
 
 
-use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Memory\Manager;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
+use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\DataAccess\CoordinatorInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Filter\FilterResultInterface;
+use Cundd\Stairtower\Memory\Manager;
+use Cundd\Stairtower\Server\DummyServer;
+use Cundd\Stairtower\Server\ServerInterface;
+use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
 use React\Http\Request;
 
 /**
@@ -50,7 +54,7 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
@@ -87,7 +91,7 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
@@ -126,7 +130,7 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
@@ -171,13 +175,13 @@ class HandlerExpandTest extends AbstractCase
         );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+            DocumentInterface::class,
             $handlerResult->getData()
         );
 
@@ -210,13 +214,13 @@ class HandlerExpandTest extends AbstractCase
         );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+            DocumentInterface::class,
             $handlerResult->getData()
         );
 
@@ -251,13 +255,13 @@ class HandlerExpandTest extends AbstractCase
         );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+            DocumentInterface::class,
             $handlerResult->getData()
         );
 
@@ -286,7 +290,7 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
@@ -314,7 +318,7 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
@@ -347,13 +351,13 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(404, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Filter\\FilterResultInterface',
+            FilterResultInterface::class,
             $handlerResult->getData()
         );
         $this->assertEquals(0, $handlerResult->getData()->count());
@@ -372,13 +376,13 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(404, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Filter\\FilterResultInterface',
+            FilterResultInterface::class,
             $handlerResult->getData()
         );
         $this->assertEquals(0, $handlerResult->getData()->count());
@@ -404,7 +408,7 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
@@ -444,7 +448,7 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
@@ -486,7 +490,7 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
@@ -534,13 +538,13 @@ class HandlerExpandTest extends AbstractCase
         );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+            DocumentInterface::class,
             $handlerResult->getData()
         );
 
@@ -575,13 +579,13 @@ class HandlerExpandTest extends AbstractCase
         );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+            DocumentInterface::class,
             $handlerResult->getData()
         );
 
@@ -618,13 +622,13 @@ class HandlerExpandTest extends AbstractCase
         );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Domain\\Model\\DocumentInterface',
+            DocumentInterface::class,
             $handlerResult->getData()
         );
 
@@ -655,7 +659,7 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
@@ -685,7 +689,7 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(200, $handlerResult->getStatusCode());
@@ -720,13 +724,13 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(404, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Filter\\FilterResultInterface',
+            FilterResultInterface::class,
             $handlerResult->getData()
         );
         $this->assertEquals(0, $handlerResult->getData()->count());
@@ -746,13 +750,13 @@ class HandlerExpandTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerResultInterface',
+            HandlerResultInterface::class,
             $handlerResult
         );
         $this->assertEquals(404, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Filter\\FilterResultInterface',
+            FilterResultInterface::class,
             $handlerResult->getData()
         );
         $this->assertEquals(0, $handlerResult->getData()->count());
@@ -760,24 +764,22 @@ class HandlerExpandTest extends AbstractCase
 
     protected function setUp()
     {
-        if (class_exists('Cundd\PersistentObjectStore\Memory\Manager')) {
+        if (class_exists(Manager::class)) {
             Manager::freeAll();
         }
 
         $diContainer = $this->getDiContainer();
 
-        $this->requestInfoFactory = $diContainer->get(
-            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory'
-        );
+        $this->requestInfoFactory = $diContainer->get(RequestInfoFactory::class);
 
-        $server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\DummyServer');
-        $diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $server);
+        $server = $diContainer->get(DummyServer::class);
+        $diContainer->set(ServerInterface::class, $server);
 
-        $coordinator = $diContainer->get('Cundd\\PersistentObjectStore\\DataAccess\\CoordinatorInterface');
+        $coordinator = $diContainer->get(CoordinatorInterface::class);
 
         $this->setUpXhprof();
 
-        $this->fixture = $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Server\\Handler\\Handler');
+        $this->fixture = $this->getDiContainer()->get(Handler::class);
         $this->database = $coordinator->getDatabase('contacts');
     }
 

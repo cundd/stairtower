@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\System\Lock\Exception;
+namespace Cundd\Stairtower\System\Lock\Exception;
 
-use Cundd\PersistentObjectStore\RuntimeException;
+use Cundd\Stairtower\RuntimeException;
 
 /**
  * Exception thrown if a lock request runs into a timeout

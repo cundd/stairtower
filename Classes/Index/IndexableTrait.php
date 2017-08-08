@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Index;
+namespace Cundd\Stairtower\Index;
 
 /**
  * Trait for Indexable
@@ -76,7 +76,7 @@ trait IndexableTrait
      *
      * @param mixed  $value
      * @param string $property
-     * @return \Cundd\PersistentObjectStore\Index\IndexInterface[]
+     * @return \Cundd\Stairtower\Index\IndexInterface[]
      */
     public function getIndexesForValueOfProperty($value, $property)
     {

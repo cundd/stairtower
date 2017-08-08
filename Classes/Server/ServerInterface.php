@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server;
+namespace Cundd\Stairtower\Server;
 
 
-use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
-use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
-use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
+use Cundd\Stairtower\Formatter\FormatterInterface;
+use Cundd\Stairtower\Server\BodyParser\BodyParserInterface;
+use Cundd\Stairtower\Server\Exception\InvalidEventLoopException;
+use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\ValueObject\Statistics;
 use DateTimeInterface;
 use Exception;
 use React\EventLoop\LoopInterface;

@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Index;
+namespace Cundd\Stairtower\Index;
 
-use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Index\Exception\DuplicateEntryException;
-use Cundd\PersistentObjectStore\Index\Exception\InvalidEntryException;
-use Cundd\PersistentObjectStore\Utility\DocumentUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+use Cundd\Stairtower\Core\ArrayException\InvalidIndexException;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseRawDataInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Index\Exception\DuplicateEntryException;
+use Cundd\Stairtower\Index\Exception\InvalidEntryException;
+use Cundd\Stairtower\Utility\DocumentUtility;
+use Cundd\Stairtower\Utility\ObjectUtility;
 use SplFixedArray;
 
 /**

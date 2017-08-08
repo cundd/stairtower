@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Console\Database;
+namespace Cundd\Stairtower\Console\Database;
 
-use Cundd\PersistentObjectStore\Console\AbstractCommand;
+use Cundd\Stairtower\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

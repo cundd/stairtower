@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter\Exception;
+namespace Cundd\Stairtower\Filter\Exception;
 
 
-use Cundd\PersistentObjectStore\LogicException;
+use Cundd\Stairtower\LogicException;
 
 /**
  * Exception thrown if a invalid comparison is detected

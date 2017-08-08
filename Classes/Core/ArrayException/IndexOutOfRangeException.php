@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Core\ArrayException;
+namespace Cundd\Stairtower\Core\ArrayException;
 
 
 /**

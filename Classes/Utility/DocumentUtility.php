@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Utility;
+namespace Cundd\Stairtower\Utility;
 
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDataException;
 
 /**
  * Utility for common Document features

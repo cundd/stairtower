@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Handler;
+namespace Cundd\Stairtower\Server\Handler;
 
 /**
  * Interface for classes that describe a Handlers response

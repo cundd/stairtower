@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Console\Data;
+namespace Cundd\Stairtower\Console\Data;
 
 
-use Cundd\PersistentObjectStore\Console\AbstractCommand;
-use Cundd\PersistentObjectStore\Console\Exception\CommandException;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
-use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
-use Cundd\PersistentObjectStore\Serializer\Exception as SerializerException;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Cundd\Stairtower\Console\AbstractCommand;
+use Cundd\Stairtower\Console\Exception\CommandException;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDataException;
+use Cundd\Stairtower\Filter\FilterResultInterface;
+use Cundd\Stairtower\Serializer\Exception as SerializerException;
+use Cundd\Stairtower\Utility\GeneralUtility;
 use Symfony\Component\Console\Input\InputInterface;
 
 /**
@@ -22,7 +22,7 @@ class AbstractDataCommand extends AbstractCommand
     /**
      * Simple JSON serializer instance
      *
-     * @var \Cundd\PersistentObjectStore\Serializer\JsonSerializer
+     * @var \Cundd\Stairtower\Serializer\JsonSerializer
      * @Inject
      */
     protected $jsonSerializer;
@@ -30,7 +30,7 @@ class AbstractDataCommand extends AbstractCommand
     /**
      * Filter Builder instance
      *
-     * @var \Cundd\PersistentObjectStore\Filter\FilterBuilder
+     * @var \Cundd\Stairtower\Filter\FilterBuilder
      * @Inject
      */
     protected $filterBuilder;
@@ -40,7 +40,7 @@ class AbstractDataCommand extends AbstractCommand
      * Returns the Document instances from the database defined in the argument 'database' matching the given query
      *
      * @param InputInterface $input
-     * @return FilterResultInterface
+     * @return FilterResultInterface|DocumentInterface|DatabaseInterface
      */
     protected function filterDataInstanceFromInput(InputInterface $input)
     {

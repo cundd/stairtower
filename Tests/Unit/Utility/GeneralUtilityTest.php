@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Utility;
+namespace Cundd\Stairtower\Utility;
 
-use Cundd\PersistentObjectStore\Domain\Model\Document;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseIdentifierException;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDataIdentifierException;
+use PHPUnit\Framework\TestCase;
 
 class DummyObjectThatCanBeConvertedToString
 {
@@ -28,7 +29,7 @@ class DummyObjectThatCanBeConvertedToString
 /**
  * Tests for the general utility
  */
-class GeneralUtilityTest extends \PHPUnit\Framework\TestCase
+class GeneralUtilityTest extends TestCase
 {
     /**
      * @test
@@ -304,13 +305,13 @@ class GeneralUtilityTest extends \PHPUnit\Framework\TestCase
 
         $dataInstance = new Document(['my' => 'life']);
         $this->assertSame(
-            'Cundd\\PersistentObjectStore\\Domain\\Model\\Document',
+            Document::class,
             GeneralUtility::getType($dataInstance)
         );
 
         $object = new DummyObjectThatCanBeConvertedToString('my life');
         $this->assertSame(
-            'Cundd\\PersistentObjectStore\\Utility\\DummyObjectThatCanBeConvertedToString',
+            DummyObjectThatCanBeConvertedToString::class,
             GeneralUtility::getType($object)
         );
     }

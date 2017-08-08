@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Exception;
+namespace Cundd\Stairtower\Server\Exception;
 
-use Cundd\PersistentObjectStore\LogicException;
+use Cundd\Stairtower\LogicException;
 
 /**
  * Exception thrown if a servers event loop is not configured

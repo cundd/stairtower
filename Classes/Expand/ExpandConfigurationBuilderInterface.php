@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Expand;
+namespace Cundd\Stairtower\Expand;
 
 /**
  * Interface for Expand configuration builders

@@ -1,22 +1,22 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Handler;
+namespace Cundd\Stairtower\Server\Handler;
 
-use Cundd\PersistentObjectStore\Asset\AssetInterface;
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Expand\ExpandConfigurationInterface;
-use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestParameterException;
-use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RawResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Cundd\Stairtower\Asset\AssetInterface;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\DataAccess\Exception\ReaderException;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Expand\ExpandConfigurationInterface;
+use Cundd\Stairtower\Filter\FilterResultInterface;
+use Cundd\Stairtower\Server\Exception\InvalidBodyException;
+use Cundd\Stairtower\Server\Exception\InvalidRequestParameterException;
+use Cundd\Stairtower\Server\ValueObject\HandlerResult;
+use Cundd\Stairtower\Server\ValueObject\RawResult;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Utility\DebugUtility;
 use SplFixedArray;
 
 /**
@@ -27,7 +27,7 @@ class Handler implements HandlerInterface
     /**
      * Document Access Coordinator
      *
-     * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
+     * @var \Cundd\Stairtower\DataAccess\CoordinatorInterface
      * @Inject
      */
     protected $coordinator;
@@ -35,7 +35,7 @@ class Handler implements HandlerInterface
     /**
      * Server instance
      *
-     * @var \Cundd\PersistentObjectStore\Server\ServerInterface
+     * @var \Cundd\Stairtower\Server\ServerInterface
      * @Inject
      */
     protected $server;
@@ -43,7 +43,7 @@ class Handler implements HandlerInterface
     /**
      * FilterBuilder instance
      *
-     * @var \Cundd\PersistentObjectStore\Filter\FilterBuilderInterface
+     * @var \Cundd\Stairtower\Filter\FilterBuilderInterface
      * @Inject
      */
     protected $filterBuilder;
@@ -51,7 +51,7 @@ class Handler implements HandlerInterface
     /**
      * ExpandConfigurationBuilder instance
      *
-     * @var \Cundd\PersistentObjectStore\Expand\ExpandConfigurationBuilderInterface
+     * @var \Cundd\Stairtower\Expand\ExpandConfigurationBuilderInterface
      * @Inject
      */
     protected $expandConfigurationBuilder;
@@ -59,7 +59,7 @@ class Handler implements HandlerInterface
     /**
      * Expand Resolver instance
      *
-     * @var \Cundd\PersistentObjectStore\Expand\ExpandResolverInterface
+     * @var \Cundd\Stairtower\Expand\ExpandResolverInterface
      * @Inject
      */
     protected $expandResolver;
@@ -67,7 +67,7 @@ class Handler implements HandlerInterface
     /**
      * Asset Loader instance
      *
-     * @var \Cundd\PersistentObjectStore\Asset\AssetProviderInterface
+     * @var \Cundd\Stairtower\Asset\AssetProviderInterface
      * @Inject
      */
     protected $assetLoader;
@@ -75,7 +75,7 @@ class Handler implements HandlerInterface
     /**
      * Event Emitter
      *
-     * @var \Cundd\PersistentObjectStore\Event\SharedEventEmitter
+     * @var \Cundd\Stairtower\Event\SharedEventEmitter
      * @Inject
      */
     protected $eventEmitter;

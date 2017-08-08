@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Serializer;
+namespace Cundd\Stairtower\Serializer;
 
-use Cundd\PersistentObjectStore\RuntimeException;
+use Cundd\Stairtower\RuntimeException;
 
 /**
  * Exception used if data could not be serialized or unserialized

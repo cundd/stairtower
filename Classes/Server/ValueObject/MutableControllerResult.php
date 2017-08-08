@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\Stairtower\Server\ValueObject;
 
-use Cundd\PersistentObjectStore\Server\ContentType;
-use Cundd\PersistentObjectStore\Server\Controller\MutableControllerResultInterface;
+use Cundd\Stairtower\Server\ContentType;
+use Cundd\Stairtower\Server\Controller\MutableControllerResultInterface;
 
 /**
  * Controller result implementation

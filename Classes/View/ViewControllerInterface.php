@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\View;
+namespace Cundd\Stairtower\View;
 
-use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
-use Cundd\PersistentObjectStore\Server\UriBuilderInterface;
+use Cundd\Stairtower\Server\Controller\ControllerInterface;
+use Cundd\Stairtower\Server\UriBuilderInterface;
 
 /**
  * Interface for View based controllers
@@ -14,7 +14,7 @@ interface ViewControllerInterface extends ControllerInterface
     /**
      * Returns the View instance
      *
-     * @return \Cundd\PersistentObjectStore\View\ViewInterface
+     * @return \Cundd\Stairtower\View\ViewInterface
      */
     public function getView();
 

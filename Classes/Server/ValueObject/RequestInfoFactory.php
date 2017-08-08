@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\Stairtower\Server\ValueObject;
 
-use Cundd\PersistentObjectStore\Server\Cookie\CookieParserInterface;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestActionException;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Cundd\Stairtower\Server\Cookie\CookieParserInterface;
+use Cundd\Stairtower\Server\Exception\InvalidRequestActionException;
+use Cundd\Stairtower\Server\Handler\HandlerInterface;
+use Cundd\Stairtower\Utility\GeneralUtility;
 use React\Http\Request as BaseRequest;
 
 /**
@@ -88,7 +89,7 @@ class RequestInfoFactory
      */
     public static function getHandlerClassForRequest($request): string
     {
-        $default = 'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface';
+        $default = HandlerInterface::class;
         $path = $request->getPath();
         if (!$path) {
             return $default;
@@ -112,7 +113,7 @@ class RequestInfoFactory
 
         // Generate the Handler name
         $handlerName = sprintf(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\%sHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\%sHandler',
             ucfirst($handlerIdentifier)
         );
         if (class_exists($handlerName)) {

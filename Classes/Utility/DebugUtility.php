@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Utility;
+namespace Cundd\Stairtower\Utility;
 
 /**
  * Debug utility

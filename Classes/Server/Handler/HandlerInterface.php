@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Handler;
+namespace Cundd\Stairtower\Server\Handler;
 
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\ValueObject\Request;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 
 /**
  * Interface for classes that handle the actions from incoming requests

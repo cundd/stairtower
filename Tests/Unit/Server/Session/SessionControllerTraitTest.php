@@ -1,14 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Session;
+namespace Cundd\Stairtower\Server\Session;
 
 
-use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Server\Cookie\Constants as CookieConstants;
-use Cundd\PersistentObjectStore\Server\Session\Constants as SessionConstants;
-use Cundd\PersistentObjectStore\Server\Cookie\Cookie;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Server\Controller\MutableControllerResultInterface;
+use Cundd\Stairtower\Server\Cookie\Constants as CookieConstants;
+use Cundd\Stairtower\Server\Session\Constants as SessionConstants;
+use Cundd\Stairtower\Server\Cookie\Cookie;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use Test_Session_Controller;
 
 /**
@@ -33,7 +34,7 @@ class SessionControllerTraitTest extends AbstractCase
     {
         $session = $this->fixture->getSession();
         $this->assertNotNull($session);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Server\\Session\\SessionInterface', $session);
+        $this->assertInstanceOf(SessionInterface::class, $session);
     }
 
     /**
@@ -44,7 +45,7 @@ class SessionControllerTraitTest extends AbstractCase
         $response = $this->fixture->buildResponse();
         $this->assertNotNull($response);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Controller\\MutableControllerResultInterface',
+            MutableControllerResultInterface::class,
             $response
         );
 
@@ -67,7 +68,7 @@ class SessionControllerTraitTest extends AbstractCase
         $response = $this->fixture->buildResponse($statusCode, $data, $contentType, $headers);
         $this->assertNotNull($response);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Server\\Controller\\MutableControllerResultInterface',
+            MutableControllerResultInterface::class,
             $response
         );
 
@@ -88,9 +89,7 @@ class SessionControllerTraitTest extends AbstractCase
         parent::setUp();
 
         /** @var RequestInterface $request */
-        $request = $this->getMockForAbstractClass(
-            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface'
-        );
+        $request = $this->getMockForAbstractClass(RequestInterface::class);
         $request
             ->expects($this->any())
             ->method('getCookie')

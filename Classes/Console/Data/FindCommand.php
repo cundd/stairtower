@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Console\Data;
+namespace Cundd\Stairtower\Console\Data;
 
 
 use Symfony\Component\Console\Input\InputArgument;

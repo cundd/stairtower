@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\ErrorHandling;
+namespace Cundd\Stairtower\ErrorHandling;
 
 use stdClass;
 
@@ -36,7 +36,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Exception\StringTransformationException
+     * @expectedException \Cundd\Stairtower\Exception\StringTransformationException
      */
     public function stdClassToStringTest()
     {
@@ -47,7 +47,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Exception\StringTransformationException
+     * @expectedException \Cundd\Stairtower\Exception\StringTransformationException
      */
     public function documentToStringTest()
     {

@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\Stairtower\Server\ValueObject;
 
-use Cundd\PersistentObjectStore\Exception\UndefinedMethodCallException;
-use Cundd\PersistentObjectStore\Immutable;
-use Cundd\PersistentObjectStore\Server\ContentType;
-use Cundd\PersistentObjectStore\Server\Cookie\Cookie;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Cundd\Stairtower\Exception\UndefinedMethodCallException;
+use Cundd\Stairtower\Immutable;
+use Cundd\Stairtower\Server\ContentType;
+use Cundd\Stairtower\Server\Cookie\Cookie;
+use Cundd\Stairtower\Utility\GeneralUtility;
 use React\Http\Request as BaseRequest;
 
 

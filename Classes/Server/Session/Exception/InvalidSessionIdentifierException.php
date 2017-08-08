@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Session\Exception;
+namespace Cundd\Stairtower\Server\Session\Exception;
 
 
 /**

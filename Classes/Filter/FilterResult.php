@@ -1,20 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter;
+namespace Cundd\Stairtower\Filter;
 
-use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
-use Cundd\PersistentObjectStore\Core\IndexArray;
-use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseObjectDataInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
-use Cundd\PersistentObjectStore\Exception\ImmutableException;
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
-use Cundd\PersistentObjectStore\Immutable;
-use Cundd\PersistentObjectStore\Index\IndexableInterface;
-use Cundd\PersistentObjectStore\Index\IndexInterface;
+use Cundd\Stairtower\Core\ArrayException\IndexOutOfRangeException;
+use Cundd\Stairtower\Core\IndexArray;
+use Cundd\Stairtower\Domain\Model\Database;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseObjectDataInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseRawDataInterface;
+use Cundd\Stairtower\Exception\ImmutableException;
+use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\Filter\Comparison\PropertyComparisonInterface;
+use Cundd\Stairtower\Immutable;
+use Cundd\Stairtower\Index\IndexableInterface;
+use Cundd\Stairtower\Index\IndexInterface;
 use Iterator;
 use SplFixedArray;
 
@@ -369,7 +369,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      * Adds an element to the end of the array
      *
      * @param mixed $value
-     * @throws \Cundd\PersistentObjectStore\Exception\ImmutableException
+     * @throws \Cundd\Stairtower\Exception\ImmutableException
      */
     public function push($value)
     {
@@ -379,7 +379,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
     /**
      * Pops the element from the end of the array
      *
-     * @throws \Cundd\PersistentObjectStore\Exception\ImmutableException
+     * @throws \Cundd\Stairtower\Exception\ImmutableException
      * @return mixed
      */
     public function pop()
@@ -398,7 +398,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      * @param mixed $value  <p>
      *                      The value to set.
      *                      </p>
-     * @throws \Cundd\PersistentObjectStore\Exception\ImmutableException
+     * @throws \Cundd\Stairtower\Exception\ImmutableException
      * @return void
      */
     public function offsetSet($offset, $value)
@@ -415,7 +415,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      * @param mixed $offset <p>
      *                      The offset to unset.
      *                      </p>
-     * @throws \Cundd\PersistentObjectStore\Exception\ImmutableException
+     * @throws \Cundd\Stairtower\Exception\ImmutableException
      * @return void
      */
     public function offsetUnset($offset)

@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Exception;
+namespace Cundd\Stairtower\Exception;
 
-use Cundd\PersistentObjectStore\ErrorException;
+use Cundd\Stairtower\ErrorException;
 
 /**
  * Exception thrown if an object could not be converted to a string

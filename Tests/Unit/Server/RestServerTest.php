@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server;
+namespace Cundd\Stairtower\Server;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Tests\Unit\HttpRequestClient;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Tests\Unit\HttpRequestClient;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\System\Lock;
+namespace Cundd\Stairtower\System\Lock;
 
 /**
  * Factory class to retrieve the best lock implementation
@@ -13,7 +13,7 @@ class Factory
      *
      * @var string
      */
-    protected static $lockImplementationClass = 'Cundd\\PersistentObjectStore\\System\\Lock\\FileLock';
+    protected static $lockImplementationClass = FileLock::class;
 
     /**
      * Creates a new Lock instance

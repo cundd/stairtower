@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Cookie;
+namespace Cundd\Stairtower\Server\Cookie;
 
 /**
  * Constants for Cookies

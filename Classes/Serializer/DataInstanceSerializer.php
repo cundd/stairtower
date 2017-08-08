@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Serializer;
+namespace Cundd\Stairtower\Serializer;
 
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Utility\GeneralUtility;
+use Cundd\Stairtower\Utility\ObjectUtility;
 
 
 /**
@@ -19,7 +19,7 @@ class DataInstanceSerializer extends JsonSerializer
      * Serialize the given data
      *
      * @param mixed $data
-     * @throws \Cundd\PersistentObjectStore\Serializer\Exception if the data could not be serialized
+     * @throws \Cundd\Stairtower\Serializer\Exception if the data could not be serialized
      * @return string
      */
     public function serialize($data)
@@ -43,7 +43,7 @@ class DataInstanceSerializer extends JsonSerializer
      * Unserialize the given data
      *
      * @param string $string
-     * @throws \Cundd\PersistentObjectStore\Serializer\Exception if the data could not be unserialized
+     * @throws \Cundd\Stairtower\Serializer\Exception if the data could not be unserialized
      * @return mixed
      */
     public function unserialize($string)

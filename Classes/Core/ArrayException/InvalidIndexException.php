@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Core\ArrayException;
+namespace Cundd\Stairtower\Core\ArrayException;
 
 
-use Cundd\PersistentObjectStore\RuntimeException;
+use Cundd\Stairtower\RuntimeException;
 
 /**
  * Exception thrown if an invalid index is detected

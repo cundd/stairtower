@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter;
+namespace Cundd\Stairtower\Filter;
 
-use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparisonInterface;
+use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Filter\Comparison\LogicalComparison;
+use Cundd\Stairtower\Filter\Comparison\PropertyComparison;
+use Cundd\Stairtower\Filter\Comparison\PropertyComparisonInterface;
 use stdClass;
 
 

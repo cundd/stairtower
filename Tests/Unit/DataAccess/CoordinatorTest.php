@@ -1,21 +1,21 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\DataAccess;
+namespace Cundd\Stairtower\DataAccess;
 
-use Cundd\PersistentObjectStore\AbstractDataBasedCase;
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
+use Cundd\Stairtower\AbstractDataBasedCase;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Domain\Model\Database;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\Document;
 
 /**
- * Test for Cundd\PersistentObjectStore\DataAccess\Coordinator
+ * Test for Cundd\Stairtower\DataAccess\Coordinator
  */
 class CoordinatorTest extends AbstractDataBasedCase
 {
     /**
-     * @var \Cundd\PersistentObjectStore\DataAccess\Coordinator
+     * @var \Cundd\Stairtower\DataAccess\Coordinator
      */
     protected $fixture;
 
@@ -34,7 +34,7 @@ class CoordinatorTest extends AbstractDataBasedCase
     protected $numberOfContacts = 5;
 
     /**
-     * @var \Cundd\PersistentObjectStore\DataAccess\Reader
+     * @var \Cundd\Stairtower\DataAccess\Reader
      */
     protected $databaseReader;
 
@@ -85,7 +85,7 @@ class CoordinatorTest extends AbstractDataBasedCase
 
     /**
      * @test
-     * @expectedException     \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseException
+     * @expectedException     \Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseException
      */
     public function dropNotExistingDatabaseTest()
     {
@@ -389,7 +389,7 @@ class CoordinatorTest extends AbstractDataBasedCase
     protected function setUp()
     {
         parent::setUp();
-        $this->databaseReader = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Reader');
+        $this->databaseReader = $this->getDiContainer()->get(Reader::class);
     }
 
     protected function tearDown()

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Console;
+namespace Cundd\Stairtower\Console;
 
 
 use Symfony\Component\Console\Command\Command;
@@ -15,7 +15,7 @@ abstract class AbstractCommand extends Command
     /**
      * Document Access Coordinator
      *
-     * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
+     * @var \Cundd\Stairtower\DataAccess\CoordinatorInterface
      * @Inject
      */
     protected $coordinator;
@@ -23,7 +23,7 @@ abstract class AbstractCommand extends Command
     /**
      * Serializer instance
      *
-     * @var \Cundd\PersistentObjectStore\Serializer\DataInstanceSerializer
+     * @var \Cundd\Stairtower\Serializer\DataInstanceSerializer
      * @Inject
      */
     protected $serializer;
@@ -31,7 +31,7 @@ abstract class AbstractCommand extends Command
     /**
      * Formatter
      *
-     * @var \Cundd\PersistentObjectStore\Formatter\JsonFormatter
+     * @var \Cundd\Stairtower\Formatter\JsonFormatter
      * @Inject
      */
     protected $formatter;

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter;
+namespace Cundd\Stairtower\Filter;
 
-use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\Domain\Model\Database;
+use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
 
 /**
  * Interface for collection filters

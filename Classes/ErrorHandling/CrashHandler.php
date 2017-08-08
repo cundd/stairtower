@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\ErrorHandling;
+namespace Cundd\Stairtower\ErrorHandling;
 
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\DataAccess\Coordinator;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseRawDataInterface;
-use Cundd\PersistentObjectStore\Memory\Manager;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\DataAccess\Coordinator;
+use Cundd\Stairtower\Domain\Model\DatabaseRawDataInterface;
+use Cundd\Stairtower\Memory\Manager;
+use Cundd\Stairtower\Utility\GeneralUtility;
 use DateTime;
 
 /**

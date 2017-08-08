@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Domain\Model;
+namespace Cundd\Stairtower\Domain\Model;
 
-use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
-use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
+use Cundd\Stairtower\Core\ArrayException\IndexOutOfRangeException;
+use Cundd\Stairtower\Filter\Exception\InvalidCollectionException;
 
 /**
  * Special database interface that describes the access to raw data

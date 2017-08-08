@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore;
+namespace Cundd\Stairtower;
 
-use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\Database;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 
 /**
  * Abstract database based test case

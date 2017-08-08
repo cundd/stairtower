@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\DataAccess\Exception;
+namespace Cundd\Stairtower\DataAccess\Exception;
 
-use Cundd\PersistentObjectStore\RuntimeException;
+use Cundd\Stairtower\RuntimeException;
 
 /**
  * Exception thrown on Data Access problems

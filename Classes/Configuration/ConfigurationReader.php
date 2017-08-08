@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Configuration;
+namespace Cundd\Stairtower\Configuration;
 
 /**
  * Class to read the configuration from config files

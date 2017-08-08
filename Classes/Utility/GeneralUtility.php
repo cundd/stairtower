@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Utility;
+namespace Cundd\Stairtower\Utility;
 
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseIdentifierException;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDataIdentifierException;
+use Cundd\Stairtower\Server\Exception\InvalidRequestMethodException;
 
 /**
  * Interface GeneralUtilityInterface
@@ -16,7 +16,7 @@ abstract class GeneralUtility
      * Checks if the given database identifier is valid
      *
      * @param string $identifier
-     * @throws \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDatabaseIdentifierException if the database isn't valid
+     * @throws \Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseIdentifierException if the database isn't valid
      */
     public static function assertDatabaseIdentifier($identifier)
     {
@@ -29,7 +29,7 @@ abstract class GeneralUtility
      * Checks if the given data identifier is valid
      *
      * @param string $identifier
-     * @throws \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataIdentifierException if the database isn't valid
+     * @throws \Cundd\Stairtower\Domain\Model\Exception\InvalidDataIdentifierException if the database isn't valid
      */
     public static function assertDataIdentifier($identifier)
     {
@@ -42,7 +42,7 @@ abstract class GeneralUtility
      * Checks if the given method is a valid HTTP method
      *
      * @param string $method
-     * @throw \Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodServerException
+     * @throw \Cundd\Stairtower\Server\Exception\InvalidRequestMethodServerException
      */
     public static function assertRequestMethod($method)
     {

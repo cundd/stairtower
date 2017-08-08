@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Sorting;
+namespace Cundd\Stairtower\Sorting;
 
 
-use Cundd\PersistentObjectStore\Result\ResultInterface;
+use Cundd\Stairtower\Result\ResultInterface;
 
 /**
  * Interface for Sort results

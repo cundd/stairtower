@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Memory;
+namespace Cundd\Stairtower\Memory;
 
-use Cundd\PersistentObjectStore\Memory\Exception\ManagerException;
+use Cundd\Stairtower\Memory\Exception\ManagerException;
 
 /**
  * The Memory Manager tries to help managing the used and available memory

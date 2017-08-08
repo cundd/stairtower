@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Utility;
+namespace Cundd\Stairtower\Utility;
 
-use Cundd\PersistentObjectStore\Server\ContentType;
+use Cundd\Stairtower\Server\ContentType;
 
 /**
  * Helper class to convert content types to file endings and vice versa

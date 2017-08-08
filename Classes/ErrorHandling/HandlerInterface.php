@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\ErrorHandling;
+namespace Cundd\Stairtower\ErrorHandling;
 
 /**
  * Interface for Error and Crash Handler

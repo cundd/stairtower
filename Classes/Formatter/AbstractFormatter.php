@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Formatter;
+namespace Cundd\Stairtower\Formatter;
 
-use Cundd\PersistentObjectStore\ArrayableInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\ArrayableInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
 
 /**
  * Abstract formatter

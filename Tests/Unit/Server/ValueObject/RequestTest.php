@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\Stairtower\Server\ValueObject;
 
-use Cundd\PersistentObjectStore\AbstractCase;
+use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Server\Handler\Handler;
+use Cundd\Stairtower\Server\Handler\HandlerInterface;
 use React\Http\Request as BaseRequest;
 
 
@@ -20,9 +22,7 @@ class RequestTest extends AbstractCase
 
     protected function setUp()
     {
-        $this->requestInfoFactory = $this->getDiContainer()->get(
-            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory'
-        );
+        $this->requestInfoFactory = $this->getDiContainer()->get(RequestInfoFactory::class);
     }
 
 
@@ -1678,269 +1678,269 @@ class RequestTest extends AbstractCase
     public function getHandlerForRequestTest()
     {
         class_alias(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\Handler',
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler'
+            Handler::class,
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler'
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_restart'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_restart/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_restart/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_restart'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_restart/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_restart/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_restart'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_restart/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_restart/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_restart'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_restart/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_restart/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_restart'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_restart/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_restart/something'))
         );
 
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_shutdown'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_shutdown/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_shutdown/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_shutdown'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_shutdown/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_shutdown/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_shutdown'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_shutdown/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_shutdown/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_shutdown'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_shutdown/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_shutdown/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_shutdown'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_shutdown/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_shutdown/something'))
         );
 
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/database-identifier'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/database-identifier/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/database-identifier/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/database-identifier'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/database-identifier/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/database-identifier/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/database-identifier'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/database-identifier/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/database-identifier/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/database-identifier'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/database-identifier/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/database-identifier/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/database-identifier'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/database-identifier/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\HandlerInterface',
+            HandlerInterface::class,
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/database-identifier/something'))
         );
 
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_special'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_special/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_special/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_special'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_special/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_special/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_special'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_special/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_special/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_special'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_special/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_special/something'))
         );
 
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_special'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_special/'))
         );
         $this->assertEquals(
-            'Cundd\\PersistentObjectStore\\Server\\Handler\\SpecialHandler',
+            'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
             RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_special/something'))
         );
 

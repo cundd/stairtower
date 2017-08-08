@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\Stairtower\Server\ValueObject;
 
 
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Cundd\Stairtower\Utility\GeneralUtility;
 use Evenement\EventEmitter;
 use React\Http\ResponseCodes;
 use React\Stream\WritableStreamInterface;

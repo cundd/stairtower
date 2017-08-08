@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Domain\Model;
+namespace Cundd\Stairtower\Domain\Model;
 
-use Cundd\PersistentObjectStore\KeyValueCodingInterface;
+use Cundd\Stairtower\KeyValueCodingInterface;
 
 /**
  * Abstract interface to describe the parameters of a persisted object

@@ -1,15 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Session\Exception;
+namespace Cundd\Stairtower\Server\Session\Exception;
 
 
-use Cundd\PersistentObjectStore\Exception\SecurityException;
+use Cundd\Stairtower\Exception\SecurityException;
 
-/**
- * @package Cundd\PersistentObjectStore\Server\Session\Exception
- */
 class InvalidSessionException extends SecurityException
 {
-
 }

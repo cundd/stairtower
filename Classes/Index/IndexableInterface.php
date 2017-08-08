@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Index;
+namespace Cundd\Stairtower\Index;
 
 /**
  * Interface for classes that have associated Indexes

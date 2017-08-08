@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Cookie;
+namespace Cundd\Stairtower\Server\Cookie;
 
-use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use stdClass;
 
 /**
@@ -23,9 +23,7 @@ class CookieParserTest extends AbstractCase
     public function parseTest()
     {
         /** @var RequestInterface $request */
-        $request = $this->getMockForAbstractClass(
-            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface'
-        );
+        $request = $this->getMockForAbstractClass(RequestInterface::class);
         $request
             ->expects($this->any())
             ->method('getHeader')
@@ -43,7 +41,7 @@ class CookieParserTest extends AbstractCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
+     * @expectedException \Cundd\Stairtower\Exception\InvalidArgumentError
      */
     public function invalidArgumentShouldFailTest()
     {

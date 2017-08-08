@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\View\Twig;
+namespace Cundd\Stairtower\View\Twig;
 
-use Cundd\PersistentObjectStore\View\ViewInterface;
+use Cundd\Stairtower\View\ViewInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -64,7 +64,7 @@ class ViewTest extends TestCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\View\Exception\InvalidTemplatePathException
+     * @expectedException \Cundd\Stairtower\View\Exception\InvalidTemplatePathException
      */
     public function noTemplatePathExceptionTest()
     {

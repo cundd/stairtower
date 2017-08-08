@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Expand\Exception;
+namespace Cundd\Stairtower\Expand\Exception;
 
 
-use Cundd\PersistentObjectStore\RuntimeException;
+use Cundd\Stairtower\RuntimeException;
 
 /**
  * Exception thrown if the input passed to the Expand Resolver is invalid

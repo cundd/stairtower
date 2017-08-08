@@ -6,12 +6,12 @@ require_once __DIR__ . '/_autoload.php';
 
 use Symfony\Component\Console\Application;
 
-$bootstrap = new \Cundd\PersistentObjectStore\Bootstrap\Core();
+$bootstrap = new \Cundd\Stairtower\Bootstrap\Core();
 
 /** @var DI\Container $diContainer */
 $diContainer = $bootstrap->getDiContainer();
 
-$application = new Application('Stairtower', \Cundd\PersistentObjectStore\Constants::VERSION);
+$application = new Application('Stairtower', \Cundd\Stairtower\Constants::VERSION);
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\ConsoleCommand'));
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Database\\ListCommand'));
 $application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Database\\CreateCommand'));

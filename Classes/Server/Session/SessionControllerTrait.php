@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Session;
+namespace Cundd\Stairtower\Server\Session;
 
-use Cundd\PersistentObjectStore\Server\Controller\MutableControllerResultInterface;
-use Cundd\PersistentObjectStore\Server\Cookie\Constants as CookieConstants;
-use Cundd\PersistentObjectStore\Server\Cookie\Cookie;
-use Cundd\PersistentObjectStore\Server\Session\Constants as SessionConstants;
-use Cundd\PersistentObjectStore\Server\ValueObject\MutableControllerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\Controller\MutableControllerResultInterface;
+use Cundd\Stairtower\Server\Cookie\Constants as CookieConstants;
+use Cundd\Stairtower\Server\Cookie\Cookie;
+use Cundd\Stairtower\Server\Session\Constants as SessionConstants;
+use Cundd\Stairtower\Server\ValueObject\MutableControllerResult;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 
 /**
  * A trait to provide a controller with the ability to load a session
@@ -18,7 +18,7 @@ trait SessionControllerTrait
     /**
      * Session provider instance
      *
-     * @var \Cundd\PersistentObjectStore\Server\Session\SessionProviderInterface
+     * @var \Cundd\Stairtower\Server\Session\SessionProviderInterface
      * @Inject
      */
     protected $sessionProvider;

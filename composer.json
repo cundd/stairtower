@@ -24,12 +24,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Cundd\\PersistentObjectStore\\": "Classes/"
+            "Cundd\\Stairtower\\": "Classes/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Cundd\\PersistentObjectStore\\Tests\\": "Tests/"
+            "Cundd\\Stairtower\\Tests\\": "Tests/"
         }
     },
     "bin": [

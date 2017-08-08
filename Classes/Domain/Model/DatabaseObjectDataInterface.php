@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Domain\Model;
+namespace Cundd\Stairtower\Domain\Model;
 
 /**
  * Special database interface that describes the access to objects by index

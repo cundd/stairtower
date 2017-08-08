@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Cookie;
+namespace Cundd\Stairtower\Server\Cookie;
 
-use Cundd\PersistentObjectStore\Exception\InvalidArgumentError;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Cundd\Stairtower\Exception\InvalidArgumentError;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Utility\GeneralUtility;
 
 /**
  * Implementation of cookie parsers

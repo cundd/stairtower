@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Domain\Model\Exception;
+namespace Cundd\Stairtower\Domain\Model\Exception;
 
 
-use Cundd\PersistentObjectStore\RuntimeException;
+use Cundd\Stairtower\RuntimeException;
 
 /**
  * Exception thrown if a Document instances identifier is somehow invalid

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Session;
+namespace Cundd\Stairtower\Server\Session;
 
 
-use Cundd\PersistentObjectStore\Server\Controller\MutableControllerResultInterface;
+use Cundd\Stairtower\Server\Controller\MutableControllerResultInterface;
 
 /**
  * Interface for Session based controllers

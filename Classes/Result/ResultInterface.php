@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Result;
+namespace Cundd\Stairtower\Result;
 
 /**
  * Interface for results

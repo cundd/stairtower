@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Utility;
+namespace Cundd\Stairtower\Utility;
 
-use Cundd\PersistentObjectStore\KeyValueCodingInterface;
-use Cundd\PersistentObjectStore\LogicException;
+use Cundd\Stairtower\KeyValueCodingInterface;
+use Cundd\Stairtower\LogicException;
 
 /**
  * Utility class for accessing object properties

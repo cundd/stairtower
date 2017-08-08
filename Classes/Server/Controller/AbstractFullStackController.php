@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Controller;
+namespace Cundd\Stairtower\Server\Controller;
 
-use Cundd\PersistentObjectStore\Server\Session\SessionControllerTrait;
-use Cundd\PersistentObjectStore\View\ViewControllerInterface;
-use Cundd\PersistentObjectStore\View\ViewControllerTrait;
+use Cundd\Stairtower\Server\Session\SessionControllerTrait;
+use Cundd\Stairtower\View\ViewControllerInterface;
+use Cundd\Stairtower\View\ViewControllerTrait;
 
 /**
  * An abstract Controller merging the different features

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Console\Exception;
+namespace Cundd\Stairtower\Console\Exception;
 
 /**
  * Exception thrown for invalid arguments

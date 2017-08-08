@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Tests\Unit;
+namespace Cundd\Stairtower\Tests\Unit;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
 
 class Bootstrap
 {

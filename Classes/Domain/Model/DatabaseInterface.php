@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Domain\Model;
+namespace Cundd\Stairtower\Domain\Model;
 
 use Countable;
-use Cundd\PersistentObjectStore\ArrayableInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
-use Cundd\PersistentObjectStore\Index\IndexableInterface;
+use Cundd\Stairtower\ArrayableInterface;
+use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\Filter\FilterResultInterface;
+use Cundd\Stairtower\Index\IndexableInterface;
 use Iterator;
 use SeekableIterator;
 

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Controller;
+namespace Cundd\Stairtower\Server\Controller;
 
 
 /**

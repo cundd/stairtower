@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\View\Twig\Loader;
+namespace Cundd\Stairtower\View\Twig\Loader;
 
 
 use Twig_Loader_Filesystem as BaseFilesystem;

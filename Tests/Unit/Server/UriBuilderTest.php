@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server;
+namespace Cundd\Stairtower\Server;
 
-use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
+use Cundd\Stairtower\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Domain\Model\Document;
 
 /**
  * Tests for creating URIs
@@ -292,7 +292,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
+     * @expectedException \Cundd\Stairtower\Server\Exception\InvalidUriBuilderArgumentException
      * @expectedExceptionCode 1422475362
      */
     public function noActionNameTest()
@@ -302,7 +302,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
+     * @expectedException \Cundd\Stairtower\Server\Exception\InvalidUriBuilderArgumentException
      * @expectedExceptionCode 1422475419
      */
     public function noControllerTest()
@@ -312,7 +312,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
+     * @expectedException \Cundd\Stairtower\Server\Exception\InvalidUriBuilderArgumentException
      * @expectedExceptionCode 1422472522
      */
     public function invalidActionNameTest()
@@ -322,7 +322,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
+     * @expectedException \Cundd\Stairtower\Server\Exception\InvalidUriBuilderArgumentException
      * @expectedExceptionCode 1422472579
      */
     public function invalidDatabaseTest()
@@ -332,7 +332,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
+     * @expectedException \Cundd\Stairtower\Server\Exception\InvalidUriBuilderArgumentException
      * @expectedExceptionCode 1422472633
      */
     public function invalidDocumentTest()
@@ -342,7 +342,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Exception\InvalidUriBuilderArgumentException
+     * @expectedException \Cundd\Stairtower\Server\Exception\InvalidUriBuilderArgumentException
      * @expectedExceptionCode 1422472650
      */
     public function noControllerForGetControllerNamespaceForControllerTests()

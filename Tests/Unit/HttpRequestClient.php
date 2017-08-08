@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Cundd\PersistentObjectStore\Tests\Unit;
+namespace Cundd\Stairtower\Tests\Unit;
 
 
 class HttpRequestClient

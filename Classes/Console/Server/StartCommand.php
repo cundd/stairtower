@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Console\Server;
+namespace Cundd\Stairtower\Console\Server;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Console\Exception\InvalidArgumentsException;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Console\Exception\InvalidArgumentsException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Cookie;
+namespace Cundd\Stairtower\Server\Cookie;
 
 
-use Cundd\PersistentObjectStore\Exception\InvalidArgumentError;
-use Cundd\PersistentObjectStore\Immutable;
+use Cundd\Stairtower\Exception\InvalidArgumentError;
+use Cundd\Stairtower\Immutable;
 use DateTime;
 
 /**

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter;
+namespace Cundd\Stairtower\Filter;
 
-use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Filter\Comparison\CallableComparison;
+use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Filter\Comparison\CallableComparison;
 
 
 /**

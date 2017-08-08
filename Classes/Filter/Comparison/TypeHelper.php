@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter\Comparison;
+namespace Cundd\Stairtower\Filter\Comparison;
 
 use ReflectionClass;
 
@@ -53,9 +53,7 @@ class TypeHelper
     {
         static $comparisonInterfaceTypes;
         if (!$comparisonInterfaceTypes) {
-            $reflectionClass = new ReflectionClass(
-                'Cundd\\PersistentObjectStore\\Filter\\Comparison\\ComparisonInterface'
-            );
+            $reflectionClass = new ReflectionClass(ComparisonInterface::class);
             $comparisonInterfaceTypes = $reflectionClass->getConstants();
         }
 

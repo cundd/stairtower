@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Domain\Model;
+namespace Cundd\Stairtower\Domain\Model;
 
 
-use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Constants;
+use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Constants;
 
 class DocumentTest extends AbstractCase
 {
     /**
-     * @var \Cundd\PersistentObjectStore\Domain\Model\Document
+     * @var \Cundd\Stairtower\Domain\Model\Document
      */
     protected $fixture;
 
@@ -123,7 +123,7 @@ class DocumentTest extends AbstractCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     * @expectedException \Cundd\Stairtower\Domain\Model\Exception\InvalidDataException
      */
     public function invalidInputDataStringTest()
     {
@@ -132,7 +132,7 @@ class DocumentTest extends AbstractCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     * @expectedException \Cundd\Stairtower\Domain\Model\Exception\InvalidDataException
      */
     public function invalidInputDataFloatTest()
     {
@@ -141,7 +141,7 @@ class DocumentTest extends AbstractCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     * @expectedException \Cundd\Stairtower\Domain\Model\Exception\InvalidDataException
      */
     public function invalidInputDataIntTest()
     {
@@ -161,7 +161,7 @@ class DocumentTest extends AbstractCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     * @expectedException \Cundd\Stairtower\Domain\Model\Exception\InvalidDataException
      */
     public function setInvalidDataStringTest()
     {
@@ -170,7 +170,7 @@ class DocumentTest extends AbstractCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     * @expectedException \Cundd\Stairtower\Domain\Model\Exception\InvalidDataException
      */
     public function setInvalidDataFloatTest()
     {
@@ -179,7 +179,7 @@ class DocumentTest extends AbstractCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException
+     * @expectedException \Cundd\Stairtower\Domain\Model\Exception\InvalidDataException
      */
     public function setInvalidDataIntTest()
     {

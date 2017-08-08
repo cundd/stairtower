@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Bootstrap;
+namespace Cundd\Stairtower\Bootstrap;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
-use Cundd\PersistentObjectStore\Exception\InvalidArgumentError;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Event\SharedEventEmitter;
+use Cundd\Stairtower\Exception\InvalidArgumentError;
 use DI\ContainerBuilder;
 
 /**
@@ -71,7 +71,7 @@ class Core
      */
     public function getSharedEventEmitter()
     {
-        return $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\Event\\SharedEventEmitter');
+        return $this->getDiContainer()->get(SharedEventEmitter::class);
     }
 
     /**

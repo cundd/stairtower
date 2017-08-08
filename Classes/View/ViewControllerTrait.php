@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\View;
+namespace Cundd\Stairtower\View;
 
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Server\UriBuilderInterface;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Server\UriBuilderInterface;
+use Cundd\Stairtower\View\Twig\View;
 
 /**
  * Trait for View base controllers
@@ -13,7 +14,7 @@ use Cundd\PersistentObjectStore\Server\UriBuilderInterface;
 trait ViewControllerTrait
 {
     /**
-     * @var \Cundd\PersistentObjectStore\View\ViewInterface
+     * @var \Cundd\Stairtower\View\ViewInterface
      */
     protected $view;
 
@@ -29,10 +30,10 @@ trait ViewControllerTrait
      *
      * @var string
      */
-    protected $viewClass = 'Cundd\\PersistentObjectStore\\View\\Twig\\View';
+    protected $viewClass = View::class;
 
     /**
-     * @var \Cundd\PersistentObjectStore\Server\UriBuilderInterface
+     * @var \Cundd\Stairtower\Server\UriBuilderInterface
      * @Inject
      */
     protected $uriBuilder;
@@ -40,7 +41,7 @@ trait ViewControllerTrait
     /**
      * Returns the View instance
      *
-     * @return \Cundd\PersistentObjectStore\View\ViewInterface
+     * @return \Cundd\Stairtower\View\ViewInterface
      */
     public function getView()
     {

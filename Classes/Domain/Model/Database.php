@@ -1,26 +1,26 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Domain\Model;
+namespace Cundd\Stairtower\Domain\Model;
 
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException;
-use Cundd\PersistentObjectStore\Core\ArrayException\InvalidIndexException;
-use Cundd\PersistentObjectStore\DataAccess\Event;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\DatabaseMismatchException;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
-use Cundd\PersistentObjectStore\Event\SharedEventEmitter;
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
-use Cundd\PersistentObjectStore\Filter\Filter;
-use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
-use Cundd\PersistentObjectStore\Index\IdentifierIndex;
-use Cundd\PersistentObjectStore\Index\IndexableTrait;
-use Cundd\PersistentObjectStore\Index\IndexInterface;
-use Cundd\PersistentObjectStore\RuntimeException;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use Cundd\PersistentObjectStore\Utility\DocumentUtility;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Core\ArrayException\IndexOutOfRangeException;
+use Cundd\Stairtower\Core\ArrayException\InvalidIndexException;
+use Cundd\Stairtower\DataAccess\Event;
+use Cundd\Stairtower\Domain\Model\Exception\DatabaseMismatchException;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDataException;
+use Cundd\Stairtower\Event\SharedEventEmitter;
+use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\Filter\Exception\InvalidCollectionException;
+use Cundd\Stairtower\Filter\Filter;
+use Cundd\Stairtower\Filter\FilterResultInterface;
+use Cundd\Stairtower\Index\IdentifierIndex;
+use Cundd\Stairtower\Index\IndexableTrait;
+use Cundd\Stairtower\Index\IndexInterface;
+use Cundd\Stairtower\RuntimeException;
+use Cundd\Stairtower\Utility\DebugUtility;
+use Cundd\Stairtower\Utility\DocumentUtility;
+use Cundd\Stairtower\Utility\GeneralUtility;
 use SplFixedArray;
 
 /**

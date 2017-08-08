@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Console\Data;
+namespace Cundd\Stairtower\Console\Data;
 
 
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

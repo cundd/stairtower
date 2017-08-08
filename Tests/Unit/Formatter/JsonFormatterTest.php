@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Formatter;
+namespace Cundd\Stairtower\Formatter;
 
-use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
+use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Domain\Model\Document;
 
 /**
  * Test class for JsonFormatter

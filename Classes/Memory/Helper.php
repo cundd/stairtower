@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Memory;
+namespace Cundd\Stairtower\Memory;
 
 
-use Cundd\PersistentObjectStore\DataAccess\Coordinator;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseStateInterface;
-use Cundd\PersistentObjectStore\Memory\Exception\MemoryException;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Cundd\Stairtower\DataAccess\Coordinator;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseStateInterface;
+use Cundd\Stairtower\Memory\Exception\MemoryException;
+use Cundd\Stairtower\Utility\DebugUtility;
+use Cundd\Stairtower\Utility\GeneralUtility;
 
 /**
  * Helper to check and free memory

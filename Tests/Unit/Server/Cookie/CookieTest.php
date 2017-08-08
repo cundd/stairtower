@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Cookie;
+namespace Cundd\Stairtower\Server\Cookie;
 
 /**
  * Test for Cookies
@@ -140,7 +140,7 @@ class CookieTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Exception\InvalidArgumentError
+     * @expectedException \Cundd\Stairtower\Exception\InvalidArgumentError
      */
     public function cookieWithoutNameTest()
     {

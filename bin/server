@@ -4,5 +4,5 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_autoload.php';
 
-$serverBootstrap = new Cundd\PersistentObjectStore\Bootstrap\Server($argv);
+$serverBootstrap = new Cundd\Stairtower\Bootstrap\Server($argv);
 $serverBootstrap->execute();

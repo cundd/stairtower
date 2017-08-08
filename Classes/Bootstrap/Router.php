@@ -1,12 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Bootstrap;
+namespace Cundd\Stairtower\Bootstrap;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Server\ServerInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\SimpleResponse;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Server\RestServer;
+use Cundd\Stairtower\Server\ServerInterface;
+use Cundd\Stairtower\Server\ValueObject\SimpleResponse;
 use DI\Container;
 use Psr\Log\LogLevel;
 use React\Http\Request;
@@ -59,8 +60,8 @@ class Router extends AbstractBootstrap
         /** @var Container $diContainer */
         $diContainer = $bootstrap->getDiContainer();
 
-        $this->server = $diContainer->get('Cundd\\PersistentObjectStore\\Server\\RestServer');
-        $diContainer->set('Cundd\\PersistentObjectStore\\Server\\ServerInterface', $this->server);
+        $this->server = $diContainer->get(RestServer::class);
+        $diContainer->set(ServerInterface::class, $this->server);
 
         // Set the server mode
         $this->server->setMode($serverMode);

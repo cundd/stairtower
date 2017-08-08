@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Expand;
+namespace Cundd\Stairtower\Expand;
 
 
-use Cundd\PersistentObjectStore\AbstractCase;
-use Cundd\PersistentObjectStore\Constants;
+use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Constants;
 
 /**
  * ExpandConfigurationBuilder test
@@ -35,7 +35,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
@@ -63,7 +63,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
@@ -93,7 +93,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(2, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
@@ -102,7 +102,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $this->assertEquals('', $expandConfigurations[0]->getAsKey());
 
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[1]
         );
         $this->assertEquals('book', $expandConfigurations[1]->getLocalKey());
@@ -130,7 +130,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
@@ -159,7 +159,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
@@ -190,7 +190,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(2, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
@@ -199,7 +199,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $this->assertEquals('person-data', $expandConfigurations[0]->getAsKey());
 
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[1]
         );
         $this->assertEquals('book', $expandConfigurations[1]->getLocalKey());
@@ -228,7 +228,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
@@ -252,7 +252,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
@@ -279,7 +279,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(2, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
@@ -288,7 +288,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $this->assertEquals('', $expandConfigurations[0]->getAsKey());
 
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[1]
         );
         $this->assertEquals('book', $expandConfigurations[1]->getLocalKey());
@@ -313,7 +313,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
@@ -339,7 +339,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandConfigurationInterface',
+            ExpandConfigurationInterface::class,
             $expandConfigurations[0]
         );
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());

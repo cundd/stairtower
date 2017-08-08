@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Controller;
+namespace Cundd\Stairtower\Server\Controller;
 
-use Cundd\PersistentObjectStore\Server\Exception\RequestMethodNotImplementedException;
-use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
-use Cundd\PersistentObjectStore\View\ViewControllerInterface;
+use Cundd\Stairtower\Server\Exception\RequestMethodNotImplementedException;
+use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
+use Cundd\Stairtower\Server\ValueObject\ControllerResult;
+use Cundd\Stairtower\Server\ValueObject\Request;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\View\ViewControllerInterface;
 use React\Stream\WritableStreamInterface;
 
 /**

@@ -1,21 +1,21 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server;
+namespace Cundd\Stairtower\Server;
 
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
-use Cundd\PersistentObjectStore\Formatter\JsonFormatter;
-use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
-use Cundd\PersistentObjectStore\Server\Exception\ServerException;
-use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
-use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Formatter\FormatterInterface;
+use Cundd\Stairtower\Formatter\JsonFormatter;
+use Cundd\Stairtower\Server\BodyParser\BodyParserInterface;
+use Cundd\Stairtower\Server\Exception\InvalidEventLoopException;
+use Cundd\Stairtower\Server\Exception\InvalidServerChangeException;
+use Cundd\Stairtower\Server\Exception\ServerException;
+use Cundd\Stairtower\Server\Handler\HandlerInterface;
+use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
+use Cundd\Stairtower\Server\ValueObject\HandlerResult;
+use Cundd\Stairtower\Server\ValueObject\Request;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\ValueObject\Statistics;
 use DateTime;
 use DateTimeInterface;
 use Exception;
@@ -45,7 +45,7 @@ class DummyServer implements ServerInterface
     /**
      * Document Access Coordinator
      *
-     * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
+     * @var \Cundd\Stairtower\DataAccess\CoordinatorInterface
      * @Inject
      */
     protected $coordinator;
@@ -53,7 +53,7 @@ class DummyServer implements ServerInterface
     /**
      * JSON serializer
      *
-     * @var \Cundd\PersistentObjectStore\Serializer\JsonSerializer
+     * @var \Cundd\Stairtower\Serializer\JsonSerializer
      * @Inject
      */
     protected $serializer;
@@ -69,7 +69,7 @@ class DummyServer implements ServerInterface
     /**
      * Formatter
      *
-     * @var \Cundd\PersistentObjectStore\Formatter\FormatterInterface
+     * @var \Cundd\Stairtower\Formatter\FormatterInterface
      */
     protected $formatter;
 

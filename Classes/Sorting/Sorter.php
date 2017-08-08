@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Sorting;
+namespace Cundd\Stairtower\Sorting;
 
 
-use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\KeyValueCodingInterface;
-use Cundd\PersistentObjectStore\Sorting\Exception\SortingException;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+use Cundd\Stairtower\Domain\Model\Database;
+use Cundd\Stairtower\KeyValueCodingInterface;
+use Cundd\Stairtower\Sorting\Exception\SortingException;
+use Cundd\Stairtower\Utility\ObjectUtility;
 use SplFixedArray;
 
 /**

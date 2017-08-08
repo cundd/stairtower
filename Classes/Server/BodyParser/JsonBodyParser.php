@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\BodyParser;
+namespace Cundd\Stairtower\Server\BodyParser;
 
-use Cundd\PersistentObjectStore\Serializer\Exception;
-use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Serializer\Exception;
+use Cundd\Stairtower\Serializer\JsonSerializer;
+use Cundd\Stairtower\Server\Exception\InvalidBodyException;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 
 /**
  * Body Parser implementation that can parse JSON data

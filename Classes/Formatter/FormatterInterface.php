@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Formatter;
+namespace Cundd\Stairtower\Formatter;
 
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
 
 /**
  * Interface for data formatter responsible to transform Document objects into matching string representations

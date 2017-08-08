@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\System\Lock;
+namespace Cundd\Stairtower\System\Lock;
 
 /**
  * Transient in-memory based lock implementation

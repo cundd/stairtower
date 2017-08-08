@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter\Comparison;
+namespace Cundd\Stairtower\Filter\Comparison;
 
-use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
-use Cundd\PersistentObjectStore\KeyValueCodingInterface;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+use Cundd\Stairtower\Filter\Exception\InvalidComparisonException;
+use Cundd\Stairtower\KeyValueCodingInterface;
+use Cundd\Stairtower\Utility\GeneralUtility;
+use Cundd\Stairtower\Utility\ObjectUtility;
 
 
 /**

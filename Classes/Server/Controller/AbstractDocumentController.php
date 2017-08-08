@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Controller;
+namespace Cundd\Stairtower\Server\Controller;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface;
-use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Server\ServerInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\DataAccess\CoordinatorInterface;
+use Cundd\Stairtower\DataAccess\Exception\ReaderException;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Server\ServerInterface;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use ReflectionClass;
 
 /**
@@ -21,7 +21,7 @@ abstract class AbstractDocumentController extends AbstractController implements 
     /**
      * Document Access Coordinator
      *
-     * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
+     * @var \Cundd\Stairtower\DataAccess\CoordinatorInterface
      * @Inject
      */
     protected $coordinator;
@@ -50,7 +50,7 @@ abstract class AbstractDocumentController extends AbstractController implements 
     /**
      * Returns the coordinator
      *
-     * @return \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
+     * @return \Cundd\Stairtower\DataAccess\CoordinatorInterface
      */
     public function getCoordinator(): CoordinatorInterface
     {

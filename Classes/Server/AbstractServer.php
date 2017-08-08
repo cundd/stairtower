@@ -1,23 +1,37 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server;
+namespace Cundd\Stairtower\Server;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Exception\SecurityException;
-use Cundd\PersistentObjectStore\Memory\Manager;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidEventLoopException;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestActionException;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidServerChangeException;
-use Cundd\PersistentObjectStore\Server\Exception\ServerException;
-use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RawResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\Request as Request;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\Statistics;
-use Cundd\PersistentObjectStore\System\Lock\Factory;
-use Cundd\PersistentObjectStore\System\Lock\TransientLock;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\DataAccess\Exception\ReaderException;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseException;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseIdentifierException;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDataException;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDataIdentifierException;
+use Cundd\Stairtower\Exception\SecurityException;
+use Cundd\Stairtower\Filter\Exception\InvalidCollectionException;
+use Cundd\Stairtower\Filter\Exception\InvalidComparisonException;
+use Cundd\Stairtower\Filter\Exception\InvalidOperatorException;
+use Cundd\Stairtower\Memory\Manager;
+use Cundd\Stairtower\Server\Exception\InvalidBodyException;
+use Cundd\Stairtower\Server\Exception\InvalidEventLoopException;
+use Cundd\Stairtower\Server\Exception\InvalidRequestActionException;
+use Cundd\Stairtower\Server\Exception\InvalidRequestException;
+use Cundd\Stairtower\Server\Exception\InvalidRequestMethodException;
+use Cundd\Stairtower\Server\Exception\InvalidRequestParameterException;
+use Cundd\Stairtower\Server\Exception\InvalidServerChangeException;
+use Cundd\Stairtower\Server\Exception\MissingLengthHeaderException;
+use Cundd\Stairtower\Server\Exception\RequestMethodNotImplementedException;
+use Cundd\Stairtower\Server\Exception\ServerException;
+use Cundd\Stairtower\Server\ValueObject\HandlerResult;
+use Cundd\Stairtower\Server\ValueObject\RawResult;
+use Cundd\Stairtower\Server\ValueObject\Request as Request;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\ValueObject\Statistics;
+use Cundd\Stairtower\System\Lock\Factory;
+use Cundd\Stairtower\System\Lock\TransientLock;
 use DateTime;
 use DateTimeInterface;
 use Exception;
@@ -48,7 +62,7 @@ abstract class AbstractServer implements ServerInterface
     /**
      * Document Access Coordinator
      *
-     * @var \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface
+     * @var \Cundd\Stairtower\DataAccess\CoordinatorInterface
      * @Inject
      */
     protected $coordinator;
@@ -56,7 +70,7 @@ abstract class AbstractServer implements ServerInterface
     /**
      * JSON serializer
      *
-     * @var \Cundd\PersistentObjectStore\Serializer\JsonSerializer
+     * @var \Cundd\Stairtower\Serializer\JsonSerializer
      * @Inject
      */
     protected $serializer;
@@ -121,7 +135,7 @@ abstract class AbstractServer implements ServerInterface
     /**
      * Event Emitter
      *
-     * @var \Cundd\PersistentObjectStore\Event\SharedEventEmitter
+     * @var \Cundd\Stairtower\Event\SharedEventEmitter
      * @Inject
      */
     protected $eventEmitter;
@@ -281,58 +295,58 @@ abstract class AbstractServer implements ServerInterface
             return 500;
         }
         switch (get_class($error)) {
-            case 'Cundd\\PersistentObjectStore\\DataAccess\\Exception\\ReaderException':
+            case ReaderException::class:
                 $statusCode = ($error->getCode() === 1408127629 ? 400 : 500);
                 break;
 
-            case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDatabaseException':
+            case InvalidDatabaseException::class:
                 $statusCode = 400;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDatabaseIdentifierException':
+            case InvalidDatabaseIdentifierException::class:
                 $statusCode = 400;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDataException':
+            case InvalidDataException::class:
                 $statusCode = 500;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Domain\\Model\\Exception\\InvalidDataIdentifierException':
+            case InvalidDataIdentifierException::class:
                 $statusCode = 400;
                 break;
 
-            case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidBodyException':
+            case InvalidBodyException::class:
                 $statusCode = 400;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidEventLoopException':
+            case InvalidEventLoopException::class:
                 $statusCode = 500;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidRequestException':
+            case InvalidRequestException::class:
                 $statusCode = 400;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidRequestMethodException':
+            case InvalidRequestMethodException::class:
                 $statusCode = 405;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidRequestParameterException':
+            case InvalidRequestParameterException::class:
                 $statusCode = 400;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Server\\Exception\\InvalidServerChangeException':
+            case InvalidServerChangeException::class:
                 $statusCode = 500;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Server\\Exception\\MissingLengthHeaderException':
+            case MissingLengthHeaderException::class:
                 $statusCode = 411;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Server\\Exception\\RequestMethodNotImplementedException':
+            case RequestMethodNotImplementedException::class:
                 $statusCode = 501;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Server\\Exception\\ServerException':
+            case ServerException::class:
                 $statusCode = 500;
                 break;
 
-            case 'Cundd\\PersistentObjectStore\\Filter\\Exception\\InvalidCollectionException':
+            case InvalidCollectionException::class:
                 $statusCode = 500;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Filter\\Exception\\InvalidComparisonException':
+            case InvalidComparisonException::class:
                 $statusCode = 500;
                 break;
-            case 'Cundd\\PersistentObjectStore\\Filter\\Exception\\InvalidOperatorException':
+            case InvalidOperatorException::class:
                 $statusCode = 500;
                 break;
             default:

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Domain\Model\Exception;
+namespace Cundd\Stairtower\Domain\Model\Exception;
 
 /**
  * Created by PhpStorm.

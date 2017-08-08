@@ -1,19 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter;
+namespace Cundd\Stairtower\Filter;
 
-use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
 
 /**
- * Test for \Cundd\PersistentObjectStore\Filter\FilterBuilderInterface
+ * Test for \Cundd\Stairtower\Filter\FilterBuilderInterface
  */
 class FilterBuilderTest extends AbstractDatabaseBasedCase
 {
     /**
-     * @var \Cundd\PersistentObjectStore\Filter\FilterBuilderInterface
+     * @var \Cundd\Stairtower\Filter\FilterBuilderInterface
      */
     protected $fixture;
 
@@ -30,7 +30,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => 'Daniel Corn'];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -45,7 +45,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['eyeColor' => 'green'];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(24, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -65,7 +65,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => 'Daniel Corn', 'eyeColor' => 'brown'];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -80,7 +80,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['eyeColor' => 'green', 'email' => 'nolanbyrd@vantage.com'];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -100,7 +100,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         ];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -120,7 +120,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         ];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -145,7 +145,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         ];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(2, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -174,7 +174,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         ];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(2, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -203,7 +203,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => [ComparisonInterface::TYPE_EQUAL_TO => 'Daniel Corn']];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -218,7 +218,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => ['$eq' => 'Daniel Corn']];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -238,7 +238,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => [ComparisonInterface::TYPE_NOT_EQUAL_TO => 'Daniel Corn']];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(92, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -253,7 +253,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => [ComparisonInterface::TYPE_NOT_EQUAL_TO => 'Daniel Corn']];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(92, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -273,7 +273,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['age' => [ComparisonInterface::TYPE_LESS_THAN => 25]];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(32, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -288,7 +288,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['age' => ['$lt' => 25]];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(32, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -308,7 +308,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['age' => [ComparisonInterface::TYPE_LESS_THAN_OR_EQUAL_TO => 25]];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(37, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -323,7 +323,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['age' => ['$lte' => 25]];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(37, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -343,7 +343,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['age' => [ComparisonInterface::TYPE_GREATER_THAN => 25]];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(56, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -358,7 +358,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['age' => ['$gt' => 25]];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(56, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -378,7 +378,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['age' => [ComparisonInterface::TYPE_GREATER_THAN_OR_EQUAL_TO => 25]];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(61, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -393,7 +393,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['age' => ['$gte' => 25]];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(61, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -413,7 +413,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => [ComparisonInterface::TYPE_LIKE => 'Daniel Corn']];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -428,7 +428,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => ['$lk' => 'Daniel Corn']];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -448,7 +448,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => [ComparisonInterface::TYPE_CONTAINS => 'niel Co']];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -463,7 +463,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => ['$con' => 'niel Co']];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -483,7 +483,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => [ComparisonInterface::TYPE_IN => 'Daniel Corn']];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -498,7 +498,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => ['$in' => 'Daniel Corn']];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(1, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -518,14 +518,14 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => ComparisonInterface::TYPE_IS_NULL];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(0, $filterResult->count());
 
 
         $query = ['not-existing-' . time() => ComparisonInterface::TYPE_IS_NULL];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(93, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -540,14 +540,14 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => '$null'];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(0, $filterResult->count());
 
 
         $query = ['not-existing-' . time() => '$null'];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(93, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -567,13 +567,13 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => ComparisonInterface::TYPE_IS_EMPTY];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(0, $filterResult->count());
 
         $query = ['not-existing-' . time() => ComparisonInterface::TYPE_IS_EMPTY];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(93, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -588,13 +588,13 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $query = ['name' => '$em'];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(0, $filterResult->count());
 
         $query = ['not-existing-' . time() => '$em'];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(93, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -626,7 +626,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
 
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(25, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -666,7 +666,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
 
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(25, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -698,7 +698,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         ];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(25, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -728,7 +728,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         ];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(25, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -758,7 +758,7 @@ class FilterBuilderTest extends AbstractDatabaseBasedCase
         ];
         $filter = $this->fixture->buildFilter($query);
         $filterResult = $filter->filterCollection($this->database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(25, $filterResult->count());
 
         $currentObject = $filterResult->current();

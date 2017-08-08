@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\DataAccess;
+namespace Cundd\Stairtower\DataAccess;
 
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 
 /**
  * Interface for coordinators responsible for managing the data

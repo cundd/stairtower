@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Asset;
+namespace Cundd\Stairtower\Asset;
 
-use Cundd\PersistentObjectStore\Asset\Exception\InvalidUriException;
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Memory\Manager;
+use Cundd\Stairtower\Asset\Exception\InvalidUriException;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Memory\Manager;
 
 /**
  * Asset Provider implementation

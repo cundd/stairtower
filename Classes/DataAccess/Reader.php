@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\DataAccess;
+namespace Cundd\Stairtower\DataAccess;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException;
-use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseStateInterface;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Serializer\JsonSerializer;
-use Cundd\PersistentObjectStore\System\Lock\Factory;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\DataAccess\Exception\ReaderException;
+use Cundd\Stairtower\Domain\Model\Database;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseStateInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Serializer\JsonSerializer;
+use Cundd\Stairtower\System\Lock\Factory;
 
 /**
  * Class to read data from it's source
@@ -23,7 +23,7 @@ class Reader
     const DATA_ENCODING = 'json';
 
     /**
-     * @var \Cundd\PersistentObjectStore\Memory\Helper
+     * @var \Cundd\Stairtower\Memory\Helper
      * @Inject
      */
     protected $memoryHelper;

@@ -1,36 +1,38 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server;
+namespace Cundd\Stairtower\Server;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Formatter\FormatterInterface;
-use Cundd\PersistentObjectStore\Formatter\JsonFormatter;
-use Cundd\PersistentObjectStore\Server\BodyParser\BodyParserInterface;
-use Cundd\PersistentObjectStore\Server\Controller\ControllerInterface;
-use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
-use Cundd\PersistentObjectStore\Server\Dispatcher\ControllerActionDispatcherInterface;
-use Cundd\PersistentObjectStore\Server\Dispatcher\ServerActionDispatcherInterface;
-use Cundd\PersistentObjectStore\Server\Dispatcher\SpecialHandlerActionDispatcherInterface;
-use Cundd\PersistentObjectStore\Server\Dispatcher\StandardActionDispatcherInterface;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidBodyException;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestControllerException;
-use Cundd\PersistentObjectStore\Server\Exception\InvalidRequestMethodException;
-use Cundd\PersistentObjectStore\Server\Exception\MissingLengthHeaderException;
-use Cundd\PersistentObjectStore\Server\Handler\HandlerInterface;
-use Cundd\PersistentObjectStore\Server\Handler\HandlerResultInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\DeferredResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\HandlerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\NullResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RawResultInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\Request;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
-use Cundd\PersistentObjectStore\Utility\ContentTypeUtility;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Formatter\FormatterInterface;
+use Cundd\Stairtower\Formatter\JsonFormatter;
+use Cundd\Stairtower\Server\BodyParser\BodyParserInterface;
+use Cundd\Stairtower\Server\BodyParser\FormDataBodyParser;
+use Cundd\Stairtower\Server\BodyParser\JsonBodyParser;
+use Cundd\Stairtower\Server\Controller\ControllerInterface;
+use Cundd\Stairtower\Server\Controller\ControllerResultInterface;
+use Cundd\Stairtower\Server\Dispatcher\ControllerActionDispatcherInterface;
+use Cundd\Stairtower\Server\Dispatcher\ServerActionDispatcherInterface;
+use Cundd\Stairtower\Server\Dispatcher\SpecialHandlerActionDispatcherInterface;
+use Cundd\Stairtower\Server\Dispatcher\StandardActionDispatcherInterface;
+use Cundd\Stairtower\Server\Exception\InvalidBodyException;
+use Cundd\Stairtower\Server\Exception\InvalidRequestControllerException;
+use Cundd\Stairtower\Server\Exception\InvalidRequestMethodException;
+use Cundd\Stairtower\Server\Exception\MissingLengthHeaderException;
+use Cundd\Stairtower\Server\Handler\HandlerInterface;
+use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
+use Cundd\Stairtower\Server\ValueObject\ControllerResult;
+use Cundd\Stairtower\Server\ValueObject\DeferredResult;
+use Cundd\Stairtower\Server\ValueObject\HandlerResult;
+use Cundd\Stairtower\Server\ValueObject\NullResult;
+use Cundd\Stairtower\Server\ValueObject\RawResultInterface;
+use Cundd\Stairtower\Server\ValueObject\Request;
+use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Utility\ContentTypeUtility;
 use Monolog\Logger;
 use React\Http\Response;
 use React\Http\Server as HttpServer;
@@ -61,7 +63,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     /**
      * Request factory instance to transform React requests into Stairtower requests
      *
-     * @var \Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory
+     * @var \Cundd\Stairtower\Server\ValueObject\RequestInfoFactory
      * @Inject
      */
     protected $requestFactory;
@@ -564,13 +566,13 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     public function getBodyParserForRequest(RequestInterface $request): BodyParserInterface
     {
         $header = $request->getHeaders();
-        $bodyParser = 'Cundd\\PersistentObjectStore\\Server\\BodyParser\\JsonBodyParser';
+        $bodyParser = JsonBodyParser::class;
         if (isset($header['Content-Type'])) {
             $contentType = $header['Content-Type'];
             if (substr($contentType, 0, 19) === 'multipart/form-data') {
                 throw new InvalidBodyException(sprintf('No body parser for Content-Type "%s" found', $contentType));
             } elseif ($contentType === 'application/x-www-form-urlencoded') {
-                $bodyParser = 'Cundd\\PersistentObjectStore\\Server\\BodyParser\\FormDataBodyParser';
+                $bodyParser = FormDataBodyParser::class;
             }
         }
 
@@ -624,7 +626,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
 
         if (!$controller instanceof ControllerInterface) {
             throw new InvalidRequestControllerException(
-                'Detected controller is not an instance of Cundd\\PersistentObjectStore\\Server\\Controller\\ControllerInterface',
+                sprintf('Detected controller is not an instance of %s', ControllerInterface::class),
                 1420712698
             );
         }

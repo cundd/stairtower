@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\System\Lock;
+namespace Cundd\Stairtower\System\Lock;
 
 
-use Cundd\PersistentObjectStore\AbstractCase;
+use Cundd\Stairtower\AbstractCase;
 
 
 /**
@@ -17,14 +17,13 @@ class FactoryTest extends AbstractCase
      */
     public function getLockTest()
     {
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\System\\Lock\\FileLock', Factory::createLock('test'));
+        $this->assertInstanceOf(FileLock::class, Factory::createLock('test'));
 
-        Factory::setLockImplementationClass('Cundd\\PersistentObjectStore\\System\\Lock\\TransientLock');
+        Factory::setLockImplementationClass(TransientLock::class);
         $this->assertInstanceOf(
-            'Cundd\\PersistentObjectStore\\System\\Lock\\TransientLock',
+            TransientLock::class,
             Factory::createLock('test')
         );
-
     }
 }
  

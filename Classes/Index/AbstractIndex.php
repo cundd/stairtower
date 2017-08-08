@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Index;
+namespace Cundd\Stairtower\Index;
 
-use Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 use Traversable;
 
 /**

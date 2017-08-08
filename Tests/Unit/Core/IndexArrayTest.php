@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Core;
+namespace Cundd\Stairtower\Core;
 
 /**
  * Tests for class IndexArray

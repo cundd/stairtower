@@ -1,18 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore;
+namespace Cundd\Stairtower;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Memory\Manager;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Event\SharedEventEmitter;
+use Cundd\Stairtower\Memory\Manager;
 use DI\ContainerBuilder;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Abstract base class for tests
  */
-class AbstractCase extends \PHPUnit\Framework\TestCase
+class AbstractCase extends TestCase
 {
     /**
      * Defines if Xhprof should be used
@@ -65,7 +67,7 @@ class AbstractCase extends \PHPUnit\Framework\TestCase
 
     protected function setUp()
     {
-        if (class_exists('Cundd\PersistentObjectStore\Memory\Manager')) {
+        if (class_exists(Manager::class)) {
             Manager::freeAll();
         }
 
@@ -123,7 +125,7 @@ class AbstractCase extends \PHPUnit\Framework\TestCase
             $this->diContainer = $builder->build();
 //			$this->diContainer = ContainerBuilder::buildDevContainer();
 
-            $this->diContainer->get('Cundd\\PersistentObjectStore\\Event\\SharedEventEmitter');
+            $this->diContainer->get(SharedEventEmitter::class);
 
             $logger = new Logger('core');
             $logger->pushHandler(new NullHandler());
@@ -137,7 +139,7 @@ class AbstractCase extends \PHPUnit\Framework\TestCase
     {
 //		unset($this->fixture);
 //		unset($this->diContainer);
-        if (class_exists('Cundd\PersistentObjectStore\Memory\Manager')) {
+        if (class_exists(Manager::class)) {
 //			MemoryManager::freeObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
             Manager::freeAll();
         }

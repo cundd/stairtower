@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter;
+namespace Cundd\Stairtower\Filter;
 
-use Cundd\PersistentObjectStore\ArrayableInterface;
-use Cundd\PersistentObjectStore\Result\ResultInterface;
+use Cundd\Stairtower\ArrayableInterface;
+use Cundd\Stairtower\Result\ResultInterface;
 
 /**
  * Interface for filter results

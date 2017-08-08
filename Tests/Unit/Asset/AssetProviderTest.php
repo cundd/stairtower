@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Asset;
+namespace Cundd\Stairtower\Asset;
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
 
 /**
  * Test for Asset Provider
@@ -85,7 +85,7 @@ class AssetProviderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Asset\Exception\InvalidUriException
+     * @expectedException \Cundd\Stairtower\Asset\Exception\InvalidUriException
      * @expectedExceptionCode 1428518305
      */
     public function noUriTest()
@@ -95,7 +95,7 @@ class AssetProviderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Asset\Exception\InvalidUriException
+     * @expectedException \Cundd\Stairtower\Asset\Exception\InvalidUriException
      * @expectedExceptionCode 1428518310
      */
     public function uriContainsIllegalCharacterTest()

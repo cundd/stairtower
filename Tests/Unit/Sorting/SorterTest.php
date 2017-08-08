@@ -1,15 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Sorting;
+namespace Cundd\Stairtower\Sorting;
 
 
-use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
-use Cundd\PersistentObjectStore\DataAccess\Reader;
-use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Cundd\Stairtower\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\DataAccess\Coordinator;
+use Cundd\Stairtower\DataAccess\Reader;
+use Cundd\Stairtower\Domain\Model\Database;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Utility\DebugUtility;
 
 
 /**
@@ -18,12 +19,12 @@ use Cundd\PersistentObjectStore\Utility\DebugUtility;
 class SorterTest extends AbstractDatabaseBasedCase
 {
     /**
-     * @var \Cundd\PersistentObjectStore\Sorting\Sorter
+     * @var \Cundd\Stairtower\Sorting\Sorter
      */
     protected $fixture;
 
     /**
-     * @var \Cundd\PersistentObjectStore\DataAccess\Coordinator
+     * @var \Cundd\Stairtower\DataAccess\Coordinator
      */
     protected $coordinator;
 
@@ -63,7 +64,7 @@ class SorterTest extends AbstractDatabaseBasedCase
         $this->checkPersonFile();
 
         /** @var Reader $databaseReader */
-        $databaseReader = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Reader');
+        $databaseReader = $this->getDiContainer()->get(Reader::class);
         $newlyLoadedDatabase = $databaseReader->loadDatabase('people');
         $dataInstance = new Document();
         $dataInstance->setData(
@@ -310,7 +311,7 @@ class SorterTest extends AbstractDatabaseBasedCase
 
 //		$this->setUpXhprof();
 
-        $this->coordinator = $this->getDiContainer()->get('Cundd\\PersistentObjectStore\\DataAccess\\Coordinator');
+        $this->coordinator = $this->getDiContainer()->get(Coordinator::class);
         $this->fixture = new Sorter();
     }
 

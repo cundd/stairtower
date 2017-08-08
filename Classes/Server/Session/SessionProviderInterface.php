@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Session;
+namespace Cundd\Stairtower\Server\Session;
 
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 
 /**
  * Interface for classes that allow creation and loading of session objects

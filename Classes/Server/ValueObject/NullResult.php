@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\Stairtower\Server\ValueObject;
 
 
-use Cundd\PersistentObjectStore\Immutable;
-use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
+use Cundd\Stairtower\Immutable;
+use Cundd\Stairtower\Server\Controller\ControllerResultInterface;
 
 /**
  * Empty result implementation

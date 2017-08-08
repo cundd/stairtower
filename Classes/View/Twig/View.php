@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\View\Twig;
+namespace Cundd\Stairtower\View\Twig;
 
 
-use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
-use Cundd\PersistentObjectStore\Server\ServerInterface;
-use Cundd\PersistentObjectStore\View\AbstractView;
-use Cundd\PersistentObjectStore\View\Exception\InvalidTemplatePathException;
-use Cundd\PersistentObjectStore\View\ExpandableViewInterface;
-use Cundd\PersistentObjectStore\View\Twig\Loader\Filesystem;
-use Cundd\PersistentObjectStore\View\ViewInterface;
+use Cundd\Stairtower\Configuration\ConfigurationManager;
+use Cundd\Stairtower\Server\ServerInterface;
+use Cundd\Stairtower\View\AbstractView;
+use Cundd\Stairtower\View\Exception\InvalidTemplatePathException;
+use Cundd\Stairtower\View\ExpandableViewInterface;
+use Cundd\Stairtower\View\Twig\Loader\Filesystem;
+use Cundd\Stairtower\View\ViewInterface;
 use Twig_Environment;
 use Twig_Extension_Debug;
 use Twig_Loader_Filesystem;

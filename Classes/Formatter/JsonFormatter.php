@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Formatter;
+namespace Cundd\Stairtower\Formatter;
 
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
 
 
 /**
@@ -12,7 +12,7 @@ use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
 class JsonFormatter extends AbstractFormatter
 {
     /**
-     * @var \Cundd\PersistentObjectStore\Serializer\DataInstanceSerializer
+     * @var \Cundd\Stairtower\Serializer\DataInstanceSerializer
      * @Inject
      */
     protected $serializer;

@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 namespace Server\Controller;
 
-use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
-use Cundd\PersistentObjectStore\Server\Controller\DocumentControllerInterface;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInfoFactory;
+use Cundd\Stairtower\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\DataAccess\Coordinator;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Server\Controller\AbstractDocumentController;
+use Cundd\Stairtower\Server\Controller\DocumentControllerInterface;
+use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
 use React\Http\Request;
 
 /**
@@ -28,7 +31,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
         parent::setUp();
 
         ///** @var CoordinatorInterface $coordinatorStub */
-        $coordinatorStub = $this->getMockBuilder('Cundd\\PersistentObjectStore\\DataAccess\\Coordinator')->getMock();
+        $coordinatorStub = $this->getMockBuilder(Coordinator::class)->getMock();
         $coordinatorStub
             ->expects($this->any())
             ->method('getDatabase')
@@ -39,9 +42,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
             ->method('databaseExists')
             ->will($this->returnValue(true));
 
-        $this->fixture = $this->getMockBuilder(
-            'Cundd\\PersistentObjectStore\\Server\\Controller\\AbstractDocumentController'
-        )
+        $this->fixture = $this->getMockBuilder(AbstractDocumentController::class)
             ->setMethods(['getCoordinator'])
             ->getMock();
         $this->fixture
@@ -49,9 +50,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
             ->method('getCoordinator')
             ->will($this->returnValue($coordinatorStub));
 
-        $this->requestInfoFactory = $this->getDiContainer()->get(
-            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInfoFactory'
-        );
+        $this->requestInfoFactory = $this->getDiContainer()->get(RequestInfoFactory::class);
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/people-small/elliottgentry@andershun.com')
         );
@@ -71,7 +70,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
     {
         $database = $this->fixture->getDatabaseForCurrentRequest();
         $this->assertNotNull($database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DatabaseInterface', $database);
+        $this->assertInstanceOf(DatabaseInterface::class, $database);
         $this->assertEquals('people-small', $database->getIdentifier());
     }
 
@@ -85,7 +84,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
         );
         $database = $this->fixture->getDatabaseForRequest($requestInfo);
         $this->assertNotNull($database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\DatabaseInterface', $database);
+        $this->assertInstanceOf(DatabaseInterface::class, $database);
         $this->assertEquals('people-small', $database->getIdentifier());
     }
 

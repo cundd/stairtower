@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Configuration;
+namespace Cundd\Stairtower\Configuration;
 
 /**
  * Interface for Configuration Managers

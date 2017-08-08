@@ -2,10 +2,10 @@
 declare(strict_types=1);
 
 
-use Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface;
-use Cundd\PersistentObjectStore\Server\Session\SessionControllerTrait;
-use Cundd\PersistentObjectStore\Server\ValueObject\ControllerResult;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\Controller\ControllerResultInterface;
+use Cundd\Stairtower\Server\Session\SessionControllerTrait;
+use Cundd\Stairtower\Server\ValueObject\ControllerResult;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use Evenement\EventEmitter;
 use React\Socket\ConnectionInterface;
 use React\Stream\WritableStreamInterface;
@@ -15,14 +15,14 @@ class Test_Application
 {
 }
 
-class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server\Controller\ControllerInterface
+class Test_Application_Controller implements \Cundd\Stairtower\Server\Controller\ControllerInterface
 {
     public function initialize(): void
     {
     }
 
     public function setRequest(RequestInterface $request
-    ): \Cundd\PersistentObjectStore\Server\Controller\ControllerInterface {
+    ): \Cundd\Stairtower\Server\Controller\ControllerInterface {
         return $this;
     }
 
@@ -42,7 +42,7 @@ class Test_Application_Controller implements \Cundd\PersistentObjectStore\Server
 
     public function didInvokeAction(
         string $action,
-        \Cundd\PersistentObjectStore\Server\Controller\ControllerResultInterface $result
+        \Cundd\Stairtower\Server\Controller\ControllerResultInterface $result
     ): void {
 
     }

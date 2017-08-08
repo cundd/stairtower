@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter;
+namespace Cundd\Stairtower\Filter;
 
-use Cundd\PersistentObjectStore\Domain\Model\Database;
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Exception\InvalidCollectionException;
-use Cundd\PersistentObjectStore\Filter\Exception\InvalidComparisonException;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Cundd\Stairtower\Domain\Model\Database;
+use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\Filter\Exception\InvalidCollectionException;
+use Cundd\Stairtower\Filter\Exception\InvalidComparisonException;
+use Cundd\Stairtower\Utility\DebugUtility;
 
 
 /**

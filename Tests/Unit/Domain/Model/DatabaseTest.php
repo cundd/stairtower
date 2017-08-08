@@ -1,34 +1,37 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Domain\Model;
+namespace Cundd\Stairtower\Domain\Model;
 
 
-use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
-use Cundd\PersistentObjectStore\Index\IndexInterface;
+use Cundd\Stairtower\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\DataAccess\Coordinator;
+use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\Filter\Comparison\PropertyComparison;
+use Cundd\Stairtower\Filter\FilterResult;
+use Cundd\Stairtower\Index\IdentifierIndex;
+use Cundd\Stairtower\Index\IndexInterface;
 
 class DatabaseTest extends AbstractDatabaseBasedCase
 {
     /**
-     * @var \Cundd\PersistentObjectStore\Domain\Model\DatabaseInterface
+     * @var \Cundd\Stairtower\Domain\Model\DatabaseInterface
      */
     protected $fixture;
 
     /**
-     * @var \Cundd\PersistentObjectStore\DataAccess\Coordinator
+     * @var \Cundd\Stairtower\DataAccess\Coordinator
      */
     protected $coordinator;
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\DataAccess\Exception\ReaderException
+     * @expectedException \Cundd\Stairtower\DataAccess\Exception\ReaderException
      */
     public function invalidDatabaseTest()
     {
-        $this->coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
+        $this->coordinator = $this->getDiContainer()->get(Coordinator::class);
         $this->coordinator->getDatabase('congress_members');
     }
 
@@ -247,7 +250,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
         $filterResult = $this->fixture->filter(
             new PropertyComparison('email', ComparisonInterface::TYPE_EQUAL_TO, $testEmail)
         );
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertGreaterThan(0, $filterResult->count());
 
         $person = $filterResult->current();
@@ -314,7 +317,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
 
         $indexes = $this->fixture->getIndexesForValueOfProperty('an-id', Constants::DATA_ID_KEY);
         $this->assertNotEmpty($indexes);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Index\\IdentifierIndex', $indexes[0]);
+        $this->assertInstanceOf(IdentifierIndex::class, $indexes[0]);
     }
 
     /**
@@ -342,7 +345,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
         $person = $documents[0];
 
         $this->assertNotNull($person);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Domain\\Model\\Document', $person);
+        $this->assertInstanceOf(Document::class, $person);
 
         $this->assertSame(22, $person->valueForKeyPath('age'));
         $this->assertSame('blue', $person->valueForKeyPath('eyeColor'));
@@ -356,7 +359,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
 
         $this->setUpXhprof();
 
-        $this->coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
+        $this->coordinator = $this->getDiContainer()->get(Coordinator::class);
         $this->fixture = $this->getSmallPeopleDatabase();
     }
 

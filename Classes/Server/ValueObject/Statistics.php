@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\Stairtower\Server\ValueObject;
 
-use Cundd\PersistentObjectStore\Immutable;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
+use Cundd\Stairtower\Immutable;
+use Cundd\Stairtower\Utility\GeneralUtility;
 use DateTime;
 use DateTimeInterface;
 use JsonSerializable;

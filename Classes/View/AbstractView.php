@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\View;
+namespace Cundd\Stairtower\View;
 
 /**
  * Abstract View class

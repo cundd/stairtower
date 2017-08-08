@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Session;
+namespace Cundd\Stairtower\Server\Session;
 
 
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
-use Cundd\PersistentObjectStore\Exception\MissingExtensionException;
-use Cundd\PersistentObjectStore\LogicException;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDataException;
+use Cundd\Stairtower\Exception\MissingExtensionException;
+use Cundd\Stairtower\LogicException;
+use Cundd\Stairtower\Utility\GeneralUtility;
+use Cundd\Stairtower\Utility\ObjectUtility;
 
 /**
  * Session instance

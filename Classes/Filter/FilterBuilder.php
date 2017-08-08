@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter;
+namespace Cundd\Stairtower\Filter;
 
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
-use Cundd\PersistentObjectStore\Filter\Exception\InvalidFilterBuilderInputException;
-use Cundd\PersistentObjectStore\Utility\DebugUtility;
+use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\Filter\Comparison\LogicalComparison;
+use Cundd\Stairtower\Filter\Comparison\PropertyComparison;
+use Cundd\Stairtower\Filter\Exception\InvalidFilterBuilderInputException;
+use Cundd\Stairtower\Utility\DebugUtility;
 
 /**
  * FilterBuild implementation
@@ -22,7 +22,7 @@ class FilterBuilder implements FilterBuilderInterface
     protected $defaultComparisonType = ComparisonInterface::TYPE_LIKE;
 
     /**
-     * @var \Cundd\PersistentObjectStore\Filter\Comparison\TypeHelper
+     * @var \Cundd\Stairtower\Filter\Comparison\TypeHelper
      * @inject
      */
     protected $comparisonTypeHelper;

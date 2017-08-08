@@ -1,22 +1,23 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Filter;
+namespace Cundd\Stairtower\Filter;
 
-use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
-use Cundd\PersistentObjectStore\Filter\Comparison\LogicalComparison;
-use Cundd\PersistentObjectStore\Filter\Comparison\PropertyComparison;
+use Cundd\Stairtower\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\DataAccess\Coordinator;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\Filter\Comparison\LogicalComparison;
+use Cundd\Stairtower\Filter\Comparison\PropertyComparison;
 
 /**
- * Test for Cundd\PersistentObjectStore\Filter\FilterResult
+ * Test for Cundd\Stairtower\Filter\FilterResult
  */
 class FilterResultTest extends AbstractDatabaseBasedCase
 {
     /**
-     * @var \Cundd\PersistentObjectStore\Filter\FilterResult
+     * @var \Cundd\Stairtower\Filter\FilterResult
      */
     protected $fixture;
 
@@ -51,8 +52,8 @@ class FilterResultTest extends AbstractDatabaseBasedCase
      */
     public function currentWithMoreConstraintsTest()
     {
-        /** @var \Cundd\PersistentObjectStore\DataAccess\Coordinator $coordinator */
-        $coordinator = $this->getDiContainer()->get('\Cundd\PersistentObjectStore\DataAccess\Coordinator');
+        /** @var \Cundd\Stairtower\DataAccess\Coordinator $coordinator */
+        $coordinator = $this->getDiContainer()->get(Coordinator::class);
 
         $filter = new Filter(
             new LogicalComparison(
@@ -96,7 +97,7 @@ class FilterResultTest extends AbstractDatabaseBasedCase
             )
         );
         $filterResult = $filter->filterCollection($database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(25, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -130,7 +131,7 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         );
 
         $filterResult = $filter->filterCollection($database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(25, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -164,7 +165,7 @@ class FilterResultTest extends AbstractDatabaseBasedCase
         );
 
         $filterResult = $filter->filterCollection($database);
-        $this->assertInstanceOf('Cundd\\PersistentObjectStore\\Filter\\FilterResult', $filterResult);
+        $this->assertInstanceOf(FilterResult::class, $filterResult);
         $this->assertEquals(25, $filterResult->count());
 
         $currentObject = $filterResult->current();
@@ -214,7 +215,7 @@ class FilterResultTest extends AbstractDatabaseBasedCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Core\ArrayException\IndexOutOfRangeException
+     * @expectedException \Cundd\Stairtower\Core\ArrayException\IndexOutOfRangeException
      */
     public function iterateAndGetCurrentShouldThrowAnException()
     {

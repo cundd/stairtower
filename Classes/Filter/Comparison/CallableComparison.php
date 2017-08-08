@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Cundd\PersistentObjectStore\Filter\Comparison;
+namespace Cundd\Stairtower\Filter\Comparison;
 
 /**
  * Filter Comparison that will invoke a user defined callback

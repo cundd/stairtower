@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Configuration;
+namespace Cundd\Stairtower\Configuration;
 
-use Cundd\PersistentObjectStore\RuntimeException;
-use Cundd\PersistentObjectStore\Server\ServerInterface;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+use Cundd\Stairtower\RuntimeException;
+use Cundd\Stairtower\Server\ServerInterface;
+use Cundd\Stairtower\Utility\ObjectUtility;
 use Monolog\Logger;
 use Symfony\Component\Process\PhpExecutableFinder;
 

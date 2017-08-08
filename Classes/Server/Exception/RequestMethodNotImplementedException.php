@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Exception;
+namespace Cundd\Stairtower\Server\Exception;
 
 /**
  * Exception thrown for not implemented request methods

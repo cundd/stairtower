@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\System\Lock;
+namespace Cundd\Stairtower\System\Lock;
 
 /**
  * Interface for locks
@@ -20,7 +20,7 @@ interface LockInterface
      *
      * @param int $timeout Microseconds to wait before throwing a TimeoutException
      * @return void
-     * @throws \Cundd\PersistentObjectStore\System\Lock\Exception\TimeoutException if the timeout is reached before the lock can be acquired
+     * @throws \Cundd\Stairtower\System\Lock\Exception\TimeoutException if the timeout is reached before the lock can be acquired
      */
     public function lockWithTimeout(int $timeout);
 

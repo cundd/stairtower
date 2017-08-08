@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server;
+namespace Cundd\Stairtower\Server;
 
 /**
  * Content types taken from http://en.wikipedia.org/wiki/Internet_media_type#List_of_common_media_types

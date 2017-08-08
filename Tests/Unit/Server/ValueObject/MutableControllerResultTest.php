@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\ValueObject;
+namespace Cundd\Stairtower\Server\ValueObject;
 
-use Cundd\PersistentObjectStore\Server\ContentType;
+use Cundd\Stairtower\Server\ContentType;
 
 /**
  * Test for Controller Results

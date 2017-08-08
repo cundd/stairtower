@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Sorting;
+namespace Cundd\Stairtower\Sorting;
 
 
 /**

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Expand;
+namespace Cundd\Stairtower\Expand;
 
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Expand\Exception\InvalidExpandBuilderInputException;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Expand\Exception\InvalidExpandBuilderInputException;
 
 /**
  * Expand configuration builder

@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Session;
+namespace Cundd\Stairtower\Server\Session;
 
 
-use Cundd\PersistentObjectStore\Server\Cookie\Cookie;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\Cookie\Cookie;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 
 /**
  * Test class for the Session Provider
@@ -36,7 +36,7 @@ class SessionProviderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @test
-     * @expectedException \Cundd\PersistentObjectStore\Server\Session\Exception\InvalidSessionIdentifierException
+     * @expectedException \Cundd\Stairtower\Server\Session\Exception\InvalidSessionIdentifierException
      */
     public function createExistingSessionShouldFailTest()
     {
@@ -90,9 +90,7 @@ class SessionProviderTest extends \PHPUnit\Framework\TestCase
 
 
         /** @var RequestInterface $request */
-        $request = $this->getMockForAbstractClass(
-            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface'
-        );
+        $request = $this->getMockForAbstractClass(RequestInterface::class);
         $request
             ->expects($this->any())
             ->method('getCookie')
@@ -113,9 +111,7 @@ class SessionProviderTest extends \PHPUnit\Framework\TestCase
         $sessionId = 'not-existing-session-' . time();
 
         /** @var RequestInterface $request */
-        $request = $this->getMockForAbstractClass(
-            'Cundd\\PersistentObjectStore\\Server\\ValueObject\\RequestInterface'
-        );
+        $request = $this->getMockForAbstractClass(RequestInterface::class);
         $request
             ->expects($this->any())
             ->method('getCookie')

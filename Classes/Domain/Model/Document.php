@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Domain\Model;
+namespace Cundd\Stairtower\Domain\Model;
 
-use Cundd\PersistentObjectStore\Constants;
-use Cundd\PersistentObjectStore\Domain\Model\Exception\InvalidDataException;
-use Cundd\PersistentObjectStore\LogicException;
-use Cundd\PersistentObjectStore\Utility\GeneralUtility;
-use Cundd\PersistentObjectStore\Utility\ObjectUtility;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Domain\Model\Exception\InvalidDataException;
+use Cundd\Stairtower\LogicException;
+use Cundd\Stairtower\Utility\GeneralUtility;
+use Cundd\Stairtower\Utility\ObjectUtility;
 use \JsonSerializable;
 
 /**

@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Expand;
+namespace Cundd\Stairtower\Expand;
 
-use Cundd\PersistentObjectStore\AbstractDatabaseBasedCase;
-use Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface;
-use Cundd\PersistentObjectStore\Domain\Model\Document;
-use Cundd\PersistentObjectStore\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\DataAccess\CoordinatorInterface;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
 
 /**
  * Dummy for Expand Resolver
@@ -16,7 +16,7 @@ class ExpandResolver_withInjectableCoordinator extends ExpandResolver
     /**
      * Sets the Document Access Coordinator
      *
-     * @param \Cundd\PersistentObjectStore\DataAccess\CoordinatorInterface $coordinator
+     * @param \Cundd\Stairtower\DataAccess\CoordinatorInterface $coordinator
      * @return $this
      */
     public function setCoordinator($coordinator)
@@ -39,12 +39,10 @@ class ExpandResolverTest extends AbstractDatabaseBasedCase
 
     protected function setUp()
     {
-        $this->fixture = $this->getDiContainer()->get(
-            'Cundd\\PersistentObjectStore\\Expand\\ExpandResolver_withInjectableCoordinator'
-        );
+        $this->fixture = $this->getDiContainer()->get(ExpandResolver_withInjectableCoordinator::class);
 
         /** @var \PHPUnit_Framework_MockObject_MockObject|CoordinatorInterface $coordinator */
-        $coordinator = $this->getMockBuilder('Cundd\\PersistentObjectStore\\DataAccess\\CoordinatorInterface')
+        $coordinator = $this->getMockBuilder(CoordinatorInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 

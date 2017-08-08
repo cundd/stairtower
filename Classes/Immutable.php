@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore;
+namespace Cundd\Stairtower;
 
 /**
  * Interface for classes with immutable objects

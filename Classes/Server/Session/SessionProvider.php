@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Session;
+namespace Cundd\Stairtower\Server\Session;
 
 
-use Cundd\PersistentObjectStore\Exception\MissingExtensionException;
-use Cundd\PersistentObjectStore\Memory\Manager;
-use Cundd\PersistentObjectStore\Server\Session\Exception\InvalidSessionIdentifierException;
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Exception\MissingExtensionException;
+use Cundd\Stairtower\Memory\Manager;
+use Cundd\Stairtower\Server\Session\Exception\InvalidSessionIdentifierException;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 
 /**
  * Session instance

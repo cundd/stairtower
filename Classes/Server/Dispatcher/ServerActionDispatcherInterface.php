@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\PersistentObjectStore\Server\Dispatcher;
+namespace Cundd\Stairtower\Server\Dispatcher;
 
-use Cundd\PersistentObjectStore\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use React\Stream\WritableStreamInterface;
 
 /**
