@@ -35,7 +35,7 @@ class Helper
      * @param int $size Memory to free in bytes
      * @return bool Returns if the memory could be freed
      */
-    public function freeMemory($size)
+    public function freeMemory($size): bool
     {
         $size = abs($size);
         $currentMemory = memory_get_usage(true);
@@ -64,7 +64,7 @@ class Helper
      *
      * @return int
      */
-    public function getAvailableMemory()
+    public function getAvailableMemory(): int
     {
         $iniMemoryLimit = ini_get('memory_limit');
         switch (strtoupper(substr($iniMemoryLimit, -1))) {
@@ -118,4 +118,4 @@ class Helper
             }
         }
     }
-} 
+}

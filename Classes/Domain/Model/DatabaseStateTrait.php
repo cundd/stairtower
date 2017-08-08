@@ -20,7 +20,7 @@ trait DatabaseStateTrait
      *
      * @return string
      */
-    public function getState()
+    public function getState(): string
     {
         return $this->state;
     }
@@ -29,9 +29,9 @@ trait DatabaseStateTrait
      * Sets the Database's state
      *
      * @param string $newState
-     * @return $this
+     * @return DatabaseStateInterface
      */
-    public function setState($newState)
+    public function setState(string $newState): DatabaseStateInterface
     {
         $this->state = $newState;
 

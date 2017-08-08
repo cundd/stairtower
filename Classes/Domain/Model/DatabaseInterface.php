@@ -3,15 +3,19 @@ declare(strict_types=1);
 
 namespace Cundd\PersistentObjectStore\Domain\Model;
 
+use Countable;
 use Cundd\PersistentObjectStore\ArrayableInterface;
 use Cundd\PersistentObjectStore\Filter\Comparison\ComparisonInterface;
+use Cundd\PersistentObjectStore\Filter\FilterResultInterface;
 use Cundd\PersistentObjectStore\Index\IndexableInterface;
+use Iterator;
+use SeekableIterator;
 
 
 /**
  * Interface for Database implementations
  */
-interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, IndexableInterface, \Iterator, \Countable, \SeekableIterator
+interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, IndexableInterface, Iterator, Countable, SeekableIterator
 {
     /**
      * Returns the database identifier
@@ -24,9 +28,9 @@ interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, 
      * Filters the database using the given comparison
      *
      * @param ComparisonInterface $comparison
-     * @return \Cundd\PersistentObjectStore\Filter\FilterResultInterface
+     * @return FilterResultInterface
      */
-    public function filter(ComparisonInterface $comparison): \Cundd\PersistentObjectStore\Filter\FilterResultInterface;
+    public function filter(ComparisonInterface $comparison): FilterResultInterface;
 
     /**
      * Returns the object with the given identifier
@@ -80,5 +84,4 @@ interface DatabaseInterface extends DatabaseStateInterface, ArrayableInterface, 
      * @return bool
      */
     public function contains($document): bool;
-
-} 
+}

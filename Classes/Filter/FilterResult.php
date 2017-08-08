@@ -431,7 +431,7 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      * @param ComparisonInterface $comparison
      * @return SplFixedArray
      */
-    protected function queryIndexesForComparison($collection, $comparison)
+    protected function queryIndexesForComparison(IndexableInterface $collection, ComparisonInterface $comparison)
     {
         $foundObjects = null;
         if ($comparison instanceof PropertyComparisonInterface) {

@@ -57,9 +57,8 @@ class CoordinatorTest extends AbstractDataBasedCase
     public function createDatabaseTest()
     {
         $databaseIdentifier = 'test-db-' . time();
-        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
-                'writeDataPath'
-            ) . $databaseIdentifier . '.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()
+                ->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
 
         $this->fixture->createDatabase($databaseIdentifier);
 
@@ -73,9 +72,8 @@ class CoordinatorTest extends AbstractDataBasedCase
     public function dropDatabaseTest()
     {
         $databaseIdentifier = 'test-db-' . time();
-        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
-                'dataPath'
-            ) . $databaseIdentifier . '.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()
+                ->getConfigurationForKeyPath('dataPath') . $databaseIdentifier . '.json';
 
         file_put_contents($expectedPath, '[]');
         $this->assertFileExists($expectedPath);
@@ -184,9 +182,8 @@ class CoordinatorTest extends AbstractDataBasedCase
         $database->add($dataInstance);
         $this->fixture->commitDatabase($database);
 
-        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
-                'writeDataPath'
-            ) . 'contacts.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()
+                ->getConfigurationForKeyPath('writeDataPath') . 'contacts.json';
         $this->assertTrue(file_exists($expectedPath));
         unlink($expectedPath);
     }
@@ -254,9 +251,8 @@ class CoordinatorTest extends AbstractDataBasedCase
 
         $this->fixture->commitDatabase($database);
 
-        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
-                'writeDataPath'
-            ) . 'people.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()
+                ->getConfigurationForKeyPath('writeDataPath') . 'people.json';
         $this->assertTrue(file_exists($expectedPath));
         unlink($expectedPath);
     }
@@ -374,9 +370,8 @@ class CoordinatorTest extends AbstractDataBasedCase
         $this->assertEquals($database->count(), $databaseRetrievedFromTheCoordinator->count());
 
 
-        $expectedPath = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath(
-                'writeDataPath'
-            ) . $databaseIdentifier . '.json';
+        $expectedPath = ConfigurationManager::getSharedInstance()
+                ->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
         $this->fixture->commitDatabase($database);
         $this->assertFileExists($expectedPath);
 
