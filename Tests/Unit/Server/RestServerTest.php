@@ -5,15 +5,16 @@ namespace Cundd\PersistentObjectStore\Server;
 
 use Cundd\PersistentObjectStore\Configuration\ConfigurationManager;
 use Cundd\PersistentObjectStore\Constants;
+use Cundd\PersistentObjectStore\Tests\Unit\HttpRequestClient;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test for REST commands
  */
-class RestServerTest extends \PHPUnit\Framework\TestCase
+class RestServerTest extends TestCase
 {
     protected $databaseIdentifier;
     protected $expectedPath;
-    protected $portForTestServer = 7700;
 
     protected function setUp()
     {
@@ -21,8 +22,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
         $this->databaseIdentifier = $databaseIdentifier = 'test-db-' . time();
         $this->expectedPath = ConfigurationManager::getSharedInstance()
-                ->getConfigurationForKeyPath('writeDataPath')
-            . $databaseIdentifier . '.json';
+                ->getConfigurationForKeyPath('writeDataPath') . $databaseIdentifier . '.json';
         $this->expectedPath = __DIR__ . '/../../var/Data/' . $databaseIdentifier . '.json';
     }
 
@@ -33,8 +33,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
         }
 
         $writeDataPath = ConfigurationManager::getSharedInstance()
-                ->getConfigurationForKeyPath('writeDataPath')
-            . $this->databaseIdentifier . '.json';
+                ->getConfigurationForKeyPath('writeDataPath') . $this->databaseIdentifier . '.json';
         if (file_exists($writeDataPath)) {
             unlink($writeDataPath);
         }
@@ -48,6 +47,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
     public function fullServerTest()
     {
         // $start = microtime(1);
+        $httpClient = new HttpRequestClient('127.0.0.1', $this->getPortForTestServer());
 
         $databaseIdentifier = $this->databaseIdentifier;
 
@@ -78,38 +78,38 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // Get the welcome message
-        $response = $this->performRestRequest('');
+        $response = $httpClient->performRestRequest('');
         $this->assertNotEquals(false, $response, 'Could not get the welcome message');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(Constants::MESSAGE_JSON_WELCOME, $response['message']);
 
 
         // Get the stats
-        $response = $this->performRestRequest('_stats');
+        $response = $httpClient->performRestRequest('_stats');
         $this->assertArrayHasKey('version', $response, 'Could not get the stats');
         $this->assertArrayHasKey('guid', $response);
 
 
         // Create a database
-        $response = $this->performRestRequest($databaseIdentifier, 'PUT');
+        $response = $httpClient->performRestRequest($databaseIdentifier, 'PUT');
         $this->assertNotEquals(false, $response, 'Could not create the Database');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
 
 
         // List all Databases
-        $response = $this->performRestRequest('_all_dbs');
+        $response = $httpClient->performRestRequest('_all_dbs');
         $this->assertNotEquals(false, $response, 'Could not list all Databases');
         $this->assertTrue(in_array($this->databaseIdentifier, $response));
 
 
         // List Documents in that database
-        $response = $this->performRestRequest($databaseIdentifier);
+        $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertEmpty($response, 'Database should be empty');
 
 
         // Add a Document
-        $response = $this->performRestRequest($databaseIdentifier, 'POST', $testDocument1);
+        $response = $httpClient->performRestRequest($databaseIdentifier, 'POST', $testDocument1);
         $this->assertEquals(
             $testDocument1[Constants::DATA_ID_KEY],
             $response[Constants::DATA_ID_KEY],
@@ -121,7 +121,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // List Documents in that database
-        $response = $this->performRestRequest($databaseIdentifier);
+        $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertNotEmpty($response, 'Could not list the Documents');
         $responseFirstDocument = $response[0];
         $this->assertEquals($testDocument1[Constants::DATA_ID_KEY], $responseFirstDocument[Constants::DATA_ID_KEY]);
@@ -131,7 +131,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // Add another Document
-        $response = $this->performRestRequest($databaseIdentifier, 'POST', $testDocument2);
+        $response = $httpClient->performRestRequest($databaseIdentifier, 'POST', $testDocument2);
         $this->assertNotSame(false, $response, 'Could not add another Document');
         $this->assertEquals($testDocument2[Constants::DATA_ID_KEY], $response[Constants::DATA_ID_KEY]);
         $this->assertEquals($testDocument2['name'], $response['name'], 'Could not add another Document');
@@ -140,7 +140,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // List Documents in that database
-        $response = $this->performRestRequest($databaseIdentifier);
+        $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertNotEmpty($response, 'Database does not contain any Documents');
         $this->assertEquals($testDocument1[Constants::DATA_ID_KEY], $response[0][Constants::DATA_ID_KEY]);
         $this->assertEquals($testDocument1['name'], $response[0]['name']);
@@ -154,14 +154,14 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // Count Documents in that database
-        $response = $this->performRestRequest($databaseIdentifier . '/_count');
+        $response = $httpClient->performRestRequest($databaseIdentifier . '/_count');
         $this->assertNotEmpty($response, 'Could not count the Documents in the Database');
         $this->assertEquals(2, $response['count']);
 
 
         // Update a Document
         $testDocument1['os'] = 'Cundbuntu';
-        $response = $this->performRestRequest(
+        $response = $httpClient->performRestRequest(
             $databaseIdentifier . '/' . $documentIdentifier1,
             'PUT',
             $testDocument1
@@ -177,7 +177,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // List Documents in that database
-        $response = $this->performRestRequest($databaseIdentifier);
+        $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertNotEmpty($response);
         $responseFirstDocument = $response[0];
         $this->assertEquals(
@@ -191,7 +191,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // Find a Document
-        $response = $this->performRestRequest($databaseIdentifier . '/?os=' . $testDocument1['os']);
+        $response = $httpClient->performRestRequest($databaseIdentifier . '/?os=' . $testDocument1['os']);
         $this->assertNotEmpty($response);
         $responseFirstDocument = $response[0];
         $this->assertEquals(
@@ -205,7 +205,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // Delete a Document
-        $response = $this->performRestRequest(
+        $response = $httpClient->performRestRequest(
             $databaseIdentifier . '/' . $documentIdentifier1,
             'DELETE',
             $testDocument1
@@ -216,7 +216,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // List Documents in that database
-        $response = $this->performRestRequest($databaseIdentifier);
+        $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertNotEmpty($response, 'Database does not contain any Documents');
         $this->assertEquals($testDocument2[Constants::DATA_ID_KEY], $response[0][Constants::DATA_ID_KEY]);
         $this->assertEquals($testDocument2['name'], $response[0]['name']);
@@ -225,7 +225,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // Delete a Document
-        $response = $this->performRestRequest(
+        $response = $httpClient->performRestRequest(
             $databaseIdentifier . '/' . $documentIdentifier2,
             'DELETE',
             $testDocument1
@@ -236,7 +236,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // Delete a Document again should fail
-        $response = $this->performRestRequest(
+        $response = $httpClient->performRestRequest(
             $databaseIdentifier . '/' . $documentIdentifier2,
             'DELETE',
             $testDocument1
@@ -254,18 +254,18 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // List Documents in that database
-        $response = $this->performRestRequest($databaseIdentifier);
+        $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertEmpty($response);
 
 
         // Delete the database
-        $response = $this->performRestRequest($databaseIdentifier, 'DELETE');
+        $response = $httpClient->performRestRequest($databaseIdentifier, 'DELETE');
         $this->assertArrayHasKey('message', $response, 'Could not delete the Database');
         $this->assertEquals(sprintf('Database "%s" deleted', $databaseIdentifier), $response['message']);
 
 
         // The database should not exist anymore
-        $response = $this->performRestRequest($databaseIdentifier);
+        $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertSame(
             [
                 'message' => sprintf('Database with identifier "%s" not found', $databaseIdentifier),
@@ -276,14 +276,14 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
 
         // Shutdown the server
-        $response = $this->performRestRequest('_shutdown', 'POST');
+        $response = $httpClient->performRestRequest('_shutdown', 'POST');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals('Server is going to shut down', $response['message']);
         sleep(1);
 
 
         // The server should not send the welcome message
-        $response = $this->performRestRequest('');
+        $response = $httpClient->performRestRequest('');
         $this->assertSame(false, $response);
 
         $this->assertFileNotExists($expectedPath);
@@ -301,8 +301,10 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
         $this->startServer(40);
 
+        $httpClient = new HttpRequestClient('127.0.0.1', $this->getPortForTestServer());
+
         // Create a database
-        $response = $this->performRestRequest($databaseIdentifier, 'PUT');
+        $response = $httpClient->performRestRequest($databaseIdentifier, 'PUT');
         $this->assertNotFalse($response, "Could not create database $databaseIdentifier");
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
@@ -310,7 +312,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
         // Create Documents
         $i = 0;
-        while (++$i < 1000) {
+        while (++$i < 10000) {
             $documentHostName = 'database' . $i . '.my-servers.local';
             $documentIdentifier = md5($documentHostName);
 
@@ -322,144 +324,43 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
                 'os'   => 'CunddOS',
             ];
 
-            $response = $this->performRestRequest($databaseIdentifier, 'POST', $testDocument);
+            $response = $httpClient->performRestRequest($databaseIdentifier, 'POST', $testDocument);
+            $this->assertInternalType('array', $response, 'Post request failed');
             $this->assertEquals($testDocument['name'], $response['name']);
             $this->assertEquals($testDocument['id'], $response['id']);
             $this->assertEquals($testDocument['ip'], $response['ip']);
             $this->assertEquals($testDocument['os'], $response['os']);
 
-            $response = $this->performRestRequest($databaseIdentifier . '/' . $documentIdentifier, 'GET');
-            $this->assertTrue($response !== false);
+            $response = $httpClient->performRestRequest($databaseIdentifier . '/' . $documentIdentifier, 'GET');
+            $this->assertTrue(
+                $response !== false,
+                sprintf('Could not retrieve document #%d (ID %s)', $i, $databaseIdentifier)
+            );
             $this->assertEquals($testDocument['id'], $response['id']);
         }
 
         // List Documents in that database
-        $response = $this->performRestRequest($databaseIdentifier);
+        $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertNotEmpty($response);
 
         // Delete the database
-        $response = $this->performRestRequest($databaseIdentifier, 'DELETE');
+        $response = $httpClient->performRestRequest($databaseIdentifier, 'DELETE');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" deleted', $databaseIdentifier), $response['message']);
 
         // Shutdown the server
-        $response = $this->performRestRequest('_shutdown', 'POST');
+        $response = $httpClient->performRestRequest('_shutdown', 'POST');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals('Server is going to shut down', $response['message']);
     }
 
-    /**
-     * Performs a REST request
-     *
-     * @param string $request
-     * @param string $method
-     * @param array  $arguments
-     * @param bool   $jsonContent
-     *
-     * @return mixed|string
-     */
-    protected function performRestRequest($request, $method = 'GET', $arguments = [], $jsonContent = false)
-    {
-        $url = sprintf('http://127.0.0.1:%d/%s', $this->portForTestServer, $request);
-
-        if ($jsonContent) {
-            $content = json_encode($jsonContent);
-            $contentType = 'application/json';
-        } else {
-            $content = http_build_query($arguments);
-            $contentType = 'application/x-www-form-urlencoded';
-        }
-
-        $headers = [
-            'Content-Type: ' . $contentType,
-            'Content-Length: ' . strlen($content),
-        ];
-
-        //printf('Request %s %d %s' . PHP_EOL, $method, strlen($content), $url);
-
-
-        if (is_callable('curl_init')) {
-            return $this->performRestRequestCurl($url, $method, $headers, $content);
-        }
-
-        return $this->performRestRequestFopen($url, $method, $headers, $content);
-    }
-
-    /**
-     * Performs a REST request CURL
-     *
-     * @param string $request
-     * @param string $method
-     * @param array  $headers
-     * @param string $content
-     *
-     * @return mixed
-     */
-    protected function performRestRequestCurl($request, $method = 'GET', $headers = [], $content = '')
-    {
-        $ch = curl_init($request);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-
-
-        $response = curl_exec($ch);
-        if (false === $response) {
-            return $response;
-        }
-
-        $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $header = substr($response, 0, $headerSize);
-        $body = substr($response, $headerSize);
-
-        curl_close($ch);
-
-        if ($body) {
-            return json_decode($body, true);
-        }
-
-        echo 'Header: ' . PHP_EOL . $header . PHP_EOL;
-
-
-        return $response;
-    }
-
-    /**
-     * Performs a REST request using file_get_contents
-     *
-     * @param string $request
-     * @param string $method
-     * @param array  $headers
-     * @param string $content
-     *
-     * @return mixed
-     */
-    protected function performRestRequestFopen($request, $method = 'GET', $headers = [], $content = '')
-    {
-        $options = [
-            'http' => [
-                'header'  => implode("\r\n", $headers),
-                'method'  => $method,
-                'content' => $content,
-            ],
-        ];
-        $context = stream_context_create($options);
-        $response = @file_get_contents($request, false, $context);
-        if ($response) {
-            return json_decode($response, true);
-        }
-
-        return $response;
-    }
 
     /**
      * Start the server
      *
      * @param int $autoShutdownTime
      */
-    protected function startServer($autoShutdownTime = 7)
+    private function startServer($autoShutdownTime = 7)
     {
         // Start the server
         $configurationManager = ConfigurationManager::getSharedInstance();
@@ -470,7 +371,7 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
             $phpBinPath,
             $phpIniFile ? '-c' . $phpIniFile : '',
             escapeshellcmd(sprintf('"%s"', $serverBinPath)),
-            sprintf('--port=%d', $this->portForTestServer),
+            sprintf('--port=%d', $this->getPortForTestServer()),
         ];
         if ($autoShutdownTime > -1) {
             $commandParts[] = '--test=' . $autoShutdownTime; // Run the server in test mode
@@ -483,5 +384,13 @@ class RestServerTest extends \PHPUnit\Framework\TestCase
 
         // Wait for the server to boot
         sleep(1);
+    }
+
+    /**
+     * @return int
+     */
+    private function getPortForTestServer()
+    {
+        return (int)getenv('STAIRTOWER_TEST_SERVER_PORT') ?: 1338;
     }
 }

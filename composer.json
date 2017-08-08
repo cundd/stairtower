@@ -27,6 +27,11 @@
             "Cundd\\PersistentObjectStore\\": "Classes/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Cundd\\PersistentObjectStore\\Tests\\": "Tests/"
+        }
+    },
     "bin": [
         "bin/console",
         "bin/server"
