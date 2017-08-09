@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\ErrorHandling;
+namespace Cundd\Stairtower\Tests\Unit\ErrorHandling;
 
+use Cundd\Stairtower\ErrorHandling\ErrorHandler;
 use stdClass;
 
 class TestClass_ForErrorHandler

@@ -9,10 +9,10 @@ namespace Cundd\Stairtower\Domain\Model;
 interface DatabaseObjectDataInterface
 {
     /**
-     * Returns the Document instance at the given index or sets it if it is not already set
+     * Returns the Document instance at the given index or stores it if not already set
      *
      * @param int $index
-     * @return bool|DocumentInterface
+     * @return DocumentInterface|bool
      * @internal
      */
     public function getObjectDataForIndex($index);

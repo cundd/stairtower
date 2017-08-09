@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Filter;
+namespace Cundd\Stairtower\Tests\Unit\Filter;
 
-use Cundd\Stairtower\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\Filter\FilterResult;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
 

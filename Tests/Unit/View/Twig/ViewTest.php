@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\View\Twig;
+namespace Cundd\Stairtower\Tests\Unit\View\Twig;
 
+use Cundd\Stairtower\View\Twig\View;
 use Cundd\Stairtower\View\ViewInterface;
 use PHPUnit\Framework\TestCase;
 

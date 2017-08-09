@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\ValueObject;
+namespace Cundd\Stairtower\Tests\Unit\Server\ValueObject;
 
-use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Cundd\Stairtower\Server\Handler\Handler;
 use Cundd\Stairtower\Server\Handler\HandlerInterface;
+use Cundd\Stairtower\Tests\Fixtures\TestApplication;
 use React\Http\Request as BaseRequest;
 
 
@@ -23,6 +25,9 @@ class RequestTest extends AbstractCase
     protected function setUp()
     {
         $this->requestInfoFactory = $this->getDiContainer()->get(RequestInfoFactory::class);
+        if (!class_exists('Cundd\\Special\\Application')) {
+            class_alias(TestApplication::class, 'Cundd\\Special\\Application');
+        }
     }
 
 

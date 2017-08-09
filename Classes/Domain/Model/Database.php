@@ -306,12 +306,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
         return $this;
     }
 
-    /**
-     * Returns the Document instance at the given index or sets it if it is not already set
-     *
-     * @param int $index
-     * @return bool|DocumentInterface
-     */
     public function getObjectDataForIndex($index)
     {
         $document = $this->getObjectDataForIndexIfSet($index);
@@ -516,7 +510,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
      * Return the current element
      *
      * @link http://php.net/manual/en/iterator.current.php
-     * @return mixed Can return any type.
+     * @return DocumentInterface|false
      */
     public function current()
     {

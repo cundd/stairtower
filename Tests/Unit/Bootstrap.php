@@ -22,10 +22,9 @@ class Bootstrap
         } else {
             require_once $parentProjectAutoloadPath;
         }
-        require_once __DIR__ . '/AbstractCase.php';
-        require_once __DIR__ . '/AbstractDataBasedCase.php';
-        require_once __DIR__ . '/AbstractDatabaseBasedCase.php';
-        require_once __DIR__ . '/EmptyTestClasses.php';
+//        require_once __DIR__ . '/AbstractCase.php';
+//        require_once __DIR__ . '/AbstractDataBasedCase.php';
+//        require_once __DIR__ . '/AbstractDatabaseBasedCase.php';
 
 
         ConfigurationManager::getSharedInstance()->setConfigurationForKeyPath('dataPath', __DIR__ . '/../Resources/');

@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\ValueObject;
+namespace Cundd\Stairtower\Tests\Unit\Server\ValueObject;
 
 use Cundd\Stairtower\Server\ContentType;
+use Cundd\Stairtower\Server\ValueObject\ControllerResult;
+use Cundd\Stairtower\Server\ValueObject\MutableControllerResult;
 
 /**
  * Test for Controller Results

@@ -1,8 +1,7 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Cundd\Stairtower\Tests\Unit;
-
 
 class HttpRequestClient
 {
@@ -32,8 +31,12 @@ class HttpRequestClient
      *
      * @return mixed|string
      */
-    public function performRestRequest(string $request, string $method = 'GET', array $arguments = [], $jsonContent = null)
-    {
+    public function performRestRequest(
+        string $request,
+        string $method = 'GET',
+        array $arguments = [],
+        $jsonContent = null
+    ) {
         $url = sprintf('http://%s:%d/%s', $this->hostname, $this->port, $request);
 
         if ($jsonContent) {
@@ -114,8 +117,8 @@ class HttpRequestClient
     {
         $options = [
             'http' => [
-                'header'  => implode("\r\n", $headers),
-                'method'  => $method,
+                'header' => implode("\r\n", $headers),
+                'method' => $method,
                 'content' => $content,
             ],
         ];

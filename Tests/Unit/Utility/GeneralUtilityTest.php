@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Utility;
+namespace Cundd\Stairtower\Tests\Unit\Utility;
 
 use Cundd\Stairtower\Domain\Model\Document;
 use Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseIdentifierException;
 use Cundd\Stairtower\Domain\Model\Exception\InvalidDataIdentifierException;
+use Cundd\Stairtower\Utility\GeneralUtility;
 use PHPUnit\Framework\TestCase;
 
 class DummyObjectThatCanBeConvertedToString

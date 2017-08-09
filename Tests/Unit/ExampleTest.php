@@ -1,12 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower;
+namespace Cundd\Stairtower\Tests\Unit;
 
 use Cundd\Stairtower\DataAccess\Coordinator;
 use Cundd\Stairtower\Domain\Model\Database;
-use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
+use Cundd\Stairtower\Filter\Comparison\LogicalComparison;
+use Cundd\Stairtower\Filter\Comparison\PropertyComparison;
 
 
 /**
@@ -24,10 +25,6 @@ class ExampleTest extends AbstractDataBasedCase
      */
     public function exampleTest()
     {
-        $startTime = microtime(true);
-
-        /** @var DocumentInterface $currentObject */
-
         // Load a database called 'people'
         /** @var Database $database */
         $database = $this->fixture->getDatabase('people');
@@ -47,7 +44,7 @@ class ExampleTest extends AbstractDataBasedCase
 
         // Brown eyes are ok, but lets search for someone with blue eyes
         $filterResult = $database->filter(
-            new Filter\Comparison\PropertyComparison(
+            new PropertyComparison(
                 'eyeColor',
                 ComparisonInterface::TYPE_EQUAL_TO, 'blue'
             )
@@ -63,10 +60,10 @@ class ExampleTest extends AbstractDataBasedCase
 
         // Ok, that's a guy... lets look for a girl
         $filterResult = $database->filter(
-            new Filter\Comparison\LogicalComparison(
+            new LogicalComparison(
                 ComparisonInterface::TYPE_AND,
-                new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
-                new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'female')
+                new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
+                new PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'female')
             )
         );
 
@@ -87,12 +84,10 @@ class ExampleTest extends AbstractDataBasedCase
         $this->assertSame('Frankie Horn', $currentObject->valueForKey('name'));
         $this->assertContains('blue', $currentObject->valueForKey('eyeColor'));
 
-        $endTime = microtime(true);
-//		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
 
         // Let's see how many people in the database have blue eyes
         $filterResult = $database->filter(
-            new Filter\Comparison\PropertyComparison(
+            new PropertyComparison(
                 'eyeColor',
                 ComparisonInterface::TYPE_EQUAL_TO, 'blue'
             )
@@ -100,13 +95,10 @@ class ExampleTest extends AbstractDataBasedCase
         $blueEyes = $filterResult->count();
         $this->assertSame(1684, $blueEyes);
 
-        $endTime = microtime(true);
-//		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
-
 
         // Let's see how many people in the database have brown eyes
         $filterResult = $database->filter(
-            new Filter\Comparison\PropertyComparison(
+            new PropertyComparison(
                 'eyeColor',
                 ComparisonInterface::TYPE_EQUAL_TO, 'brown'
             )
@@ -114,13 +106,10 @@ class ExampleTest extends AbstractDataBasedCase
         $brownEyes = $filterResult->count();
         $this->assertSame(1601, $brownEyes);
 
-        $endTime = microtime(true);
-//		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
-
 
         // Let's see how many people in the database have brown or blue eyes
         $filterResult = $database->filter(
-            new Filter\Comparison\PropertyComparison(
+            new PropertyComparison(
                 'eyeColor',
                 ComparisonInterface::TYPE_IN, ['blue', 'brown']
             )
@@ -128,22 +117,19 @@ class ExampleTest extends AbstractDataBasedCase
         $blueBrownEyes = $filterResult->count();
         $this->assertSame($blueEyes + $brownEyes, $blueBrownEyes);
 
-        $endTime = microtime(true);
-//		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
-
 
         $filterResult = $database->filter(
-            new Filter\Comparison\LogicalComparison(
+            new LogicalComparison(
                 ComparisonInterface::TYPE_OR,
-                new Filter\Comparison\LogicalComparison(
+                new LogicalComparison(
                     ComparisonInterface::TYPE_AND,
-                    new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'brown'),
-                    new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'male')
+                    new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'brown'),
+                    new PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'male')
                 ),
-                new Filter\Comparison\LogicalComparison(
+                new LogicalComparison(
                     ComparisonInterface::TYPE_AND,
-                    new Filter\Comparison\PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
-                    new Filter\Comparison\PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'female')
+                    new PropertyComparison('eyeColor', ComparisonInterface::TYPE_EQUAL_TO, 'blue'),
+                    new PropertyComparison('gender', ComparisonInterface::TYPE_EQUAL_TO, 'female')
                 )
             )
         );
@@ -164,15 +150,11 @@ class ExampleTest extends AbstractDataBasedCase
         $this->assertEquals('Frankie Horn', $currentObject->valueForKey('name'));
         $this->assertEquals('female', $currentObject->valueForKey('gender'));
         $this->assertEquals('blue', $currentObject->valueForKey('eyeColor'));
-
-        $endTime = microtime(true);
-//		printf('All this took us %0.6f seconds' . PHP_EOL, $endTime - $startTime);
     }
 
     protected function setUp()
     {
-//		$this->setUpXhprof();
-
+        parent::setUp();
         $this->checkPersonFile();
         $this->fixture = $this->getDiContainer()->get(Coordinator::class);
     }

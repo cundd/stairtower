@@ -57,7 +57,7 @@ class Session implements SessionInterface
      * @param string $key
      * @return mixed
      */
-    public function valueForKey($key)
+    public function valueForKey(string $key)
     {
         if ($key === 'identifier') {
             return $this->identifier;
@@ -75,9 +75,8 @@ class Session implements SessionInterface
      *
      * @param mixed  $value
      * @param string $key
-     * @throws LogicException
      */
-    public function setValueForKey($value, $key)
+    public function setValueForKey($value, string $key)
     {
         if (!is_string($key)) {
             throw new LogicException(
@@ -94,7 +93,7 @@ class Session implements SessionInterface
      * @param string $keyPath
      * @return mixed
      */
-    public function valueForKeyPath($keyPath)
+    public function valueForKeyPath(string $keyPath)
     {
         if (!strpos($keyPath, '.')) {
             return $this->valueForKey($keyPath);

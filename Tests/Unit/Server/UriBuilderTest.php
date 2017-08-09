@@ -1,11 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server;
+namespace Cundd\Stairtower\Tests\Unit\Server;
 
-use Cundd\Stairtower\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Server\UriBuilderInterface;
+use Cundd\Stairtower\Tests\Fixtures\TestApplicationController;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\Tests\Unit\ClassBuilderTrait;
 
 /**
  * Tests for creating URIs
@@ -23,17 +26,7 @@ class UriBuilderTest extends AbstractDatabaseBasedCase
             die;
         }
 
-        if (!class_exists($className)) {
-
-            if (strpos($className, '\\') !== false) {
-                $classParts = explode('\\', $className);
-                $class = array_pop($classParts);
-                $namespace = implode('\\', $classParts);
-                eval("namespace $namespace; class $class extends \\Test_Application_Controller {}");
-            } else {
-                eval("class $className extends \\Test_Application_Controller {}");
-            }
-        }
+        ClassBuilderTrait::buildClass($className, TestApplicationController::class);
 
         return new $className;
     }

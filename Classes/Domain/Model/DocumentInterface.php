@@ -15,33 +15,33 @@ interface DocumentInterface extends KeyValueCodingInterface
      *
      * @return int
      */
-    public function getCreationTime();
+    public function getCreationTime(): ?int;
 
     /**
      * Returns the timestamp of the last modification
      *
      * @return int
      */
-    public function getModificationTime();
+    public function getModificationTime(): ?int;
 
     /**
      * Returns the associated database
      *
      * @return string
      */
-    public function getDatabaseIdentifier();
+    public function getDatabaseIdentifier(): ?string;
 
     /**
      * Returns the global unique identifier
      *
      * @return string
      */
-    public function getGuid();
+    public function getGuid(): string;
 
     /**
      * Returns the ID
      *
-     * @return string
+     * @return string|int|null
      */
     public function getId();
 
@@ -50,29 +50,5 @@ interface DocumentInterface extends KeyValueCodingInterface
      *
      * @return array
      */
-    public function getData();
-
-    /**
-     * Returns the value for the given key from the data
-     *
-     * @param string $key
-     * @return mixed
-     */
-    public function valueForKey($key);
-
-    /**
-     * Sets the value for the given key from the data
-     *
-     * @param mixed  $value
-     * @param string $key
-     */
-    public function setValueForKey($value, $key);
-
-    /**
-     * Returns the value for the given key path from the data
-     *
-     * @param string $keyPath
-     * @return mixed
-     */
-    public function valueForKeyPath($keyPath);
+    public function getData(): ?array;
 }

@@ -12,16 +12,16 @@ interface KeyValueCodingInterface
      * @param string $key
      * @return mixed
      */
-    public function valueForKey($key);
+    public function valueForKey(string $key);
 
     /**
      * Sets the value for the given key from the data
      *
      * @param mixed  $value
      * @param string $key
-     * @throws LogicException
+     * @return
      */
-    public function setValueForKey($value, $key);
+    public function setValueForKey($value, string $key);
 
 
     /**
@@ -30,5 +30,5 @@ interface KeyValueCodingInterface
      * @param string $keyPath
      * @return mixed
      */
-    public function valueForKeyPath($keyPath);
+    public function valueForKeyPath(string $keyPath);
 } 

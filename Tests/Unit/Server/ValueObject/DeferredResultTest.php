@@ -1,12 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\ValueObject;
+namespace Cundd\Stairtower\Tests\Unit\Server\ValueObject;
+
+use Cundd\Stairtower\Server\ValueObject\DeferredResult;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test for Deferred Result
  */
-class DeferredResultTest extends \PHPUnit\Framework\TestCase
+class DeferredResultTest extends TestCase
 {
     /**
      * @var DeferredResult

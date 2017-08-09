@@ -1,10 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Serializer;
+namespace Cundd\Stairtower\Tests\Unit\Serializer;
 
 
-class JsonSerializerTest extends \PHPUnit\Framework\TestCase
+use Cundd\Stairtower\Serializer\JsonSerializer;
+use PHPUnit\Framework\TestCase;
+
+class JsonSerializerTest extends TestCase
 {
     /**
      * @var JsonSerializer

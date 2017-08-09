@@ -1,14 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Expand;
+namespace Cundd\Stairtower\Tests\Unit\Expand;
 
 use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Expand\ExpandConfiguration;
+use PHPUnit\Framework\TestCase;
 
 /**
  * ExpandConfiguration test
  */
-class ExpandConfigurationTest extends \PHPUnit\Framework\TestCase
+class ExpandConfigurationTest extends TestCase
 {
     /**
      * @test

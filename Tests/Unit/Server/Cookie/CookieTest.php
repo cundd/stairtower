@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\Cookie;
+namespace Cundd\Stairtower\Tests\Unit\Server\Cookie;
+
+use Cundd\Stairtower\Server\Cookie\Cookie;
 
 /**
  * Test for Cookies

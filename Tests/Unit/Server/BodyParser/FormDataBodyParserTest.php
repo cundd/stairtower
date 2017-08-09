@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\BodyParser;
+namespace Cundd\Stairtower\Tests\Unit\Server\BodyParser;
 
-use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Server\BodyParser\BodyParserInterface;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use Prophecy\Prophecy\ObjectProphecy;
 

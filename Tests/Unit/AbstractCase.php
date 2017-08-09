@@ -1,15 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower;
+namespace Cundd\Stairtower\Tests\Unit;
 
 use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\Event\SharedEventEmitter;
 use Cundd\Stairtower\Memory\Manager;
 use DI\ContainerBuilder;
+use Doctrine\Common\Cache\ArrayCache;
 use Monolog\Handler\NullHandler;
 use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 /**
  * Abstract base class for tests
@@ -39,7 +41,21 @@ class AbstractCase extends TestCase
     public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
-//		Coordinator::flushObjectStore();
+    }
+
+
+    protected function setUp()
+    {
+        $this->memoryManagerFree();
+        $this->setUpXhprof();
+
+        parent::setUp();
+
+        // Automatically instantiate the fixture
+        $fixtureClass = 'Cundd\\Stairtower' . substr(get_class($this), 27, -4);
+        if (class_exists($fixtureClass)) {
+            $this->fixture = $this->getDiContainer()->get($fixtureClass);
+        }
     }
 
     /**
@@ -53,30 +69,12 @@ class AbstractCase extends TestCase
 
         if (self::$didSetupXhprof && extension_loaded('xhprof')) {
             $xhprofData = xhprof_disable();
+            if (class_exists('XHProfRuns_Default')) {
+                $xhprofRuns = new \XHProfRuns_Default();
+                $runId = $xhprofRuns->save_run($xhprofData, 'cundd_pos');
 
-//			$XHPROF_ROOT = __DIR__ . '/../../xhprof-0.9.4/';
-//			require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_lib.php';
-//			require_once $XHPROF_ROOT . '/xhprof_lib/utils/xhprof_runs.php';
-
-            $xhprofRuns = new \XHProfRuns_Default();
-            $runId = $xhprofRuns->save_run($xhprofData, 'cundd_pos');
-
-            echo PHP_EOL . 'http://localhost:8080/index.php?run=' . $runId . '&source=cundd_pos' . PHP_EOL;
-        }
-    }
-
-    protected function setUp()
-    {
-        if (class_exists(Manager::class)) {
-            Manager::freeAll();
-        }
-
-        $this->setUpXhprof();
-
-        parent::setUp();
-        $fixtureClass = substr(get_class($this), 0, -4);
-        if (class_exists($fixtureClass)) {
-            $this->fixture = $this->getDiContainer()->get($fixtureClass);
+                echo PHP_EOL . 'http://localhost:8080/index.php?run=' . $runId . '&source=cundd_pos' . PHP_EOL;
+            }
         }
     }
 
@@ -95,7 +93,7 @@ class AbstractCase extends TestCase
             );
 
 
-            xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
+            xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY, []);
 
             self::$didSetupXhprof = true;
             register_shutdown_function([__CLASS__, 'tearDownXhprof']);
@@ -119,17 +117,16 @@ class AbstractCase extends TestCase
         if (!$this->diContainer) {
             $builder = new ContainerBuilder();
             $builder->useAnnotations(true);
-            $builder->setDefinitionCache(new \Doctrine\Common\Cache\ArrayCache());
+            $builder->setDefinitionCache(new ArrayCache());
 //            $builder->setDefinitionCache(new FilesystemCache(__DIR__ . '/../../var/Cache/'));
             $builder->addDefinitions(__DIR__ . '/../../Classes/Configuration/dependencyInjectionConfiguration.php');
             $this->diContainer = $builder->build();
-//			$this->diContainer = ContainerBuilder::buildDevContainer();
 
             $this->diContainer->get(SharedEventEmitter::class);
 
             $logger = new Logger('core');
             $logger->pushHandler(new NullHandler());
-            $this->diContainer->set('Psr\\Log\\LoggerInterface', $logger);
+            $this->diContainer->set(LoggerInterface::class, $logger);
         }
 
         return $this->diContainer;
@@ -137,13 +134,9 @@ class AbstractCase extends TestCase
 
     protected function tearDown()
     {
-//		unset($this->fixture);
-//		unset($this->diContainer);
-        if (class_exists(Manager::class)) {
-//			MemoryManager::freeObjectsByTag(Coordinator::MEMORY_MANAGER_TAG);
-            Manager::freeAll();
-        }
+        $this->memoryManagerFree();
         gc_collect_cycles();
+        parent::tearDown();
     }
 
     /**
@@ -160,5 +153,12 @@ class AbstractCase extends TestCase
         }
 
         return $personsDataPath;
+    }
+
+    protected function memoryManagerFree(): void
+    {
+        if (class_exists(Manager::class)) {
+            Manager::freeAll();
+        }
     }
 }

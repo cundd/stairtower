@@ -1,12 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\ValueObject;
+namespace Cundd\Stairtower\Tests\Unit\Server\ValueObject;
+
+use Cundd\Stairtower\Server\ValueObject\MutableHandlerResult;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test for mutable Handler Results
  */
-class MutableHandlerResultTest extends \PHPUnit\Framework\TestCase
+class MutableHandlerResultTest extends TestCase
 {
     /**
      * @var MutableHandlerResult

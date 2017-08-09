@@ -1,17 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Domain\Model;
+namespace Cundd\Stairtower\Tests\Unit\Domain\Model;
 
 
-use Cundd\Stairtower\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\DataAccess\Coordinator;
+use Cundd\Stairtower\Domain\Model\DatabaseStateInterface;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
 use Cundd\Stairtower\Filter\Comparison\PropertyComparison;
 use Cundd\Stairtower\Filter\FilterResult;
 use Cundd\Stairtower\Index\IdentifierIndex;
 use Cundd\Stairtower\Index\IndexInterface;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 
 class DatabaseTest extends AbstractDatabaseBasedCase
 {

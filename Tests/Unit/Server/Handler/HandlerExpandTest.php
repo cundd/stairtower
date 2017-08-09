@@ -1,10 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\Handler;
+namespace Cundd\Stairtower\Tests\Unit\Server\Handler;
 
 
-use Cundd\Stairtower\AbstractCase;
 use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\DataAccess\CoordinatorInterface;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;
@@ -12,8 +11,12 @@ use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Cundd\Stairtower\Filter\FilterResultInterface;
 use Cundd\Stairtower\Memory\Manager;
 use Cundd\Stairtower\Server\DummyServer;
+use Cundd\Stairtower\Server\Handler\Handler;
+use Cundd\Stairtower\Server\Handler\HandlerInterface;
+use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
 use Cundd\Stairtower\Server\ServerInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use React\Http\Request;
 
 /**
@@ -785,6 +788,8 @@ class HandlerExpandTest extends AbstractCase
 
     protected function tearDown()
     {
-        Manager::freeAll();
+        if (class_exists(Manager::class)) {
+            Manager::freeAll();
+        }
     }
 }

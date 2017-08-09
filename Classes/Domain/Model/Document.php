@@ -8,7 +8,7 @@ use Cundd\Stairtower\Domain\Model\Exception\InvalidDataException;
 use Cundd\Stairtower\LogicException;
 use Cundd\Stairtower\Utility\GeneralUtility;
 use Cundd\Stairtower\Utility\ObjectUtility;
-use \JsonSerializable;
+use JsonSerializable;
 
 /**
  * Class that represents a block of data
@@ -21,7 +21,13 @@ class Document implements DocumentInterface, JsonSerializable
     protected $id;
     protected $data;
 
-    public function __construct($data = [], $databaseIdentifier = '')
+    /**
+     * Document constructor
+     *
+     * @param array  $data
+     * @param string $databaseIdentifier
+     */
+    public function __construct($data = [], string $databaseIdentifier = '')
     {
         if ($data) {
             $this->assertDataType($data);
@@ -33,23 +39,12 @@ class Document implements DocumentInterface, JsonSerializable
         }
     }
 
-    /**
-     * Returns the global unique identifier
-     *
-     * @return string
-     */
-    public function getGuid()
+    public function getGuid(): string
     {
         return $this->getDatabaseIdentifier() . '-' . $this->getId();
     }
 
-
-    /**
-     * Returns the associated database
-     *
-     * @return string
-     */
-    public function getDatabaseIdentifier()
+    public function getDatabaseIdentifier(): ?string
     {
         return $this->databaseIdentifier;
     }
@@ -65,23 +60,12 @@ class Document implements DocumentInterface, JsonSerializable
         $this->databaseIdentifier = $databaseIdentifier;
     }
 
-    /**
-     * Returns the ID
-     *
-     * @return string
-     */
     public function getId()
     {
         return $this->valueForKey(Constants::DATA_ID_KEY);
     }
 
-    /**
-     * Returns the value for the given key from the data
-     *
-     * @param string $key
-     * @return mixed
-     */
-    public function valueForKey($key)
+    public function valueForKey(string $key)
     {
         if ($key === 'guid') {
             return $this->getGuid();
@@ -93,12 +77,7 @@ class Document implements DocumentInterface, JsonSerializable
         return null;
     }
 
-    /**
-     * Returns the timestamp of the creation
-     *
-     * @return int
-     */
-    public function getCreationTime()
+    public function getCreationTime(): ?int
     {
         return $this->creationTime;
     }
@@ -108,7 +87,7 @@ class Document implements DocumentInterface, JsonSerializable
      *
      * @param int $creationTime
      */
-    public function setCreationTime($creationTime)
+    public function setCreationTime(int $creationTime)
     {
         $this->creationTime = $creationTime;
     }
@@ -118,7 +97,7 @@ class Document implements DocumentInterface, JsonSerializable
      *
      * @return int
      */
-    public function getModificationTime()
+    public function getModificationTime(): ?int
     {
         return $this->modificationTime;
     }
@@ -128,19 +107,12 @@ class Document implements DocumentInterface, JsonSerializable
      *
      * @param int $modificationTime
      */
-    public function setModificationTime($modificationTime)
+    public function setModificationTime(int $modificationTime)
     {
         $this->modificationTime = $modificationTime;
     }
 
-    /**
-     * Sets the value for the given key from the data
-     *
-     * @param mixed  $value
-     * @param string $key
-     * @throws LogicException
-     */
-    public function setValueForKey($value, $key)
+    public function setValueForKey($value, string $key)
     {
         if (!is_string($key)) {
             throw new LogicException(
@@ -151,13 +123,7 @@ class Document implements DocumentInterface, JsonSerializable
         $this->data[$key] = $value;
     }
 
-    /**
-     * Returns the value for the given key path from the data
-     *
-     * @param string $keyPath
-     * @return mixed
-     */
-    public function valueForKeyPath($keyPath)
+    public function valueForKeyPath(string $keyPath)
     {
         if (!strpos($keyPath, '.')) {
             return $this->valueForKey($keyPath);
@@ -166,12 +132,7 @@ class Document implements DocumentInterface, JsonSerializable
         return ObjectUtility::valueForKeyPathOfObject($keyPath, $this->getData());
     }
 
-    /**
-     * Returns the underlying data
-     *
-     * @return array
-     */
-    public function getData()
+    public function getData(): ?array
     {
         return $this->data;
     }
@@ -180,11 +141,14 @@ class Document implements DocumentInterface, JsonSerializable
      * Sets the underlying data
      *
      * @param array $data
+     * @return Document
      */
-    public function setData($data)
+    public function setData(array $data): Document
     {
         $this->assertDataType($data);
         $this->data = $data;
+
+        return $this;
     }
 
     /**

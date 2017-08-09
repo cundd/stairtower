@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\Cookie;
+namespace Cundd\Stairtower\Tests\Unit\Server\Cookie;
 
-use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Server\Cookie\CookieParserInterface;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use stdClass;
 
@@ -22,7 +23,7 @@ class CookieParserTest extends AbstractCase
      */
     public function parseTest()
     {
-        /** @var RequestInterface $request */
+        /** @var RequestInterface|\PHPUnit_Framework_MockObject_MockObject $request */
         $request = $this->getMockForAbstractClass(RequestInterface::class);
         $request
             ->expects($this->any())

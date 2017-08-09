@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Expand;
+namespace Cundd\Stairtower\Tests\Unit\Expand;
 
 
-use Cundd\Stairtower\AbstractCase;
 use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Expand\ExpandConfigurationBuilderInterface;
+use Cundd\Stairtower\Expand\ExpandConfigurationInterface;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 
 /**
  * ExpandConfigurationBuilder test
@@ -34,10 +36,7 @@ class ExpandConfigurationBuilderTest extends AbstractCase
         parse_str($queryString, $query);
         $expandConfigurations = $this->fixture->buildExpandConfigurations($query[Constants::EXPAND_KEYWORD]);
         $this->assertEquals(1, count($expandConfigurations));
-        $this->assertInstanceOf(
-            ExpandConfigurationInterface::class,
-            $expandConfigurations[0]
-        );
+        $this->assertInstanceOf(ExpandConfigurationInterface::class, $expandConfigurations[0]);
         $this->assertEquals('person', $expandConfigurations[0]->getLocalKey());
         $this->assertEquals('contacts', $expandConfigurations[0]->getDatabaseIdentifier());
         $this->assertEquals('email', $expandConfigurations[0]->getForeignKey());

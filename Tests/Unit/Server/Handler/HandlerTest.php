@@ -1,10 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\Handler;
+namespace Cundd\Stairtower\Tests\Unit\Server\Handler;
 
 
-use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Server\Handler\HandlerInterface;
+use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\DataAccess\CoordinatorInterface;

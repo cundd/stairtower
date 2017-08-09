@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower;
+namespace Cundd\Stairtower\Tests\Unit;
 
 use Cundd\Stairtower\Domain\Model\Database;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;

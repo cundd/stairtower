@@ -1,16 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\Session;
+namespace Cundd\Stairtower\Tests\Unit\Server\Session;
 
 
 use Cundd\Stairtower\Server\Cookie\Cookie;
+use Cundd\Stairtower\Server\Session\Constants;
+use Cundd\Stairtower\Server\Session\SessionProvider;
+use Cundd\Stairtower\Server\Session\SessionProviderInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test class for the Session Provider
  */
-class SessionProviderTest extends \PHPUnit\Framework\TestCase
+class SessionProviderTest extends TestCase
 {
     /**
      * @var SessionProviderInterface
@@ -89,7 +93,7 @@ class SessionProviderTest extends \PHPUnit\Framework\TestCase
         $createdSession = $this->fixture->create($sessionId);
 
 
-        /** @var RequestInterface $request */
+        /** @var RequestInterface|\PHPUnit_Framework_MockObject_MockObject $request */
         $request = $this->getMockForAbstractClass(RequestInterface::class);
         $request
             ->expects($this->any())
@@ -110,7 +114,7 @@ class SessionProviderTest extends \PHPUnit\Framework\TestCase
     {
         $sessionId = 'not-existing-session-' . time();
 
-        /** @var RequestInterface $request */
+        /** @var RequestInterface|\PHPUnit_Framework_MockObject_MockObject $request */
         $request = $this->getMockForAbstractClass(RequestInterface::class);
         $request
             ->expects($this->any())

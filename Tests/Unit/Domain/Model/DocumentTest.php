@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Domain\Model;
+namespace Cundd\Stairtower\Tests\Unit\Domain\Model;
 
-
-use Cundd\Stairtower\AbstractCase;
 use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 
 class DocumentTest extends AbstractCase
 {
@@ -159,33 +159,6 @@ class DocumentTest extends AbstractCase
         $this->assertEmpty((new Document(''))->getData());
     }
 
-    /**
-     * @test
-     * @expectedException \Cundd\Stairtower\Domain\Model\Exception\InvalidDataException
-     */
-    public function setInvalidDataStringTest()
-    {
-        $this->fixture->setData('blur');
-    }
-
-    /**
-     * @test
-     * @expectedException \Cundd\Stairtower\Domain\Model\Exception\InvalidDataException
-     */
-    public function setInvalidDataFloatTest()
-    {
-        $this->fixture->setData(0.1);
-    }
-
-    /**
-     * @test
-     * @expectedException \Cundd\Stairtower\Domain\Model\Exception\InvalidDataException
-     */
-    public function setInvalidDataIntTest()
-    {
-        $this->fixture->setData(10);
-    }
-
     protected function setUp()
     {
         $this->checkPersonFile();
@@ -242,10 +215,6 @@ FIXTURE;
         $document->setData(json_decode($fixtureJSON, true));
 
         $document->setDatabaseIdentifier('congress_members');
-        $document->setCreationTime(isset($rawMetaData['creation_time']) ? $rawMetaData['creation_time'] : null);
-        $document->setModificationTime(
-            isset($rawMetaData['modification_time']) ? $rawMetaData['modification_time'] : null
-        );
 
         $this->fixture = $document;
     }

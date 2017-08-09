@@ -1,14 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Utility;
+namespace Cundd\Stairtower\Tests\Unit\Utility;
 
 use Cundd\Stairtower\Server\ContentType;
+use Cundd\Stairtower\Utility\ContentTypeUtility;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for the ContentType Utility
  */
-class ContentTypeUtilityTest extends \PHPUnit\Framework\TestCase
+class ContentTypeUtilityTest extends TestCase
 {
     /**
      * @test

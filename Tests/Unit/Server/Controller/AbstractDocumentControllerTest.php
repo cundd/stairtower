@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Server\Controller;
 
-use Cundd\Stairtower\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\DataAccess\Coordinator;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 use Cundd\Stairtower\Server\Controller\AbstractDocumentController;

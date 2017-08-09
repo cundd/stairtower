@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Formatter;
+namespace Cundd\Stairtower\Tests\Unit\Formatter;
 
-use Cundd\Stairtower\AbstractCase;
 use Cundd\Stairtower\Domain\Model\Document;
+use Cundd\Stairtower\Formatter\JsonFormatter;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 
 /**
  * Test class for JsonFormatter

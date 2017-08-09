@@ -1,16 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\Session;
+namespace Cundd\Stairtower\Tests\Unit\Server\Session;
 
 
-use Cundd\Stairtower\AbstractCase;
 use Cundd\Stairtower\Server\Controller\MutableControllerResultInterface;
 use Cundd\Stairtower\Server\Cookie\Constants as CookieConstants;
-use Cundd\Stairtower\Server\Session\Constants as SessionConstants;
 use Cundd\Stairtower\Server\Cookie\Cookie;
+use Cundd\Stairtower\Server\Session\Constants as SessionConstants;
+use Cundd\Stairtower\Server\Session\SessionControllerTrait;
+use Cundd\Stairtower\Server\Session\SessionInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
-use Test_Session_Controller;
+use Cundd\Stairtower\Tests\Fixtures\TestSessionController;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 
 /**
  * Tests for the Session Controller trait
@@ -88,7 +90,7 @@ class SessionControllerTraitTest extends AbstractCase
     {
         parent::setUp();
 
-        /** @var RequestInterface $request */
+        /** @var RequestInterface|\PHPUnit_Framework_MockObject_MockObject $request */
         $request = $this->getMockForAbstractClass(RequestInterface::class);
         $request
             ->expects($this->any())
@@ -97,8 +99,8 @@ class SessionControllerTraitTest extends AbstractCase
                 $this->returnValue(new Cookie(SessionConstants::SESSION_ID_COOKIE_NAME, $this->sessionId))
             );
 
-        /** @var Test_Session_Controller $fixture */
-        $fixture = $this->getDiContainer()->get('Test_Session_Controller');
+        /** @var TestSessionController $fixture */
+        $fixture = $this->getDiContainer()->get(TestSessionController::class);
         $fixture->setRequest($request);
         $this->fixture = $fixture;
     }

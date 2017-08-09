@@ -1,12 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Core;
+namespace Cundd\Stairtower\Tests\Unit\Core;
+
+use Cundd\Stairtower\Core\IndexArray;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for class IndexArray
  */
-class IndexArrayTest extends \PHPUnit\Framework\TestCase
+class IndexArrayTest extends TestCase
 {
     /**
      * @var IndexArray
@@ -204,7 +207,5 @@ class IndexArrayTest extends \PHPUnit\Framework\TestCase
     {
         unset($this->fixture);
     }
-
-
 }
  

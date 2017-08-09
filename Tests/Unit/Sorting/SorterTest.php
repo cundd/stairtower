@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Sorting;
+namespace Cundd\Stairtower\Tests\Unit\Sorting;
 
 
-use Cundd\Stairtower\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\Sorting\Sorter;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\DataAccess\Coordinator;
 use Cundd\Stairtower\DataAccess\Reader;
 use Cundd\Stairtower\Domain\Model\Database;

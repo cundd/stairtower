@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\DataAccess;
+namespace Cundd\Stairtower\Tests\Unit\DataAccess;
 
-use Cundd\Stairtower\AbstractDataBasedCase;
+use Cundd\Stairtower\DataAccess\Reader;
+use Cundd\Stairtower\Tests\Unit\AbstractDataBasedCase;
 use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\Domain\Model\Database;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;

@@ -1,12 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Expand;
+namespace Cundd\Stairtower\Tests\Unit\Expand;
 
-use Cundd\Stairtower\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\DataAccess\CoordinatorInterface;
 use Cundd\Stairtower\Domain\Model\Document;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Expand\ExpandConfiguration;
+use Cundd\Stairtower\Expand\ExpandResolver;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 
 /**
  * Dummy for Expand Resolver

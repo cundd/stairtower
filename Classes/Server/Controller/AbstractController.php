@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Server\Controller;
 
+use Cundd\Stairtower\Server\Exception\InvalidRequestActionException;
 use Cundd\Stairtower\Server\Exception\RequestMethodNotImplementedException;
 use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
 use Cundd\Stairtower\Server\ValueObject\ControllerResult;
@@ -69,6 +70,12 @@ abstract class AbstractController implements ControllerInterface
 
     public function processRequest(RequestInterface $request, WritableStreamInterface $response): ControllerResultInterface
     {
+        if (!$request->getAction()) {
+            throw new InvalidRequestActionException(
+                sprintf('Request action must not be empty'),
+                1420551045
+            );
+        }
         if (!method_exists($this, $request->getAction())) {
             throw new RequestMethodNotImplementedException(
                 sprintf('Request method %s is not defined', $request->getAction()),

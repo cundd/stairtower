@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Asset;
+namespace Cundd\Stairtower\Tests\Unit\Asset;
 
+use Cundd\Stairtower\Asset\AssetProvider;
+use Cundd\Stairtower\Asset\AssetProviderInterface;
 use Cundd\Stairtower\Configuration\ConfigurationManager;
 
 /**

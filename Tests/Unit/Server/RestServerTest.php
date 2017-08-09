@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server;
+namespace Cundd\Stairtower\Tests\Unit\Server;
 
 use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\Constants;

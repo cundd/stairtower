@@ -18,7 +18,7 @@ abstract class GeneralUtility
      * @param string $identifier
      * @throws \Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseIdentifierException if the database isn't valid
      */
-    public static function assertDatabaseIdentifier($identifier)
+    public static function assertDatabaseIdentifier(string $identifier)
     {
         if (!preg_match('(^([a-zA-Z]{1}[a-zA-Z0-9_\-]{0,})$)', $identifier)) {
             throw new InvalidDatabaseIdentifierException("Invalid database identifier '$identifier'", 1408996075);
@@ -31,7 +31,7 @@ abstract class GeneralUtility
      * @param string $identifier
      * @throws \Cundd\Stairtower\Domain\Model\Exception\InvalidDataIdentifierException if the database isn't valid
      */
-    public static function assertDataIdentifier($identifier)
+    public static function assertDataIdentifier(string $identifier)
     {
         if (!preg_match('(^([a-zA-Z0-9]{1}[a-zA-Z0-9_\-\.@]{0,})$)', $identifier)) {
             throw new InvalidDataIdentifierException("Invalid data identifier '$identifier'", 1412889537);
@@ -44,7 +44,7 @@ abstract class GeneralUtility
      * @param string $method
      * @throw \Cundd\Stairtower\Server\Exception\InvalidRequestMethodServerException
      */
-    public static function assertRequestMethod($method)
+    public static function assertRequestMethod(string $method)
     {
         if (!in_array($method, ['GET', 'POST', 'PUT', 'DELETE', 'HEAD'])) {
             throw new InvalidRequestMethodException("Invalid method '$method'", 1413052000);

@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 namespace Server\Controller;
 
-use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Cundd\Stairtower\Server\Controller\AbstractController;
 use Cundd\Stairtower\Server\Controller\ControllerInterface;
 use Cundd\Stairtower\Server\ValueObject\ControllerResult;
 use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
+use Cundd\Stairtower\Tests\Fixtures\ReactConnectionStub;
+use Cundd\Stairtower\Tests\Fixtures\TestApplicationController;
 use React\Http\Request;
 use React\Http\Response;
-use React_ConnectionStub;
 
 /**
  * Tests for the abstract Controller implementation
@@ -30,6 +31,15 @@ class AbstractControllerTest extends AbstractCase
     protected function setUp()
     {
         parent::setUp();
+
+        $this->makeClassAliasIfNotExists(
+            TestApplicationController::class,
+            'Cundd\\Test\\Controller\\ApplicationController'
+        );
+        $this->makeClassAliasIfNotExists(
+            TestApplicationController::class,
+            'Cundd\\TestModule\\Controller\\ApplicationController'
+        );
 
         $this->fixture = $this->getMockForAbstractClass(
             AbstractController::class
@@ -121,8 +131,7 @@ class AbstractControllerTest extends AbstractCase
      */
     public function processRequestTest()
     {
-
-        /** @var ControllerInterface $controller */
+        /** @var ControllerInterface|\PHPUnit_Framework_MockObject_MockObject $controller */
         $controller = $this->getMockBuilder(AbstractController::class)
             ->setMethods(['getHelloAction'])
             ->getMock();
@@ -134,7 +143,7 @@ class AbstractControllerTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/hello')
         );
-        $response = new Response(new React_ConnectionStub());
+        $response = new Response(new ReactConnectionStub());
 
         /** @var \Cundd\Stairtower\Server\ValueObject\ControllerResult $result */
         $result = $controller->processRequest($requestInfo, $response);
@@ -148,7 +157,7 @@ class AbstractControllerTest extends AbstractCase
      */
     public function processRequestWithLongerActionNameTest()
     {
-        /** @var ControllerInterface $controller */
+        /** @var ControllerInterface|\PHPUnit_Framework_MockObject_MockObject $controller */
         $controller = $this->getMockBuilder(AbstractController::class)
             ->setMethods(['getHelloWorldAction'])
             ->getMock();
@@ -160,7 +169,7 @@ class AbstractControllerTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/hello_world')
         );
-        $response = new Response(new React_ConnectionStub());
+        $response = new Response(new ReactConnectionStub());
 
         /** @var \Cundd\Stairtower\Server\ValueObject\ControllerResult $result */
         $result = $controller->processRequest($requestInfo, $response);
@@ -174,7 +183,7 @@ class AbstractControllerTest extends AbstractCase
      */
     public function processRequestWithMultipleArgumentsTest()
     {
-        /** @var ControllerInterface $controller */
+        /** @var ControllerInterface|\PHPUnit_Framework_MockObject_MockObject $controller */
         $controller = $this->getMockBuilder(AbstractController::class)
             ->setMethods(['getHelloWorldAction'])
             ->getMock();
@@ -186,7 +195,7 @@ class AbstractControllerTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/hello_world/another_argument')
         );
-        $response = new Response(new React_ConnectionStub());
+        $response = new Response(new ReactConnectionStub());
 
         /** @var \Cundd\Stairtower\Server\ValueObject\ControllerResult $result */
         $result = $controller->processRequest($requestInfo, $response);
@@ -204,7 +213,18 @@ class AbstractControllerTest extends AbstractCase
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
             new Request('GET', '/_cundd-test-application/my_method')
         );
-        $response = new Response(new React_ConnectionStub());
+        $response = new Response(new ReactConnectionStub());
         $this->fixture->processRequest($requestInfo, $response);
+    }
+
+    /**
+     * @param string $original
+     * @param string $alias
+     */
+    private function makeClassAliasIfNotExists(string $original, string $alias)
+    {
+        if (!class_exists($alias)) {
+            class_alias($original, $alias);
+        }
     }
 }

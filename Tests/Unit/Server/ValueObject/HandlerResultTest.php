@@ -1,12 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Server\ValueObject;
+namespace Cundd\Stairtower\Tests\Unit\Server\ValueObject;
+
+use Cundd\Stairtower\Server\ValueObject\HandlerResult;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test for Handler Results
  */
-class HandlerResultTest extends \PHPUnit\Framework\TestCase
+class HandlerResultTest extends TestCase
 {
     /**
      * @var HandlerResult

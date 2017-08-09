@@ -1,15 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Filter;
+namespace Cundd\Stairtower\Tests\Unit\Filter;
 
-use Cundd\Stairtower\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\DataAccess\Coordinator;
 use Cundd\Stairtower\Domain\Model\Document;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Cundd\Stairtower\Filter\Comparison\ComparisonInterface;
 use Cundd\Stairtower\Filter\Comparison\LogicalComparison;
 use Cundd\Stairtower\Filter\Comparison\PropertyComparison;
+use Cundd\Stairtower\Filter\Filter;
+use Cundd\Stairtower\Filter\FilterResult;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 
 /**
  * Test for Cundd\Stairtower\Filter\FilterResult

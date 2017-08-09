@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Filter;
+namespace Cundd\Stairtower\Tests\Unit\Filter;
 
-use Cundd\Stairtower\AbstractCase;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Cundd\Stairtower\Filter\Comparison\LogicalComparison;
 use Cundd\Stairtower\Filter\Comparison\PropertyComparison;
 use Cundd\Stairtower\Filter\Comparison\PropertyComparisonInterface;
