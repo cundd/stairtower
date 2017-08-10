@@ -599,8 +599,7 @@ class RestServer extends AbstractServer implements StandardActionDispatcherInter
     public function getFormatterForRequest(RequestInterface $request): FormatterInterface
     {
         if ($this->getContentTypeForRequest($request) === ContentType::XML_TEXT) {
-            // TODO: Implement the XML formatter
-            $formatter = 'Cundd\\PersistentObjectStore\\Formatter\\XmlFormatter';
+            throw new \Exception('No XML formatter currently implemented');
         } else {
             $formatter = JsonFormatter::class;
         }

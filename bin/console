@@ -4,27 +4,35 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/_autoload.php';
 
+use Cundd\Stairtower\Bootstrap\Core;
+use Cundd\Stairtower\Console\Cache\ClearCommand;
+use Cundd\Stairtower\Console\ConsoleCommand;
+use Cundd\Stairtower\Console\Data;
+use Cundd\Stairtower\Console\Database;
+use Cundd\Stairtower\Console\Server\RouterStartCommand;
+use Cundd\Stairtower\Console\Server\StartCommand;
+use Cundd\Stairtower\Constants;
 use Symfony\Component\Console\Application;
 
-$bootstrap = new \Cundd\Stairtower\Bootstrap\Core();
+$bootstrap = new Core();
 
 /** @var DI\Container $diContainer */
 $diContainer = $bootstrap->getDiContainer();
 
-$application = new Application('Stairtower', \Cundd\Stairtower\Constants::VERSION);
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\ConsoleCommand'));
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Database\\ListCommand'));
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Database\\CreateCommand'));
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Database\\DropCommand'));
+$application = new Application('Stairtower', Constants::VERSION);
+$application->add($diContainer->get(ConsoleCommand::class));
+$application->add($diContainer->get(Database\ListCommand::class));
+$application->add($diContainer->get(Database\CreateCommand::class));
+$application->add($diContainer->get(Database\DropCommand::class));
 
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\ListCommand'));
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\AddCommand'));
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\FilterCommand'));
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\FindCommand'));
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Data\\RemoveCommand'));
+$application->add($diContainer->get(Data\ListCommand::class));
+$application->add($diContainer->get(Data\AddCommand::class));
+$application->add($diContainer->get(Data\FilterCommand::class));
+$application->add($diContainer->get(Data\RemoveCommand::class));
 
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Cache\\ClearCommand'));
+$application->add($diContainer->get(ClearCommand::class));
 
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Server\\StartCommand'));
-$application->add($diContainer->get('Cundd\\PersistentObjectStore\\Console\\Server\\RouterStartCommand'));
+$application->add($diContainer->get(StartCommand::class));
+$application->add($diContainer->get(RouterStartCommand::class));
+
 $application->run();
