@@ -128,6 +128,6 @@ abstract class AbstractController implements ControllerInterface
         string $action,
         &$noArgument = false
     ) {
-        return $request->getBody();
+        return $request->getParsedBody();
     }
 }

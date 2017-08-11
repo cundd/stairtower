@@ -96,7 +96,7 @@ class RouterStartCommand extends AbstractServerCommand
             $address .= ':1338';
         }
 
-        $routerPath = $configurationManager->getConfigurationForKeyPath('binPath') . 'router.php';
+        $routerPath = $configurationManager->getBinPath() . 'router.php';
         $arguments = ['-S', $address, $routerPath];
         $process = $this->processBuilder
             ->setPrefix(['exec', $phpBinPath])

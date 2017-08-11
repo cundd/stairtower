@@ -10,8 +10,11 @@
          bootstrap="Tests/Unit/Bootstrap.php"
 >
     <testsuites>
-        <testsuite name="Project Test Suite">
+        <testsuite name="Unit Test Suite">
             <directory>Tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Acceptance Test Suite">
+            <directory>Tests/Acceptance</directory>
         </testsuite>
     </testsuites>
 

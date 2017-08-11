@@ -12,13 +12,6 @@ use Cundd\Stairtower\ErrorHandling\ErrorHandler;
 abstract class AbstractBootstrap
 {
     /**
-     * Server instance
-     *
-     * @var \Cundd\Stairtower\Server\RestServer
-     */
-    protected $server;
-
-    /**
      * Crash handler
      *
      * @var CrashHandler
@@ -32,37 +25,39 @@ abstract class AbstractBootstrap
      */
     protected $errorHandler;
 
-    /**
-     * @param array $arguments
-     */
-    public function __construct($arguments)
+    public function __construct()
     {
         ini_set('display_errors', '1');
         set_time_limit(0);
-
-        $this->configure($arguments);
     }
 
     /**
      * Configure the server/router
      *
      * @param array $arguments
-     * @throws \DI\NotFoundException
      */
-    abstract public function configure($arguments);
+    abstract protected function configure(array $arguments);
 
     /**
      * Executes the routing or starts the server
+     *
+     * @param array $arguments
+     * @return
      */
-    abstract protected function doExecute();
+    abstract protected function doExecute(array $arguments);
 
     /**
      * Start the server
+     *
+     * @param array $arguments
      */
-    public function execute()
+    public function execute(array $arguments)
     {
+        $this->configure($arguments);
         $this->configureErrorHandling();
-        $this->doExecute();
+
+        $this->doExecute($arguments);
+
         $this->crashHandler->unregister();
     }
 

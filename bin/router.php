@@ -10,5 +10,5 @@ $argv = [
     'files'  => $_FILES,
     'server' => $_SERVER,
 ];
-$routerBootstrap = new Cundd\Stairtower\Bootstrap\Router($argv);
-$routerBootstrap->execute();
+$routerBootstrap = new Cundd\Stairtower\Bootstrap\Router();
+$routerBootstrap->execute($argv);

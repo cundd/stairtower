@@ -22,60 +22,67 @@ class Request implements Immutable, RequestInterface
      *
      * @var string
      */
-    protected $databaseIdentifier = '';
+    private $databaseIdentifier = '';
 
     /**
      * Identifier for the Document instance
      *
      * @var string
      */
-    protected $dataIdentifier = '';
+    private $dataIdentifier = '';
 
     /**
      * Current request method
      *
      * @var string
      */
-    protected $method;
+    private $method;
 
     /**
      * Original request
      *
      * @var ServerRequestInterface
      */
-    protected $originalRequest;
+    private $originalRequest;
 
     /**
      * Request body
      *
-     * @var mixed
+     * @var StreamInterface|null
      */
-    protected $body;
+    private $body;
 
     /**
      * The controller or special handler action
      *
      * @var string
      */
-    protected $action;
+    private $action;
 
     /**
      * Special controller class name
      *
      * @var string
      */
-    protected $controllerClass;
+    private $controllerClass;
+
+    /**
+     * Parsed body
+     *
+     * @var array|string
+     */
+    private $parsedBody;
 
     /**
      * Create a new Request object
      *
-     * @param ServerRequestInterface     $request
-     * @param string                     $dataIdentifier
-     * @param string                     $databaseIdentifier
-     * @param string                     $method
-     * @param string                     $action
-     * @param string                     $controllerClass
-     * @param StreamInterface|mixed|null $body
+     * @param ServerRequestInterface $request
+     * @param string                 $dataIdentifier
+     * @param string                 $databaseIdentifier
+     * @param string                 $method
+     * @param string                 $action
+     * @param string                 $controllerClass
+     * @param StreamInterface|null   $body
      */
     public function __construct(
         $request,
@@ -84,7 +91,7 @@ class Request implements Immutable, RequestInterface
         string $method,
         string $action = '',
         string $controllerClass = '',
-        $body = null
+        ?StreamInterface $body = null
     ) {
         if ($method) {
             GeneralUtility::assertRequestMethod($method);
@@ -104,15 +111,20 @@ class Request implements Immutable, RequestInterface
         $this->databaseIdentifier = $databaseIdentifier;
     }
 
-    public function getBody()
+    public function getBody(): ?StreamInterface
     {
         return $this->body;
     }
 
-    public function withBody($parsedBody): RequestInterface
+    public function getParsedBody()
+    {
+        return $this->parsedBody;
+    }
+
+    public function withParsedBody($parsedBody): RequestInterface
     {
         $clone = clone $this;
-        $clone->body = $parsedBody;
+        $clone->parsedBody = $parsedBody;
 
         return $clone;
     }

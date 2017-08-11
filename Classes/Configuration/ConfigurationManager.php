@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Configuration;
 
+use Cundd\Stairtower\ApplicationMode;
+use Cundd\Stairtower\Exception\UndefinedMethodCallException;
 use Cundd\Stairtower\RuntimeException;
 use Cundd\Stairtower\Server\ServerInterface;
 use Cundd\Stairtower\Utility\ObjectUtility;
@@ -11,6 +13,20 @@ use Symfony\Component\Process\PhpExecutableFinder;
 
 /**
  * Configuration Manager class
+ *
+ * @method string getBinPath()
+ * @method string getPublicResources()
+ * @method string getPrivateResources()
+ * @method string getDataPath()
+ * @method string getWriteDataPath()
+ * @method string getLockPath()
+ * @method string getCachePath()
+ * @method string getLogPath()
+ * @method string getTempPath()
+ * @method string getRescuePath()
+ * @method int getLogLevel()
+ * @method int getServerMode()
+ * @method string getApplicationMode()
  */
 class ConfigurationManager implements ConfigurationManagerInterface
 {
@@ -40,32 +56,32 @@ class ConfigurationManager implements ConfigurationManagerInterface
     }
 
     /**
-     * Returns the default configuration
+     * Returns the shared instance
      *
-     * @return array
+     * @return ConfigurationManager|ConfigurationManagerInterface
      */
-    public function getDefaults(): array
+    public static function getSharedInstance(): ConfigurationManagerInterface
     {
-        $basePath = $this->getBasePath();
-        $varPath = $basePath . 'var/';
-        $installationPath = $this->getInstallationPath();
+        if (!self::$sharedInstance) {
+            new static();
+        }
 
-        return [
-            'basePath'         => $basePath,
-            'binPath'          => $installationPath . 'bin/',
-            'phpBinPath'       => $this->getPhpBinaryPath(),
-            'publicResources'  => $basePath . 'Resources/Public/',
-            'privateResources' => $basePath . 'Resources/Private/',
-            'dataPath'         => $varPath . 'Data/',
-            'writeDataPath'    => $varPath . 'Data/',
-            'lockPath'         => $varPath . 'Lock/',
-            'cachePath'        => $varPath . 'Cache/',
-            'logPath'          => $varPath . 'Log/',
-            'tempPath'         => $varPath . 'Temp/',
-            'rescuePath'       => $varPath . 'Rescue/',
-            'logLevel'         => Logger::INFO,
-            'serverMode'       => ServerInterface::SERVER_MODE_NOT_RUNNING,
-        ];
+        return self::$sharedInstance;
+    }
+
+    public function getConfigurationForKeyPath(string $keyPath)
+    {
+        return ObjectUtility::valueForKeyPathOfObject($keyPath, $this->configuration);
+    }
+
+    public function setConfigurationForKeyPath(string $keyPath, $value): ConfigurationManagerInterface
+    {
+        if (strpos($keyPath, '.') !== false) {
+            throw new RuntimeException('Dot notation is currently not supported');
+        }
+        $this->configuration[$keyPath] = $value;
+
+        return $this;
     }
 
     /**
@@ -102,7 +118,7 @@ class ConfigurationManager implements ConfigurationManagerInterface
     }
 
     /**
-     * Returns PHP's binary path
+     * Returns the path to the PHP binary
      *
      * @return string
      */
@@ -114,44 +130,43 @@ class ConfigurationManager implements ConfigurationManagerInterface
     }
 
     /**
-     * Returns the shared instance
+     * Returns the default configuration
      *
-     * @return ConfigurationManagerInterface
+     * @return array
      */
-    public static function getSharedInstance(): ConfigurationManagerInterface
+    private function getDefaults(): array
     {
-        if (!self::$sharedInstance) {
-            new static();
-        }
+        $basePath = $this->getBasePath();
+        $varPath = $basePath . 'var/';
+        $installationPath = $this->getInstallationPath();
 
-        return self::$sharedInstance;
+        return [
+            'basePath'         => $basePath,
+            'binPath'          => $installationPath . 'bin/',
+            'phpBinPath'       => $this->getPhpBinaryPath(),
+            'publicResources'  => $basePath . 'Resources/Public/',
+            'privateResources' => $basePath . 'Resources/Private/',
+            'dataPath'         => $varPath . 'Data/',
+            'writeDataPath'    => $varPath . 'Data/',
+            'lockPath'         => $varPath . 'Lock/',
+            'cachePath'        => $varPath . 'Cache/',
+            'logPath'          => $varPath . 'Log/',
+            'tempPath'         => $varPath . 'Temp/',
+            'rescuePath'       => $varPath . 'Rescue/',
+            'logLevel'         => Logger::INFO,
+            'serverMode'       => ServerInterface::SERVER_MODE_NOT_RUNNING,
+            'applicationMode'  => ApplicationMode::SERVER,
+        ];
     }
 
-    /**
-     * Returns the configuration for the given key path
-     *
-     * @param string $keyPath
-     * @return mixed
-     */
-    public function getConfigurationForKeyPath(string $keyPath)
+    public function __call($name, $arguments)
     {
-        return ObjectUtility::valueForKeyPathOfObject($keyPath, $this->configuration);
-    }
-
-    /**
-     * Sets the configuration for the given key path
-     *
-     * @param string $keyPath
-     * @param mixed  $value
-     * @return ConfigurationManagerInterface
-     */
-    public function setConfigurationForKeyPath(string $keyPath, $value): ConfigurationManagerInterface
-    {
-        if (strpos($keyPath, '.') !== false) {
-            throw new RuntimeException('Dot notation is currently not supported');
+        if (substr($name, 0, 3) === 'get') {
+            return $this->getConfigurationForKeyPath(lcfirst(substr($name, 3)));
         }
-        $this->configuration[$keyPath] = $value;
-
-        return $this;
+        throw new UndefinedMethodCallException(
+            sprintf('Method %s is not defined', $name),
+            1502460718
+        );
     }
 }

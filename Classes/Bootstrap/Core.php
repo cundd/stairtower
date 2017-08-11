@@ -57,7 +57,8 @@ class Core
                 new \Doctrine\Common\Cache\ArrayCache()
             );
 
-            $builder->addDefinitions(__DIR__ . '/../Configuration/dependencyInjectionConfiguration.php');
+            $builder->addDefinitions(__DIR__ . '/../Configuration/DependencyInjection/MainConfiguration.php');
+            $builder->addDefinitions(__DIR__ . '/../Configuration/DependencyInjection/LoggerConfiguration.php');
             $this->diContainer = $builder->build();
         }
 

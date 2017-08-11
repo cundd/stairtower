@@ -1,26 +1,22 @@
 <?php
 declare(strict_types=1);
 
-namespace Cundd\Stairtower\Tests\Unit;
+namespace Cundd\Stairtower\Tests;
 
 class HttpRequestClient
 {
-    private $port;
-    private $hostname;
+    private $uri;
     private $lastCurlCommand = '';
 
     /**
      * HttpRequestClient constructor
      *
-     * @param string $hostname
-     * @param int    $port
+     * @param string $uri
      */
-    public function __construct(string $hostname = '127.0.0.1', int $port = 1338)
+    public function __construct(string $uri = '127.0.0.1:1338')
     {
-        $this->port = $port;
-        $this->hostname = $hostname;
+        $this->uri = $uri;
     }
-
 
     /**
      * Performs a REST request
@@ -29,15 +25,15 @@ class HttpRequestClient
      * @param string           $method
      * @param array            $bodyData
      * @param string|null|bool $rawResult
-     * @return mixed|string
+     * @return HttpResponse
      */
     public function performRestRequest(
         string $request,
         string $method = 'GET',
         array $bodyData = null,
         &$rawResult = null
-    ) {
-        $url = sprintf('http://%s:%d/%s', $this->hostname, $this->port, $request);
+    ): HttpResponse {
+        $url = sprintf('http://%s/%s', $this->uri, $request);
 
         if ($bodyData) {
             $content = http_build_query($bodyData);
@@ -56,11 +52,16 @@ class HttpRequestClient
 
         $this->lastCurlCommand = $this->buildCurlCommand($url, $method, $bodyData, $headers);
 
-        if (is_callable('curl_init')) {
-            return $this->performRestRequestCurl($url, $method, $headers, $content, $rawResult);
+        if (!is_callable('curl_init')) {
+            fwrite(
+                STDERR,
+                'Curl is not available. Falling back to file_get_contents() which does not support all operations'
+            );
+
+            return $this->performRestRequestFopen($url, $method, $headers, $content, $rawResult);
         }
 
-        return $this->performRestRequestFopen($url, $method, $headers, $content, $rawResult);
+        return $this->performRestRequestCurl($url, $method, $headers, $content, $rawResult);
     }
 
     /**
@@ -71,7 +72,7 @@ class HttpRequestClient
      * @param array            $headers
      * @param string           $content
      * @param string|null|bool $rawResult
-     * @return mixed
+     * @return HttpResponse
      */
     protected function performRestRequestCurl(
         string $uri,
@@ -79,37 +80,31 @@ class HttpRequestClient
         array $headers = [],
         string $content = null,
         &$rawResult = null
-    ) {
+    ): HttpResponse {
         $ch = curl_init($uri);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt(
-            $ch,
-            CURLOPT_HTTPHEADER,
-            array_map(
-                function ($key, $value) {
-                    return "$key: $value";
-                },
-                array_keys($headers),
-                $headers
-            )
-        );
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->flattenHeaders($headers));
         if (null !== $content) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
         }
 
         $rawResult = curl_exec($ch);
+
+
         if (false === $rawResult) {
-            return $rawResult;
+            return new HttpResponse(0, null, $rawResult, [], new \Exception(curl_error($ch), curl_errno($ch)));
         }
 
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $body = substr($rawResult, $headerSize);
+        $rawHeader = substr($rawResult, 0, $headerSize);
 
         curl_close($ch);
 
-        return $this->decodeResponseBody($body);
+        return $this->decodeResponseBody($status, explode("\n", $rawHeader), $body);
     }
 
     /**
@@ -120,7 +115,7 @@ class HttpRequestClient
      * @param array            $headers
      * @param string           $content
      * @param string|null|bool $rawResult
-     * @return mixed
+     * @return HttpResponse
      */
     private function performRestRequestFopen(
         string $uri,
@@ -128,10 +123,10 @@ class HttpRequestClient
         array $headers = [],
         string $content = null,
         &$rawResult = null
-    ) {
+    ): HttpResponse {
         $options = [
             'http' => [
-                'header' => implode("\r\n", $headers),
+                'header' => implode("\r\n", $this->flattenHeaders($headers)),
                 'method' => $method,
             ],
         ];
@@ -140,9 +135,13 @@ class HttpRequestClient
         }
 
         $context = stream_context_create($options);
-        $rawResult = @file_get_contents($uri, false, $context);
+        $rawResult = file_get_contents($uri, false, $context);
 
-        return $this->decodeResponseBody($rawResult);
+        $headers = array_merge([], $http_response_header);
+        $statusLine = array_shift($headers);
+        list($statusCode,) = sscanf($statusLine, 'HTTP/1.1 %d %s');
+
+        return $this->decodeResponseBody((int)$statusCode, $headers, $rawResult);
     }
 
     /**
@@ -178,7 +177,7 @@ class HttpRequestClient
         $basicAuth = null
     ) {
         if (substr($uri, 0, 7) !== 'http://' && substr($uri, 0, 8) !== 'https://') {
-            $uri = sprintf('http://%s:%d/%s', $this->hostname, $this->port, $uri);
+            $uri = sprintf('http://%s/%s', $this->uri, $uri);
         }
 
         $command = ['curl'];
@@ -232,27 +231,55 @@ class HttpRequestClient
     }
 
     /**
-     * @param $body
-     * @return mixed
-     * @throws \Exception
+     * @param int         $status
+     * @param string[]    $headers
+     * @param string|null $body
+     * @return HttpResponse
      */
-    private function decodeResponseBody($body)
+    private function decodeResponseBody(int $status, array $headers, $body): HttpResponse
     {
-        $parsedResponseBody = json_decode($body, true);
+        $error = null;
+        $parsedResponseBody = [];
 
-        if (null === $parsedResponseBody) {
-            throw new \Exception(
-                sprintf(
-                    'JSON decode failed with message %s for body "%s"%s%s',
-                    json_last_error_msg(),
-                    $body,
-                    PHP_EOL,
-                    $this->getLastCurlCommand()
-                ),
-                json_last_error()
-            );
+        if (is_string($body)) {
+            $parsedResponseBody = json_decode($body, true);
+
+            if (null === $parsedResponseBody) {
+                $error = new \Exception(
+                    sprintf(
+                        'JSON decode failed with message %s for body "%s"%s%s',
+                        json_last_error_msg(),
+                        $body,
+                        PHP_EOL,
+                        $this->getLastCurlCommand()
+                    ),
+                    json_last_error()
+                );
+            }
         }
 
-        return $parsedResponseBody;
+
+        return new HttpResponse(
+            $status,
+            $parsedResponseBody,
+            $body,
+            $headers,
+            $error
+        );
+    }
+
+    /**
+     * @param array $headers
+     * @return array
+     */
+    private function flattenHeaders(array $headers): array
+    {
+        return array_map(
+            function ($key, $value) {
+                return "$key: $value";
+            },
+            array_keys($headers),
+            $headers
+        );
     }
 }

@@ -33,10 +33,7 @@ use React\Http\Response;
 use React\Promise\Promise;
 use React\Stream\ReadableStreamInterface;
 
-/**
- * REST server
- */
-class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandlerActionDispatcherInterface, ServerActionDispatcherInterface, ControllerActionDispatcherInterface
+class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandlerActionDispatcherInterface, ServerActionDispatcherInterface, ControllerActionDispatcherInterface, CoreDispatcherInterface
 {
     use OutputWriterTrait;
 
@@ -95,17 +92,10 @@ class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandle
         $this->server = $server;
     }
 
-    /**
-     * Dispatch the Request
-     *
-     * @param ServerRequestInterface $serverRequest
-     * @return Promise
-     */
     public function dispatch(ServerRequestInterface $serverRequest)
     {
         return new Promise(
             function (callable $resolve, callable $reject) use ($serverRequest) {
-                $this->logger->info(__LINE__);
                 // Immediately close ignored requests
                 if ($this->getIgnoreRequest($serverRequest)) {
                     $resolve(new Response(404, ['Content-Type' => 'text/plain']));
@@ -116,13 +106,7 @@ class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandle
                 $promiseCallback = new PromiseCallback($resolve, $reject);
                 $request = $this->requestFactory->buildRequestFromRawRequest($serverRequest);
 
-                try {
-                    $this->waitForBodyDispatchAndLog($request, $promiseCallback, true);
-                } catch (\Throwable $error) {
-                    echo $error;
-                    $this->logger->error((string)$error);
-                    $resolve($this->responseBuilder->buildErrorResponse($error, $request));
-                }
+                $this->waitForBodyDispatchAndLog($request, $promiseCallback, true);
             }
         );
     }
@@ -140,23 +124,9 @@ class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandle
         bool $allowRawBody
     ): void {
         $contentLength = $this->getContentLengthFromRequest($request);
-        $rawBody = '';
-        $receivedDataLength = 0;
-
-        $this->logger->debug(
-            sprintf(
-                '< Start deferred request with content-length %d %s %s %s',
-                $contentLength,
-                $request->getMethod(),
-                $request->getPath(),
-                $request->getHttpVersion()
-            )
-        );
 
         if ($contentLength <= 0) {
             $requestResult = $this->dispatchInternal($request);
-
-            $this->logger->debug('hello ' . __LINE__);
             $promiseCallback->resolve($this->responseBuilder->buildResponseForResult($requestResult, $request));
 
             return;
@@ -164,65 +134,20 @@ class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandle
 
 
         $bodyStream = $request->getBody();
-        if (!$bodyStream instanceof ReadableStreamInterface) {
-            throw new LogicException(
-                sprintf(
-                    'Request body is not an instance of %s but',
-                    ReadableStreamInterface::class,
-                    is_object($bodyStream) ? get_class($bodyStream) : gettype($bodyStream)
-                ),
-                1502448377
-            );
+        if (!$bodyStream) {
+            $promiseCallback->resolve(new Response(400));
+
+            return;
         }
-        $bodyStream->on(
-            'data',
-            function ($data) use (
-                $request,
-                &$rawBody,
-                &$receivedDataLength,
-                $contentLength,
-                $allowRawBody
-            ) {
-                $this->logger->debug('Receive data');
-                var_dump($data);
-                $rawBody .= $data;
-                $receivedDataLength += strlen($data);
-            }
-        );
+        if ($bodyStream instanceof ReadableStreamInterface) {
+            $this->dispatchAsync($request, $promiseCallback, $allowRawBody, $bodyStream, $contentLength);
 
-        $bodyStream->on(
-            'end',
-            function () use ($request, $promiseCallback, $allowRawBody, &$rawBody) {
-                $body = $this->parseBody($request, $allowRawBody, $rawBody);
-
-                $this->logger->debug(
-                    sprintf(
-                        'End stream %s %s %s',
-                        $request->getMethod(),
-                        $request->getPath(),
-                        $request->getHttpVersion()
-                    )
-                );
-
-                $requestResult = $this->dispatchInternal($request->withBody($body));
-                $promiseCallback->resolve($this->responseBuilder->buildResponseForResult($requestResult, $request));
-            }
-        );
-
-        // An error occurs e.g. on invalid chunked encoded data or an unexpected 'end' event
-        $bodyStream->on(
-            'error',
-            function (\Exception $exception) use ($request, $promiseCallback, &$receivedDataLength, $contentLength) {
-                $this->logger->debug('errorrrrrr .' . __LINE__);
-                $promiseCallback->resolve($this->responseBuilder->buildErrorResponse($exception, $request));
-                // $response = new Response(
-                //     400,
-                //     ['Content-Type' => 'text/plain'],
-                //     sprintf('An error occurred while reading at length: %s of %s', $receivedDataLength, $contentLength)
-                // );
-                // $promiseCallback->resolve($response);
-            }
-        );
+            return;
+        }
+        
+        $body = $this->parseBody($request, $allowRawBody, $bodyStream->getContents());
+        $requestResult = $this->dispatchInternal($request->withParsedBody($body));
+        $promiseCallback->resolve($this->responseBuilder->buildResponseForResult($requestResult, $request));
     }
 
     private function waitForBodyDispatchAndLog(
@@ -286,8 +211,6 @@ class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandle
                     return $this->dispatchStandardAction($request);
             }
         } catch (\Throwable $error) {
-            $this->logger->error($error->getMessage(), ['trace' => $error->getTraceAsString()]);
-
             return new ExceptionResult($error);
         }
     }
@@ -328,17 +251,25 @@ class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandle
             /** @noinspection PhpMissingBreakStatementInspection */
             case 'PUT':
                 if ($request->getDataIdentifier()) {
-                    return $handler->update($request, $request->getBody());
+                    $this->logger->debug('Dispatch Standard Action: PUT with Data Identifier');
+
+                    return $handler->update($request, $request->getParsedBody());
                 }
             // else treat like a POST
 
             case 'POST':
-                return $handler->create($request, $request->getBody());
+                $this->logger->debug('Dispatch Standard Action: ' . $method);
+
+                return $handler->create($request, $request->getParsedBody());
 
             case 'GET':
+                $this->logger->debug('Dispatch Standard Action: ' . $method);
+
                 return $handler->read($request);
 
             case 'DELETE':
+                $this->logger->debug('Dispatch Standard Action: ' . $method);
+
                 return $handler->delete($request);
 
             default:
@@ -389,7 +320,7 @@ class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandle
                 'An error occurred while calling controller \'%s\' action \'%s\' %s',
                 $request->getControllerClass(),
                 $request->getAction(),
-                $request->getBody() ? 'with a body' : 'without a body'
+                $request->getParsedBody() ? 'with a body' : 'without a body'
             );
 
             if ($this->server->getMode() === ServerInterface::SERVER_MODE_DEVELOPMENT) {
@@ -513,5 +444,80 @@ class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandle
         }
 
         return true;
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param PromiseCallback  $promiseCallback
+     * @param bool             $allowRawBody
+     * @param                  $bodyStream
+     * @param                  $contentLength
+     */
+    private function dispatchAsync(
+        RequestInterface $request,
+        PromiseCallback $promiseCallback,
+        bool $allowRawBody,
+        ReadableStreamInterface $bodyStream,
+        int $contentLength
+    ): void {
+        $this->logger->debug(
+            sprintf(
+                '< Start deferred request with content-length %d %s %s %s',
+                $contentLength,
+                $request->getMethod(),
+                $request->getPath(),
+                $request->getHttpVersion()
+            )
+        );
+
+        $rawBody = '';
+        $receivedDataLength = 0;
+
+        $bodyStream->on(
+            'data',
+            function ($data) use (
+                $request,
+                &$rawBody,
+                &$receivedDataLength,
+                $contentLength,
+                $allowRawBody
+            ) {
+                $rawBody .= $data;
+                $receivedDataLength += strlen($data);
+            }
+        );
+
+        $bodyStream->on(
+            'end',
+            function () use ($request, $promiseCallback, $allowRawBody, &$rawBody) {
+                $body = $this->parseBody($request, $allowRawBody, $rawBody);
+
+                $this->logger->debug(
+                    sprintf(
+                        'End stream %s %s %s',
+                        $request->getMethod(),
+                        $request->getPath(),
+                        $request->getHttpVersion()
+                    )
+                );
+
+                $requestResult = $this->dispatchInternal($request->withParsedBody($body));
+                $promiseCallback->resolve($this->responseBuilder->buildResponseForResult($requestResult, $request));
+            }
+        );
+
+        // An error occurs e.g. on invalid chunked encoded data or an unexpected 'end' event
+        $bodyStream->on(
+            'error',
+            function (\Exception $exception) use ($request, $promiseCallback, &$receivedDataLength, $contentLength) {
+                $promiseCallback->resolve($this->responseBuilder->buildErrorResponse($exception, $request));
+                // $response = new Response(
+                //     400,
+                //     ['Content-Type' => 'text/plain'],
+                //     sprintf('An error occurred while reading at length: %s of %s', $receivedDataLength, $contentLength)
+                // );
+                // $promiseCallback->resolve($response);
+            }
+        );
     }
 }

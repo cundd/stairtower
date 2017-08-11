@@ -11,11 +11,18 @@ use Psr\Http\Message\UriInterface;
 interface RequestInterface
 {
     /**
+     * Returns the request body as stream
+     *
+     * @return StreamInterface|null
+     */
+    public function getBody(): ?StreamInterface;
+
+    /**
      * Returns the parsed request body
      *
-     * @return StreamInterface|mixed|null
+     * @return mixed
      */
-    public function getBody();
+    public function getParsedBody();
 
     /**
      * Returns a copy of the Request with the given prepared body
@@ -23,7 +30,7 @@ interface RequestInterface
      * @param $parsedBody
      * @return RequestInterface
      */
-    public function withBody($parsedBody): RequestInterface;
+    public function withParsedBody($parsedBody): RequestInterface;
 
     /**
      * Returns the identifier for the Document instance

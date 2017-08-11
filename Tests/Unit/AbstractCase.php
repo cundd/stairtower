@@ -118,8 +118,12 @@ class AbstractCase extends TestCase
             $builder = new ContainerBuilder();
             $builder->useAnnotations(true);
             $builder->setDefinitionCache(new ArrayCache());
-//            $builder->setDefinitionCache(new FilesystemCache(__DIR__ . '/../../var/Cache/'));
-            $builder->addDefinitions(__DIR__ . '/../../Classes/Configuration/dependencyInjectionConfiguration.php');
+            $builder->addDefinitions(
+                __DIR__ . '/../../Classes/Configuration/DependencyInjection/MainConfiguration.php'
+            );
+            $builder->addDefinitions(
+                __DIR__ . '/../../Classes/Configuration/DependencyInjection/LoggerConfiguration.php'
+            );
             $this->diContainer = $builder->build();
 
             $this->diContainer->get(SharedEventEmitter::class);

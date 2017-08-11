@@ -16,12 +16,18 @@ use Psr\Log\LogLevel;
 class Server extends AbstractBootstrap
 {
     /**
+     * Server instance
+     *
+     * @var \Cundd\Stairtower\Server\RestServer
+     */
+    protected $server;
+
+    /**
      * Configure the server/router
      *
      * @param array $arguments
-     * @throws \DI\NotFoundException
      */
-    public function configure($arguments)
+    public function configure(array $arguments)
     {
         // Parse the arguments
         $longOptions = [
@@ -81,10 +87,7 @@ class Server extends AbstractBootstrap
         }
     }
 
-    /**
-     * Executes the routing or starts the server
-     */
-    protected function doExecute()
+    protected function doExecute(array $arguments)
     {
         $this->server->start();
     }
@@ -92,11 +95,11 @@ class Server extends AbstractBootstrap
     /**
      * Checks and returns an argument value
      *
-     * @param $key
-     * @param $options
-     * @return null
+     * @param string $key
+     * @param array  $options
+     * @return int|string|null
      */
-    protected function checkArgument($key, $options)
+    protected function checkArgument(string $key, array $options)
     {
         if (isset($options[$key])) {
             if ($options[$key] === false) {
@@ -113,10 +116,10 @@ class Server extends AbstractBootstrap
     /**
      * Returns the server mode according to the options
      *
-     * @param $options
+     * @param array $options
      * @return int
      */
-    protected function getServerModeFromOptions($options)
+    protected function getServerModeFromOptions(array $options)
     {
         if (isset($options['dev'])) {
             return ServerInterface::SERVER_MODE_DEVELOPMENT;

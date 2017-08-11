@@ -38,57 +38,50 @@ class Handler implements HandlerInterface
      * Document Access Coordinator
      *
      * @var CoordinatorInterface
-     * @Inject
      */
-    protected $coordinator;
+    private $coordinator;
 
     /**
      * Server instance
      *
      * @var ServerInterface
-     * @Inject
      */
-    protected $server;
+    private $server;
 
     /**
      * FilterBuilder instance
      *
      * @var FilterBuilderInterface
-     * @Inject
      */
-    protected $filterBuilder;
+    private $filterBuilder;
 
     /**
      * ExpandConfigurationBuilder instance
      *
      * @var ExpandConfigurationBuilderInterface
-     * @Inject
      */
-    protected $expandConfigurationBuilder;
+    private $expandConfigurationBuilder;
 
     /**
      * Expand Resolver instance
      *
      * @var ExpandResolverInterface
-     * @Inject
      */
-    protected $expandResolver;
+    private $expandResolver;
 
     /**
      * Asset Loader instance
      *
      * @var AssetProviderInterface
-     * @Inject
      */
-    protected $assetLoader;
+    private $assetLoader;
 
     /**
      * Event Emitter
      *
      * @var SharedEventEmitter
-     * @Inject
      */
-    protected $eventEmitter;
+    private $eventEmitter;
 
     /**
      * Handler constructor.
@@ -145,7 +138,7 @@ class Handler implements HandlerInterface
      * @param mixed            $data
      * @return HandlerResultInterface
      */
-    protected function createDataInstance(RequestInterface $request, $data): HandlerResultInterface
+    private function createDataInstance(RequestInterface $request, $data): HandlerResultInterface
     {
         $database = $this->getDatabaseForRequest($request);
         if (!$database) {
@@ -169,7 +162,7 @@ class Handler implements HandlerInterface
         if ($database->contains($document)) {
             throw new InvalidBodyException(
                 sprintf(
-                    'Database \'%s\' already contains the given data. Maybe the values of the identifier are not expressive',
+                    'Database "%s" already contains the given data. Maybe the values of the identifier are not expressive',
                     $database->getIdentifier()
                 ),
                 1413215990
@@ -214,7 +207,7 @@ class Handler implements HandlerInterface
      * @param mixed            $data
      * @return HandlerResult
      */
-    protected function createDatabase(RequestInterface $request, $data)
+    private function createDatabase(RequestInterface $request, $data)
     {
         if ($request->getDataIdentifier()) {
             throw new InvalidRequestParameterException(
@@ -455,7 +448,7 @@ class Handler implements HandlerInterface
      * @param ExpandConfigurationInterface[]    $expandConfigurationCollection
      * @return SplFixedArray
      */
-    protected function expandObjectsInCollection($collection, $expandConfigurationCollection)
+    private function expandObjectsInCollection($collection, $expandConfigurationCollection)
     {
         if (is_array($collection)) {
             $collectionCount = count($collection);

@@ -3,15 +3,18 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Bootstrap;
 
+use Cundd\Stairtower\ApplicationMode;
 use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\Constants;
-use Cundd\Stairtower\Server\RestServer;
+use Cundd\Stairtower\DataAccess\CoordinatorInterface;
+use Cundd\Stairtower\Server\Dispatcher\CoreDispatcherInterface;
 use Cundd\Stairtower\Server\ServerInterface;
-use Cundd\Stairtower\Server\ValueObject\SimpleResponse;
-use DI\Container;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
-use React\Http\Request;
 use React\Http\Response;
+use React\Http\ServerRequest;
 
 /**
  * Router bootstrapping for conventional servers
@@ -26,25 +29,30 @@ class Router extends AbstractBootstrap
     protected $response;
 
     /**
-     * Current request's arguments
-     *
-     * @var array
+     * @var CoreDispatcherInterface
      */
-    protected $arguments = [];
+    private $dispatcher;
 
     /**
-     * Configure the server/router
-     *
-     * @param array $arguments
-     * @throws \DI\NotFoundException
+     * @var CoordinatorInterface
      */
-    public function configure($arguments)
+    private $coordinator;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @param array $arguments
+     */
+    public function configure(array $arguments)
     {
-        $this->arguments = $arguments;
         $dataPath = getenv(Constants::ENVIRONMENT_KEY_SERVER_DATA_PATH);
         $serverMode = $this->getServerModeFromEnv();
 
         $configurationManager = ConfigurationManager::getSharedInstance();
+        $configurationManager->setConfigurationForKeyPath('applicationMode', ApplicationMode::ROUTER);
         if ($serverMode === ServerInterface::SERVER_MODE_DEVELOPMENT) {
             $configurationManager->setConfigurationForKeyPath('logLevel', LogLevel::DEBUG);
         }
@@ -56,83 +64,102 @@ class Router extends AbstractBootstrap
 
         // Instantiate the Core
         $bootstrap = new Core();
+        $container = $bootstrap->getDiContainer();
 
-        /** @var Container $diContainer */
-        $diContainer = $bootstrap->getDiContainer();
-
-        $this->server = $diContainer->get(RestServer::class);
-        $diContainer->set(ServerInterface::class, $this->server);
-
-        // Set the server mode
-        $this->server->setMode($serverMode);
+        $this->coordinator = $container->get(CoordinatorInterface::class);
+        $this->dispatcher = $container->get(CoreDispatcherInterface::class);
+        $this->logger = $container->get(LoggerInterface::class);
     }
 
-    /**
-     * Executes the routing or starts the server
-     */
-    protected function doExecute()
+    protected function doExecute(array $arguments)
     {
-        $request = $this->createRequestInstance();
-        $response = $this->getResponse();
-        $this->server->prepareAndHandle($request, $response);
-        $this->handleSentData($request);
+        $request = $this->createRequestInstance($arguments);
+
+        $this->dispatcher->dispatch($request)
+            ->then([$this, 'sendResponse'])
+            ->otherwise([$this, 'handleError']);
+
+        $this->coordinator->commitDatabases();
+    }
+
+    public function handleError($error)
+    {
+        if ($error instanceof \Throwable) {
+            $this->logger->error(
+                sprintf(
+                    'Caught exception #%d: %s',
+                    $error->getCode(),
+                    $error->getMessage(),
+                    ['error' => $error]
+                )
+            );
+        }
+    }
+
+    public function sendResponse(ResponseInterface $response)
+    {
+        header(
+            sprintf(
+                'HTTP/%s %s %s',
+                $response->getProtocolVersion(),
+                $response->getStatusCode(),
+                $response->getReasonPhrase()
+            ),
+            true,
+            $response->getStatusCode()
+        );
+
+        foreach ($response->getHeaders() as $name => $values) {
+            foreach ($values as $value) {
+                header(sprintf('%s: %s', $name, $value), false);
+            }
+        }
+
+        $body = $response->getBody();
+        $body->rewind();
+        echo $body;
     }
 
     /**
      * Builds the request instance from the current request arguments
      *
-     * @return Request
+     * @param array $arguments
+     * @return ServerRequestInterface
      */
-    protected function createRequestInstance()
+    private function createRequestInstance(array $arguments): ServerRequestInterface
     {
-        $mergedArguments = array_reduce(
-            $this->arguments,
-            function ($carry, $item) {
-                return array_merge($carry, array_change_key_case($item, CASE_LOWER));
+        $flatArguments = array_reduce(
+            $arguments,
+            function (array $carry, array $item) {
+                return array_merge($carry, array_change_key_case($item, CASE_UPPER));
             },
             []
         );
 
-        $requestPath = parse_url($mergedArguments['request_uri'], PHP_URL_PATH);
-
-        $request = new Request(
-            $mergedArguments['request_method'],
-            $requestPath,
-            $this->arguments['get'],
+        return new ServerRequest(
+            $flatArguments['REQUEST_METHOD'],
+            $flatArguments['REQUEST_URI'],
+            $this->getAllHeaders($arguments),
+            file_get_contents('php://input'),
             '1.1',
-            $this->getAllHeaders()
+            $arguments['server']
         );
-
-        return $request;
-    }
-
-    /**
-     * Builds a response instance for the current request
-     *
-     * @return SimpleResponse
-     */
-    public function getResponse()
-    {
-        if (!$this->response) {
-            $this->response = new SimpleResponse();
-        }
-
-        return $this->response;
     }
 
     /**
      * Returns the headers for the current request arguments
      *
+     * @param array $arguments
      * @return array
      */
-    protected function getAllHeaders()
+    private function getAllHeaders(array $arguments)
     {
         if (function_exists('getallheaders')) {
             return getallheaders();
         }
 
         $headers = [];
-        foreach ($this->arguments['server'] as $name => $value) {
+        foreach ($arguments['server'] as $name => $value) {
             if (substr($name, 0, 5) == 'HTTP_') {
                 $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
             }
@@ -146,7 +173,7 @@ class Router extends AbstractBootstrap
      *
      * @return int
      */
-    protected function getServerModeFromEnv()
+    private function getServerModeFromEnv()
     {
         $serverModeName = getenv(Constants::ENVIRONMENT_KEY_SERVER_MODE);
         if ($serverModeName === 'dev') {
@@ -156,19 +183,5 @@ class Router extends AbstractBootstrap
         }
 
         return ServerInterface::SERVER_MODE_NORMAL;
-    }
-
-    /**
-     * Handle sent data
-     *
-     * @param Request $request
-     */
-    private function handleSentData($request)
-    {
-        $rawPostData = file_get_contents('php://input');
-        if ($rawPostData) {
-            $request->emit('data', [$rawPostData]);
-            $this->server->runMaintenance();
-        }
     }
 }

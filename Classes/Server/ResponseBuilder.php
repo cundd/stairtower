@@ -218,8 +218,7 @@ class ResponseBuilder implements ResponseBuilderInterface
     private function writeError(\Throwable $error)
     {
         $message = sprintf('Caught exception #%d: %s', $error->getCode(), $error->getMessage());
-        fwrite(STDERR, $message . PHP_EOL . $error->getTraceAsString());
 
-        $this->logger->error($message, ['trace' => $error->getTrace()]);
+        $this->logger->error($message, ['file' => $error->getFile(), 'line' => $error->getLine()]);
     }
 }

@@ -197,7 +197,6 @@ class Coordinator implements CoordinatorInterface
         return [];
     }
 
-
     /**
      * Commit all changed databases to the file system
      */

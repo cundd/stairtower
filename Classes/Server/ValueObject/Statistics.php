@@ -141,9 +141,10 @@ class Statistics implements Immutable, JsonSerializable
      */
     public function getUpTime()
     {
-        $now = new DateTime();
+        $now = new \DateTimeImmutable();
+        $startTime = $this->getStartTime();
 
-        return $now->diff($this->getStartTime());
+        return $startTime ? $now->diff($startTime) : false;
     }
 
     /**

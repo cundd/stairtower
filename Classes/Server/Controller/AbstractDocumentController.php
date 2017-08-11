@@ -144,7 +144,7 @@ abstract class AbstractDocumentController extends AbstractController implements 
             return null;
         }
 
-        $requestBody = $request->getBody();
+        $requestBody = $request->getParsedBody();
         if ($requiresDocumentArgument > 0) {
             if ($requestBody !== null) {
                 return new Document($requestBody);
