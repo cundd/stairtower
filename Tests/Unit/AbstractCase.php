@@ -161,4 +161,15 @@ class AbstractCase extends TestCase
             Manager::freeAll();
         }
     }
+
+    /**
+     * @param string $original
+     * @param string $alias
+     */
+    protected function makeClassAliasIfNotExists(string $original, string $alias)
+    {
+        if (!class_exists($alias)) {
+            class_alias($original, $alias);
+        }
+    }
 }

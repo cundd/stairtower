@@ -3,19 +3,21 @@ declare(strict_types=1);
 
 namespace Server\Controller;
 
-use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\DataAccess\Coordinator;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 use Cundd\Stairtower\Server\Controller\AbstractDocumentController;
 use Cundd\Stairtower\Server\Controller\DocumentControllerInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
-use React\Http\Request;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
+use Cundd\Stairtower\Tests\Unit\RequestBuilderTrait;
 
 /**
  * Tests for the abstract Document Controller implementation
  */
 class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
 {
+    use RequestBuilderTrait;
+
     /**
      * @var DocumentControllerInterface
      */
@@ -52,7 +54,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
 
         $this->requestInfoFactory = $this->getDiContainer()->get(RequestInfoFactory::class);
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('GET', '/people-small/elliottgentry@andershun.com')
+            $this->buildRequest('GET', '/people-small/elliottgentry@andershun.com')
         );
         $this->fixture->setRequest($requestInfo);
     }
@@ -80,7 +82,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
     public function getDatabaseForRequestInfoTest()
     {
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('GET', '/people-small/elliottgentry@andershun.com')
+            $this->buildRequest('GET', '/people-small/elliottgentry@andershun.com')
         );
         $database = $this->fixture->getDatabaseForRequest($requestInfo);
         $this->assertNotNull($database);
@@ -104,7 +106,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
     public function getDocumentForRequestTest()
     {
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('GET', '/people-small/elliottgentry@andershun.com')
+            $this->buildRequest('GET', '/people-small/elliottgentry@andershun.com')
         );
         $document = $this->fixture->getDocumentForRequest($requestInfo);
         $this->assertNotNull($document);

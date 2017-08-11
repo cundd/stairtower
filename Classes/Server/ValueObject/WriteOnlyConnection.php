@@ -6,7 +6,7 @@ namespace Cundd\Stairtower\Server\ValueObject;
 
 use Evenement\EventEmitter;
 use React\Socket\ConnectionInterface;
-use React\Stream\WritableStreamInterface;
+
 
 class WriteOnlyConnection extends EventEmitter implements ConnectionInterface
 {
@@ -48,7 +48,7 @@ class WriteOnlyConnection extends EventEmitter implements ConnectionInterface
         echo "resume()" . PHP_EOL;
     }
 
-    public function pipe(WritableStreamInterface $dest, array $options = [])
+    public function pipe(\Psr\Http\Message\ResponseInterface $dest, array $options = [])
     {
         echo "pipe()" . PHP_EOL;
     }

@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Server\Dispatcher;
 
-
 use Cundd\Stairtower\Server\Controller\ControllerInterface;
 use Cundd\Stairtower\Server\Controller\ControllerResultInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
-use React\Stream\WritableStreamInterface;
+
 
 /**
  * Interface for classes that can dispatch controller actions that will be handled by a custom Controller
@@ -17,26 +16,24 @@ interface ControllerActionDispatcherInterface
     /**
      * Dispatches the given Controller/Action request action
      *
-     * @param RequestInterface        $request
-     * @param WritableStreamInterface $response
-     * @return ControllerResultInterface|null Returns the Handler Result if the request is not delayed
+     * @param RequestInterface $request
+     * @return ControllerResultInterface Returns the Handler Result if the request is not delayed
+     * @internal param ResponseInterface $response
      */
     public function dispatchControllerAction(
-        RequestInterface $request,
-        WritableStreamInterface $response
-    ): ?ControllerResultInterface;
+        RequestInterface $request
+    ): ControllerResultInterface;
 
     /**
      * Handles the given Controller/Action request action
      *
-     * @param RequestInterface        $request
-     * @param WritableStreamInterface $response
-     * @param ControllerInterface     $controller
+     * @param RequestInterface    $request
+     * @param ControllerInterface $controller
      * @return ControllerResultInterface Returns the Handler Result
+     * @internal param ResponseInterface $response
      */
     public function invokeControllerActionWithRequest(
         RequestInterface $request,
-        WritableStreamInterface $response,
         ControllerInterface $controller
     ): ControllerResultInterface;
 

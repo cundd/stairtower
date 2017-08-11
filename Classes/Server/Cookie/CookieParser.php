@@ -6,6 +6,7 @@ namespace Cundd\Stairtower\Server\Cookie;
 use Cundd\Stairtower\Exception\InvalidArgumentError;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use Cundd\Stairtower\Utility\GeneralUtility;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Implementation of cookie parsers
@@ -36,25 +37,28 @@ class CookieParser implements CookieParserInterface
     /**
      * Parse the cookie data from the given request and transform it into objects
      *
-     * @param RequestInterface|\React\Http\Request $request
+     * @param RequestInterface|ServerRequestInterface $request
      * @return Cookie[] Returns a dictionary with the cookie names as keys
      * @throws InvalidArgumentError if the headers could not be read from the given request
      */
     public function parse($request)
     {
-        if ($request instanceof RequestInterface) {
-            $cookieString = $request->getHeader(Constants::GET_COOKIE_HEADER_NAME);
-        } elseif (method_exists($request, 'getHeaders')) {
-            $headers = $request->getHeaders();
-            $cookieString = isset($headers[Constants::GET_COOKIE_HEADER_NAME]) ? $headers[Constants::GET_COOKIE_HEADER_NAME] : '';
-        } else {
+        if ($request instanceof ServerRequestInterface) {
+            return $request->getCookieParams();
+        }
+        if (!($request instanceof RequestInterface)) {
             throw new InvalidArgumentError(
                 sprintf('Could not retrieve cookie header from argument of type %s', GeneralUtility::getType($request)),
                 1428081672
             );
         }
 
-        $parsedCookies = $this->parseCookie($cookieString);
+        $cookieHeaders = $request->getHeader(Constants::GET_COOKIE_HEADER_NAME);
+        if (empty($cookieHeaders)) {
+            return [];
+        }
+
+        $parsedCookies = $this->parseCookie(reset($cookieHeaders));
         if (!$parsedCookies) {
             return [];
         }

@@ -10,7 +10,6 @@ use Cundd\Stairtower\Server\ValueObject\ControllerResult;
 use Cundd\Stairtower\Server\ValueObject\Request;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use Cundd\Stairtower\View\ViewControllerInterface;
-use React\Stream\WritableStreamInterface;
 
 /**
  * An abstract Controller implementation
@@ -68,7 +67,7 @@ abstract class AbstractController implements ControllerInterface
     {
     }
 
-    public function processRequest(RequestInterface $request, WritableStreamInterface $response): ControllerResultInterface
+    public function processRequest(RequestInterface $request): ControllerResultInterface
     {
         if (!$request->getAction()) {
             throw new InvalidRequestActionException(

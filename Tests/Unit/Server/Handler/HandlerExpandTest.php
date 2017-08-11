@@ -4,26 +4,32 @@ declare(strict_types=1);
 namespace Cundd\Stairtower\Tests\Unit\Server\Handler;
 
 
+use Cundd\Stairtower\Asset\AssetProviderInterface;
 use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\DataAccess\CoordinatorInterface;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Event\SharedEventEmitter;
+use Cundd\Stairtower\Expand\ExpandConfigurationBuilderInterface;
+use Cundd\Stairtower\Expand\ExpandResolverInterface;
+use Cundd\Stairtower\Filter\FilterBuilderInterface;
 use Cundd\Stairtower\Filter\FilterResultInterface;
 use Cundd\Stairtower\Memory\Manager;
-use Cundd\Stairtower\Server\DummyServer;
 use Cundd\Stairtower\Server\Handler\Handler;
 use Cundd\Stairtower\Server\Handler\HandlerInterface;
 use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
 use Cundd\Stairtower\Server\ServerInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
 use Cundd\Stairtower\Tests\Unit\AbstractCase;
-use React\Http\Request;
+use Cundd\Stairtower\Tests\Unit\RequestBuilderTrait;
+use SplFixedArray;
 
 /**
  * Handler test
  */
 class HandlerExpandTest extends AbstractCase
 {
+    use RequestBuilderTrait;
     /**
      * @var HandlerInterface
      */
@@ -54,7 +60,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/loaned/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -63,7 +71,7 @@ class HandlerExpandTest extends AbstractCase
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
 
-        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertInstanceOf(SplFixedArray::class, $handlerResult->getData());
         $this->assertEquals(4, $handlerResult->getData()->count());
 
         /** @var DocumentInterface $dataInstance */
@@ -91,7 +99,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/loaned/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -100,7 +110,7 @@ class HandlerExpandTest extends AbstractCase
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
 
-        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertInstanceOf(SplFixedArray::class, $handlerResult->getData());
         $this->assertEquals(4, $handlerResult->getData()->count());
 
         /** @var DocumentInterface $dataInstance */
@@ -130,7 +140,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/loaned/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -139,7 +151,7 @@ class HandlerExpandTest extends AbstractCase
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
 
-        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertInstanceOf(SplFixedArray::class, $handlerResult->getData());
         $this->assertEquals(4, $handlerResult->getData()->count());
 
         /** @var DocumentInterface $dataInstance */
@@ -171,8 +183,9 @@ class HandlerExpandTest extends AbstractCase
         );
         parse_str($queryString, $query);
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request(
-                'GET', '/loaned/L1420194884',
+            $this->buildRequest(
+                'GET',
+                '/loaned/L1420194884',
                 $query
             )
         );
@@ -210,8 +223,9 @@ class HandlerExpandTest extends AbstractCase
         );
         parse_str($queryString, $query);
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request(
-                'GET', '/loaned/L1420194884',
+            $this->buildRequest(
+                'GET',
+                '/loaned/L1420194884',
                 $query
             )
         );
@@ -251,8 +265,9 @@ class HandlerExpandTest extends AbstractCase
         );
         parse_str($queryString, $query);
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request(
-                'GET', '/loaned/L1420194884',
+            $this->buildRequest(
+                'GET',
+                '/loaned/L1420194884',
                 $query
             )
         );
@@ -290,7 +305,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/loaned/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -299,7 +316,7 @@ class HandlerExpandTest extends AbstractCase
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
 
-        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertInstanceOf(SplFixedArray::class, $handlerResult->getData());
         $this->assertEquals(1, $handlerResult->getData()->count());
 
         /** @var DocumentInterface $dataInstance */
@@ -318,7 +335,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/loaned/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -327,7 +346,7 @@ class HandlerExpandTest extends AbstractCase
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
 
-        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertInstanceOf(SplFixedArray::class, $handlerResult->getData());
         $this->assertEquals(1, $handlerResult->getData()->count());
 
         /** @var DocumentInterface $dataInstance */
@@ -351,7 +370,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/contacts/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -376,7 +397,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/contacts/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -408,7 +431,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/loaned/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -417,7 +442,7 @@ class HandlerExpandTest extends AbstractCase
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
 
-        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertInstanceOf(SplFixedArray::class, $handlerResult->getData());
         $this->assertEquals(4, $handlerResult->getData()->count());
 
         /** @var DocumentInterface $dataInstance */
@@ -448,7 +473,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/loaned/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -457,7 +484,7 @@ class HandlerExpandTest extends AbstractCase
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
 
-        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertInstanceOf(SplFixedArray::class, $handlerResult->getData());
         $this->assertEquals(4, $handlerResult->getData()->count());
 
         /** @var DocumentInterface $dataInstance */
@@ -490,7 +517,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/loaned/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -499,7 +528,7 @@ class HandlerExpandTest extends AbstractCase
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
 
-        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertInstanceOf(SplFixedArray::class, $handlerResult->getData());
         $this->assertEquals(4, $handlerResult->getData()->count());
 
         /** @var DocumentInterface $dataInstance */
@@ -534,8 +563,9 @@ class HandlerExpandTest extends AbstractCase
         );
         parse_str($queryString, $query);
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request(
-                'GET', '/loaned/L1420194884',
+            $this->buildRequest(
+                'GET',
+                '/loaned/L1420194884',
                 $query
             )
         );
@@ -575,8 +605,9 @@ class HandlerExpandTest extends AbstractCase
         );
         parse_str($queryString, $query);
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request(
-                'GET', '/loaned/L1420194884',
+            $this->buildRequest(
+                'GET',
+                '/loaned/L1420194884',
                 $query
             )
         );
@@ -618,8 +649,9 @@ class HandlerExpandTest extends AbstractCase
         );
         parse_str($queryString, $query);
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request(
-                'GET', '/loaned/L1420194884',
+            $this->buildRequest(
+                'GET',
+                '/loaned/L1420194884',
                 $query
             )
         );
@@ -659,7 +691,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/loaned/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -668,7 +702,7 @@ class HandlerExpandTest extends AbstractCase
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
 
-        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertInstanceOf(SplFixedArray::class, $handlerResult->getData());
         $this->assertEquals(1, $handlerResult->getData()->count());
 
         /** @var DocumentInterface $dataInstance */
@@ -689,7 +723,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/loaned/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/loaned/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -698,7 +734,7 @@ class HandlerExpandTest extends AbstractCase
         $this->assertEquals(200, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
 
-        $this->assertInstanceOf('SplFixedArray', $handlerResult->getData());
+        $this->assertInstanceOf(SplFixedArray::class, $handlerResult->getData());
         $this->assertEquals(1, $handlerResult->getData()->count());
 
         /** @var DocumentInterface $dataInstance */
@@ -724,7 +760,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/contacts/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -732,10 +770,7 @@ class HandlerExpandTest extends AbstractCase
         );
         $this->assertEquals(404, $handlerResult->getStatusCode());
         $this->assertNotNull($handlerResult->getData());
-        $this->assertInstanceOf(
-            FilterResultInterface::class,
-            $handlerResult->getData()
-        );
+        $this->assertInstanceOf(FilterResultInterface::class, $handlerResult->getData());
         $this->assertEquals(0, $handlerResult->getData()->count());
 
 
@@ -750,7 +785,9 @@ class HandlerExpandTest extends AbstractCase
             ]
         );
         parse_str($queryString, $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            $this->buildRequest('GET', '/contacts/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -772,18 +809,39 @@ class HandlerExpandTest extends AbstractCase
         }
 
         $diContainer = $this->getDiContainer();
-
         $this->requestInfoFactory = $diContainer->get(RequestInfoFactory::class);
 
-        $server = $diContainer->get(DummyServer::class);
-        $diContainer->set(ServerInterface::class, $server);
+//        $server = $diContainer->get(DummyServer::class);
+//        $diContainer->set(ServerInterface::class, $server);
 
         $coordinator = $diContainer->get(CoordinatorInterface::class);
 
         $this->setUpXhprof();
 
+        /** @var ServerInterface $server */
+        $server = $this->prophesize(ServerInterface::class)->reveal();
+        /** @var SharedEventEmitter $eventEmitter */
+        $eventEmitter = $this->prophesize(SharedEventEmitter::class)->reveal();
+        /** @var FilterBuilderInterface $filterBuilder */
+        $filterBuilder = $this->prophesize(FilterBuilderInterface::class)->reveal();
+        /** @var ExpandConfigurationBuilderInterface $expandConfigurationBuilder */
+        $expandConfigurationBuilder = $this->prophesize(ExpandConfigurationBuilderInterface::class)->reveal();
+        /** @var ExpandResolverInterface $expandResolver */
+        $expandResolver = $this->prophesize(ExpandResolverInterface::class)->reveal();
+        /** @var AssetProviderInterface $assetLoader */
+        $assetLoader = $this->prophesize(AssetProviderInterface::class)->reveal();
+
+        $this->fixture = new Handler(
+            $server,
+            $eventEmitter,
+            $coordinator,
+            $filterBuilder,
+            $expandConfigurationBuilder,
+            $expandResolver,
+            $assetLoader
+        );
         $this->fixture = $this->getDiContainer()->get(Handler::class);
-        $this->database = $coordinator->getDatabase('contacts');
+//        $this->database = $coordinator->getDatabase('contacts');
     }
 
     protected function tearDown()

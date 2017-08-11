@@ -17,7 +17,7 @@ interface HandlerInterface
      * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function noRoute(RequestInterface $request);
+    public function noRoute(RequestInterface $request): HandlerResultInterface;
 
     /**
      * Creates a new Document instance or Database with the given data for the given Request
@@ -26,7 +26,7 @@ interface HandlerInterface
      * @param mixed            $data
      * @return HandlerResultInterface
      */
-    public function create(RequestInterface $request, $data);
+    public function create(RequestInterface $request, $data): HandlerResultInterface;
 
     /**
      * Read Document instances for the given Request
@@ -34,7 +34,7 @@ interface HandlerInterface
      * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function read(RequestInterface $request);
+    public function read(RequestInterface $request): HandlerResultInterface;
 
     /**
      * Update a Document instance with the given data for the given Request
@@ -43,7 +43,7 @@ interface HandlerInterface
      * @param mixed            $data
      * @return HandlerResultInterface
      */
-    public function update(RequestInterface $request, $data);
+    public function update(RequestInterface $request, $data): HandlerResultInterface;
 
     /**
      * Deletes a Document instance for the given Request
@@ -51,7 +51,7 @@ interface HandlerInterface
      * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function delete(RequestInterface $request);
+    public function delete(RequestInterface $request): HandlerResultInterface;
 
     /**
      * Action to display server statistics
@@ -59,7 +59,7 @@ interface HandlerInterface
      * @param RequestInterface|Request $request
      * @return HandlerResultInterface
      */
-    public function getStatsAction(RequestInterface $request);
+    public function getStatsAction(RequestInterface $request): HandlerResultInterface;
 
     /**
      * Action to deliver assets
@@ -67,7 +67,7 @@ interface HandlerInterface
      * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function getAssetAction(RequestInterface $request);
+    public function getAssetAction(RequestInterface $request): HandlerResultInterface;
 
     /**
      * Action to display all databases
@@ -75,7 +75,7 @@ interface HandlerInterface
      * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function getAllDbsAction(RequestInterface $request);
+    public function getAllDbsAction(RequestInterface $request): HandlerResultInterface;
 
     /**
      * Returns the count of the result set
@@ -83,5 +83,5 @@ interface HandlerInterface
      * @param RequestInterface $request
      * @return HandlerResultInterface
      */
-    public function getCountAction(RequestInterface $request);
+    public function getCountAction(RequestInterface $request): HandlerResultInterface;
 }

@@ -47,7 +47,7 @@ class RestServerTest extends TestCase
     public function fullServerTest()
     {
         // $start = microtime(1);
-        $httpClient = new HttpRequestClient('127.0.0.1', $this->getPortForTestServer());
+        $httpClient = new HttpRequestClient($this->getIpForTestServer(), $this->getPortForTestServer());
 
         $databaseIdentifier = $this->databaseIdentifier;
 
@@ -79,27 +79,28 @@ class RestServerTest extends TestCase
 
         // Get the welcome message
         $response = $httpClient->performRestRequest('');
-        $this->assertNotEquals(false, $response, 'Could not get the welcome message');
+        $this->assertNotSame(false, $response, 'Could not get the welcome message');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(Constants::MESSAGE_JSON_WELCOME, $response['message']);
 
 
         // Get the stats
         $response = $httpClient->performRestRequest('_stats');
+        $this->assertNotSame(false, $response, 'Could not get the stats');
         $this->assertArrayHasKey('version', $response, 'Could not get the stats');
         $this->assertArrayHasKey('guid', $response);
 
 
         // Create a database
         $response = $httpClient->performRestRequest($databaseIdentifier, 'PUT');
-        $this->assertNotEquals(false, $response, 'Could not create the Database');
+        $this->assertNotSame(false, $response, 'Could not create the Database');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" created', $databaseIdentifier), $response['message']);
 
 
         // List all Databases
         $response = $httpClient->performRestRequest('_all_dbs');
-        $this->assertNotEquals(false, $response, 'Could not list all Databases');
+        $this->assertNotSame(false, $response, 'Could not list all Databases');
         $this->assertTrue(in_array($this->databaseIdentifier, $response));
 
 
@@ -110,11 +111,13 @@ class RestServerTest extends TestCase
 
         // Add a Document
         $response = $httpClient->performRestRequest($databaseIdentifier, 'POST', $testDocument1);
+//        $httpClient->debugCurlCommand($databaseIdentifier, 'POST', $testDocument1);
         $this->assertEquals(
             $testDocument1[Constants::DATA_ID_KEY],
             $response[Constants::DATA_ID_KEY],
             'Could not add the Document'
         );
+
         $this->assertEquals($testDocument1['name'], $response['name']);
         $this->assertEquals($testDocument1['ip'], $response['ip']);
         $this->assertEquals($testDocument1['os'], $response['os']);
@@ -210,7 +213,12 @@ class RestServerTest extends TestCase
             'DELETE',
             $testDocument1
         );
-        $this->assertNotEquals(false, $response, 'Could not delete the Document');
+        $this->assertNotSame(false, $response, 'Could not delete the Document');
+        $this->assertInternalType(
+            'array',
+            $response,
+            'Could not delete Document: ' . PHP_EOL . $httpClient->getLastCurlCommand()
+        );
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Document "%s" deleted', $documentIdentifier1), $response['message']);
 
@@ -230,7 +238,7 @@ class RestServerTest extends TestCase
             'DELETE',
             $testDocument1
         );
-        $this->assertNotEquals(false, $response, 'Could not delete the Document');
+        $this->assertNotSame(false, $response, 'Could not delete the Document');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Document "%s" deleted', $documentIdentifier2), $response['message']);
 
@@ -239,7 +247,8 @@ class RestServerTest extends TestCase
         $response = $httpClient->performRestRequest(
             $databaseIdentifier . '/' . $documentIdentifier2,
             'DELETE',
-            $testDocument1
+            $testDocument1,
+            $rawResult
         );
         $this->assertSame(
             [
@@ -249,7 +258,10 @@ class RestServerTest extends TestCase
                     $databaseIdentifier
                 ),
             ],
-            $response
+            $response,
+            'Failed for request: '
+            . PHP_EOL . $httpClient->getLastCurlCommand() . PHP_EOL
+            . 'Raw result: ' . var_export($rawResult, true)
         );
 
 
@@ -301,7 +313,7 @@ class RestServerTest extends TestCase
 
         $this->startServer(40);
 
-        $httpClient = new HttpRequestClient('127.0.0.1', $this->getPortForTestServer());
+        $httpClient = new HttpRequestClient($this->getIpForTestServer(), $this->getPortForTestServer());
 
         // Create a database
         $response = $httpClient->performRestRequest($databaseIdentifier, 'PUT');
@@ -345,11 +357,18 @@ class RestServerTest extends TestCase
 
         // Delete the database
         $response = $httpClient->performRestRequest($databaseIdentifier, 'DELETE');
+        $this->assertNotFalse($response, 'Could not delete Database ' . $databaseIdentifier);
+        $this->assertInternalType(
+            'array',
+            $response,
+            'Could not delete Database' . PHP_EOL . $httpClient->getLastCurlCommand() . PHP_EOL
+        );
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" deleted', $databaseIdentifier), $response['message']);
 
         // Shutdown the server
         $response = $httpClient->performRestRequest('_shutdown', 'POST');
+        $this->assertNotSame(false, $response);
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals('Server is going to shut down', $response['message']);
     }
@@ -360,7 +379,7 @@ class RestServerTest extends TestCase
      *
      * @param int $autoShutdownTime
      */
-    private function startServer($autoShutdownTime = 7)
+    private function startServer(int $autoShutdownTime = 7)
     {
         // Start the server
         $configurationManager = ConfigurationManager::getSharedInstance();
@@ -370,17 +389,16 @@ class RestServerTest extends TestCase
         $commandParts = [
             $phpBinPath,
             $phpIniFile ? '-c' . $phpIniFile : '',
-            escapeshellcmd(sprintf('"%s"', $serverBinPath)),
+            escapeshellarg($serverBinPath),
             sprintf('--port=%d', $this->getPortForTestServer()),
         ];
         if ($autoShutdownTime > -1) {
-            $commandParts[] = '--test=' . $autoShutdownTime; // Run the server in test mode
+            $commandParts[] = '--test=' . (int)$autoShutdownTime; // Run the server in test mode
         }
         $commandParts[] = '> /dev/null &'; // Run the server in the background
 
         // printf('Run %s'.PHP_EOL, implode(' ', $commandParts));
         exec(implode(' ', $commandParts), $output, $returnValue);
-
 
         // Wait for the server to boot
         sleep(1);
@@ -392,5 +410,13 @@ class RestServerTest extends TestCase
     private function getPortForTestServer()
     {
         return (int)getenv('STAIRTOWER_TEST_SERVER_PORT') ?: 7700;
+    }
+
+    /**
+     * @return string
+     */
+    private function getIpForTestServer()
+    {
+        return (string)getenv('STAIRTOWER_TEST_SERVER_IP') ?: '127.0.0.1';
     }
 }

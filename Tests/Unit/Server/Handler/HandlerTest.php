@@ -4,9 +4,6 @@ declare(strict_types=1);
 namespace Cundd\Stairtower\Tests\Unit\Server\Handler;
 
 
-use Cundd\Stairtower\Server\Handler\HandlerInterface;
-use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
-use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\DataAccess\CoordinatorInterface;
@@ -15,10 +12,11 @@ use Cundd\Stairtower\Domain\Model\Document;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Cundd\Stairtower\Filter\FilterResultInterface;
 use Cundd\Stairtower\Memory\Manager;
-use Cundd\Stairtower\Server\DummyServer;
-use Cundd\Stairtower\Server\ServerInterface;
+use Cundd\Stairtower\Server\Handler\HandlerInterface;
+use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
-use React\Http\Request;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
+use Cundd\Stairtower\Tests\Unit\RequestBuilderTrait;
 
 /**
  * Handler test
@@ -50,7 +48,9 @@ class HandlerTest extends AbstractCase
      */
     public function noRouteTest()
     {
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            RequestBuilderTrait::buildRequest('GET', '/')
+        );
         $handlerResult = $this->fixture->noRoute($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -65,7 +65,9 @@ class HandlerTest extends AbstractCase
      */
     public function createTest()
     {
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('POST', '/contacts/'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            RequestBuilderTrait::buildRequest('POST', '/contacts/')
+        );
         $data = ['email' => 'info-for-me@cundd.net', 'name' => 'Daniel'];
         $handlerResult = $this->fixture->create($requestInfo, $data);
 
@@ -116,7 +118,7 @@ class HandlerTest extends AbstractCase
             ) . $databaseIdentifier . '.json';
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('PUT', sprintf('/%s/', $databaseIdentifier))
+            RequestBuilderTrait::buildRequest('PUT', sprintf('/%s/', $databaseIdentifier))
         );
         $databaseOptions = [];
         // Todo: Enable Database creation parameters
@@ -141,7 +143,7 @@ class HandlerTest extends AbstractCase
     public function createWithDataIdentifierShouldFailTest()
     {
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('POST', '/contacts/info@cundd.net')
+            RequestBuilderTrait::buildRequest('POST', '/contacts/info@cundd.net')
         );
         $data = ['email' => 'info-for-me@cundd.net', 'name' => 'Daniel'];
         $handlerResult = $this->fixture->create($requestInfo, $data);
@@ -169,7 +171,7 @@ class HandlerTest extends AbstractCase
     public function readTest()
     {
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request(
+            RequestBuilderTrait::buildRequest(
                 'GET',
                 '/contacts/info@cundd.net'
             )
@@ -196,7 +198,9 @@ class HandlerTest extends AbstractCase
      */
     public function readDatabaseTest()
     {
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            RequestBuilderTrait::buildRequest('GET', '/contacts/')
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -220,7 +224,9 @@ class HandlerTest extends AbstractCase
     public function readWithSearchTest()
     {
         parse_str('firstName=Daniel', $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            RequestBuilderTrait::buildRequest('GET', '/contacts/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -245,7 +251,9 @@ class HandlerTest extends AbstractCase
     public function readWithEmptyResultSearchTest()
     {
         parse_str('firstName=Some-thing-not-existing', $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            RequestBuilderTrait::buildRequest('GET', '/contacts/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -261,7 +269,9 @@ class HandlerTest extends AbstractCase
 
 
         parse_str('some-thing-not-existing=Daniel', $query);
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/contacts/', $query));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            RequestBuilderTrait::buildRequest('GET', '/contacts/', $query)
+        );
         $handlerResult = $this->fixture->read($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -283,7 +293,7 @@ class HandlerTest extends AbstractCase
     {
         $newName = 'Steve ' . time();
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('PUT', '/contacts/info@cundd.net')
+            RequestBuilderTrait::buildRequest('PUT', '/contacts/info@cundd.net')
         );
         $data = ['email' => 'info@cundd.net', 'name' => $newName];
 
@@ -306,7 +316,7 @@ class HandlerTest extends AbstractCase
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('PUT', '/contacts/email@does-not-exist.net')
+            RequestBuilderTrait::buildRequest('PUT', '/contacts/email@does-not-exist.net')
         );
         $data = [
             'what ever' => 'this will not be updated',
@@ -329,7 +339,7 @@ class HandlerTest extends AbstractCase
     public function deleteTest()
     {
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('DELETE', '/contacts/info@cundd.net')
+            RequestBuilderTrait::buildRequest('DELETE', '/contacts/info@cundd.net')
         );
         $handlerResult = $this->fixture->delete($requestInfo);
 
@@ -337,7 +347,7 @@ class HandlerTest extends AbstractCase
             HandlerResultInterface::class,
             $handlerResult
         );
-        $this->assertEquals(204, $handlerResult->getStatusCode());
+        $this->assertEquals(202, $handlerResult->getStatusCode());
         $this->assertEquals('Document "info@cundd.net" deleted', $handlerResult->getData());
 
         /** @var DocumentInterface $dataInstance */
@@ -354,7 +364,7 @@ class HandlerTest extends AbstractCase
     {
         // Running this test would remove our test data :(
         /*
-        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('DELETE', '/contacts/'));
+        $requestInfo   = $this->requestInfoFactory->buildRequestFromRawRequestRequestBuilderTrait::buildRequest('DELETE', '/contacts/'));
         $handlerResult = $this->fixture->delete($requestInfo);
 
         $this->assertInstanceOf(HandlerResultInterface::class,
@@ -369,7 +379,9 @@ class HandlerTest extends AbstractCase
      */
     public function getStatsActionTest()
     {
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/_stats/'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            RequestBuilderTrait::buildRequest('GET', '/_stats/')
+        );
         $handlerResult = $this->fixture->getStatsAction($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -382,7 +394,9 @@ class HandlerTest extends AbstractCase
      */
     public function getAssetActionTest()
     {
-        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(new Request('GET', '/_asset/book.json'));
+        $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
+            RequestBuilderTrait::buildRequest('GET', '/_asset/book.json')
+        );
         $handlerResult = $this->fixture->getAssetAction($requestInfo);
         $this->assertInstanceOf(
             HandlerResultInterface::class,
@@ -399,7 +413,7 @@ class HandlerTest extends AbstractCase
     public function doNotGetAssetActionTest()
     {
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('GET', '/_asset/not-existing.jpg')
+            RequestBuilderTrait::buildRequest('GET', '/_asset/not-existing.jpg')
         );
         $handlerResult = $this->fixture->getAssetAction($requestInfo);
         $this->assertInstanceOf(
@@ -417,15 +431,9 @@ class HandlerTest extends AbstractCase
         $this->publicResourcesPath = $configurationManager->getConfigurationForKeyPath('publicResources');
         $configurationManager->setConfigurationForKeyPath('publicResources', __DIR__ . '/../../../Resources/');
 
-        $diContainer = $this->getDiContainer();
-        $server = $diContainer->get(DummyServer::class);
-        $diContainer->set(ServerInterface::class, $server);
-
-        $coordinator = $diContainer->get(CoordinatorInterface::class);
-
-        $this->requestInfoFactory = $diContainer->get(RequestInfoFactory::class);
-
-
+        $container = $this->getDiContainer();
+        $coordinator = $container->get(CoordinatorInterface::class);
+        $this->requestInfoFactory = $container->get(RequestInfoFactory::class);
         parent::setUp();
         $this->database = $coordinator->getDatabase('contacts');
     }

@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Tests\Unit\Server\ValueObject;
 
-use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
-use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Cundd\Stairtower\Server\Handler\Handler;
 use Cundd\Stairtower\Server\Handler\HandlerInterface;
+use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
 use Cundd\Stairtower\Tests\Fixtures\TestApplication;
-use React\Http\Request as BaseRequest;
+use Cundd\Stairtower\Tests\Fixtures\TestApplicationController;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
+use Cundd\Stairtower\Tests\Unit\RequestBuilderTrait;
 
 
 /**
@@ -16,6 +17,8 @@ use React\Http\Request as BaseRequest;
  */
 class RequestTest extends AbstractCase
 {
+    use RequestBuilderTrait;
+
     /**
      * @var RequestInfoFactory
      */
@@ -25,9 +28,18 @@ class RequestTest extends AbstractCase
     protected function setUp()
     {
         $this->requestInfoFactory = $this->getDiContainer()->get(RequestInfoFactory::class);
-        if (!class_exists('Cundd\\Special\\Application')) {
-            class_alias(TestApplication::class, 'Cundd\\Special\\Application');
-        }
+        $this->makeClassAliasIfNotExists(
+            TestApplication::class,
+            'Cundd\\Special\\Application'
+        );
+        $this->makeClassAliasIfNotExists(
+            TestApplicationController::class,
+            'Cundd\\Test\\Controller\\ApplicationController'
+        );
+        $this->makeClassAliasIfNotExists(
+            TestApplicationController::class,
+            'Cundd\\TestModule\\Controller\\ApplicationController'
+        );
     }
 
 
@@ -37,7 +49,7 @@ class RequestTest extends AbstractCase
     public function buildRequestInfoFromRequestTests()
     {
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/contacts/info@cundd.net'
             )
@@ -47,11 +59,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('info@cundd.net', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/contacts/info@cundd.net'
             )
@@ -61,11 +73,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('info@cundd.net', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/contacts/info@cundd.net'
             )
@@ -75,11 +87,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('info@cundd.net', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/contacts/info@cundd.net'
             )
@@ -89,11 +101,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('info@cundd.net', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/contacts/info@cundd.net'
             )
@@ -103,144 +115,154 @@ class RequestTest extends AbstractCase
         $this->assertEquals('info@cundd.net', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
-                'GET', '/contacts/'
+            $this->buildRequest(
+                'GET',
+                '/contacts/'
             )
         );
         $this->assertEquals('GET', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
-        $this->assertNull($requestInfo->getDataIdentifier());
+        $this->assertSame('', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
-                'HEAD', '/contacts/'
+            $this->buildRequest(
+                'HEAD',
+                '/contacts/'
             )
         );
         $this->assertEquals('HEAD', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
-        $this->assertNull($requestInfo->getDataIdentifier());
+        $this->assertSame('', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
-                'POST', '/contacts/'
+            $this->buildRequest(
+                'POST',
+                '/contacts/'
             )
         );
         $this->assertEquals('POST', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
-        $this->assertNull($requestInfo->getDataIdentifier());
+        $this->assertSame('', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
-                'PUT', '/contacts/'
+            $this->buildRequest(
+                'PUT',
+                '/contacts/'
             )
         );
         $this->assertEquals('PUT', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
-        $this->assertNull($requestInfo->getDataIdentifier());
+        $this->assertSame('', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
-                'DELETE', '/contacts/'
+            $this->buildRequest(
+                'DELETE',
+                '/contacts/'
             )
         );
         $this->assertEquals('DELETE', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
-        $this->assertNull($requestInfo->getDataIdentifier());
+        $this->assertSame('', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
-                'GET', '/contacts'
+            $this->buildRequest(
+                'GET',
+                '/contacts'
             )
         );
         $this->assertEquals('GET', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
-        $this->assertNull($requestInfo->getDataIdentifier());
+        $this->assertSame('', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
-                'HEAD', '/contacts'
+            $this->buildRequest(
+                'HEAD',
+                '/contacts'
             )
         );
         $this->assertEquals('HEAD', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
-        $this->assertNull($requestInfo->getDataIdentifier());
+        $this->assertSame('', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
-                'POST', '/contacts'
+            $this->buildRequest(
+                'POST',
+                '/contacts'
             )
         );
         $this->assertEquals('POST', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
-        $this->assertNull($requestInfo->getDataIdentifier());
+        $this->assertSame('', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
-                'PUT', '/contacts'
+            $this->buildRequest(
+                'PUT',
+                '/contacts'
             )
         );
         $this->assertEquals('PUT', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
-        $this->assertNull($requestInfo->getDataIdentifier());
+        $this->assertSame('', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
-                'DELETE', '/contacts'
+            $this->buildRequest(
+                'DELETE',
+                '/contacts'
             )
         );
         $this->assertEquals('DELETE', $requestInfo->getMethod());
         $this->assertEquals('contacts', $requestInfo->getDatabaseIdentifier());
-        $this->assertNull($requestInfo->getDataIdentifier());
+        $this->assertSame('', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/contacts/my-info-path'
             )
@@ -250,11 +272,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-info-path', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/contacts/my-info-path'
             )
@@ -264,11 +286,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-info-path', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/contacts/my-info-path'
             )
@@ -278,11 +300,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-info-path', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/contacts/my-info-path'
             )
@@ -292,11 +314,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-info-path', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/contacts/my-info-path'
             )
@@ -306,12 +328,12 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-info-path', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/contacts-database/my-info-path'
             )
@@ -321,11 +343,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-info-path', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/contacts-database/my-info-path'
             )
@@ -335,11 +357,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-info-path', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/contacts-database/my-info-path'
             )
@@ -349,11 +371,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-info-path', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/contacts-database/my-info-path'
             )
@@ -363,11 +385,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-info-path', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/contacts-database/my-info-path'
             )
@@ -377,12 +399,12 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-info-path', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/contacts_database/my_info-path'
             )
@@ -392,11 +414,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my_info-path', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/contacts_database/my_info-path'
             )
@@ -406,11 +428,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my_info-path', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/contacts_database/my_info-path'
             )
@@ -420,11 +442,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my_info-path', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/contacts_database/my_info-path'
             )
@@ -434,11 +456,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my_info-path', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/contacts_database/my_info-path'
             )
@@ -448,12 +470,12 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my_info-path', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/contacts_database/my-super_email@a-smthng.com'
             )
@@ -463,11 +485,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-super_email@a-smthng.com', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/contacts_database/my-super_email@a-smthng.com'
             )
@@ -477,11 +499,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-super_email@a-smthng.com', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/contacts_database/my-super_email@a-smthng.com'
             )
@@ -491,11 +513,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-super_email@a-smthng.com', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/contacts_database/my-super_email@a-smthng.com'
             )
@@ -505,11 +527,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-super_email@a-smthng.com', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/contacts_database/my-super_email@a-smthng.com'
             )
@@ -519,12 +541,12 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-super_email@a-smthng.com', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/contacts_database/my-super_email@a-smthng.com/something-more'
             )
@@ -534,11 +556,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-super_email@a-smthng.com', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/contacts_database/my-super_email@a-smthng.com/something-more'
             )
@@ -548,11 +570,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-super_email@a-smthng.com', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/contacts_database/my-super_email@a-smthng.com/something-more'
             )
@@ -562,11 +584,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-super_email@a-smthng.com', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/contacts_database/my-super_email@a-smthng.com/something-more'
             )
@@ -576,11 +598,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-super_email@a-smthng.com', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/contacts_database/my-super_email@a-smthng.com/something-more'
             )
@@ -590,8 +612,8 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my-super_email@a-smthng.com', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
     }
 
     /**
@@ -600,7 +622,7 @@ class RequestTest extends AbstractCase
     public function buildRequestInfoFromRequestWithControllerTest()
     {
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/_cundd-test-application/my_method'
             )
@@ -614,7 +636,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/_cundd-test-application/my_method'
             )
@@ -628,7 +650,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/_cundd-test-application/my_method'
             )
@@ -642,7 +664,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/_cundd-test-application/my_method'
             )
@@ -656,7 +678,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/_cundd-test-application/my_method'
             )
@@ -671,7 +693,7 @@ class RequestTest extends AbstractCase
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/_cundd-notexistingtest-application/my_undefined_method'
             )
@@ -681,11 +703,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my_undefined_method', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/_cundd-notexistingtest-application/my_undefined_method'
             )
@@ -695,11 +717,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my_undefined_method', $requestInfo->getDataIdentifier());
         $this->assertTrue($requestInfo->isReadRequest());
         $this->assertFalse($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/_cundd-notexistingtest-application/my_undefined_method'
             )
@@ -709,11 +731,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my_undefined_method', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/_cundd-notexistingtest-application/my_undefined_method'
             )
@@ -723,11 +745,11 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my_undefined_method', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/_cundd-notexistingtest-application/my_undefined_method'
             )
@@ -737,12 +759,12 @@ class RequestTest extends AbstractCase
         $this->assertEquals('my_undefined_method', $requestInfo->getDataIdentifier());
         $this->assertFalse($requestInfo->isReadRequest());
         $this->assertTrue($requestInfo->isWriteRequest());
-        $this->assertNull($requestInfo->getAction());
-        $this->assertNull($requestInfo->getControllerClass());
+        $this->assertSame('', $requestInfo->getAction());
+        $this->assertSame('', $requestInfo->getControllerClass());
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/_cundd-test-application/my_undefined_method'
             )
@@ -756,7 +778,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/_cundd-test-application/my_undefined_method'
             )
@@ -770,7 +792,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/_cundd-test-application/my_undefined_method'
             )
@@ -784,7 +806,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/_cundd-test-application/my_undefined_method'
             )
@@ -798,7 +820,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/_cundd-test-application/my_undefined_method'
             )
@@ -813,7 +835,7 @@ class RequestTest extends AbstractCase
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/_cundd-test_module-application/my_undefined_method'
             )
@@ -827,7 +849,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/_cundd-test_module-application/my_undefined_method'
             )
@@ -841,7 +863,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/_cundd-test_module-application/my_undefined_method'
             )
@@ -855,7 +877,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/_cundd-test_module-application/my_undefined_method'
             )
@@ -869,7 +891,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/_cundd-test_module-application/my_undefined_method'
             )
@@ -884,7 +906,7 @@ class RequestTest extends AbstractCase
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/_cundd-testModule-application/my_undefined_method'
             )
@@ -898,7 +920,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/_cundd-testModule-application/my_undefined_method'
             )
@@ -912,7 +934,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/_cundd-testModule-application/my_undefined_method'
             )
@@ -926,7 +948,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/_cundd-testModule-application/my_undefined_method'
             )
@@ -940,7 +962,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/_cundd-testModule-application/my_undefined_method'
             )
@@ -955,7 +977,7 @@ class RequestTest extends AbstractCase
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/_cundd-test-application/my_method/my-database/data-identifier'
             )
@@ -969,7 +991,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/_cundd-test-application/my_method/my-database/data-identifier'
             )
@@ -983,7 +1005,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/_cundd-test-application/my_method/my-database/data-identifier'
             )
@@ -997,7 +1019,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/_cundd-test-application/my_method/my-database/data-identifier'
             )
@@ -1011,7 +1033,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/_cundd-test-application/my_method/my-database/data-identifier'
             )
@@ -1026,7 +1048,7 @@ class RequestTest extends AbstractCase
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/_cundd-test-application/my_undefined_method/my-database/data-identifier'
             )
@@ -1040,7 +1062,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/_cundd-test-application/my_undefined_method/my-database/data-identifier'
             )
@@ -1054,7 +1076,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/_cundd-test-application/my_undefined_method/my-database/data-identifier'
             )
@@ -1068,7 +1090,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/_cundd-test-application/my_undefined_method/my-database/data-identifier'
             )
@@ -1082,7 +1104,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/_cundd-test-application/my_undefined_method/my-database/data-identifier'
             )
@@ -1097,7 +1119,7 @@ class RequestTest extends AbstractCase
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/_cundd-test_module-application/my_undefined_method/my-database'
             )
@@ -1111,7 +1133,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/_cundd-test_module-application/my_undefined_method/my-database'
             )
@@ -1125,7 +1147,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/_cundd-test_module-application/my_undefined_method/my-database'
             )
@@ -1139,7 +1161,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/_cundd-test_module-application/my_undefined_method/my-database'
             )
@@ -1153,7 +1175,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/_cundd-test_module-application/my_undefined_method/my-database'
             )
@@ -1168,7 +1190,7 @@ class RequestTest extends AbstractCase
 
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'GET',
                 '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'
             )
@@ -1182,7 +1204,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'HEAD',
                 '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'
             )
@@ -1196,7 +1218,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'POST',
                 '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'
             )
@@ -1210,7 +1232,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'PUT',
                 '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'
             )
@@ -1224,7 +1246,7 @@ class RequestTest extends AbstractCase
         $this->assertEquals('data-identifier', $requestInfo->getDataIdentifier());
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new BaseRequest(
+            $this->buildRequest(
                 'DELETE',
                 '/_cundd-testModule-application/my_undefined_method/my-database/data-identifier'
             )
@@ -1243,44 +1265,88 @@ class RequestTest extends AbstractCase
      */
     public function getServerActionForRequestTest()
     {
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('GET', '/_restart')));
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('GET', '/_restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getServerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('GET', '/_restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest('GET', '/_restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest(
                     'GET',
                     '/_restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('HEAD', '/_restart')));
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('HEAD', '/_restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getServerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('HEAD', '/_restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest('HEAD', '/_restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest(
                     'HEAD',
                     '/_restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('PUT', '/_restart')));
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('PUT', '/_restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getServerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('PUT', '/_restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest('PUT', '/_restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest(
                     'PUT',
                     '/_restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('DELETE', '/_restart')));
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('DELETE', '/_restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getServerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('DELETE', '/_restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest('DELETE', '/_restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest(
                     'DELETE',
                     '/_restart/something'
                 )
@@ -1289,56 +1355,102 @@ class RequestTest extends AbstractCase
 
         $this->assertEquals(
             'restart',
-            RequestInfoFactory::getServerActionForRequest(new BaseRequest('POST', '/_restart'))
+            RequestInfoFactory::getServerActionForRequest($this->buildRequest('POST', '/_restart'))
         );
         $this->assertEquals(
             'restart',
-            RequestInfoFactory::getServerActionForRequest(new BaseRequest('POST', '/_restart/'))
+            RequestInfoFactory::getServerActionForRequest($this->buildRequest('POST', '/_restart/'))
         );
         $this->assertEquals(
             'restart',
-            RequestInfoFactory::getServerActionForRequest(new BaseRequest('POST', '/_restart/something'))
-        );
-
-
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('GET', '/_shutdown')));
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('GET', '/_shutdown/')));
-        $this->assertFalse(
             RequestInfoFactory::getServerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('POST', '/_restart/something')
+            )
+        );
+
+
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest('GET', '/_shutdown')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest('GET', '/_shutdown/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest(
                     'GET',
                     '/_shutdown/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('HEAD', '/_shutdown')));
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('HEAD', '/_shutdown/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getServerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('HEAD', '/_shutdown')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest('HEAD', '/_shutdown/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest(
                     'HEAD',
                     '/_shutdown/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('PUT', '/_shutdown')));
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('PUT', '/_shutdown/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getServerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('PUT', '/_shutdown')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest('PUT', '/_shutdown/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest(
                     'PUT',
                     '/_shutdown/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('DELETE', '/_shutdown')));
-        $this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('DELETE', '/_shutdown/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getServerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('DELETE', '/_shutdown')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest('DELETE', '/_shutdown/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest(
                     'DELETE',
                     '/_shutdown/something'
                 )
@@ -1347,37 +1459,39 @@ class RequestTest extends AbstractCase
 
         $this->assertEquals(
             'shutdown',
-            RequestInfoFactory::getServerActionForRequest(new BaseRequest('POST', '/_shutdown'))
+            RequestInfoFactory::getServerActionForRequest($this->buildRequest('POST', '/_shutdown'))
         );
         $this->assertEquals(
             'shutdown',
-            RequestInfoFactory::getServerActionForRequest(new BaseRequest('POST', '/_shutdown/'))
+            RequestInfoFactory::getServerActionForRequest($this->buildRequest('POST', '/_shutdown/'))
         );
         $this->assertEquals(
             'shutdown',
-            RequestInfoFactory::getServerActionForRequest(new BaseRequest('POST', '/_shutdown/something'))
+            RequestInfoFactory::getServerActionForRequest(
+                $this->buildRequest('POST', '/_shutdown/something')
+            )
         );
 
 
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('GET', '/_stop')));
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('GET', '/_stop/')));
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('GET', '/_stop/something')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('GET', '/_stop')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('GET', '/_stop/')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('GET', '/_stop/something')));
 //
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('HEAD', '/_stop')));
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('HEAD', '/_stop/')));
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('HEAD', '/_stop/something')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('HEAD', '/_stop')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('HEAD', '/_stop/')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('HEAD', '/_stop/something')));
 //
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('PUT', '/_stop')));
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('PUT', '/_stop/')));
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('PUT', '/_stop/something')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('PUT', '/_stop')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('PUT', '/_stop/')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('PUT', '/_stop/something')));
 //
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('DELETE', '/_stop')));
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('DELETE', '/_stop/')));
-//		$this->assertFalse(RequestInfoFactory::getServerActionForRequest(new BaseRequest('DELETE', '/_stop/something')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('DELETE', '/_stop')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('DELETE', '/_stop/')));
+//		$this->assertSame('',RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('DELETE', '/_stop/something')));
 //
-//		$this->assertEquals('stop', RequestInfoFactory::getServerActionForRequest(new BaseRequest('POST', '/_stop')));
-//		$this->assertEquals('stop', RequestInfoFactory::getServerActionForRequest(new BaseRequest('POST', '/_stop/')));
-//		$this->assertEquals('stop', RequestInfoFactory::getServerActionForRequest(new BaseRequest('POST', '/_stop/something')));
+//		$this->assertEquals('stop', RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('POST', '/_stop')));
+//		$this->assertEquals('stop', RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('POST', '/_stop/')));
+//		$this->assertEquals('stop', RequestInfoFactory::getServerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('POST', '/_stop/something')));
 
     }
 
@@ -1388,48 +1502,98 @@ class RequestTest extends AbstractCase
     {
         $this->assertEquals(
             'getStatsAction',
-            RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/_stats'))
+            RequestInfoFactory::getHandlerActionForRequest($this->buildRequest('GET', '/_stats'))
         );
         $this->assertEquals(
             'getStatsAction',
-            RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/_stats/'))
+            RequestInfoFactory::getHandlerActionForRequest($this->buildRequest('GET', '/_stats/'))
         );
         $this->assertEquals(
             'getStatsAction',
-            RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/_stats/something'))
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('GET', '/_stats/something')
+            )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_stats')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_stats/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('POST', '/_stats')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('POST', '/_stats/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'POST',
                     '/_stats/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/_stats')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/_stats/')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/_stats/something')));
-
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('DELETE', '/_stats')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('DELETE', '/_stats/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('PUT', '/_stats')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('PUT', '/_stats/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('PUT', '/_stats/something')
+            )
+        );
+
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('DELETE', '/_stats')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('DELETE', '/_stats/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'DELETE',
                     '/_stats/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('HEAD', '/_stats')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('HEAD', '/_stats/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('HEAD', '/_stats')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('HEAD', '/_stats/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'HEAD',
                     '/_stats/something'
                 )
@@ -1439,79 +1603,174 @@ class RequestTest extends AbstractCase
 
         $this->assertEquals(
             'getAllDbsAction',
-            RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/_all_dbs'))
+            RequestInfoFactory::getHandlerActionForRequest($this->buildRequest('GET', '/_all_dbs'))
         );
         $this->assertEquals(
             'getAllDbsAction',
-            RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/_all_dbs/'))
+            RequestInfoFactory::getHandlerActionForRequest($this->buildRequest('GET', '/_all_dbs/'))
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_all_dbs')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_all_dbs/')));
-
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/_all_dbs')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/_all_dbs/')));
-
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('DELETE', '/_all_dbs')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('DELETE', '/_all_dbs/')));
-
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('HEAD', '/_all_dbs')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('HEAD', '/_all_dbs/')));
-
-
-//		$this->assertEquals('postRestartAction', RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_restart')));
-//		$this->assertEquals('postRestartAction', RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_restart/')));
-//		$this->assertEquals('postRestartAction', RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_restart/something')));
-
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_restart')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('POST', '/_all_dbs')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('POST', '/_all_dbs/')
+            )
+        );
+
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('PUT', '/_all_dbs')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('PUT', '/_all_dbs/')
+            )
+        );
+
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('DELETE', '/_all_dbs')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('DELETE', '/_all_dbs/')
+            )
+        );
+
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('HEAD', '/_all_dbs')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('HEAD', '/_all_dbs/')
+            )
+        );
+
+
+//		$this->assertEquals('postRestartAction', RequestInfoFactory::getHandlerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('POST', '/_restart')));
+//		$this->assertEquals('postRestartAction', RequestInfoFactory::getHandlerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('POST', '/_restart/')));
+//		$this->assertEquals('postRestartAction', RequestInfoFactory::getHandlerActionForRequest(\Cundd\Stairtower\Tests\Unit\$this->buildRequest('POST', '/_restart/something')));
+
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('POST', '/_restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('POST', '/_restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'POST',
                     '/_restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/_restart')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/_restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('GET', '/_restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('GET', '/_restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'GET',
                     '/_restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/_restart')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/_restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('PUT', '/_restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('PUT', '/_restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'PUT',
                     '/_restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('DELETE', '/_restart')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('DELETE', '/_restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('DELETE', '/_restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('DELETE', '/_restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'DELETE',
                     '/_restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('HEAD', '/_restart')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('HEAD', '/_restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('HEAD', '/_restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('HEAD', '/_restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'HEAD',
                     '/_restart/something'
                 )
@@ -1519,55 +1778,110 @@ class RequestTest extends AbstractCase
         );
 
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/restart')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('POST', '/restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('POST', '/restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'POST',
                     '/restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/restart')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('GET', '/restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('GET', '/restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'GET',
                     '/restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/restart')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('PUT', '/restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('PUT', '/restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'PUT',
                     '/restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('DELETE', '/restart')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('DELETE', '/restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('DELETE', '/restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('DELETE', '/restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'DELETE',
                     '/restart/something'
                 )
             )
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('HEAD', '/restart')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('HEAD', '/restart/')));
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('HEAD', '/restart')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('HEAD', '/restart/')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'HEAD',
                     '/restart/something'
                 )
@@ -1577,97 +1891,149 @@ class RequestTest extends AbstractCase
 
         $this->assertEquals(
             'getCountAction',
-            RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/_count'))
+            RequestInfoFactory::getHandlerActionForRequest($this->buildRequest('GET', '/_count'))
         );
         $this->assertEquals(
             'getCountAction',
-            RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/_count/'))
+            RequestInfoFactory::getHandlerActionForRequest($this->buildRequest('GET', '/_count/'))
         );
 
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_count')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('POST', '/_count/')));
-
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/_count')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('PUT', '/_count/')));
-
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('DELETE', '/_count')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('DELETE', '/_count/')));
-
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('HEAD', '/_count')));
-        $this->assertFalse(RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('HEAD', '/_count/')));
-
-
-        $this->assertEquals(
-            'getCountAction',
-            RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/database-identifier/_count'))
-        );
-        $this->assertEquals(
-            'getCountAction',
-            RequestInfoFactory::getHandlerActionForRequest(new BaseRequest('GET', '/database-identifier/_count/'))
-        );
-
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest('POST', '/_count')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('POST', '/_count/')
+            )
+        );
+
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('PUT', '/_count')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('PUT', '/_count/')
+            )
+        );
+
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('DELETE', '/_count')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('DELETE', '/_count/')
+            )
+        );
+
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('HEAD', '/_count')
+            )
+        );
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('HEAD', '/_count/')
+            )
+        );
+
+
+        $this->assertEquals(
+            'getCountAction',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('GET', '/database-identifier/_count')
+            )
+        );
+        $this->assertEquals(
+            'getCountAction',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest('GET', '/database-identifier/_count/')
+            )
+        );
+
+        $this->assertSame(
+            '',
+            RequestInfoFactory::getHandlerActionForRequest(
+                $this->buildRequest(
                     'POST',
                     '/database-identifier/_count'
                 )
             )
         );
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest(
                     'POST',
                     '/database-identifier/_count/'
                 )
             )
         );
 
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest(
                     'PUT',
                     '/database-identifier/_count'
                 )
             )
         );
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest(
                     'PUT',
                     '/database-identifier/_count/'
                 )
             )
         );
 
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest(
                     'DELETE',
                     '/database-identifier/_count'
                 )
             )
         );
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest(
                     'DELETE',
                     '/database-identifier/_count/'
                 )
             )
         );
 
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest(
                     'HEAD',
                     '/database-identifier/_count'
                 )
             )
         );
-        $this->assertFalse(
+        $this->assertSame(
+            '',
             RequestInfoFactory::getHandlerActionForRequest(
-                new BaseRequest(
+                $this->buildRequest(
                     'HEAD',
                     '/database-identifier/_count/'
                 )
@@ -1688,331 +2054,405 @@ class RequestTest extends AbstractCase
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_restart'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('GET', '/_restart'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_restart/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('GET', '/_restart/'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_restart/something'))
-        );
-
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_restart'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_restart/'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_restart/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('GET', '/_restart/something')
+            )
         );
 
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_restart'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('HEAD', '/_restart'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_restart/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('HEAD', '/_restart/'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_restart/something'))
-        );
-
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_restart'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_restart/'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_restart/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('HEAD', '/_restart/something')
+            )
         );
 
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_restart'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('PUT', '/_restart'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_restart/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('PUT', '/_restart/'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_restart/something'))
-        );
-
-
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_shutdown'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_shutdown/'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_shutdown/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('PUT', '/_restart/something')
+            )
         );
 
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_shutdown'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('DELETE', '/_restart'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_shutdown/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('DELETE', '/_restart/'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_shutdown/something'))
-        );
-
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_shutdown'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_shutdown/'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_shutdown/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('DELETE', '/_restart/something')
+            )
         );
 
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_shutdown'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('POST', '/_restart'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_shutdown/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('POST', '/_restart/'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_shutdown/something'))
-        );
-
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_shutdown'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_shutdown/'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_shutdown/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('POST', '/_restart/something')
+            )
         );
 
 
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/database-identifier'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('GET', '/_shutdown'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/database-identifier/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('GET', '/_shutdown/'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/database-identifier/something'))
-        );
-
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/database-identifier'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/database-identifier/'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/database-identifier/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('GET', '/_shutdown/something')
+            )
         );
 
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/database-identifier'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('HEAD', '/_shutdown'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/database-identifier/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('HEAD', '/_shutdown/'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/database-identifier/something'))
-        );
-
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/database-identifier'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/database-identifier/'))
-        );
-        $this->assertEquals(
-            HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/database-identifier/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('HEAD', '/_shutdown/something')
+            )
         );
 
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/database-identifier'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('PUT', '/_shutdown'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/database-identifier/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('PUT', '/_shutdown/'))
         );
         $this->assertEquals(
             HandlerInterface::class,
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/database-identifier/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('PUT', '/_shutdown/something')
+            )
+        );
+
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('DELETE', '/_shutdown'))
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('DELETE', '/_shutdown/'))
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('DELETE', '/_shutdown/something')
+            )
+        );
+
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('POST', '/_shutdown'))
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('POST', '/_shutdown/'))
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('POST', '/_shutdown/something')
+            )
+        );
+
+
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('GET', '/database-identifier')
+            )
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('GET', '/database-identifier/')
+            )
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('GET', '/database-identifier/something')
+            )
+        );
+
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('HEAD', '/database-identifier')
+            )
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('HEAD', '/database-identifier/')
+            )
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('HEAD', '/database-identifier/something')
+            )
+        );
+
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('PUT', '/database-identifier')
+            )
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('PUT', '/database-identifier/')
+            )
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('PUT', '/database-identifier/something')
+            )
+        );
+
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('DELETE', '/database-identifier')
+            )
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('DELETE', '/database-identifier/')
+            )
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('DELETE', '/database-identifier/something')
+            )
+        );
+
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('POST', '/database-identifier')
+            )
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('POST', '/database-identifier/')
+            )
+        );
+        $this->assertEquals(
+            HandlerInterface::class,
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('POST', '/database-identifier/something')
+            )
         );
 
 
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_special'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('GET', '/_special'))
         );
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_special/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('GET', '/_special/'))
         );
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_special/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('GET', '/_special/something')
+            )
         );
 
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_special'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('HEAD', '/_special'))
         );
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_special/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('HEAD', '/_special/'))
         );
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_special/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('HEAD', '/_special/something')
+            )
         );
 
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_special'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('PUT', '/_special'))
         );
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_special/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('PUT', '/_special/'))
         );
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_special/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('PUT', '/_special/something')
+            )
         );
 
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_special'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('DELETE', '/_special'))
         );
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_special/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('DELETE', '/_special/'))
         );
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_special/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('DELETE', '/_special/something')
+            )
         );
 
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_special'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('POST', '/_special'))
         );
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_special/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('POST', '/_special/'))
         );
         $this->assertEquals(
             'Cundd\\Stairtower\\Server\\Handler\\SpecialHandler',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_special/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('POST', '/_special/something')
+            )
         );
 
 
         $this->assertEquals(
             'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_cundd_special'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('GET', '/_cundd_special'))
         );
         $this->assertEquals(
             'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_cundd_special/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('GET', '/_cundd_special/'))
         );
         $this->assertEquals(
             'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('GET', '/_cundd_special/something'))
-        );
-
-        $this->assertEquals(
-            'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_cundd_special'))
-        );
-        $this->assertEquals(
-            'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_cundd_special/'))
-        );
-        $this->assertEquals(
-            'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('HEAD', '/_cundd_special/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('GET', '/_cundd_special/something')
+            )
         );
 
         $this->assertEquals(
             'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_cundd_special'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('HEAD', '/_cundd_special'))
         );
         $this->assertEquals(
             'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_cundd_special/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('HEAD', '/_cundd_special/'))
         );
         $this->assertEquals(
             'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('PUT', '/_cundd_special/something'))
-        );
-
-        $this->assertEquals(
-            'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_cundd_special'))
-        );
-        $this->assertEquals(
-            'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_cundd_special/'))
-        );
-        $this->assertEquals(
-            'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('DELETE', '/_cundd_special/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('HEAD', '/_cundd_special/something')
+            )
         );
 
         $this->assertEquals(
             'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_cundd_special'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('PUT', '/_cundd_special'))
         );
         $this->assertEquals(
             'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_cundd_special/'))
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('PUT', '/_cundd_special/'))
         );
         $this->assertEquals(
             'Cundd\\Special\\Application',
-            RequestInfoFactory::getHandlerClassForRequest(new BaseRequest('POST', '/_cundd_special/something'))
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('PUT', '/_cundd_special/something')
+            )
+        );
+
+        $this->assertEquals(
+            'Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('DELETE', '/_cundd_special')
+            )
+        );
+        $this->assertEquals(
+            'Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('DELETE', '/_cundd_special/')
+            )
+        );
+        $this->assertEquals(
+            'Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('DELETE', '/_cundd_special/something')
+            )
+        );
+
+        $this->assertEquals(
+            'Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('POST', '/_cundd_special'))
+        );
+        $this->assertEquals(
+            'Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest($this->buildRequest('POST', '/_cundd_special/'))
+        );
+        $this->assertEquals(
+            'Cundd\\Special\\Application',
+            RequestInfoFactory::getHandlerClassForRequest(
+                $this->buildRequest('POST', '/_cundd_special/something')
+            )
         );
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Server\ValueObject;
 
+use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\Immutable;
 use Cundd\Stairtower\Utility\GeneralUtility;
 use DateTime;
@@ -48,6 +49,10 @@ class Statistics implements Immutable, JsonSerializable
      * @var float
      */
     protected $memoryPeakUsage;
+    /**
+     * @var string
+     */
+    private $eventLoopImplementation;
 
     /**
      * @param string            $version
@@ -57,17 +62,15 @@ class Statistics implements Immutable, JsonSerializable
      * @param float             $memoryPeakUsage
      */
     public function __construct(
-        string $version,
         string $guid,
-        DateTimeInterface $startTime,
-        $memoryUsage,
-        $memoryPeakUsage
+        ?DateTimeInterface $startTime,
+        string $eventLoopImplementation
     ) {
         $this->guid = $guid;
-        $this->memoryPeakUsage = $memoryPeakUsage;
-        $this->memoryUsage = $memoryUsage;
-        $this->startTime = $startTime ?: new DateTime();
-        $this->version = $version;
+        $this->startTime = $startTime;
+        $this->memoryPeakUsage = memory_get_usage(true);
+        $this->memoryUsage = memory_get_peak_usage(true);
+        $this->eventLoopImplementation = $eventLoopImplementation;
     }
 
     /**
@@ -75,15 +78,30 @@ class Statistics implements Immutable, JsonSerializable
      */
     public function jsonSerialize()
     {
+        $upTime = $this->getUpTime() ? $this->getUpTime()->format('%a days %H:%I:%S') : 'undefined';
+        $startTime = $this->getStartTime() ? $this->getStartTime()->format('r') : 'undefined';
+
         return [
-            'version'         => $this->getVersion(),
-            'guid'            => $this->getGuid(),
-            'host'            => php_uname('n'),
-            'startTime'       => $this->getStartTime() ? $this->getStartTime()->format('r') : 'undefined',
-            'upTime'          => $this->getUpTime() ? $this->getUpTime()->format('%a days %H:%I:%S') : 'undefined',
-            'memoryUsage'     => GeneralUtility::formatBytes($this->getMemoryUsage()),
-            'memoryPeakUsage' => GeneralUtility::formatBytes($this->getMemoryPeakUsage()),
+            'version'                 => $this->getVersion(),
+            'guid'                    => $this->getGuid(),
+            'host'                    => $this->getHost(),
+            'startTime'               => $startTime,
+            'upTime'                  => $upTime,
+            'memoryUsage'             => GeneralUtility::formatBytes($this->getMemoryUsage()),
+            'memoryPeakUsage'         => GeneralUtility::formatBytes($this->getMemoryPeakUsage()),
+            'os'                      => $this->getOsInformation(),
+            'eventLoopImplementation' => $this->getEventLoopImplementation(),
         ];
+    }
+
+    /**
+     * Returns the implementation name of the Event Loop
+     *
+     * @return string
+     */
+    public function getEventLoopImplementation(): string
+    {
+        return $this->eventLoopImplementation;
     }
 
     /**
@@ -91,9 +109,9 @@ class Statistics implements Immutable, JsonSerializable
      *
      * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
-        return $this->version;
+        return Constants::VERSION;
     }
 
     /**
@@ -101,7 +119,7 @@ class Statistics implements Immutable, JsonSerializable
      *
      * @return string
      */
-    public function getGuid()
+    public function getGuid(): string
     {
         return $this->guid;
     }
@@ -109,15 +127,15 @@ class Statistics implements Immutable, JsonSerializable
     /**
      * Returns the time of the server start
      *
-     * @return DateTime
+     * @return DateTimeInterface|null
      */
-    public function getStartTime()
+    public function getStartTime(): ?DateTimeInterface
     {
         return $this->startTime;
     }
 
     /**
-     * Returns the server upTime
+     * Returns the server up-time
      *
      * @return bool|\DateInterval
      */
@@ -133,7 +151,7 @@ class Statistics implements Immutable, JsonSerializable
      *
      * @return float
      */
-    public function getMemoryUsage()
+    public function getMemoryUsage(): float
     {
         return $this->memoryUsage;
     }
@@ -143,8 +161,35 @@ class Statistics implements Immutable, JsonSerializable
      *
      * @return float
      */
-    public function getMemoryPeakUsage()
+    public function getMemoryPeakUsage(): float
     {
         return $this->memoryPeakUsage;
+    }
+
+    /**
+     * Return information about the OS
+     *
+     * @return array
+     */
+    public function getOsInformation(): array
+    {
+        return [
+            'os' => [
+                'vendor'  => php_uname('s'),
+                'version' => php_uname('r'),
+                'machine' => php_uname('m'),
+                'info'    => php_uname('v'),
+            ],
+        ];
+    }
+
+    /**
+     * Return the hostname
+     *
+     * @return string
+     */
+    public function getHost(): string
+    {
+        return php_uname('n');
     }
 }

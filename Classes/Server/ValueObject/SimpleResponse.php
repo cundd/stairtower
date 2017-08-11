@@ -7,12 +7,12 @@ namespace Cundd\Stairtower\Server\ValueObject;
 use Cundd\Stairtower\Utility\GeneralUtility;
 use Evenement\EventEmitter;
 use React\Http\ResponseCodes;
-use React\Stream\WritableStreamInterface;
+
 
 /**
  * Implementation of a Response without an attached connection
  */
-class SimpleResponse extends EventEmitter implements WritableStreamInterface
+class SimpleResponse extends EventEmitter implements \Psr\Http\Message\ResponseInterface
 {
     protected $closed = false;
     protected $writable = true;

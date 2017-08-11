@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Server\ValueObject;
 
-use Cundd\Stairtower\Server\Cookie\CookieParserInterface;
 use Cundd\Stairtower\Server\Exception\InvalidRequestActionException;
 use Cundd\Stairtower\Server\Handler\HandlerInterface;
 use Cundd\Stairtower\Utility\GeneralUtility;
-use React\Http\Request as BaseRequest;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Factory for Request instances
@@ -17,29 +16,21 @@ class RequestInfoFactory
     const DEFAULT_ACTION = 'index';
 
     /**
-     * @var CookieParserInterface
-     * @Inject
-     */
-    protected $cookieParser;
-
-    /**
      * Builds a Request instance for the given raw request
      *
-     * @param BaseRequest|RequestInterface $request
-     * @param bool                         $parseCookies Define if the cookies should be parsed
+     * @param RequestInterface|ServerRequestInterface $request
      * @return RequestInterface
      */
-    public function buildRequestFromRawRequest($request, $parseCookies = false): RequestInterface
+    public function buildRequestFromRawRequest($request): RequestInterface
     {
-        if ($request instanceof Request) {
+        if ($request instanceof RequestInterface) {
             return $request;
         }
 
-        $pathParts = explode('/', $request->getPath());
-        $pathParts = array_values(array_filter($pathParts));
-        $dataIdentifier = null;
-        $databaseIdentifier = null;
-        $controllerClassName = null;
+        $pathParts = array_values(array_filter(explode('/', $request->getUri()->getPath())));
+        $dataIdentifier = '';
+        $databaseIdentifier = '';
+        $controllerClassName = '';
 
         if (count($pathParts) >= 2) {
             $dataIdentifier = $pathParts[1];
@@ -59,13 +50,8 @@ class RequestInfoFactory
         if ($controllerAndActionArray) {
             list($controllerClassName, $handlerAction) = $controllerAndActionArray;
 
-            $databaseIdentifier = isset($pathParts[2]) ? $pathParts[2] : null;
-            $dataIdentifier = isset($pathParts[3]) ? $pathParts[3] : null;
-        }
-
-        $cookies = [];
-        if ($parseCookies) {
-            $cookies = $this->cookieParser->parse($request);
+            $databaseIdentifier = $pathParts[2] ?? '';
+            $dataIdentifier = $pathParts[3] ?? '';
         }
 
         return new Request(
@@ -73,10 +59,9 @@ class RequestInfoFactory
             $dataIdentifier,
             $databaseIdentifier,
             $request->getMethod(),
-            ($handlerAction !== false ? $handlerAction : null),
+            ($handlerAction !== false ? $handlerAction : ''),
             $controllerClassName,
-            null,
-            $cookies
+            $request->getBody()
         );
     }
 
@@ -84,19 +69,18 @@ class RequestInfoFactory
      * Returns the handler class if the path contains a special information identifier, otherwise the Handler interface
      * name
      *
-     * @param Request|BaseRequest $request
+     * @param RequestInterface|ServerRequestInterface $request
      * @return string
      */
     public static function getHandlerClassForRequest($request): string
     {
-        $default = HandlerInterface::class;
-        $path = $request->getPath();
+        $path = $request->getUri()->getPath();
         if (!$path) {
-            return $default;
+            return HandlerInterface::class;
         }
         $path = ltrim($path, '/');
         if (!$path || $path[0] !== '_') {
-            return $default;
+            return HandlerInterface::class;
         }
 
         $handlerIdentifier = strstr($path, '/', true);
@@ -120,7 +104,7 @@ class RequestInfoFactory
             return $handlerName;
         }
 
-        return $default;
+        return HandlerInterface::class;
     }
 
     /**
@@ -129,12 +113,12 @@ class RequestInfoFactory
      * Returns the controller class and action name as array if the path contains a special information identifier. If
      * no special information identifier is given, or the controller class does not exist false is returned.
      *
-     * @param BaseRequest|RequestInterface $request
+     * @param RequestInterface|ServerRequestInterface $request
      * @return array|boolean
      */
     public function getControllerAndActionForRequest($request)
     {
-        $path = $request->getPath();
+        $path = $request->getUri()->getPath();
         if (!$path) {
             return false;
         }
@@ -187,10 +171,10 @@ class RequestInfoFactory
     /**
      * Returns the handler action if the path contains a special information identifier, otherwise FALSE
      *
-     * @param Request|BaseRequest $request
-     * @return string|bool
+     * @param RequestInterface|ServerRequestInterface $request
+     * @return string
      */
-    public static function getHandlerActionForRequest($request)
+    public static function getHandlerActionForRequest($request): string
     {
         return static::getActionForRequestAndClass(
             $request,
@@ -202,16 +186,16 @@ class RequestInfoFactory
     /**
      * Returns an action method name if the path contains a special information identifier, otherwise FALSE
      *
-     * @param Request $request
-     * @param string  $interface
-     * @return string|bool
+     * @param RequestInterface|ServerRequestInterface $request
+     * @param string                                  $interface
+     * @return string
      */
-    protected static function getActionForRequestAndClass($request, $interface)
+    protected static function getActionForRequestAndClass($request, $interface): string
     {
-        $path = $request->getPath();
+        $path = $request->getUri()->getPath();
         $method = $request->getMethod();
         if (!$path) {
-            return false;
+            return '';
         }
         if ($path[0] === '/') {
             $path = substr($path, 1);
@@ -222,29 +206,30 @@ class RequestInfoFactory
             if ($currentPathPart && $currentPathPart[0] === '_') {
                 $handlerAction = GeneralUtility::underscoreToCamelCase(
                         strtolower($method) . '_' . substr($currentPathPart, 1)
-                    ) . 'Action';
+                    )
+                    . 'Action';
                 if (method_exists($interface, $handlerAction)) {
                     return $handlerAction;
                 }
             }
         }
 
-        return false;
+        return '';
     }
 
     /**
      * Returns the special server action if the path contains a special information identifier, otherwise FALSE
      *
-     * @param RequestInterface|BaseRequest $request
-     * @return string|bool
+     * @param RequestInterface|ServerRequestInterface $request
+     * @return string
      */
-    public static function getServerActionForRequest($request)
+    public static function getServerActionForRequest($request): string
     {
-        $path = $request->getPath();
+        $path = $request->getUri()->getPath();
         $method = $request->getMethod();
         $path = ltrim($path, '/');
         if (!$path || $path[0] !== '_' || $method !== 'POST') {
-            return false;
+            return '';
         }
         list($action,) = explode('/', substr($path, 1), 2);
 
@@ -252,27 +237,6 @@ class RequestInfoFactory
             return $action;
         }
 
-        return false;
-    }
-
-    /**
-     * Creates a copy of the given Request Info with the given body
-     *
-     * @param Request $requestInfo
-     * @param mixed   $body
-     * @return Request
-     */
-    public static function copyWithBody($requestInfo, $body)
-    {
-        return new Request(
-            $requestInfo->getOriginalRequest(),
-            $requestInfo->getDataIdentifier(),
-            $requestInfo->getDatabaseIdentifier(),
-            $requestInfo->getMethod(),
-            $requestInfo->getAction(),
-            $requestInfo->getControllerClass(),
-            $body,
-            $requestInfo->getCookies()
-        );
+        return '';
     }
 }

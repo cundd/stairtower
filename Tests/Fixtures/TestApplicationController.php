@@ -7,7 +7,7 @@ use Cundd\Stairtower\Server\Controller\ControllerInterface;
 use Cundd\Stairtower\Server\Controller\ControllerResultInterface;
 use Cundd\Stairtower\Server\ValueObject\ControllerResult;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
-use React\Stream\WritableStreamInterface;
+
 
 class TestApplicationController implements ControllerInterface
 {
@@ -59,8 +59,7 @@ class TestApplicationController implements ControllerInterface
     }
 
     public function processRequest(
-        RequestInterface $request,
-        WritableStreamInterface $response
+        RequestInterface $request
     ): ControllerResultInterface {
         return new ControllerResult(0);
     }

@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 namespace Server\Controller;
 
-use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Cundd\Stairtower\Server\Controller\AbstractController;
 use Cundd\Stairtower\Server\Controller\ControllerInterface;
 use Cundd\Stairtower\Server\ValueObject\ControllerResult;
 use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
-use Cundd\Stairtower\Tests\Fixtures\ReactConnectionStub;
 use Cundd\Stairtower\Tests\Fixtures\TestApplicationController;
-use React\Http\Request;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
+use Cundd\Stairtower\Tests\Unit\RequestBuilderTrait;
 use React\Http\Response;
 
 /**
@@ -18,6 +17,7 @@ use React\Http\Response;
  */
 class AbstractControllerTest extends AbstractCase
 {
+    use RequestBuilderTrait;
     /**
      * @var ControllerInterface
      */
@@ -49,7 +49,7 @@ class AbstractControllerTest extends AbstractCase
             RequestInfoFactory::class
         );
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('GET', '/_cundd-test-application/my_method')
+            $this->buildRequest('GET', '/_cundd-test-application/my_method')
         );
         $this->fixture->setRequest($requestInfo);
     }
@@ -87,7 +87,7 @@ class AbstractControllerTest extends AbstractCase
      */
     public function setRequestTest()
     {
-        $request = new Request('GET', '/loaned/');
+        $request = $this->buildRequest('GET', '/loaned/');
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest($request);
         $this->fixture->setRequest($requestInfo);
         $this->assertSame($requestInfo, $this->fixture->getRequest());
@@ -99,7 +99,7 @@ class AbstractControllerTest extends AbstractCase
      */
     public function unsetRequestTest()
     {
-        $request = new Request('GET', '/loaned/');
+        $request = $this->buildRequest('GET', '/loaned/');
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest($request);
         $this->fixture->setRequest($requestInfo);
 
@@ -141,12 +141,11 @@ class AbstractControllerTest extends AbstractCase
             ->will($this->returnValue(true));
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('GET', '/_cundd-test-application/hello')
+            $this->buildRequest('GET', '/_cundd-test-application/hello')
         );
-        $response = new Response(new ReactConnectionStub());
 
         /** @var \Cundd\Stairtower\Server\ValueObject\ControllerResult $result */
-        $result = $controller->processRequest($requestInfo, $response);
+        $result = $controller->processRequest($requestInfo);
         $this->assertNotNull($result);
         $this->assertInstanceOf(ControllerResult::class, $result);
         $this->assertSame(true, $result->getData());
@@ -167,12 +166,11 @@ class AbstractControllerTest extends AbstractCase
             ->will($this->returnValue(true));
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('GET', '/_cundd-test-application/hello_world')
+            $this->buildRequest('GET', '/_cundd-test-application/hello_world')
         );
-        $response = new Response(new ReactConnectionStub());
 
         /** @var \Cundd\Stairtower\Server\ValueObject\ControllerResult $result */
-        $result = $controller->processRequest($requestInfo, $response);
+        $result = $controller->processRequest($requestInfo);
         $this->assertNotNull($result);
         $this->assertInstanceOf(ControllerResult::class, $result);
         $this->assertSame(true, $result->getData());
@@ -193,12 +191,11 @@ class AbstractControllerTest extends AbstractCase
             ->will($this->returnValue(true));
 
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('GET', '/_cundd-test-application/hello_world/another_argument')
+            $this->buildRequest('GET', '/_cundd-test-application/hello_world/another_argument')
         );
-        $response = new Response(new ReactConnectionStub());
 
         /** @var \Cundd\Stairtower\Server\ValueObject\ControllerResult $result */
-        $result = $controller->processRequest($requestInfo, $response);
+        $result = $controller->processRequest($requestInfo);
         $this->assertNotNull($result);
         $this->assertInstanceOf(ControllerResult::class, $result);
         $this->assertSame(true, $result->getData());
@@ -211,20 +208,8 @@ class AbstractControllerTest extends AbstractCase
     public function processRequestNotImplementedMethodTest()
     {
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(
-            new Request('GET', '/_cundd-test-application/my_method')
+            $this->buildRequest('GET', '/_cundd-test-application/my_method')
         );
-        $response = new Response(new ReactConnectionStub());
-        $this->fixture->processRequest($requestInfo, $response);
-    }
-
-    /**
-     * @param string $original
-     * @param string $alias
-     */
-    private function makeClassAliasIfNotExists(string $original, string $alias)
-    {
-        if (!class_exists($alias)) {
-            class_alias($original, $alias);
-        }
+        $this->fixture->processRequest($requestInfo);
     }
 }

@@ -4,16 +4,24 @@ declare(strict_types=1);
 namespace Cundd\Stairtower\Server\Handler;
 
 use Cundd\Stairtower\Asset\AssetInterface;
+use Cundd\Stairtower\Asset\AssetProviderInterface;
 use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\DataAccess\CoordinatorInterface;
 use Cundd\Stairtower\DataAccess\Exception\ReaderException;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 use Cundd\Stairtower\Domain\Model\Document;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Event\SharedEventEmitter;
+use Cundd\Stairtower\Expand\ExpandConfigurationBuilderInterface;
 use Cundd\Stairtower\Expand\ExpandConfigurationInterface;
+use Cundd\Stairtower\Expand\ExpandResolverInterface;
+use Cundd\Stairtower\Filter\FilterBuilderInterface;
 use Cundd\Stairtower\Filter\FilterResultInterface;
 use Cundd\Stairtower\Server\Exception\InvalidBodyException;
 use Cundd\Stairtower\Server\Exception\InvalidRequestParameterException;
+use Cundd\Stairtower\Server\ServerInterface;
 use Cundd\Stairtower\Server\ValueObject\HandlerResult;
+use Cundd\Stairtower\Server\ValueObject\NotFoundResult;
 use Cundd\Stairtower\Server\ValueObject\RawResult;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use Cundd\Stairtower\Utility\DebugUtility;
@@ -24,10 +32,12 @@ use SplFixedArray;
  */
 class Handler implements HandlerInterface
 {
+    const HTTP_STATUS_CODE_DELETED = 202;
+
     /**
      * Document Access Coordinator
      *
-     * @var \Cundd\Stairtower\DataAccess\CoordinatorInterface
+     * @var CoordinatorInterface
      * @Inject
      */
     protected $coordinator;
@@ -35,7 +45,7 @@ class Handler implements HandlerInterface
     /**
      * Server instance
      *
-     * @var \Cundd\Stairtower\Server\ServerInterface
+     * @var ServerInterface
      * @Inject
      */
     protected $server;
@@ -43,7 +53,7 @@ class Handler implements HandlerInterface
     /**
      * FilterBuilder instance
      *
-     * @var \Cundd\Stairtower\Filter\FilterBuilderInterface
+     * @var FilterBuilderInterface
      * @Inject
      */
     protected $filterBuilder;
@@ -51,7 +61,7 @@ class Handler implements HandlerInterface
     /**
      * ExpandConfigurationBuilder instance
      *
-     * @var \Cundd\Stairtower\Expand\ExpandConfigurationBuilderInterface
+     * @var ExpandConfigurationBuilderInterface
      * @Inject
      */
     protected $expandConfigurationBuilder;
@@ -59,7 +69,7 @@ class Handler implements HandlerInterface
     /**
      * Expand Resolver instance
      *
-     * @var \Cundd\Stairtower\Expand\ExpandResolverInterface
+     * @var ExpandResolverInterface
      * @Inject
      */
     protected $expandResolver;
@@ -67,7 +77,7 @@ class Handler implements HandlerInterface
     /**
      * Asset Loader instance
      *
-     * @var \Cundd\Stairtower\Asset\AssetProviderInterface
+     * @var AssetProviderInterface
      * @Inject
      */
     protected $assetLoader;
@@ -75,31 +85,47 @@ class Handler implements HandlerInterface
     /**
      * Event Emitter
      *
-     * @var \Cundd\Stairtower\Event\SharedEventEmitter
+     * @var SharedEventEmitter
      * @Inject
      */
     protected $eventEmitter;
 
     /**
-     * Invoked if no route is given (e.g. if the request path is empty)
+     * Handler constructor.
      *
-     * @param RequestInterface $request
-     * @return HandlerResultInterface
+     * @param ServerInterface                     $server
+     * @param SharedEventEmitter                  $eventEmitter
+     * @param CoordinatorInterface                $coordinator
+     * @param FilterBuilderInterface              $filterBuilder
+     * @param ExpandConfigurationBuilderInterface $expandConfigurationBuilder
+     * @param ExpandResolverInterface             $expandResolver
+     * @param AssetProviderInterface              $assetLoader
      */
-    public function noRoute(RequestInterface $request)
+    public function __construct(
+        ServerInterface $server,
+        SharedEventEmitter $eventEmitter,
+        CoordinatorInterface $coordinator,
+        FilterBuilderInterface $filterBuilder,
+        ExpandConfigurationBuilderInterface $expandConfigurationBuilder,
+        ExpandResolverInterface $expandResolver,
+        AssetProviderInterface $assetLoader
+    ) {
+        $this->coordinator = $coordinator;
+        $this->server = $server;
+        $this->filterBuilder = $filterBuilder;
+        $this->expandConfigurationBuilder = $expandConfigurationBuilder;
+        $this->expandResolver = $expandResolver;
+        $this->assetLoader = $assetLoader;
+        $this->eventEmitter = $eventEmitter;
+    }
+
+
+    public function noRoute(RequestInterface $request): HandlerResultInterface
     {
         return new HandlerResult(200, Constants::MESSAGE_JSON_WELCOME);
     }
 
-
-    /**
-     * Creates a new Document instance or Database with the given data for the given Request
-     *
-     * @param RequestInterface $request
-     * @param mixed            $data
-     * @return HandlerResultInterface
-     */
-    public function create(RequestInterface $request, $data)
+    public function create(RequestInterface $request, $data): HandlerResultInterface
     {
         if ($request->getMethod() === 'POST') { // Create a Document instance
             return $this->createDataInstance($request, $data);
@@ -117,18 +143,18 @@ class Handler implements HandlerInterface
      *
      * @param RequestInterface $request
      * @param mixed            $data
-     * @return HandlerResult
+     * @return HandlerResultInterface
      */
-    protected function createDataInstance(RequestInterface $request, $data)
+    protected function createDataInstance(RequestInterface $request, $data): HandlerResultInterface
     {
         $database = $this->getDatabaseForRequest($request);
         if (!$database) {
-            return new HandlerResult(
-                404,
+            return new NotFoundResult(
                 sprintf(
                     'Database with identifier "%s" not found',
                     $request->getDatabaseIdentifier()
-                )
+                ),
+                1502447992
             );
         }
 
@@ -211,13 +237,7 @@ class Handler implements HandlerInterface
         }
     }
 
-    /**
-     * Read Document instances for the given Request
-     *
-     * @param RequestInterface $request
-     * @return HandlerResultInterface
-     */
-    public function read(RequestInterface $request)
+    public function read(RequestInterface $request): HandlerResultInterface
     {
         $query = $request->getQuery();
 
@@ -244,25 +264,25 @@ class Handler implements HandlerInterface
                     $document
                 );
             } else {
-                return new HandlerResult(
-                    404,
+                return new NotFoundResult(
                     sprintf(
                         'Document instance with identifier "%s" not found in database "%s"',
                         $request->getDataIdentifier(),
                         $request->getDatabaseIdentifier()
-                    )
+                    ),
+                    1502448024
                 );
             }
         }
 
         $database = $this->getDatabaseForRequest($request);
         if (!$database) {
-            return new HandlerResult(
-                404,
+            return new NotFoundResult(
                 sprintf(
                     'Database with identifier "%s" not found',
                     $request->getDatabaseIdentifier()
-                )
+                ),
+                1502448032
             );
         }
 
@@ -308,26 +328,20 @@ class Handler implements HandlerInterface
         return $database ? $database->findByIdentifier($request->getDataIdentifier()) : null;
     }
 
-    /**
-     * Update a Document instance with the given data for the given Request
-     *
-     * @param RequestInterface $request
-     * @param mixed            $data
-     * @return HandlerResultInterface
-     */
-    public function update(RequestInterface $request, $data)
+    public function update(RequestInterface $request, $data): HandlerResultInterface
     {
         if (!$request->getDataIdentifier()) {
             throw new InvalidRequestParameterException('Document identifier is missing', 1413292389);
         }
         $document = $this->getDataForRequest($request);
         if (!$document) {
-            return new HandlerResult(
-                404, sprintf(
+            return new NotFoundResult(
+                sprintf(
                     'Document instance with identifier "%s" not found in database "%s"',
                     $request->getDataIdentifier(),
                     $request->getDatabaseIdentifier()
-                )
+                ),
+                1502447965
             );
         }
 
@@ -341,17 +355,11 @@ class Handler implements HandlerInterface
         return new HandlerResult(200, $newDocument);
     }
 
-    /**
-     * Deletes a Document instance for the given Request
-     *
-     * @param RequestInterface $request
-     * @return HandlerResultInterface
-     */
-    public function delete(RequestInterface $request)
+    public function delete(RequestInterface $request): HandlerResultInterface
     {
         $database = $this->getDatabaseForRequest($request);
         if (!$database) {
-            throw new InvalidRequestParameterException(
+            return new NotFoundResult(
                 sprintf(
                     'Database with identifier "%s" not found',
                     $request->getDatabaseIdentifier()
@@ -360,54 +368,44 @@ class Handler implements HandlerInterface
             );
         }
 
+        if (!$request->getDataIdentifier()) {
+            $databaseIdentifier = $database->getIdentifier();
+            $this->coordinator->dropDatabase($databaseIdentifier);
+            $this->eventEmitter->scheduleFutureEmit(Event::DATABASE_DELETED, [$database]);
 
-//		if (!$request->getDataIdentifier()) throw new InvalidRequestParameterException('Document identifier is missing', 1413035855);
-        if ($request->getDataIdentifier()) {
-            $document = $this->getDataForRequest($request);
-            if (!$document) {
-                throw new InvalidRequestParameterException(
-                    sprintf(
-                        'Document with identifier "%s" not found in database "%s"',
-                        $request->getDataIdentifier(),
-                        $request->getDatabaseIdentifier()
-                    ),
-                    1413035855
-                );
-            }
-            $database->remove($document);
-
-            $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_DELETED, [$document]);
-
-            return new HandlerResult(204, sprintf('Document "%s" deleted', $request->getDataIdentifier()));
+            return new HandlerResult(
+                self::HTTP_STATUS_CODE_DELETED,
+                sprintf('Database "%s" deleted', $databaseIdentifier)
+            );
         }
 
-        $databaseIdentifier = $database->getIdentifier();
-        $this->coordinator->dropDatabase($databaseIdentifier);
-        $this->eventEmitter->scheduleFutureEmit(Event::DATABASE_DELETED, [$database]);
+        $document = $this->getDataForRequest($request);
+        if (!$document) {
+            return new NotFoundResult(
+                sprintf(
+                    'Document with identifier "%s" not found in database "%s"',
+                    $request->getDataIdentifier(),
+                    $request->getDatabaseIdentifier()
+                ),
+                1413035855
+            );
+        }
+        $database->remove($document);
 
-        return new HandlerResult(204, sprintf('Database "%s" deleted', $databaseIdentifier));
+        $this->eventEmitter->scheduleFutureEmit(Event::DOCUMENT_DELETED, [$document]);
+
+        return new HandlerResult(
+            self::HTTP_STATUS_CODE_DELETED,
+            sprintf('Document "%s" deleted', $request->getDataIdentifier())
+        );
     }
 
-    /**
-     * Action to display server statistics
-     *
-     * @param RequestInterface $request
-     * @return HandlerResultInterface
-     */
-    public function getStatsAction(RequestInterface $request)
+    public function getStatsAction(RequestInterface $request): HandlerResultInterface
     {
-        $detailedStatistics = $request->getDataIdentifier() === 'detailed';
-
-        return new HandlerResult(200, $this->server->collectStatistics($detailedStatistics));
+        return new HandlerResult(200, $this->server->collectStatistics());
     }
 
-    /**
-     * Action to deliver assets
-     *
-     * @param RequestInterface $request
-     * @return HandlerResultInterface
-     */
-    public function getAssetAction(RequestInterface $request)
+    public function getAssetAction(RequestInterface $request): HandlerResultInterface
     {
         $uri = $request->getPath();
         $uri = substr($uri, 8); // Remove "/_asset/"
@@ -422,27 +420,15 @@ class Handler implements HandlerInterface
             return new RawResult(200, (string)$asset->getContent(), (string )$asset->getContentType());
         }
 
-        return new HandlerResult(404, sprintf('No resource found for "%s"', $uri));
+        return new NotFoundResult(sprintf('No resource found for "%s"', $uri), 1502448059);
     }
 
-    /**
-     * Action to display all databases
-     *
-     * @param RequestInterface $request
-     * @return HandlerResultInterface
-     */
-    public function getAllDbsAction(RequestInterface $request)
+    public function getAllDbsAction(RequestInterface $request): HandlerResultInterface
     {
         return new HandlerResult(200, $this->coordinator->listDatabases());
     }
 
-    /**
-     * Returns the count of the result set
-     *
-     * @param RequestInterface $request
-     * @return HandlerResultInterface
-     */
-    public function getCountAction(RequestInterface $request)
+    public function getCountAction(RequestInterface $request): HandlerResultInterface
     {
         $count = null;
         $readResult = $this->read($request);

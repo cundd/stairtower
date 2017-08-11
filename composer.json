@@ -8,7 +8,7 @@
         "doctrine/cache": "^1.7.0",
         "monolog/monolog": "^1.23",
         "php-di/php-di": "^5.4.0",
-        "react/react": "~0.4.2",
+        "react/http": "^0.7.2",
         "symfony/console": "^3.3.6",
         "symfony/process": "^3.3.6"
     },
@@ -36,7 +36,6 @@
         "bin/console",
         "bin/server"
     ],
-
     "suggest": {
         "twig/twig": "Provides the standard view implementation for the application framework"
     }

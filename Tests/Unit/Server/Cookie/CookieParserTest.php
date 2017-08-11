@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace Cundd\Stairtower\Tests\Unit\Server\Cookie;
 
 use Cundd\Stairtower\Server\Cookie\CookieParserInterface;
-use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
+use Cundd\Stairtower\Tests\Unit\AbstractCase;
+use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 use stdClass;
 
 /**
@@ -23,16 +25,17 @@ class CookieParserTest extends AbstractCase
      */
     public function parseTest()
     {
-        /** @var RequestInterface|\PHPUnit_Framework_MockObject_MockObject $request */
-        $request = $this->getMockForAbstractClass(RequestInterface::class);
-        $request
-            ->expects($this->any())
-            ->method('getHeader')
-            ->will($this->returnValue('user=daniel; last-request=2015-04-02+21%3A04%3A12'));
+        /** @var RequestInterface|ObjectProphecy $requestProphecy */
+        $requestProphecy = $this->prophesize(RequestInterface::class);
+        /** @var string $stringArgument */
+        $stringArgument = Argument::type('string');
+        $requestProphecy->getHeader($stringArgument)->willReturn(['user=daniel; last-request=2015-04-02+21%3A04%3A12']);
+        /** @var RequestInterface $request */
+        $request = $requestProphecy->reveal();
 
         $cookies = $this->fixture->parse($request);
         $this->assertNotEmpty($cookies);
-        $this->arrayHasKey('user', $cookies);
+        $this->assertArrayHasKey('user', $cookies);
 
         $firstCookie = $cookies['user'];
         $this->assertEquals('user', $firstCookie->getName());

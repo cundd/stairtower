@@ -8,8 +8,9 @@ use Cundd\Stairtower\Immutable;
 use Cundd\Stairtower\Server\ContentType;
 use Cundd\Stairtower\Server\Cookie\Cookie;
 use Cundd\Stairtower\Utility\GeneralUtility;
-use React\Http\Request as BaseRequest;
-
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Object that holds information about a parsed request
@@ -40,7 +41,7 @@ class Request implements Immutable, RequestInterface
     /**
      * Original request
      *
-     * @var BaseRequest
+     * @var ServerRequestInterface
      */
     protected $originalRequest;
 
@@ -50,13 +51,6 @@ class Request implements Immutable, RequestInterface
      * @var mixed
      */
     protected $body;
-
-    /**
-     * Cookies sent by the client
-     *
-     * @var Cookie[]
-     */
-    protected $cookies;
 
     /**
      * The controller or special handler action
@@ -75,24 +69,22 @@ class Request implements Immutable, RequestInterface
     /**
      * Create a new Request object
      *
-     * @param BaseRequest $request
-     * @param string      $dataIdentifier
-     * @param string      $databaseIdentifier
-     * @param string      $method
-     * @param string      $action
-     * @param string      $controllerClass
-     * @param null        $body
-     * @param array       $cookies
+     * @param ServerRequestInterface     $request
+     * @param string                     $dataIdentifier
+     * @param string                     $databaseIdentifier
+     * @param string                     $method
+     * @param string                     $action
+     * @param string                     $controllerClass
+     * @param StreamInterface|mixed|null $body
      */
     public function __construct(
         $request,
-        $dataIdentifier,
-        $databaseIdentifier,
-        $method,
-        $action = null,
-        $controllerClass = null,
-        $body = null,
-        $cookies = []
+        string $dataIdentifier,
+        string $databaseIdentifier,
+        string $method,
+        string $action = '',
+        string $controllerClass = '',
+        $body = null
     ) {
         if ($method) {
             GeneralUtility::assertRequestMethod($method);
@@ -103,76 +95,53 @@ class Request implements Immutable, RequestInterface
         if ($databaseIdentifier) {
             GeneralUtility::assertDatabaseIdentifier($databaseIdentifier);
         }
+        $this->body = $body;
         $this->method = $method;
+        $this->action = $action;
         $this->dataIdentifier = $dataIdentifier;
-        $this->databaseIdentifier = $databaseIdentifier;
-        $this->action = $action ?: null;
         $this->originalRequest = $request;
-        $this->controllerClass = $controllerClass ?: null;
-        $this->body = $body ?: null;
-        $this->cookies = $cookies;
+        $this->controllerClass = $controllerClass;
+        $this->databaseIdentifier = $databaseIdentifier;
     }
 
-    /**
-     * Returns the request body
-     *
-     * @return mixed
-     */
     public function getBody()
     {
         return $this->body;
     }
 
-    /**
-     * Returns the identifier for the Document instance
-     *
-     * @return string
-     */
-    public function getDataIdentifier()
+    public function withBody($parsedBody): RequestInterface
+    {
+        $clone = clone $this;
+        $clone->body = $parsedBody;
+
+        return $clone;
+    }
+
+    public function getDataIdentifier(): string
     {
         return $this->dataIdentifier;
     }
 
-    /**
-     * Return the identifier for the database
-     *
-     * @return string
-     */
-    public function getDatabaseIdentifier()
+    public function getDatabaseIdentifier(): string
     {
         return $this->databaseIdentifier;
     }
 
-    /**
-     * Returns the request method
-     *
-     * @return string
-     */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->method;
     }
 
-    /**
-     * Returns the controller or special handler action
-     *
-     * @return string
-     */
-    public function getAction()
+    public function getAction(): string
     {
         return $this->action;
     }
 
-    /**
-     * Returns the name part of the action
-     *
-     * @return string
-     */
-    public function getActionName()
+    public function getActionName(): string
     {
         $action = $this->getAction();
         if (!$action) {
-            return null;
+            return '';
         }
         $actionPrefix = substr($action, 0, 3);
         $nameOffset = 0;
@@ -194,54 +163,34 @@ class Request implements Immutable, RequestInterface
         return lcfirst(substr($action, $nameOffset, -6));
     }
 
-    /**
-     * Returns the special controller class name
-     *
-     * @return string
-     */
-    public function getControllerClass()
+    public function getControllerClass(): string
     {
         return $this->controllerClass;
     }
 
-    /**
-     * Returns if the request is a write request
-     *
-     * @return bool
-     */
-    public function isWriteRequest()
+    public function isWriteRequest(): bool
     {
         return !$this->isReadRequest();
     }
 
-    /**
-     * Returns if the request is a read request
-     *
-     * @return bool
-     */
-    public function isReadRequest()
+    public function isReadRequest(): bool
     {
         return $this->method === 'GET' || $this->method === 'HEAD';
     }
 
-    /**
-     * Returns the requested content type
-     *
-     * @return string
-     */
-    public function getContentType()
+    public function getContentType(): string
     {
         $request = $this->getOriginalRequest();
-        if (!$request instanceof BaseRequest) {
+        if (!$request instanceof ServerRequestInterface) {
             return ContentType::JSON_APPLICATION;
         }
-        $headers = $this->getHeaders();
-        $accept = '*/*';
-        if (isset($headers['Accept'])) {
-            $accept = $headers['Accept'];
+        $acceptValues = $request->getHeader('Accept');
+        $accept = reset($acceptValues);
+        if (!$accept) {
+            return ContentType::JSON_APPLICATION;
         }
-
         $acceptedTypes = explode(',', $accept);
+
         $sorting = [
             ContentType::JSON_APPLICATION => array_search('application/json', $acceptedTypes),
             ContentType::HTML_TEXT        => array_search('text/html', $acceptedTypes),
@@ -260,42 +209,34 @@ class Request implements Immutable, RequestInterface
         $sorting = array_flip($sorting);
         ksort($sorting);
 
-        return reset($sorting);
+        return (string)reset($sorting);
     }
 
-    /**
-     * Returns the header value for the given name
-     *
-     * @param string $name
-     * @return mixed
-     */
-    public function getHeader($name)
+    public function getHeader(string $name): array
     {
-        $allHeaders = $this->getHeaders();
-        if (isset($allHeaders[$name])) {
-            return $allHeaders[$name];
+        return $this->originalRequest->getHeader($name);
+    }
+
+    public function getCookies(): array
+    {
+        $parsedCookies = $this->originalRequest->getCookieParams();
+        $cookieObjects = [];
+        foreach ($parsedCookies as $cookieName => $cookieValue) {
+            $cookieObjects[$cookieName] = new Cookie(
+                $cookieName,
+                $cookieValue,
+                $parsedCookies['expires'],
+                (string)$parsedCookies['path'],
+                (string)$parsedCookies['domain'],
+                (bool)$parsedCookies['secure'],
+                (bool)($parsedCookies['http_only'] ?? false)
+            );
         }
 
-        return null;
+        return $cookieObjects;
     }
 
-    /**
-     * Returns the cookies
-     *
-     * @return Cookie[]
-     */
-    public function getCookies()
-    {
-        return $this->cookies;
-    }
-
-    /**
-     * Returns the cookie value for the given name
-     *
-     * @param string $name
-     * @return Cookie
-     */
-    public function getCookie($name)
+    public function getCookie(string $name):?Cookie
     {
         $allCookies = $this->getCookies();
         if (isset($allCookies[$name])) {
@@ -305,41 +246,26 @@ class Request implements Immutable, RequestInterface
         return null;
     }
 
-    /**
-     * Returns the path
-     *
-     * @return string
-     */
-    public function getPath()
+    public function getPath(): string
     {
-        return $this->originalRequest->getPath();
+        return $this->originalRequest->getUri()->getPath();
     }
 
-    /**
-     * Returns the query
-     *
-     * @return array
-     */
-    public function getQuery()
+    public function getUri(): UriInterface
     {
-        return $this->originalRequest->getQuery();
+        return $this->originalRequest->getUri();
     }
 
-    /**
-     * Returns the HTTP version
-     *
-     * @return string
-     */
-    public function getHttpVersion()
+    public function getQuery(): array
     {
-        return $this->originalRequest->getHttpVersion();
+        return $this->originalRequest->getQueryParams();
     }
 
-    /**
-     * Returns the headers
-     *
-     * @return array
-     */
+    public function getHttpVersion(): string
+    {
+        return $this->originalRequest->getProtocolVersion();
+    }
+
     public function getHeaders()
     {
         return $this->originalRequest->getHeaders();
@@ -348,28 +274,20 @@ class Request implements Immutable, RequestInterface
     /**
      * Returns the original request
      *
-     * @return BaseRequest
+     * @return ServerRequestInterface
      */
-    public function getOriginalRequest()
+    public function getOriginalRequest(): ServerRequestInterface
     {
         return $this->originalRequest;
-    }
-
-    /**
-     * Add a event listener
-     *
-     * @param string   $event
-     * @param callable $listener
-     */
-    public function on($event, callable $listener)
-    {
-        $this->originalRequest->on($event, $listener);
     }
 
     function __call($name, $arguments)
     {
         if (method_exists($this, $name)) {
-            throw new UndefinedMethodCallException(sprintf('Method %s is not accessible', $name), 1427730222);
+            throw new UndefinedMethodCallException(
+                sprintf('Method %s is not accessible', $name),
+                1427730222
+            );
         }
         if (!method_exists($this->originalRequest, $name)) {
             throw new UndefinedMethodCallException(
@@ -378,10 +296,6 @@ class Request implements Immutable, RequestInterface
             );
         }
 
-        if (count($arguments) > 0) {
-            return call_user_func_array([$this->originalRequest, $name], $arguments);
-        }
-
-        return $this->originalRequest->$name();
+        return $this->originalRequest->$name(...$arguments);
     }
 }

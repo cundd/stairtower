@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Cundd\Stairtower\Server\Controller;
 
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
-use React\Stream\WritableStreamInterface;
 
 /**
  * Interface for Controllers
@@ -63,12 +62,8 @@ interface ControllerInterface
      *
      * The result output is returned by altering the given response.
      *
-     * @param RequestInterface        $request
-     * @param WritableStreamInterface $response The response, modified by this handler
+     * @param RequestInterface $request
      * @return ControllerResultInterface Returns the result of the processing
      */
-    public function processRequest(
-        RequestInterface $request,
-        WritableStreamInterface $response
-    ): ControllerResultInterface;
+    public function processRequest(RequestInterface $request): ControllerResultInterface;
 }

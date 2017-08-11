@@ -4,70 +4,82 @@ declare(strict_types=1);
 namespace Cundd\Stairtower\Server\ValueObject;
 
 
+use Cundd\Stairtower\Server\Cookie\Cookie;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
+
 interface RequestInterface
 {
     /**
-     * Returns the request body
+     * Returns the parsed request body
      *
-     * @return mixed
+     * @return StreamInterface|mixed|null
      */
     public function getBody();
+
+    /**
+     * Returns a copy of the Request with the given prepared body
+     *
+     * @param $parsedBody
+     * @return RequestInterface
+     */
+    public function withBody($parsedBody): RequestInterface;
 
     /**
      * Returns the identifier for the Document instance
      *
      * @return string
      */
-    public function getDataIdentifier();
+    public function getDataIdentifier(): string;
 
     /**
      * Return the identifier for the database
      *
      * @return string
      */
-    public function getDatabaseIdentifier();
+    public function getDatabaseIdentifier(): string;
 
     /**
      * Returns the request method
      *
      * @return string
      */
-    public function getMethod();
+    public function getMethod(): string;
 
     /**
      * Returns the controller or special handler action
      *
      * @return string
      */
-    public function getAction();
+    public function getAction(): string;
 
     /**
      * Returns the name part of the action
      *
      * @return string
      */
-    public function getActionName();
+    public function getActionName(): string;
 
     /**
      * Returns the special controller class name
      *
      * @return string
      */
-    public function getControllerClass();
+    public function getControllerClass(): string;
 
     /**
      * Returns if the request is a write request
      *
      * @return bool
      */
-    public function isWriteRequest();
+    public function isWriteRequest(): bool;
 
     /**
      * Returns if the request is a read request
      *
      * @return bool
      */
-    public function isReadRequest();
+    public function isReadRequest(): bool;
 
     /**
      * Returns the headers
@@ -80,16 +92,16 @@ interface RequestInterface
      * Returns the header value for the given name
      *
      * @param string $name
-     * @return mixed
+     * @return array
      */
-    public function getHeader($name);
+    public function getHeader(string $name): array;
 
     /**
      * Returns the cookies
      *
-     * @return mixed
+     * @return Cookie[]
      */
-    public function getCookies();
+    public function getCookies(): array;
 
     /**
      * Returns the cookie value for the given name
@@ -97,34 +109,41 @@ interface RequestInterface
      * @param string $name
      * @return mixed
      */
-    public function getCookie($name);
+    public function getCookie(string $name): ?Cookie;
 
     /**
      * Returns the requested content type
      *
      * @return string
      */
-    public function getContentType();
+    public function getContentType(): string;
 
     /**
      * Returns the path
      *
      * @return string
      */
-    public function getPath();
+    public function getPath(): string;
 
     /**
-     * Returns the query
+     * Returns the query parameters
      *
      * @return array
      */
-    public function getQuery();
+    public function getQuery(): array;
 
     /**
      * Returns the HTTP version
      *
      * @return string
      */
-    public function getHttpVersion();
+    public function getHttpVersion(): string;
+
+    /**
+     * Returns the requested URI
+     *
+     * @return UriInterface
+     */
+    public function getUri(): UriInterface;
 
 }

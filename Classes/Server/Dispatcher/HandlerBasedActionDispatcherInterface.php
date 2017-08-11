@@ -17,5 +17,5 @@ interface HandlerBasedActionDispatcherInterface
      * @param RequestInterface $request
      * @return HandlerInterface
      */
-    public function getHandlerForRequest(RequestInterface $request);
+    public function getHandlerForRequest(RequestInterface $request): HandlerInterface;
 }

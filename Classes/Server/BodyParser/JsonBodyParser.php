@@ -32,7 +32,7 @@ class JsonBodyParser implements BodyParserInterface
             throw new InvalidBodyException(
                 sprintf(
                     'Could not parse body of request with path %s and method %s',
-                    $request->getPath(),
+                    $request->getUri()->getPath(),
                     $request->getMethod()
                 ), 1413214227, $exception
             );

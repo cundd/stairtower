@@ -7,7 +7,7 @@ use Cundd\Stairtower\Server\BodyParser\BodyParserInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use Cundd\Stairtower\Tests\Unit\AbstractCase;
 use Prophecy\Prophecy\ObjectProphecy;
-use React\Http\Request;
+use Psr\Http\Message\UriInterface;
 
 /**
  * JSON based body parser
@@ -65,7 +65,7 @@ class JsonBodyParserTest extends AbstractCase
      */
     public function parseEmptyBodyTest()
     {
-        /** @var Request $dummyRequest */
+        /** @var RequestInterface $dummyRequest */
         $dummyRequest = $this->buildDummyRequest();
         $this->assertNull($this->fixture->parse('', $dummyRequest));
     }
@@ -77,7 +77,15 @@ class JsonBodyParserTest extends AbstractCase
     {
         /** @var ObjectProphecy|RequestInterface $prophecy */
         $prophecy = $this->prophesize(RequestInterface::class);
-        $prophecy->getPath()->willReturn('/contacts/');
+        $path = '/contacts/';
+        $prophecy->getPath()->willReturn($path);
+
+        /** @var ObjectProphecy|UriInterface $uri */
+        $uri = $this->prophesize(UriInterface::class);
+        $uri->getPath()->willReturn($path);
+
+        $prophecy->getUri()->willReturn($uri->reveal());
+
         $prophecy->getMethod()->willReturn('GET');
         /** @var RequestInterface $dummyRequest */
         $dummyRequest = $prophecy->reveal();

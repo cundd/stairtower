@@ -4,16 +4,9 @@ declare(strict_types=1);
 namespace Cundd\Stairtower\Server;
 
 
-use Cundd\Stairtower\Formatter\FormatterInterface;
-use Cundd\Stairtower\Server\BodyParser\BodyParserInterface;
-use Cundd\Stairtower\Server\Exception\InvalidEventLoopException;
-use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
-use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use Cundd\Stairtower\Server\ValueObject\Statistics;
 use DateTimeInterface;
-use Exception;
 use React\EventLoop\LoopInterface;
-use React\Stream\WritableStreamInterface;
 
 /**
  * Interface for server implementations
@@ -39,39 +32,27 @@ interface ServerInterface
      */
     const SERVER_MODE_DEVELOPMENT = 2;
 
-    /**
-     * Handle the given request
-     *
-     * @param RequestInterface        $request
-     * @param WritableStreamInterface $response
-     */
-    public function handle(RequestInterface $request, WritableStreamInterface $response): void;
+//    /**
+//     * Handle the given request
+//     *
+//     * @param RequestInterface  $request
+//     * @param ResponseInterface $response
+//     */
+//    public function handle(RequestInterface $request, ResponseInterface $response): void;
 
-    /**
-     * Handle the given request result
-     *
-     * @param HandlerResultInterface  $result
-     * @param RequestInterface        $request
-     * @param WritableStreamInterface $response
-     */
-    public function handleResult(
-        HandlerResultInterface $result,
-        RequestInterface $request,
-        WritableStreamInterface $response
-    ): void;
+//    /**
+//     * Handle the given request result
+//     *
+//     * @param HandlerResultInterface $result
+//     * @param RequestInterface       $request
+//     * @param ResponseInterface      $response
+//     */
+//    public function handleResult(
+//        HandlerResultInterface $result,
+//        RequestInterface $request,
+//        ResponseInterface $response
+//    ): void;
 
-    /**
-     * Handles the given exception
-     *
-     * @param Exception               $error
-     * @param RequestInterface        $request
-     * @param WritableStreamInterface $response
-     */
-    public function handleError(
-        Exception $error,
-        RequestInterface $request,
-        WritableStreamInterface $response
-    ): void;
 
     /**
      * Starts the request loop
@@ -105,9 +86,9 @@ interface ServerInterface
     /**
      * Returns the servers start time
      *
-     * @return DateTimeInterface
+     * @return DateTimeInterface|null
      */
-    public function getStartTime(): DateTimeInterface;
+    public function getStartTime(): ?DateTimeInterface;
 
     /**
      * Returns if the server is running
@@ -119,43 +100,41 @@ interface ServerInterface
     /**
      * Collects and returns the current server statistics
      *
-     * @param bool $detailed If detailed is TRUE more data will be collected and an array will be returned
-     * @return array|Statistics
+     * @return Statistics
      */
-    public function collectStatistics(bool $detailed = false);
+    public function collectStatistics(): Statistics;
 
-    /**
-     * Returns the formatter for the given request
-     *
-     * @param RequestInterface $request
-     * @return FormatterInterface
-     */
-    public function getFormatterForRequest(RequestInterface $request): FormatterInterface;
+//    /**
+//     * Returns the formatter for the given request
+//     *
+//     * @param RequestInterface $request
+//     * @return FormatterInterface
+//     */
+//    public function getFormatterForRequest(RequestInterface $request): FormatterInterface;
 
-    /**
-     * Returns the requested content type
-     *
-     * @param RequestInterface $request
-     * @return string
-     */
-    public function getContentTypeForRequest(RequestInterface $request): string;
+//    /**
+//     * Returns the requested content type
+//     *
+//     * @param RequestInterface $request
+//     * @return string
+//     */
+//    public function getContentTypeForRequest(RequestInterface $request): string;
 
-    /**
-     * Returns the body parser for the given request
-     *
-     * @param RequestInterface $request
-     * @return BodyParserInterface
-     */
-    public function getBodyParserForRequest(RequestInterface $request): BodyParserInterface;
-
+//    /**
+//     * Returns the body parser for the given request
+//     *
+//     * @param RequestInterface $request
+//     * @return BodyParserInterface
+//     */
+//    public function getBodyParserForRequest(RequestInterface $request): BodyParserInterface;
 
     /**
      * Sets the IP to listen on
      *
      * @param string $ip
-     * @return $this
+     * @return ServerInterface
      */
-    public function setIp($ip);
+    public function setIp(string $ip): ServerInterface;
 
     /**
      * Returns the IP to listen on
@@ -168,9 +147,9 @@ interface ServerInterface
      * Sets the port number to listen on
      *
      * @param int $port
-     * @return $this
+     * @return ServerInterface
      */
-    public function setPort(int $port);
+    public function setPort(int $port): ServerInterface;
 
     /**
      * Returns the port number to listen on
@@ -182,10 +161,9 @@ interface ServerInterface
     /**
      * Returns the event loop instance
      *
-     * @throws InvalidEventLoopException if the event loop is not set
-     * @return \React\EventLoop\LoopInterface
+     * @return LoopInterface if the event loop is not set
      */
-    public function getEventLoop();
+    public function getEventLoop(): LoopInterface;
 
     /**
      * Sets the event loop
