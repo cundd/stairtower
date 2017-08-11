@@ -412,6 +412,14 @@ abstract class AbstractAcceptanceCase extends TestCase
     }
 
     /**
+     * @return Process
+     */
+    public function getProcess(): Process
+    {
+        return $this->process;
+    }
+
+    /**
      * @return int
      */
     protected function getPortForTestServer()
@@ -441,5 +449,29 @@ abstract class AbstractAcceptanceCase extends TestCase
     protected function getProcessBuilder(): ProcessBuilder
     {
         return new ProcessBuilder();
+    }
+
+    /**
+     * Number of seconds to wait before sending the first request after the server script has been started
+     *
+     * @return float
+     */
+    protected function getServerStartupWaitTime(): float
+    {
+        $envValue = getenv('STAIRTOWER_TEST_SERVER_STARTUP_WAIT_TIME');
+
+        return $envValue !== false ? (float)$envValue : 0.1;
+    }
+
+    /**
+     * Number of seconds to wait after checking if the server is stopped
+     *
+     * @return float
+     */
+    protected function getServerShutdownWaitTime(): float
+    {
+        $envValue = getenv('STAIRTOWER_TEST_SERVER_SHUTDOWN_WAIT_TIME');
+
+        return $envValue !== false ? (float)$envValue : 2.0;
     }
 }

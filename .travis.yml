@@ -30,4 +30,7 @@ before_script:
 
 
 script:
-  phpunit -c phpunit.xml
+  - >
+    export STAIRTOWER_TEST_SERVER_STARTUP_WAIT_TIME=2;
+    export STAIRTOWER_TEST_SERVER_SHUTDOWN_WAIT_TIME=4;
+    phpunit -c phpunit.xml

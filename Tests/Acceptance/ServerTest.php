@@ -42,7 +42,7 @@ class ServerTest extends AbstractAcceptanceCase
         $process->start();
 
         // Wait for the server to boot
-        usleep(100 * 1000);
+        usleep((int)floor($this->getServerStartupWaitTime() * 1000 * 1000));
 
         return $process;
     }
@@ -53,11 +53,12 @@ class ServerTest extends AbstractAcceptanceCase
     public function fullServerTest()
     {
         parent::fullServerTest();
+        usleep((int)floor($this->getServerShutdownWaitTime() * 1000 * 1000));
 
+        $this->assertFalse($this->getProcess()->isRunning());
         $httpClient = new HttpRequestClient($this->getUriForTestServer());
 
         // The server should not send the welcome message
-        usleep(1000 * 1000);
         $response = $httpClient->performRestRequest('');
         $this->assertFalse($response->isSuccess());
         $this->assertSame('', $response->getBody());

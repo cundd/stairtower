@@ -31,7 +31,7 @@ class RouterTest extends AbstractAcceptanceCase
         $process->start();
 
         // Wait for the server to boot
-        usleep(100 * 1000);
+        usleep((int)floor($this->getServerStartupWaitTime() * 1000 * 1000));
 
         return $process;
     }
