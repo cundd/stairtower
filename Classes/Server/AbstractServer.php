@@ -176,6 +176,11 @@ abstract class AbstractServer implements ServerInterface
         );
     }
 
+    public function getUri(): string
+    {
+        return $this->getIp() . ':' . $this->getPort();
+    }
+
     public function getIp(): string
     {
         return $this->ip;

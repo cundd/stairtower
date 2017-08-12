@@ -137,6 +137,13 @@ interface ServerInterface
     public function setIp(string $ip): ServerInterface;
 
     /**
+     * Returns the URI to listen on
+     *
+     * @return string
+     */
+    public function getUri(): string;
+
+    /**
      * Returns the IP to listen on
      *
      * @return string
