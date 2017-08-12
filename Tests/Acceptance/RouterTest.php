@@ -13,7 +13,7 @@ class RouterTest extends AbstractAcceptanceCase
 {
     protected $numberOfDocumentsToCreate = 10;
 
-    protected function startServer(int $autoShutdownTime = 7): Process
+    protected function configureServerProcess(int $autoShutdownTime = 7): Process
     {
         $configurationManager = ConfigurationManager::getSharedInstance();
         $routerPath = $configurationManager->getBinPath() . 'router.php';
@@ -21,18 +21,12 @@ class RouterTest extends AbstractAcceptanceCase
         $documentRoot = $configurationManager->getBasePath();
 
         $arguments = ['-S', $this->getUriForTestServer(), $routerPath];
-        $process = $this->getProcessBuilder()
+
+        return $this->getProcessBuilder()
             ->setPrefix(['exec', $phpBinPath])
             ->setArguments($arguments)
             ->setTimeout($autoShutdownTime + 1)
             ->setWorkingDirectory($documentRoot)
             ->getProcess();
-
-        $process->start();
-
-        // Wait for the server to boot
-        usleep((int)floor($this->getServerStartupWaitTime() * 1000 * 1000));
-
-        return $process;
     }
 }

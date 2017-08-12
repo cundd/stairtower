@@ -19,7 +19,7 @@ class ServerTest extends AbstractAcceptanceCase
      */
     protected $numberOfDocumentsToCreate = 1000;
 
-    protected function startServer(int $autoShutdownTime = 7): Process
+    protected function configureServerProcess(int $autoShutdownTime = 7): Process
     {
         $configurationManager = ConfigurationManager::getSharedInstance();
         $serverBinPath = $configurationManager->getBinPath() . 'server';
@@ -32,19 +32,12 @@ class ServerTest extends AbstractAcceptanceCase
             $arguments[] = '--test=' . (int)$autoShutdownTime; // Run the server in test mode
         }
 
-        $process = $this->getProcessBuilder()
+        return $this->getProcessBuilder()
             ->setPrefix(['exec', $phpBinPath, $serverBinPath])
             ->setArguments($arguments)
             ->setTimeout($autoShutdownTime + 1)
             ->setWorkingDirectory($documentRoot)
             ->getProcess();
-
-        $process->start();
-
-        // Wait for the server to boot
-        usleep((int)floor($this->getServerStartupWaitTime() * 1000 * 1000));
-
-        return $process;
     }
 
     /**
@@ -59,8 +52,12 @@ class ServerTest extends AbstractAcceptanceCase
         $httpClient = new HttpRequestClient($this->getUriForTestServer());
 
         // The server should not send the welcome message
+        $this->debug('The server should not send the welcome message');
         $response = $httpClient->performRestRequest('');
-        $this->assertFalse($response->isSuccess());
+        $this->assertFalse(
+            $response->isSuccess(),
+            sprintf('Server should not have sent a response (HTTP response "%s"', $response->getBody())
+        );
         $this->assertSame('', $response->getBody());
         $this->assertSame(
             sprintf(

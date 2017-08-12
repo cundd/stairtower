@@ -9,6 +9,7 @@ use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\Tests\HttpRequestClient;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
 
@@ -41,10 +42,42 @@ abstract class AbstractAcceptanceCase extends TestCase
     private $process;
 
     /**
+     * Configure and return the server process
+     *
+     * The method MUST NOT start the process
+     *
      * @param int $autoShutdownTime
      * @return Process
      */
-    abstract protected function startServer(int $autoShutdownTime = 7): Process;
+    abstract protected function configureServerProcess(int $autoShutdownTime = 7): Process;
+
+    /**
+     * Start the server process
+     *
+     * @param int $autoShutdownTime
+     */
+    protected function startServer(int $autoShutdownTime = 7): void
+    {
+        $process = $this->configureServerProcess($autoShutdownTime);
+        $process->start();
+
+        // Wait for the server to boot
+        usleep((int)floor($this->getServerStartupWaitTime() * 1000 * 1000));
+
+        if (!$process->isRunning()) {
+            if (false === strpos($process->getErrorOutput(), 'Address already in use')) {
+                throw new ProcessFailedException($process);
+            }
+
+            fwrite(
+                STDERR,
+                '[WARNING] Could not start the process because the address is already in use. '
+                . 'Will continue with the running server' . PHP_EOL
+            );
+        }
+
+        $this->process = $process;
+    }
 
     protected function setUp()
     {
@@ -75,7 +108,7 @@ abstract class AbstractAcceptanceCase extends TestCase
      */
     public function fullServerTest()
     {
-        // fwrite(STDOUT, 'Test database: ' . $this->databaseIdentifier . PHP_EOL);
+        $this->debug('Test database: %s', $this->databaseIdentifier);
         $httpClient = new HttpRequestClient($this->getUriForTestServer());
 
         $databaseIdentifier = $this->databaseIdentifier;
@@ -101,9 +134,10 @@ abstract class AbstractAcceptanceCase extends TestCase
             'os'                   => 'CunddOS',
         ];
 
-        $this->process = $this->startServer();
+        $this->startServer();
 
         // Get the welcome message
+        $this->debug('Get the welcome message');
         $response = $httpClient->performRestRequest('');
         $this->assertTrue($response->isSuccess(), 'Could not get the welcome message');
         $this->assertArrayHasKey('message', $response);
@@ -111,6 +145,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // Get the stats
+        $this->debug('Get the stats');
         $response = $httpClient->performRestRequest('_stats');
         $this->assertTrue($response->isSuccess(), 'Could not get the stats');
         $this->assertArrayHasKey('version', $response, 'Could not get the stats');
@@ -118,6 +153,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // Create a database
+        $this->debug('Create a database');
         $response = $httpClient->performRestRequest($databaseIdentifier, 'PUT');
         $this->assertTrue($response->isSuccess(), 'Could not create the Database');
         $this->assertArrayHasKey('message', $response);
@@ -125,17 +161,20 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // List all Databases
+        $this->debug('List all Databases');
         $response = $httpClient->performRestRequest('_all_dbs');
         $this->assertTrue($response->isSuccess(), 'Could not list all Databases');
         $this->assertTrue(in_array($this->databaseIdentifier, $response->getParsedBody()));
 
 
         // List Documents in that database
+        $this->debug('List Documents in that database');
         $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertEmpty($response->getParsedBody(), 'Database should be empty');
 
 
         // Add a Document
+        $this->debug('Add a Document');
         $response = $httpClient->performRestRequest($databaseIdentifier, 'POST', $testDocument1);
         $this->assertTrue($response->isSuccess());
         $this->assertEquals(
@@ -152,6 +191,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // List Documents in that database
+        $this->debug('List Documents in that database');
         $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertInternalType('array', $response->getParsedBody(), 'Could not list the Documents');
         $this->assertNotEmpty(
@@ -165,6 +205,7 @@ abstract class AbstractAcceptanceCase extends TestCase
         $this->assertEquals($testDocument1['os'], $responseFirstDocument['os']);
 
         // Add another Document
+        $this->debug('Add another Document');
         $response = $httpClient->performRestRequest($databaseIdentifier, 'POST', $testDocument2);
         $this->assertTrue($response->isSuccess(), 'Could not add another Document');
         $this->assertEquals($testDocument2[Constants::DATA_ID_KEY], $response[Constants::DATA_ID_KEY]);
@@ -174,6 +215,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // List Documents in that database
+        $this->debug('List Documents in that database');
         $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertNotEmpty($response, 'Database does not contain any Documents');
         $this->assertEquals($testDocument1[Constants::DATA_ID_KEY], $response[0][Constants::DATA_ID_KEY]);
@@ -188,12 +230,14 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // Count Documents in that database
+        $this->debug('Count Documents in that database');
         $response = $httpClient->performRestRequest($databaseIdentifier . '/_count');
         $this->assertNotEmpty($response, 'Could not count the Documents in the Database');
         $this->assertEquals(2, $response['count']);
 
 
         // Update a Document
+        $this->debug('Update a Document');
         $testDocument1['os'] = 'Cundbuntu';
         $response = $httpClient->performRestRequest(
             $databaseIdentifier . '/' . $documentIdentifier1,
@@ -211,6 +255,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // List Documents in that database
+        $this->debug('List Documents in that database');
         $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertNotEmpty($response);
         $responseFirstDocument = $response[0];
@@ -225,6 +270,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // Find a Document
+        $this->debug('Find a Document');
         $response = $httpClient->performRestRequest($databaseIdentifier . '/?os=' . $testDocument1['os']);
         $this->assertNotEmpty($response);
         $responseFirstDocument = $response[0];
@@ -239,6 +285,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // Delete a Document
+        $this->debug('Delete a Document');
         $response = $httpClient->performRestRequest(
             $databaseIdentifier . '/' . $documentIdentifier1,
             'DELETE',
@@ -253,6 +300,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // List Documents in that database
+        $this->debug('List Documents in that database');
         $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertNotEmpty($response, 'Database does not contain any Documents');
         $this->assertEquals($testDocument2[Constants::DATA_ID_KEY], $response[0][Constants::DATA_ID_KEY]);
@@ -262,6 +310,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // Delete a Document
+        $this->debug('Delete a Document');
         $response = $httpClient->performRestRequest(
             $databaseIdentifier . '/' . $documentIdentifier2,
             'DELETE',
@@ -273,6 +322,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // Delete a Document again should fail
+        $this->debug('Delete a Document again should fail');
         $response = $httpClient->performRestRequest(
             $databaseIdentifier . '/' . $documentIdentifier2,
             'DELETE',
@@ -296,11 +346,13 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // List Documents in that database
+        $this->debug('List Documents in that database');
         $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertEmpty($response->getParsedBody());
 
 
         // Delete the database
+        $this->debug('Delete the database');
         $response = $httpClient->performRestRequest($databaseIdentifier, 'DELETE');
         $this->assertTrue($response->isSuccess(), 'Could not delete the Database');
         $this->assertArrayHasKey('message', $response, 'Could not delete the Database');
@@ -308,6 +360,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // The database should not exist anymore
+        $this->debug('The database should not exist anymore');
         $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertFalse($response->isSuccess());
         $this->assertSame(
@@ -320,6 +373,7 @@ abstract class AbstractAcceptanceCase extends TestCase
 
 
         // Shutdown the server
+        $this->debug('Shutdown the server');
         $response = $httpClient->performRestRequest('_shutdown', 'POST');
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals('Server is going to shut down', $response['message']);
@@ -333,7 +387,7 @@ abstract class AbstractAcceptanceCase extends TestCase
         //fwrite(STDOUT, 'Test database: ' . $this->databaseIdentifier . PHP_EOL);
         $databaseIdentifier = $this->databaseIdentifier;
 
-        $this->process = $this->startServer(40);
+        $this->startServer(40);
 
         $httpClient = new HttpRequestClient($this->getUriForTestServer());
 
@@ -363,6 +417,7 @@ abstract class AbstractAcceptanceCase extends TestCase
                 'os'   => 'CunddOS',
             ];
 
+            $this->debug('Create document #%d in database %s', $i, $databaseIdentifier);
             $response = $httpClient->performRestRequest($databaseIdentifier, 'POST', $testDocument);
             $this->assertTrue(
                 $response->isSuccess(),
@@ -473,5 +528,29 @@ abstract class AbstractAcceptanceCase extends TestCase
         $envValue = getenv('STAIRTOWER_TEST_SERVER_SHUTDOWN_WAIT_TIME');
 
         return $envValue !== false ? (float)$envValue : 2.0;
+    }
+
+    /**
+     * Returns if the tests should be run in debug mode
+     *
+     * @return bool
+     */
+    protected function getDebugMode(): bool
+    {
+        return (bool)getenv('STAIRTOWER_TEST_DEBUG_MODE');
+    }
+
+    /**
+     * @param string $message
+     * @param array  ...$arguments
+     * @return AbstractAcceptanceCase
+     */
+    protected function debug(string $message, ...$arguments): AbstractAcceptanceCase
+    {
+        if ($this->getDebugMode()) {
+            fwrite(STDOUT, '[DEBUG] ' . vsprintf($message, $arguments) . PHP_EOL);
+        }
+
+        return $this;
     }
 }
