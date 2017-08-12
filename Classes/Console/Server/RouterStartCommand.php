@@ -5,6 +5,8 @@ namespace Cundd\Stairtower\Console\Server;
 
 use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\Console\Exception\InvalidArgumentsException;
+use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Server\OutputWriterTrait;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,6 +16,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class RouterStartCommand extends AbstractServerCommand
 {
+    use OutputWriterTrait;
+
     /**
      * Configure the command
      */
@@ -76,6 +80,9 @@ class RouterStartCommand extends AbstractServerCommand
             ->setWorkingDirectory($documentRoot)
             ->addEnvironmentVariables($environmentVariables)
             ->getProcess();
+
+        $this->writeln(Constants::MESSAGE_CLI_WELCOME . PHP_EOL);
+        $this->writeln('Start listening on %s:%s', $this->getServerIp($input), $this->getServerPort($input));
 
         $this->startProcessAndWatch($process, $output);
     }
