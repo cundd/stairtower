@@ -45,59 +45,30 @@ class RouterStartCommand extends AbstractServerCommand
         set_time_limit(0);
 
         $configurationManager = ConfigurationManager::getSharedInstance();
-        $phpBinPath = $configurationManager->getConfigurationForKeyPath('phpBinPath');
+        $phpBinPath = $configurationManager->getPhpBinaryPath();
+        $routerPath = $configurationManager->getBinPath() . 'router.php';
 
 
         // Prepare the environment variables
         $environmentVariables = [];
-        if ($input->hasArgument('data-path') && $input->getArgument('data-path')) {
-            $dataPath = $input->getArgument('data-path');
-            if ($dataPath === filter_var($dataPath, FILTER_SANITIZE_STRING)) {
-                $environmentVariables['STAIRTOWER_SERVER_DATA_PATH'] = $dataPath;
-            } else {
-                throw new InvalidArgumentsException('Invalid input for argument "data-path"', 1420812210);
-            }
+
+        $dataPath = $this->getDataPath($input);
+        if ($dataPath) {
+            $environmentVariables['STAIRTOWER_SERVER_DATA_PATH'] = $dataPath;
         }
+
         if ($input->getOption('dev')) {
             $environmentVariables['STAIRTOWER_SERVER_MODE'] = 'dev';
             $this->setDevMode(true);
         }
 
+        $documentRoot = $this->getDocumentRoot($input);
 
-        // Prepare the document root
-        if ($input->hasArgument('document-root') && $input->getArgument('document-root')) {
-            $documentRoot = $input->getArgument('document-root');
-            if ($documentRoot !== filter_var($documentRoot, FILTER_SANITIZE_STRING)) {
-                throw new InvalidArgumentsException('Invalid input for argument "document-root"', 1420812213);
-            }
-        } else {
-            $documentRoot = $configurationManager->getConfigurationForKeyPath('basePath');
-        }
-
-
-        // Prepare the arguments
-        $address = '127.0.0.1';
-        if ($input->hasArgument('ip') && $input->getArgument('ip')) {
-            $ip = $input->getArgument('ip');
-            if ($ip === filter_var($ip, FILTER_VALIDATE_URL) || $ip === filter_var($ip, FILTER_VALIDATE_IP)) {
-                $address = $ip;
-            } else {
-                throw new InvalidArgumentsException('Invalid input for argument "ip"', 1420812211);
-            }
-        }
-        if ($input->hasArgument('port') && $input->getArgument('port')) {
-            $port = $input->getArgument('port');
-            if (is_numeric($port) && ctype_alnum($port)) {
-                $address .= ':' . $port;
-            } else {
-                throw new InvalidArgumentsException('Invalid input for argument "port"', 1420812212);
-            }
-        } else {
-            $address .= ':1338';
-        }
-
-        $routerPath = $configurationManager->getBinPath() . 'router.php';
-        $arguments = ['-S', $address, $routerPath];
+        $arguments = [
+            '-S',
+            $this->getServerUri($input),
+            $routerPath,
+        ];
         $process = $this->processBuilder
             ->setPrefix(['exec', $phpBinPath])
             ->setArguments($arguments)
@@ -107,5 +78,34 @@ class RouterStartCommand extends AbstractServerCommand
             ->getProcess();
 
         $this->startProcessAndWatch($process, $output);
+    }
+
+    /**
+     * @param InputInterface $input
+     * @return string
+     */
+    protected function getServerUri(InputInterface $input)
+    {
+        return $this->getServerIp($input) . ':' . $this->getServerPort($input);
+    }
+
+    /**
+     * Return the document root
+     *
+     * @param InputInterface $input
+     * @return string
+     */
+    private function getDocumentRoot(InputInterface $input): string
+    {
+        if ($input->hasArgument('document-root') && $input->getArgument('document-root')) {
+            $documentRoot = $input->getArgument('document-root');
+            if ($documentRoot === filter_var($documentRoot, FILTER_SANITIZE_STRING)) {
+                return $documentRoot;
+            }
+
+            throw new InvalidArgumentsException('Invalid input for argument "document-root"', 1420812213);
+        }
+
+        return ConfigurationManager::getSharedInstance()->getBasePath();
     }
 }

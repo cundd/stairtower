@@ -67,14 +67,14 @@ abstract class AbstractServer implements ServerInterface
      *
      * @var int
      */
-    private $port = 1338;
+    private $port = Constants::SERVER_DEFAULT_PORT;
 
     /**
      * IP to listen on
      *
      * @var string
      */
-    private $ip = '127.0.0.1';
+    private $ip = Constants::SERVER_DEFAULT_IP;
 
     /**
      * Event loop
@@ -272,7 +272,6 @@ abstract class AbstractServer implements ServerInterface
      */
     public function start()
     {
-        var_dump('start', spl_object_hash($this));
         $this->prepareEventLoop();
         $this->setupServer();
         $this->startTime = new DateTimeImmutable();

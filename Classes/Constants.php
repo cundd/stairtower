@@ -90,4 +90,14 @@ WELCOME;
      * Environment variable name for the server data path
      */
     const ENVIRONMENT_KEY_SERVER_DATA_PATH = 'STAIRTOWER_SERVER_DATA_PATH';
+
+    /**
+     * Default server IP address
+     */
+    const SERVER_DEFAULT_IP = '127.0.0.1';
+
+    /**
+     * Default server port
+     */
+    const SERVER_DEFAULT_PORT = 1338;
 }

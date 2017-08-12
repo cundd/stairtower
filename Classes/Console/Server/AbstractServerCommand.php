@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Console\Server;
 
+use Cundd\Stairtower\Console\Exception\InvalidArgumentsException;
+use Cundd\Stairtower\Constants;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
@@ -119,5 +122,72 @@ abstract class AbstractServerCommand extends Command
     protected function setDevMode($devMode)
     {
         $this->devMode = !!$devMode;
+    }
+
+    /**
+     * Returns the server port to listen
+     *
+     * If the argument "port" exists if will be read, otherwise the default port is used
+     *
+     * @param InputInterface $input
+     * @return int
+     * @throws InvalidArgumentsException if the given port is not an integer
+     */
+    protected function getServerPort(InputInterface $input): int
+    {
+        if ($input->hasArgument('port') && $input->getArgument('port')) {
+            $port = $input->getArgument('port');
+            if (is_numeric($port) && ctype_alnum($port)) {
+                return (int)$port;
+            } else {
+                throw new InvalidArgumentsException('Invalid input for argument "port"', 1420812212);
+            }
+        }
+
+        return Constants::SERVER_DEFAULT_PORT;
+    }
+
+    /**
+     * Returns the server IP to listen
+     *
+     * If the argument "ip" exists if will be read, otherwise the default IP is used
+     *
+     * @param InputInterface $input
+     * @return string
+     * @throws InvalidArgumentsException if the given IP is neither a valid URL nor a IP
+     */
+    protected function getServerIp(InputInterface $input): string
+    {
+        if ($input->hasArgument('ip') && $input->getArgument('ip')) {
+            $ip = $input->getArgument('ip');
+            if ($ip === filter_var($ip, FILTER_VALIDATE_URL) || $ip === filter_var($ip, FILTER_VALIDATE_IP)) {
+                return $ip;
+            }
+
+            throw new InvalidArgumentsException('Invalid input for argument "ip"', 1420812211);
+        }
+
+        return Constants::SERVER_DEFAULT_IP;
+    }
+
+    /**
+     * Returns the value of the "data-path" argument, or null if it is not given
+     *
+     * @param InputInterface $input
+     * @return string|null
+     * @throws InvalidArgumentsException if the given path is not a valid string
+     */
+    protected function getDataPath(InputInterface $input): ?string
+    {
+        if ($input->hasArgument('data-path') && $input->getArgument('data-path')) {
+            $dataPath = $input->getArgument('data-path');
+            if ($dataPath === filter_var($dataPath, FILTER_SANITIZE_STRING)) {
+                return $dataPath;
+            }
+
+            throw new InvalidArgumentsException('Invalid input for argument "data-path"', 1420812210);
+        }
+
+        return null;
     }
 }

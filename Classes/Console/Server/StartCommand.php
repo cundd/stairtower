@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Cundd\Stairtower\Console\Server;
 
 use Cundd\Stairtower\Configuration\ConfigurationManager;
-use Cundd\Stairtower\Console\Exception\InvalidArgumentsException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -38,35 +37,22 @@ class StartCommand extends AbstractServerCommand
         set_time_limit(0);
 
         $configurationManager = ConfigurationManager::getSharedInstance();
-        $serverBinPath = $configurationManager->getConfigurationForKeyPath('binPath') . 'server';
-        $phpBinPath = $configurationManager->getConfigurationForKeyPath('phpBinPath');
+        $phpBinPath = $configurationManager->getPhpBinaryPath();
+        $serverBinPath = $configurationManager->getBinPath() . 'server';
+
 
         // Prepare the arguments
         $arguments = [];
-        if ($input->hasArgument('data-path') && $input->getArgument('data-path')) {
-            $dataPath = $input->getArgument('data-path');
-            if ($dataPath === filter_var($dataPath, FILTER_SANITIZE_STRING)) {
-                $arguments[] = '--data-path=' . $dataPath;
-            } else {
-                throw new InvalidArgumentsException('Invalid input for argument "data-path"', 1420812210);
-            }
+
+        $dataPath = $this->getDataPath($input);
+        if ($dataPath) {
+            $arguments[] = '--data-path=' . $dataPath;
         }
-        if ($input->hasArgument('ip') && $input->getArgument('ip')) {
-            $ip = $input->getArgument('ip');
-            if ($ip === filter_var($ip, FILTER_VALIDATE_URL) || $ip === filter_var($ip, FILTER_VALIDATE_IP)) {
-                $arguments[] = '--ip=' . $ip;
-            } else {
-                throw new InvalidArgumentsException('Invalid input for argument "ip"', 1420812211);
-            }
-        }
-        if ($input->hasArgument('port') && $input->getArgument('port')) {
-            $port = $input->getArgument('port');
-            if (is_numeric($port) && ctype_alnum($port)) {
-                $arguments[] = '--port=' . $port;
-            } else {
-                throw new InvalidArgumentsException('Invalid input for argument "port"', 1420812212);
-            }
-        }
+
+        $arguments[] = '--ip=' . (string)$this->getServerIp($input);
+        $arguments[] = '--port=' . (int)$this->getServerPort($input);
+
+
         if ($input->getOption('dev')) {
             $arguments[] = '--dev';
             $this->setDevMode(true);
