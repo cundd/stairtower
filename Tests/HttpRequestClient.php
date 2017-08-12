@@ -85,6 +85,8 @@ class HttpRequestClient
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 2);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $this->flattenHeaders($headers));
         if (null !== $content) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $content);

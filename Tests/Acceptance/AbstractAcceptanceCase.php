@@ -42,6 +42,13 @@ abstract class AbstractAcceptanceCase extends TestCase
     private $process;
 
     /**
+     * Defines if an external server process is used
+     *
+     * @var bool
+     */
+    private $useExternalServerProcess = false;
+
+    /**
      * Configure and return the server process
      *
      * The method MUST NOT start the process
@@ -74,6 +81,7 @@ abstract class AbstractAcceptanceCase extends TestCase
                 '[WARNING] Could not start the process because the address is already in use. '
                 . 'Will continue with the running server' . PHP_EOL
             );
+            $this->useExternalServerProcess = true;
         }
 
         $this->process = $process;
@@ -384,7 +392,7 @@ abstract class AbstractAcceptanceCase extends TestCase
      */
     public function performanceTest()
     {
-        //fwrite(STDOUT, 'Test database: ' . $this->databaseIdentifier . PHP_EOL);
+        $this->debug('Test database: %s', $this->databaseIdentifier);
         $databaseIdentifier = $this->databaseIdentifier;
 
         $this->startServer(40);
@@ -417,6 +425,7 @@ abstract class AbstractAcceptanceCase extends TestCase
                 'os'   => 'CunddOS',
             ];
 
+            $this->assertServerRunning();
             $this->debug('Create document #%d in database %s', $i, $databaseIdentifier);
             $response = $httpClient->performRestRequest($databaseIdentifier, 'POST', $testDocument);
             $this->assertTrue(
@@ -450,21 +459,25 @@ abstract class AbstractAcceptanceCase extends TestCase
         }
 
         // List Documents in that database
+        $this->debug('List Documents in that database');
         $response = $httpClient->performRestRequest($databaseIdentifier);
         $this->assertNotEmpty($response);
 
         // Delete the database
+        $this->debug('Delete the database');
         $response = $httpClient->performRestRequest($databaseIdentifier, 'DELETE');
         $this->assertTrue($response->isSuccess(), 'Could not delete Database ' . $databaseIdentifier);
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" deleted', $databaseIdentifier), $response['message']);
 
-        // Shutdown the server
-        $response = $httpClient->performRestRequest('_shutdown', 'POST');
-        $this->assertTrue($response->isSuccess());
-        $this->assertArrayHasKey('message', $response);
-        $this->assertEquals('Server is going to shut down', $response['message']);
+//        // Shutdown the server
+//        $this->debug('Shutdown the server');
+//        $response = $httpClient->performRestRequest('_shutdown', 'POST');
+//        $this->assertTrue($response->isSuccess());
+//        $this->assertArrayHasKey('message', $response);
+//        $this->assertEquals('Server is going to shut down', $response['message']);
     }
+
 
     /**
      * @return Process
@@ -552,5 +565,25 @@ abstract class AbstractAcceptanceCase extends TestCase
         }
 
         return $this;
+    }
+
+    /**
+     * Asserts that the server is running
+     */
+    protected function assertServerRunning(): void
+    {
+        if (false === $this->useExternalServerProcess) {
+            $this->assertTrue($this->process->isRunning(), 'Server process is not running anymore');
+        }
+    }
+
+    /**
+     * Asserts that the server is NOT running
+     */
+    protected function assertServerNotRunning(): void
+    {
+        if (false === $this->useExternalServerProcess) {
+            $this->assertFalse($this->process->isRunning(), 'Server process is still running');
+        }
     }
 }
