@@ -19,10 +19,9 @@ class DataInstanceSerializer extends JsonSerializer
      * Serialize the given data
      *
      * @param mixed $data
-     * @throws \Cundd\Stairtower\Serializer\Exception if the data could not be serialized
-     * @return string
+     * @return string if the data could not be serialized
      */
-    public function serialize($data)
+    public function serialize($data): string
     {
         if ($data instanceof DocumentInterface) {
             $objectData = $data->getData();
@@ -42,13 +41,12 @@ class DataInstanceSerializer extends JsonSerializer
     /**
      * Unserialize the given data
      *
-     * @param string $string
-     * @throws \Cundd\Stairtower\Serializer\Exception if the data could not be unserialized
-     * @return mixed
+     * @param string $input
+     * @return mixed if the data could not be unserialized
      */
-    public function unserialize($string)
+    public function unserialize(string $input)
     {
-        $data = parent::unserialize($string);
+        $data = parent::unserialize($input);
         if ($data === null) {
             return null;
         }

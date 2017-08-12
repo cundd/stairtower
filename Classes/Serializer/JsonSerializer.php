@@ -12,10 +12,9 @@ class JsonSerializer implements SerializerInterface
      * Serialize the given data
      *
      * @param mixed $data
-     * @throws \Cundd\Stairtower\Serializer\Exception if the data could not be serialized
-     * @return string
+     * @return string if the data could not be serialized
      */
-    public function serialize($data)
+    public function serialize($data): string
     {
         $serializedData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         if ($serializedData === false && json_last_error() !== JSON_ERROR_NONE) {
@@ -28,17 +27,16 @@ class JsonSerializer implements SerializerInterface
     /**
      * Unserialize the given data
      *
-     * @param string $string
-     * @throws \Cundd\Stairtower\Serializer\Exception if the data could not be unserialized
-     * @return mixed
+     * @param string $input
+     * @return mixed if the data could not be unserialized
      */
-    public function unserialize($string)
+    public function unserialize(string $input)
     {
         // Just return NULL if the input is "null", to distinguish NULL and invalid inputs (which decode to NULL)
-        if ($string === '' || $string === 'null') {
+        if ($input === '' || $input === 'null') {
             return null;
         }
-        $data = json_decode($string, true);
+        $data = json_decode($input, true);
         if ($data === null) {
             //if ($data === null && json_last_error() !== JSON_ERROR_NONE) {
             throw $this->createExceptionFromLastError();
