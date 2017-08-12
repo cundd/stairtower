@@ -48,7 +48,7 @@ class ServerTest extends AbstractAcceptanceCase
         parent::fullServerTest();
         usleep((int)floor($this->getServerShutdownWaitTime() * 1000 * 1000));
 
-        $this->assertFalse($this->getProcess()->isRunning());
+        $this->assertServerNotRunning();
         $httpClient = new HttpRequestClient($this->getUriForTestServer());
 
         // The server should not send the welcome message

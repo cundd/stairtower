@@ -23,6 +23,13 @@ abstract class AbstractAcceptanceCase extends TestCase
     protected $numberOfDocumentsToCreate;
 
     /**
+     * Specifies the number of welcome tests that should be performed in getWelcomePerformanceTest()
+     *
+     * @var integer
+     */
+    protected $numberOfWelcomeTests = 10000;
+
+    /**
      * Name of the database to use/create for the test
      *
      * @var string
@@ -470,12 +477,31 @@ abstract class AbstractAcceptanceCase extends TestCase
         $this->assertArrayHasKey('message', $response);
         $this->assertEquals(sprintf('Database "%s" deleted', $databaseIdentifier), $response['message']);
 
-//        // Shutdown the server
-//        $this->debug('Shutdown the server');
-//        $response = $httpClient->performRestRequest('_shutdown', 'POST');
-//        $this->assertTrue($response->isSuccess());
-//        $this->assertArrayHasKey('message', $response);
-//        $this->assertEquals('Server is going to shut down', $response['message']);
+        if (!$this->useExternalServerProcess) {
+            // Shutdown the server
+            $this->debug('Shutdown the server');
+            $response = $httpClient->performRestRequest('_shutdown', 'POST');
+            $this->assertTrue($response->isSuccess());
+            $this->assertArrayHasKey('message', $response);
+            $this->assertEquals('Server is going to shut down', $response['message']);
+        }
+    }
+
+    /**
+     * @test
+     */
+    public function getWelcomePerformanceTest()
+    {
+        $this->startServer();
+        $httpClient = new HttpRequestClient($this->getUriForTestServer());
+        $this->debug('Get the welcome message');
+
+        $i = 0;
+        while (++$i < $this->numberOfWelcomeTests) {
+            $response = $httpClient->performRestRequest('');
+            $this->assertTrue($response->isSuccess(), sprintf('Could not get the welcome message for run #%d', $i));
+            $this->assertEquals(Constants::MESSAGE_JSON_WELCOME, $response->getParsedBody()['message']);
+        }
     }
 
 
