@@ -12,6 +12,7 @@ use Symfony\Component\Process\Process;
 class RouterTest extends AbstractAcceptanceCase
 {
     protected $numberOfDocumentsToCreate = 10;
+    protected $numberOfWelcomeTests = 10;
 
     protected function configureServerProcess(int $autoShutdownTime = 7): Process
     {

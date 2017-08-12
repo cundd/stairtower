@@ -27,7 +27,7 @@ abstract class AbstractAcceptanceCase extends TestCase
      *
      * @var integer
      */
-    protected $numberOfWelcomeTests = 10000;
+    protected $numberOfWelcomeTests;
 
     /**
      * Name of the database to use/create for the test

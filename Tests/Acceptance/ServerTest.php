@@ -12,12 +12,8 @@ use Symfony\Component\Process\Process;
  */
 class ServerTest extends AbstractAcceptanceCase
 {
-    /**
-     * Specifies the number of documents that should be created in performanceTest()
-     *
-     * @var integer
-     */
     protected $numberOfDocumentsToCreate = 1000;
+    protected $numberOfWelcomeTests = 1000;
 
     protected function configureServerProcess(int $autoShutdownTime = 7): Process
     {
