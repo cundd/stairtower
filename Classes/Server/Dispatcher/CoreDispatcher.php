@@ -25,7 +25,6 @@ use Cundd\Stairtower\Server\ValueObject\HandlerResult;
 use Cundd\Stairtower\Server\ValueObject\Request;
 use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
-use Cundd\Stairtower\Utility\DebugUtility;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -145,7 +144,7 @@ class CoreDispatcher implements StandardActionDispatcherInterface, SpecialHandle
 
             return;
         }
-        
+
         $body = $this->parseBody($request, $allowRawBody, $bodyStream->getContents());
         $requestResult = $this->dispatchInternal($request->withParsedBody($body));
         $promiseCallback->resolve($this->responseBuilder->buildResponseForResult($requestResult, $request));

@@ -54,6 +54,7 @@ trait RequestBuilderTrait
         $prophecy->getMethod()->willReturn($method);
 
         $prophecy->getBody()->willReturn(null);
+        $prophecy->getParsedBody()->willReturn(null);
 
         return $prophecy->reveal();
     }

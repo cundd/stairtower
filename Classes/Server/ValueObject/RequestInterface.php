@@ -35,12 +35,34 @@ interface RequestInterface
     public function getParsedBody();
 
     /**
-     * Returns a copy of the Request with the given prepared body
+     * Return an instance with the specified body parameters.
      *
-     * @param $parsedBody
-     * @return RequestInterface
+     * These MAY be injected during instantiation.
+     *
+     * If the request Content-Type is either application/x-www-form-urlencoded
+     * or multipart/form-data, and the request method is POST, use this method
+     * ONLY to inject the contents of $_POST.
+     *
+     * The data IS NOT REQUIRED to come from $_POST, but MUST be the results of
+     * deserializing the request body content. Deserialization/parsing returns
+     * structured data, and, as such, this method ONLY accepts arrays or objects,
+     * or a null value if nothing was available to parse.
+     *
+     * As an example, if content negotiation determines that the request data
+     * is a JSON payload, this method could be used to create a request
+     * instance with the deserialized parameters.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * updated body parameters.
+     *
+     * @param null|array|object $data The deserialized body data. This will
+     *     typically be in an array or object.
+     * @return static
+     * @throws \InvalidArgumentException if an unsupported argument type is
+     *     provided.
      */
-    public function withParsedBody($parsedBody): RequestInterface;
+    public function withParsedBody($data): RequestInterface;
 
     /**
      * Returns the identifier for the Document instance

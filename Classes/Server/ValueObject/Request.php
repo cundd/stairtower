@@ -7,6 +7,7 @@ use Cundd\Stairtower\Exception\UndefinedMethodCallException;
 use Cundd\Stairtower\Immutable;
 use Cundd\Stairtower\Server\ContentType;
 use Cundd\Stairtower\Server\Cookie\Cookie;
+use Cundd\Stairtower\Utility\DebugUtility;
 use Cundd\Stairtower\Utility\GeneralUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -124,10 +125,24 @@ class Request implements Immutable, RequestInterface
         return $this->parsedBody;
     }
 
-    public function withParsedBody($parsedBody): RequestInterface
+    public function withParsedBody($data): RequestInterface
     {
+        if (null !== $data && !is_array($data) && !is_object($data)) {
+            throw new \InvalidArgumentException(
+                sprintf('Data must be either null, array or object, %s given', gettype($data))
+            );
+        }
+
+        if ($data == ["php://input" => ""]) {
+            DebugUtility::var_dump($data);
+            echo '<pre>';
+            debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+            echo '</pre>';
+            throw new \InvalidArgumentException('Data does not make sense');
+        }
+
         $clone = clone $this;
-        $clone->parsedBody = $parsedBody;
+        $clone->parsedBody = $data;
 
         return $clone;
     }

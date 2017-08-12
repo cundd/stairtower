@@ -67,7 +67,7 @@ abstract class ServerRequestFactory
             static::get('REQUEST_METHOD', $server, 'GET'),
             static::marshalUriFromServer($server, $headers),
             $headers,
-            'php://input',
+            self::getInputStream(),
             static::marshalProtocolVersion($server),
             $server
         );
@@ -549,5 +549,13 @@ abstract class ServerRequestFactory
         }
 
         return $cookies;
+    }
+
+    /**
+     * @return resource
+     */
+    private static function getInputStream()
+    {
+        return fopen('php://input', 'r');
     }
 }

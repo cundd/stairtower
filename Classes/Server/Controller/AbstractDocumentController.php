@@ -130,7 +130,7 @@ abstract class AbstractDocumentController extends AbstractController implements 
      * @param RequestInterface $request    Request info object
      * @param string           $action     Action name
      * @param bool             $noArgument Reference the will be set to true if no argument should be passed
-     * @return DocumentInterface|null
+     * @return DocumentInterface|mixed|null
      */
     protected function prepareArgumentForRequestAndAction(
         RequestInterface $request,
@@ -151,11 +151,9 @@ abstract class AbstractDocumentController extends AbstractController implements 
             } else {
                 return $this->getDocumentForCurrentRequest();
             }
-        } elseif ($requestBody !== null) {
-            return $requestBody;
         }
 
-        return null;
+        return $requestBody;
     }
 
     /**
