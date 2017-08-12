@@ -18,9 +18,19 @@ interface RequestInterface
     public function getBody(): ?StreamInterface;
 
     /**
-     * Returns the parsed request body
+     * Retrieve any parameters provided in the request body.
      *
-     * @return mixed
+     * If the request Content-Type is either application/x-www-form-urlencoded
+     * or multipart/form-data, and the request method is POST, this method MUST
+     * return the contents of $_POST.
+     *
+     * Otherwise, this method may return any results of deserializing
+     * the request body content; as parsing returns structured content, the
+     * potential types MUST be arrays or objects only. A null value indicates
+     * the absence of body content.
+     *
+     * @return null|array|object The deserialized body parameters, if any.
+     *     These will typically be an array or object.
      */
     public function getParsedBody();
 

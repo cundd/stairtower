@@ -83,6 +83,7 @@ class Request implements Immutable, RequestInterface
      * @param string                 $action
      * @param string                 $controllerClass
      * @param StreamInterface|null   $body
+     * @param null|array|object      $parsedBody
      */
     public function __construct(
         $request,
@@ -91,7 +92,8 @@ class Request implements Immutable, RequestInterface
         string $method,
         string $action = '',
         string $controllerClass = '',
-        ?StreamInterface $body = null
+        ?StreamInterface $body = null,
+        $parsedBody = null
     ) {
         if ($method) {
             GeneralUtility::assertRequestMethod($method);
@@ -105,6 +107,7 @@ class Request implements Immutable, RequestInterface
         $this->body = $body;
         $this->method = $method;
         $this->action = $action;
+        $this->parsedBody = $parsedBody;
         $this->dataIdentifier = $dataIdentifier;
         $this->originalRequest = $request;
         $this->controllerClass = $controllerClass;

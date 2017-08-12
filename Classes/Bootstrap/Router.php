@@ -7,14 +7,13 @@ use Cundd\Stairtower\ApplicationMode;
 use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\DataAccess\CoordinatorInterface;
+use Cundd\Stairtower\Router\ServerRequestFactory;
 use Cundd\Stairtower\Server\Dispatcher\CoreDispatcherInterface;
 use Cundd\Stairtower\Server\ServerInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use React\Http\Response;
-use React\Http\ServerRequest;
 
 /**
  * Router bootstrapping for conventional servers
@@ -73,7 +72,7 @@ class Router extends AbstractBootstrap
 
     protected function doExecute(array $arguments)
     {
-        $request = $this->createRequestInstance($arguments);
+        $request = ServerRequestFactory::fromGlobals();
 
         $this->dispatcher->dispatch($request)
             ->then([$this, 'sendResponse'])
@@ -118,32 +117,6 @@ class Router extends AbstractBootstrap
         $body = $response->getBody();
         $body->rewind();
         echo $body;
-    }
-
-    /**
-     * Builds the request instance from the current request arguments
-     *
-     * @param array $arguments
-     * @return ServerRequestInterface
-     */
-    private function createRequestInstance(array $arguments): ServerRequestInterface
-    {
-        $flatArguments = array_reduce(
-            $arguments,
-            function (array $carry, array $item) {
-                return array_merge($carry, array_change_key_case($item, CASE_UPPER));
-            },
-            []
-        );
-
-        return new ServerRequest(
-            $flatArguments['REQUEST_METHOD'],
-            $flatArguments['REQUEST_URI'],
-            $this->getAllHeaders($arguments),
-            file_get_contents('php://input'),
-            '1.1',
-            $arguments['server']
-        );
     }
 
     /**

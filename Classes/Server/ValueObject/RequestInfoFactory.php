@@ -61,7 +61,8 @@ class RequestInfoFactory
             $request->getMethod(),
             ($handlerAction !== false ? $handlerAction : ''),
             $controllerClassName,
-            $request->getBody()
+            $request->getBody(),
+            $request->getParsedBody()
         );
     }
 
