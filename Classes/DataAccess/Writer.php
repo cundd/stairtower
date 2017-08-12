@@ -12,10 +12,7 @@ use Cundd\Stairtower\Serializer\JsonSerializer;
 use Cundd\Stairtower\System\Lock\Factory;
 
 
-/**
- * Class to write data to it's source
- */
-class Writer
+class Writer implements WriterInterface
 {
     /**
      * Used data encoding
@@ -28,13 +25,7 @@ class Writer
      */
     protected $logger;
 
-    /**
-     * Write the given database to the disk
-     *
-     * @param DatabaseInterface $database
-     * @throws Exception\WriterException if the data could not be written
-     */
-    public function writeDatabase($database)
+    public function writeDatabase(DatabaseInterface $database)
     {
         $this->prepareWriteDirectory();
         $databaseIdentifier = $database->getIdentifier();
@@ -122,7 +113,7 @@ class Writer
      * @param string $databaseIdentifier
      * @return \Cundd\Stairtower\System\Lock\LockInterface
      */
-    protected function getLockForDatabase($databaseIdentifier)
+    protected function getLockForDatabase(string $databaseIdentifier)
     {
         return Factory::createLock($databaseIdentifier);
     }
@@ -133,7 +124,7 @@ class Writer
      * @param DatabaseInterface $database
      * @return string
      */
-    protected function getDataToWrite($database)
+    protected function getDataToWrite(DatabaseInterface $database): string
     {
         $objectsToWrite = $this->getObjectsWrite($database);
         $serializer = new JsonSerializer();
@@ -147,7 +138,7 @@ class Writer
      * @param DatabaseInterface $database
      * @return array
      */
-    protected function getObjectsWrite($database)
+    protected function getObjectsWrite(DatabaseInterface $database)
     {
         $objectsToWrite = [];
         $database->rewind();
@@ -156,8 +147,6 @@ class Writer
             $item = $database->current();
             if ($item) {
                 $objectsToWrite[] = $item->getData();
-//			} else {
-//				DebugUtility::pl('Current item is NULL');
             }
             $database->next();
         }
@@ -165,13 +154,7 @@ class Writer
         return $objectsToWrite;
     }
 
-    /**
-     * Creates a new database with the given identifier and options
-     *
-     * @param string $databaseIdentifier Unique identifier of the database
-     * @param array  $options            Additional options for the created database
-     */
-    public function createDatabase($databaseIdentifier, $options = [])
+    public function createDatabase(string $databaseIdentifier, array $options = [])
     {
         $this->prepareWriteDirectory();
         $path = $this->getWriteDirectory() . $databaseIdentifier . '.json';
@@ -202,13 +185,7 @@ class Writer
         }
     }
 
-    /**
-     * Deletes the database with the given identifier
-     *
-     * @param string $databaseIdentifier Unique identifier of the database
-     * @return void
-     */
-    public function dropDatabase($databaseIdentifier)
+    public function dropDatabase(string $databaseIdentifier)
     {
         $path = $this->getReadDirectory() . $databaseIdentifier . '.json';
 

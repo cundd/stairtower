@@ -12,10 +12,7 @@ use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Cundd\Stairtower\Serializer\JsonSerializer;
 use Cundd\Stairtower\System\Lock\Factory;
 
-/**
- * Class to read data from it's source
- */
-class Reader
+class Reader implements ReaderInterface
 {
     /**
      * Used data encoding
@@ -28,13 +25,6 @@ class Reader
      */
     protected $memoryHelper;
 
-    /**
-     * Loads the database with the given identifier
-     *
-     * @param string $databaseIdentifier
-     * @param int    $memoryUsage Amount of memory used to load the data
-     * @return DatabaseInterface
-     */
     public function loadDatabase(string $databaseIdentifier, &$memoryUsage = null): DatabaseInterface
     {
         $memoryUsage = memory_get_usage(true);
@@ -84,13 +74,6 @@ class Reader
         return $dataCollection;
     }
 
-    /**
-     * Returns if a database with the given identifier exists
-     *
-     * @param string          $databaseIdentifier Unique identifier of the database
-     * @param ReaderException $error              Reference to be filled with an exception describing the error if the database could not be read
-     * @return bool
-     */
     public function databaseExists(string $databaseIdentifier, &$error = null): bool
     {
         $path = ConfigurationManager::getSharedInstance()->getConfigurationForKeyPath('dataPath')
@@ -112,11 +95,6 @@ class Reader
         return true;
     }
 
-    /**
-     * Returns an array of the identifiers of databases that are already persisted
-     *
-     * @return string[]
-     */
     public function listPersistedDatabases(): array
     {
         $foundDatabases = glob(
