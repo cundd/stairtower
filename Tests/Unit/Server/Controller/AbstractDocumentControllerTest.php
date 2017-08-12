@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 namespace Server\Controller;
 
-use Cundd\Stairtower\DataAccess\Coordinator;
+use Cundd\Stairtower\DataAccess\CoordinatorInterface;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 use Cundd\Stairtower\Server\Controller\AbstractDocumentController;
 use Cundd\Stairtower\Server\Controller\DocumentControllerInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
 use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Tests\Unit\RequestBuilderTrait;
+use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * Tests for the abstract Document Controller implementation
@@ -32,17 +34,13 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
     {
         parent::setUp();
 
-        ///** @var CoordinatorInterface $coordinatorStub */
-        $coordinatorStub = $this->getMockBuilder(Coordinator::class)->getMock();
-        $coordinatorStub
-            ->expects($this->any())
-            ->method('getDatabase')
-            ->will($this->returnValue($this->getSmallPeopleDatabase()));
+        /** @var CoordinatorInterface|ObjectProphecy $coordinatorStub */
+        $coordinatorStub = $this->prophesize(CoordinatorInterface::class);
+        /** @var string $stringArgument */
+        $stringArgument = Argument::type('string');
+        $coordinatorStub->getDatabase($stringArgument)->willReturn($this->getSmallPeopleDatabase());
 
-        $coordinatorStub
-            ->expects($this->any())
-            ->method('databaseExists')
-            ->will($this->returnValue(true));
+        $coordinatorStub->databaseExists($stringArgument)->willReturn(true);
 
         $this->fixture = $this->getMockBuilder(AbstractDocumentController::class)
             ->setMethods(['getCoordinator'])
@@ -50,7 +48,7 @@ class AbstractDocumentControllerTest extends AbstractDatabaseBasedCase
         $this->fixture
             ->expects($this->any())
             ->method('getCoordinator')
-            ->will($this->returnValue($coordinatorStub));
+            ->will($this->returnValue($coordinatorStub->reveal()));
 
         $this->requestInfoFactory = $this->getDiContainer()->get(RequestInfoFactory::class);
         $requestInfo = $this->requestInfoFactory->buildRequestFromRawRequest(

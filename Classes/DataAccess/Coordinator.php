@@ -9,6 +9,8 @@ use Cundd\Stairtower\Domain\Model\DatabaseStateInterface;
 use Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseException;
 use Cundd\Stairtower\Memory\Manager;
 use Cundd\Stairtower\Utility\GeneralUtility;
+use Evenement\EventEmitterInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Coordinator responsible for managing the data
@@ -18,26 +20,22 @@ class Coordinator implements CoordinatorInterface
     const MEMORY_MANAGER_TAG = 'databases';
 
     /**
-     * @var \Cundd\Stairtower\DataAccess\Reader
-     * @Inject
+     * @var \Cundd\Stairtower\DataAccess\ReaderInterface
      */
     protected $dataReader;
 
     /**
-     * @var \Cundd\Stairtower\DataAccess\Writer
-     * @Inject
+     * @var \Cundd\Stairtower\DataAccess\WriterInterface
      */
     protected $dataWriter;
 
     /**
-     * @var \Evenement\EventEmitterInterface
-     * @Inject
+     * @var EventEmitterInterface
      */
     protected $eventEmitter;
 
     /**
-     * @var \Psr\Log\LoggerInterface
-     * @inject
+     * @var LoggerInterface
      */
     protected $logger;
 
@@ -47,6 +45,26 @@ class Coordinator implements CoordinatorInterface
      * @var string[]
      */
     protected $allDatabaseIdentifiers = null;
+
+    /**
+     * Coordinator constructor.
+     *
+     * @param EventEmitterInterface $eventEmitter
+     * @param ReaderInterface       $dataReader
+     * @param WriterInterface       $dataWriter
+     * @param LoggerInterface       $logger
+     */
+    public function __construct(
+        EventEmitterInterface $eventEmitter,
+        ReaderInterface $dataReader,
+        WriterInterface $dataWriter,
+        LoggerInterface $logger
+    ) {
+        $this->dataReader = $dataReader;
+        $this->dataWriter = $dataWriter;
+        $this->eventEmitter = $eventEmitter;
+        $this->logger = $logger;
+    }
 
     /**
      * Array of databases and their objects
@@ -231,17 +249,5 @@ class Coordinator implements CoordinatorInterface
         $this->dataWriter->writeDatabase($database);
         $database->setState(DatabaseStateInterface::STATE_CLEAN);
         $this->eventEmitter->emit(Event::DATABASE_COMMITTED, [$database]);
-    }
-
-    /**
-     * Performs the query from the given query parts on the database
-     *
-     * @param array    $queryParts
-     * @param Database $database
-     * @return array Returns the result
-     */
-    protected function performQueryOnDatabase($queryParts, $database)
-    {
-        return [];
     }
 }
