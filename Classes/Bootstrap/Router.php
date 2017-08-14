@@ -97,48 +97,30 @@ class Router extends AbstractBootstrap
 
     public function sendResponse(ResponseInterface $response)
     {
-        header(
-            sprintf(
-                'HTTP/%s %s %s',
-                $response->getProtocolVersion(),
-                $response->getStatusCode(),
-                $response->getReasonPhrase()
-            ),
-            true,
-            $response->getStatusCode()
-        );
+        if (headers_sent($file, $line)) {
+            $this->logger->error(sprintf('Headers already sent by %s:%d', $file, $line));
+        } else {
+            header(
+                sprintf(
+                    'HTTP/%s %s %s',
+                    $response->getProtocolVersion(),
+                    $response->getStatusCode(),
+                    $response->getReasonPhrase()
+                ),
+                true,
+                $response->getStatusCode()
+            );
 
-        foreach ($response->getHeaders() as $name => $values) {
-            foreach ($values as $value) {
-                header(sprintf('%s: %s', $name, $value), false);
+            foreach ($response->getHeaders() as $name => $values) {
+                foreach ($values as $value) {
+                    header(sprintf('%s: %s', $name, $value), false);
+                }
             }
         }
 
         $body = $response->getBody();
         $body->rewind();
         echo $body;
-    }
-
-    /**
-     * Returns the headers for the current request arguments
-     *
-     * @param array $arguments
-     * @return array
-     */
-    private function getAllHeaders(array $arguments)
-    {
-        if (function_exists('getallheaders')) {
-            return getallheaders();
-        }
-
-        $headers = [];
-        foreach ($arguments['server'] as $name => $value) {
-            if (substr($name, 0, 5) == 'HTTP_') {
-                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-            }
-        }
-
-        return $headers;
     }
 
     /**
