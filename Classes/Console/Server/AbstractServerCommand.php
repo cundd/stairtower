@@ -5,6 +5,7 @@ namespace Cundd\Stairtower\Console\Server;
 
 use Cundd\Stairtower\Console\Exception\InvalidArgumentsException;
 use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Server\Exception\BootException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -82,16 +83,27 @@ abstract class AbstractServerCommand extends Command
                 }
             );
 
-            $exitedSuccessfully = $process->getExitCode() === 0;
-            if ($exitedSuccessfully) {
+            if (0 === $process->getExitCode()) {
                 $output->writeln('<info>Terminated</info>');
-            } elseif ($automaticallyRestart) {
-                $output->writeln('<error>Crashed</error>');
-                $output->writeln('<info>Will restart the server</info>');
-            } else {
-                $output->writeln('<error>Crashed</error>');
+
+                return;
             }
-        } while (!$exitedSuccessfully && $automaticallyRestart);
+
+            if (!$automaticallyRestart) {
+                $output->writeln('<error>Crashed</error>');
+
+                return;
+            }
+
+            if ($this->isBootError($process)) {
+                $output->writeln('<error>Boot error will NOT restart the server</error>');
+
+                return;
+            }
+
+            $output->writeln('<error>Crashed</error>');
+            $output->writeln('<info>Will restart the server</info>');
+        } while (true);
     }
 
     /**
@@ -99,7 +111,7 @@ abstract class AbstractServerCommand extends Command
      *
      * @return bool
      */
-    protected function automaticallyRestart()
+    protected function automaticallyRestart(): bool
     {
         return !$this->isDevMode();
     }
@@ -109,7 +121,7 @@ abstract class AbstractServerCommand extends Command
      *
      * @return boolean
      */
-    protected function isDevMode()
+    protected function isDevMode(): bool
     {
         return $this->devMode;
     }
@@ -119,7 +131,7 @@ abstract class AbstractServerCommand extends Command
      *
      * @param boolean $devMode
      */
-    protected function setDevMode($devMode)
+    protected function setDevMode(bool $devMode)
     {
         $this->devMode = !!$devMode;
     }
@@ -189,5 +201,15 @@ abstract class AbstractServerCommand extends Command
         }
 
         return null;
+    }
+
+    /**
+     * @param Process $process
+     * @return bool
+     */
+    protected function isBootError(Process $process): bool
+    {
+        return $process->getExitCode() === BootException::EXIT_CODE
+            || strpos($process->getErrorOutput(), 'Failed to listen on') !== false;
     }
 }

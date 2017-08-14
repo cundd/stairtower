@@ -9,6 +9,7 @@ use Cundd\Stairtower\DataAccess\CoordinatorInterface;
 use Cundd\Stairtower\Event\SharedEventEmitter;
 use Cundd\Stairtower\Memory\Manager;
 use Cundd\Stairtower\Serializer\JsonSerializer;
+use Cundd\Stairtower\Server\Exception\BootException;
 use Cundd\Stairtower\Server\Exception\InvalidEventLoopException;
 use Cundd\Stairtower\Server\Exception\InvalidRequestException;
 use Cundd\Stairtower\Server\Exception\InvalidServerChangeException;
@@ -277,8 +278,17 @@ abstract class AbstractServer implements ServerInterface
      */
     public function start()
     {
-        $this->prepareEventLoop();
-        $this->setupServer();
+        try {
+            $this->prepareEventLoop();
+            $this->setupServer();
+
+        } catch (\RuntimeException $exception) {
+            throw new BootException(
+                sprintf('Boot exception #%d: %s', $exception->getCode(), $exception->getMessage()),
+                $exception->getCode(),
+                $exception
+            );
+        }
         $this->startTime = new DateTimeImmutable();
         $this->isRunningFlag = true;
         $this->getEventLoop()->run();

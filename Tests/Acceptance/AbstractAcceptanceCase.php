@@ -155,8 +155,11 @@ abstract class AbstractAcceptanceCase extends TestCase
         $this->debug('Get the welcome message');
         $response = $httpClient->performRestRequest('');
         $this->assertTrue($response->isSuccess(), 'Could not get the welcome message');
-        $this->assertArrayHasKey('message', $response);
-        $this->assertEquals(Constants::MESSAGE_JSON_WELCOME, $response['message']);
+        $this->assertEquals(
+            Constants::MESSAGE_JSON_WELCOME,
+            $response->getParsedBody()['message'],
+            sprintf('Could not get the welcome message: %s', $response->getBody())
+        );
 
 
         // Get the stats

@@ -2,7 +2,13 @@
 <?php
 declare(strict_types=1);
 
+use Cundd\Stairtower\Bootstrap\Server;
+use Cundd\Stairtower\Server\Exception\BootException;
+
 require_once __DIR__ . '/_autoload.php';
 
-$serverBootstrap = new Cundd\Stairtower\Bootstrap\Server();
-$serverBootstrap->execute($argv);
+try {
+    (new Server())->execute($argv);
+} catch (BootException $exception) {
+    exit(BootException::EXIT_CODE);
+}
