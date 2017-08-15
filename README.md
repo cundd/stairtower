@@ -3,7 +3,7 @@ Stairtower
 
 Stairtower is a (experimental) database server for schema-free, JSON documents, that provides a restful API and is entirely written in PHP.
 
-[![Build Status](https://travis-ci.org/cundd/pos.svg?branch=develop)](https://travis-ci.org/cundd/pos)
+[![Build Status](https://travis-ci.org/cundd/stairtower.svg?branch=master)](https://travis-ci.org/cundd/stairtower)
 
 The software is in ~~alpha state~~ an early alpha state and not ready for production. The biggest parts of the API are defined and major parts are covered by unit tests. Nevertheless there is much to improve.
 
@@ -15,7 +15,7 @@ License
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Daniel Corn
+Copyright (c) 2017 Daniel Corn
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
