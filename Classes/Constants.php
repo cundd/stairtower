@@ -39,7 +39,7 @@ WELCOME;
     /**
      * Version number
      */
-    const VERSION = '0.0.1';
+    const VERSION = '0.2.0';
 
     /**
      * Key used to store meta data in JSON
