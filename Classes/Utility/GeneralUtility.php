@@ -3,9 +3,14 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Utility;
 
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
+use Cundd\Stairtower\Domain\Model\DatabaseRawDataInterface;
 use Cundd\Stairtower\Domain\Model\Exception\InvalidDatabaseIdentifierException;
 use Cundd\Stairtower\Domain\Model\Exception\InvalidDataIdentifierException;
+use Cundd\Stairtower\Exception\InvalidCollectionException;
 use Cundd\Stairtower\Server\Exception\InvalidRequestMethodException;
+use SplFixedArray;
+use Traversable;
 
 /**
  * Interface GeneralUtilityInterface
@@ -172,4 +177,41 @@ abstract class GeneralUtility
 
         return (bool)($success * rmdir($dir));
     }
-} 
+
+    /**
+     * Transforms the given collection into a SplFixedArray
+     *
+     * @param DatabaseInterface|DatabaseRawDataInterface|Traversable|array $collection Collection to transform
+     * @param bool                                                         $preferRaw  Defines if raw database values should be used
+     * @param bool                                                         $graceful   Defines if an exception should be thrown if the collection could not be transformed
+     * @return SplFixedArray
+     */
+    public static function collectionToFixedArray($collection, $preferRaw = false, $graceful = true): SplFixedArray
+    {
+        if ($preferRaw && $collection instanceof DatabaseRawDataInterface) {
+            return $collection->getRawData();
+        }
+        if ($collection instanceof DatabaseInterface) {
+            return $collection->toFixedArray();
+        }
+        if (is_array($collection)) {
+            return SplFixedArray::fromArray($collection);
+        }
+        if ($collection instanceof Traversable) {
+            $collection->rewind();
+
+            return SplFixedArray::fromArray(iterator_to_array($collection));
+        }
+        if ($graceful) {
+            return new SplFixedArray(0);
+        }
+
+        throw new InvalidCollectionException(
+            sprintf(
+                'Could not transform given value of type %s into a fixed array',
+                GeneralUtility::getType($collection)
+            ),
+            1425127655
+        );
+    }
+}
