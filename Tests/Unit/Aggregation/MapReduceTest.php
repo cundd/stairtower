@@ -3,18 +3,15 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Aggregation;
 
-
-use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Cundd\Stairtower\Meta\Database\Property\Description;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Utility\GeneralUtility;
 use stdClass;
 
 /**
  * Tests for MapReduce
- *
- * @package Cundd\Stairtower\MapReduce
  */
 class MapReduceTest extends AbstractDatabaseBasedCase
 {
@@ -22,11 +19,6 @@ class MapReduceTest extends AbstractDatabaseBasedCase
      * @var \Cundd\Stairtower\Aggregation\MapReduceInterface
      */
     protected $fixture;
-
-    /**
-     * @var \Cundd\Stairtower\DataAccess\Coordinator
-     */
-    protected $coordinator;
 
     protected function setUp()
     {
@@ -43,8 +35,7 @@ class MapReduceTest extends AbstractDatabaseBasedCase
         $reduceFunction = function ($key, $values) {
         };
 
-        $this->fixture     = new MapReduce($mapFunction, $reduceFunction);
-        $this->coordinator = $this->getDiContainer()->get('\Cundd\Stairtower\DataAccess\Coordinator');
+        $this->fixture = new MapReduce($mapFunction, $reduceFunction);
     }
 
     /**
@@ -53,7 +44,7 @@ class MapReduceTest extends AbstractDatabaseBasedCase
     public function emptyTest()
     {
         $database = $this->getSmallPeopleDatabase();
-        $result   = $this->fixture->perform($database);
+        $result = $this->fixture->perform($database);
         $this->assertInternalType('array', $result);
         $this->assertEmpty($result);
     }
@@ -115,10 +106,10 @@ class MapReduceTest extends AbstractDatabaseBasedCase
                 /** @var MapReduce $this */
                 $this->emit(
                     $propertyKey,
-                    array(
+                    [
                         'type'  => GeneralUtility::getType($propertyValue),
-                        'count' => 1
-                    )
+                        'count' => 1,
+                    ]
                 );
             }
         };
@@ -129,22 +120,22 @@ class MapReduceTest extends AbstractDatabaseBasedCase
          * @return Description
          */
         $reduceFunction = function ($key, $values) {
-            $types = array();
+            $types = [];
             $count = 0;
             foreach ($values as $valueBlock) {
                 $types[$valueBlock['type']] = true;
                 $count += $valueBlock['count'];
             }
             $types = array_keys($types);
+
             return new Description($key, $types, $count);
         };
 
 
         $this->fixture = new MapReduce($mapFunction, $reduceFunction);
 
-        //$database = $this->getSmallPeopleDatabase();
-        $database = $this->coordinator->getDatabase('people');
-        $result   = $this->fixture->perform($database);
+        $database = $this->getLargePeopleDatabase();
+        $result = $this->fixture->perform($database);
 
         $this->assertInternalType('array', $result);
         $this->assertEquals(21, count($result));
@@ -225,7 +216,7 @@ class MapReduceTest extends AbstractDatabaseBasedCase
         $this->assertEmpty($result);
         $mapInvocationCounterFirstRun = $mapInvocationCounter;
 
-        $result = $this->fixture->perform($this->coordinator->getDatabase('people'));
+        $result = $this->fixture->perform($this->getLargePeopleDatabase());
         $this->assertInternalType('array', $result);
         $this->assertEmpty($result);
         $this->assertTrue($mapInvocationCounter != $mapInvocationCounterFirstRun);
@@ -255,15 +246,16 @@ class MapReduceTest extends AbstractDatabaseBasedCase
      */
     public function invalidEmitKeyArrayTest()
     {
-        $mapFunction    = function ($document) {
+        $mapFunction = function ($document) {
             /** @var MapReduce $this */
             $this->emit(
-                array('this is not allowed'), true
+                ['this is not allowed'],
+                true
             );
         };
         $reduceFunction = function ($key, $values) {
         };
-        $this->fixture  = new MapReduce($mapFunction, $reduceFunction);
+        $this->fixture = new MapReduce($mapFunction, $reduceFunction);
         $this->fixture->perform($this->getSmallPeopleDatabase());
     }
 
@@ -273,15 +265,16 @@ class MapReduceTest extends AbstractDatabaseBasedCase
      */
     public function invalidEmitKeyObjectTest()
     {
-        $mapFunction    = function ($document) {
+        $mapFunction = function ($document) {
             /** @var MapReduce $this */
             $this->emit(
-                new stdClass(), true
+                new stdClass(),
+                true
             );
         };
         $reduceFunction = function ($key, $values) {
         };
-        $this->fixture  = new MapReduce($mapFunction, $reduceFunction);
+        $this->fixture = new MapReduce($mapFunction, $reduceFunction);
         $this->fixture->perform($this->getSmallPeopleDatabase());
     }
 
@@ -291,15 +284,16 @@ class MapReduceTest extends AbstractDatabaseBasedCase
      */
     public function invalidEmitKeyEmptyTest()
     {
-        $mapFunction    = function ($document) {
+        $mapFunction = function ($document) {
             /** @var MapReduce $this */
             $this->emit(
-                '', true
+                '',
+                true
             );
         };
         $reduceFunction = function ($key, $values) {
         };
-        $this->fixture  = new MapReduce($mapFunction, $reduceFunction);
+        $this->fixture = new MapReduce($mapFunction, $reduceFunction);
         $this->fixture->perform($this->getSmallPeopleDatabase());
     }
 }

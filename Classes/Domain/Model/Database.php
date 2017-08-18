@@ -349,12 +349,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
     // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
     // RAW DATA
     // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
-    /**
-     * Returns the raw data
-     *
-     * @return \SplFixedArray
-     * @internal
-     */
     public function getRawData()
     {
         if (!$this->rawData) {
@@ -364,11 +358,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
         return $this->rawData;
     }
 
-    /**
-     * Sets the raw data
-     *
-     * @param \SplFixedArray|array|\Traversable $rawData
-     */
     public function setRawData($rawData)
     {
         if ($rawData instanceof SplFixedArray) {
@@ -387,25 +376,19 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
         if ($count > 0) {
             $tempRawData = new SplFixedArray($count);
             do {
-                $tempRawData[$i] = DocumentUtility::assertDocumentIdentifierOfData($rawData[$i]);
+                $tempRawData[$i] = DocumentUtility::setDocumentIdentifierOfData($rawData[$i]);
             } while (++$i < $count);
             $this->rawData = $tempRawData;
         } else {
             $this->rawData = new SplFixedArray(0);
         }
-        $this->objectData = new SplFixedArray($this->rawData->getSize());
 
+        $this->objectData = new SplFixedArray($count);
         $this->state = self::STATE_DIRTY;
 
         $this->rebuildIndexes();
     }
 
-    /**
-     * Returns the current raw data
-     *
-     * @link http://php.net/manual/en/iterator.current.php
-     * @return mixed Can return any type.
-     */
     public function currentRaw()
     {
         $document = $this->getRawDataForIndex($this->index);
@@ -427,7 +410,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
         if (isset($this->rawData[$index])) {
             $data = $this->rawData[$index];
 
-            return DocumentUtility::assertDocumentIdentifierOfData($data);
+            return DocumentUtility::setDocumentIdentifierOfData($data);
         }
 
         return false;
@@ -443,7 +426,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
      */
     protected function setRawDataForIndex($data, $index)
     {
-        $this->rawData[$index] = DocumentUtility::assertDocumentIdentifierOfData($data);
+        $this->rawData[$index] = DocumentUtility::setDocumentIdentifierOfData($data);
 
         return $data;
     }
@@ -688,7 +671,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
     {
         $rawData = $this->rawData[$index];
         if (!isset($rawData[Constants::DATA_ID_KEY]) || $rawData[Constants::DATA_ID_KEY]) {
-            $this->rawData[$index] = DocumentUtility::assertDocumentIdentifierOfData($rawData);
+            $this->rawData[$index] = DocumentUtility::setDocumentIdentifierOfData($rawData);
         }
 
         return $rawData;
@@ -740,7 +723,7 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
 
         }
         $rawData = $this->rawData[$index];
-        $rawData = DocumentUtility::assertDocumentIdentifierOfData($rawData);
+        $rawData = DocumentUtility::setDocumentIdentifierOfData($rawData);
         $dataObject = new Document($rawData, $this->identifier);
 
         return $dataObject;

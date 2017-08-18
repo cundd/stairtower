@@ -4,16 +4,14 @@ declare(strict_types=1);
 namespace Cundd\Stairtower\Aggregation;
 
 
-use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Constants;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Cundd\Stairtower\Meta\Database\Property\Description;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Utility\GeneralUtility;
 
 /**
  * Tests for Aggregator
- *
- * @package Cundd\Stairtower\Aggregator
  */
 class AggregatorTest extends AbstractDatabaseBasedCase
 {
@@ -21,11 +19,6 @@ class AggregatorTest extends AbstractDatabaseBasedCase
      * @var \Cundd\Stairtower\Aggregation\AggregatorInterface
      */
     protected $fixture;
-
-    /**
-     * @var \Cundd\Stairtower\DataAccess\Coordinator
-     */
-    protected $coordinator;
 
     protected function setUp()
     {
@@ -36,7 +29,6 @@ class AggregatorTest extends AbstractDatabaseBasedCase
         };
 
         $this->fixture = new Aggregator($aggregateFunction);
-        $this->coordinator = $this->getDiContainer()->get('\Cundd\Stairtower\DataAccess\Coordinator');
     }
 
     /**
@@ -45,7 +37,7 @@ class AggregatorTest extends AbstractDatabaseBasedCase
     public function emptyTest()
     {
         $database = $this->getSmallPeopleDatabase();
-        $result   = $this->fixture->perform($database);
+        $result = $this->fixture->perform($database);
         $this->assertInternalType('array', $result);
         $this->assertEmpty($result);
     }
@@ -68,9 +60,8 @@ class AggregatorTest extends AbstractDatabaseBasedCase
 
         $this->fixture = new Aggregator($aggregateFunction);
 
-        //$database = $this->getSmallPeopleDatabase();
-        $database = $this->coordinator->getDatabase('people');
-        $result   = $this->fixture->perform($database);
+        $database = $this->getLargePeopleDatabase();
+        $result = $this->fixture->perform($database);
 
         $this->assertInternalType('array', $result);
         $this->assertEquals(21, count($result));
@@ -100,10 +91,10 @@ class AggregatorTest extends AbstractDatabaseBasedCase
                 if (!isset($this->results[$propertyKey])) {
                     $type = GeneralUtility::getType($propertyValue);
                     if (!isset($this->results[$propertyKey])) {
-                        $this->results[$propertyKey] = array(
-                            'types' => array($type => true),
-                            'count' => 1
-                        );
+                        $this->results[$propertyKey] = [
+                            'types' => [$type => true],
+                            'count' => 1,
+                        ];
                     } else {
                         $this->results[$propertyKey]['types'][$type] = true;
                         ++$this->results[$propertyKey]['count'];
@@ -114,10 +105,9 @@ class AggregatorTest extends AbstractDatabaseBasedCase
 
         $this->fixture = new Aggregator($aggregateFunction);
 
-        //$database = $this->getSmallPeopleDatabase();
-        $database  = $this->coordinator->getDatabase('people');
+        $database = $this->getLargePeopleDatabase();
         $rawResult = $this->fixture->perform($database);
-        $result    = array();
+        $result = [];
         foreach ($rawResult as $propertyKey => $typesAndCount) {
             $result[] = new Description($propertyKey, array_keys($typesAndCount['types']), $typesAndCount['count']);
         }
@@ -181,7 +171,7 @@ class AggregatorTest extends AbstractDatabaseBasedCase
         $this->assertEmpty($result);
         $mapInvocationCounterFirstRun = $mapInvocationCounter;
 
-        $result = $this->fixture->perform($this->coordinator->getDatabase('people'));
+        $result = $this->fixture->perform($this->getLargePeopleDatabase());
         $this->assertInternalType('array', $result);
         $this->assertEmpty($result);
         $this->assertTrue($mapInvocationCounter != $mapInvocationCounterFirstRun);

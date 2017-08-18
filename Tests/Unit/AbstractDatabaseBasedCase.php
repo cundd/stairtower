@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Tests\Unit;
 
+use Cundd\Stairtower\DataAccess\CoordinatorInterface;
 use Cundd\Stairtower\Domain\Model\Database;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 
@@ -23,11 +24,29 @@ class AbstractDatabaseBasedCase extends AbstractDataBasedCase
     }
 
     /**
+     * Returns a full Coordinator instance to load Databases for testing
+     *
+     * @return CoordinatorInterface
+     */
+    public function getCoordinator(): CoordinatorInterface
+    {
+        return $this->getDiContainer()->get(CoordinatorInterface::class);
+    }
+
+    /**
+     * @return \Cundd\Stairtower\Domain\Model\DatabaseInterface
+     */
+    protected function getLargePeopleDatabase(): DatabaseInterface
+    {
+        return $this->getCoordinator()->getDatabase('people');
+    }
+
+    /**
      * Returns a dummy database
      *
-     * @return DatabaseInterface
+     * @return Database|DatabaseInterface
      */
-    public function getSmallPeopleDatabase()
+    public function getSmallPeopleDatabase(): Database
     {
         if ($this->smallPeopleDatabase) {
             return $this->smallPeopleDatabase;

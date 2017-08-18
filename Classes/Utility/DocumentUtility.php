@@ -88,12 +88,12 @@ class DocumentUtility
     }
 
     /**
-     * Checks if the Document data's identifier is set
+     * Sets the Document data's identifier is set
      *
      * @param array $data
      * @return array Returns the modified array
      */
-    public static function assertDocumentIdentifierOfData($data)
+    public static function setDocumentIdentifierOfData(array $data)
     {
         if (!isset($data[Constants::DATA_ID_KEY])) {
             $data[Constants::DATA_ID_KEY] = static::getIdentifierForDocument($data);
@@ -101,5 +101,4 @@ class DocumentUtility
 
         return $data;
     }
-
 }

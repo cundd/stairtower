@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Meta\Database\Property;
 
-use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Constants;
+use Cundd\Stairtower\Domain\Model\DatabaseRawDataInterface;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
+use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * Test for Descriptor
@@ -16,17 +18,10 @@ class DescriptorTest extends AbstractDatabaseBasedCase
      */
     protected $fixture;
 
-
-    /**
-     * @var \Cundd\Stairtower\DataAccess\Coordinator
-     */
-    protected $coordinator;
-
     protected function setUp()
     {
         parent::setUp();
-        $this->coordinator = $this->getDiContainer()->get('\Cundd\Stairtower\DataAccess\Coordinator');
-        $this->fixture     = new Descriptor();
+        $this->fixture = new Descriptor();
     }
 
     protected function tearDown()
@@ -42,18 +37,51 @@ class DescriptorTest extends AbstractDatabaseBasedCase
     {
         $database = $this->getSmallPeopleDatabase();
 
+        /** @var Description[] $result */
         $result = $this->fixture->describe($database);
         $this->assertInternalType('array', $result);
-        $this->assertEquals(21, count($result));
+        $this->assertCount(21, $result);
 
-        /** @var Description $description */
-        foreach ($result as $description) {
-            if ($description->getKey() === Constants::DATA_ID_KEY) {
-                break;
-            }
-        }
-        $this->assertEquals(Constants::DATA_ID_KEY, $description->getKey());
-        $this->assertContains(Description::TYPE_STRING, $description->getTypes());
+        $this->assertArrayHasKey('index', $result);
+        $this->assertSame($database->count(), $result['index']->getCount());
+        $this->assertSame([Description::TYPE_INTEGER], $result['index']->getTypes());
+
+        $this->assertArrayHasKey(Constants::DATA_ID_KEY, $result);
+        $this->assertSame($database->count(), $result[Constants::DATA_ID_KEY]->getCount());
+        $this->assertSame([Description::TYPE_STRING], $result[Constants::DATA_ID_KEY]->getTypes());
+
+        $this->assertArrayHasKey('name', $result);
+        $this->assertSame($database->count(), $result['name']->getCount());
+        $this->assertSame([Description::TYPE_STRING], $result['name']->getTypes());
+
+        $this->assertArrayHasKey('age', $result);
+        $this->assertSame($database->count(), $result['age']->getCount());
+        $this->assertSame([Description::TYPE_INTEGER], $result['age']->getTypes());
+
+        $this->assertArrayHasKey('friends', $result);
+        $this->assertSame($database->count(), $result['friends']->getCount());
+        $this->assertSame([Description::TYPE_ARRAY], $result['friends']->getTypes());
+
+        $this->assertArrayHasKey('isActive', $result);
+        $this->assertSame($database->count(), $result['isActive']->getCount());
+        $this->assertSame([Description::TYPE_BOOLEAN], $result['isActive']->getTypes());
+    }
+
+    /**
+     * @test
+     */
+    public function describeEmptyDatabaseTest()
+    {
+        /** @var DatabaseRawDataInterface|ObjectProphecy $databaseProphecy */
+        $databaseProphecy = $this->prophesize(DatabaseRawDataInterface::class);
+        $databaseProphecy->getRawData()->willReturn(new \SplFixedArray(0));
+        /** @var DatabaseRawDataInterface $database */
+        $database = $databaseProphecy->reveal();
+
+        /** @var Description[] $result */
+        $result = $this->fixture->describe($database);
+        $this->assertInternalType('array', $result);
+        $this->assertCount(0, $result);
     }
 
     /**
@@ -71,7 +99,7 @@ class DescriptorTest extends AbstractDatabaseBasedCase
      */
     public function invalidArraySubjectTest()
     {
-        $this->fixture->describe(array());
+        $this->fixture->describe([]);
     }
 
     /**
