@@ -4,13 +4,12 @@ declare(strict_types=1);
 namespace Cundd\Stairtower\Tests\Unit\Sorting;
 
 
-use Cundd\Stairtower\Sorting\Sorter;
-use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
-use Cundd\Stairtower\DataAccess\Coordinator;
 use Cundd\Stairtower\DataAccess\Reader;
 use Cundd\Stairtower\Domain\Model\Database;
 use Cundd\Stairtower\Domain\Model\Document;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
+use Cundd\Stairtower\Sorting\Sorter;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Utility\DebugUtility;
 
 
@@ -23,11 +22,6 @@ class SorterTest extends AbstractDatabaseBasedCase
      * @var \Cundd\Stairtower\Sorting\Sorter
      */
     protected $fixture;
-
-    /**
-     * @var \Cundd\Stairtower\DataAccess\Coordinator
-     */
-    protected $coordinator;
 
     /**
      * @test
@@ -117,9 +111,7 @@ class SorterTest extends AbstractDatabaseBasedCase
 
         $newlyLoadedDatabase->add($dataInstance);
 
-
-        /** @var Database $database */
-        $database = $this->coordinator->getDatabase('people');
+        $database = $this->getLargePeopleDatabase();
 
         $sortedDatabase = $this->fixture->sortCollectionByPropertyKeyPath($newlyLoadedDatabase, 'latitude');
 
@@ -309,18 +301,12 @@ class SorterTest extends AbstractDatabaseBasedCase
     protected function setUp()
     {
         $this->checkPersonFile();
-
-//		$this->setUpXhprof();
-
-        $this->coordinator = $this->getDiContainer()->get(Coordinator::class);
         $this->fixture = new Sorter();
     }
 
     protected function tearDown()
     {
         unset($this->fixture);
-//		unset($this->coordinator);
         parent::tearDown();
     }
-
 }

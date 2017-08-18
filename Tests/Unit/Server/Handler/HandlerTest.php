@@ -6,7 +6,6 @@ namespace Cundd\Stairtower\Tests\Unit\Server\Handler;
 
 use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\Constants;
-use Cundd\Stairtower\DataAccess\CoordinatorInterface;
 use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 use Cundd\Stairtower\Domain\Model\Document;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
@@ -15,13 +14,13 @@ use Cundd\Stairtower\Memory\Manager;
 use Cundd\Stairtower\Server\Handler\HandlerInterface;
 use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInfoFactory;
-use Cundd\Stairtower\Tests\Unit\AbstractCase;
+use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
 use Cundd\Stairtower\Tests\Unit\RequestBuilderTrait;
 
 /**
  * Handler test
  */
-class HandlerTest extends AbstractCase
+class HandlerTest extends AbstractDatabaseBasedCase
 {
     /**
      * @var HandlerInterface
@@ -431,11 +430,9 @@ class HandlerTest extends AbstractCase
         $this->publicResourcesPath = $configurationManager->getConfigurationForKeyPath('publicResources');
         $configurationManager->setConfigurationForKeyPath('publicResources', __DIR__ . '/../../../Resources/');
 
-        $container = $this->getDiContainer();
-        $coordinator = $container->get(CoordinatorInterface::class);
-        $this->requestInfoFactory = $container->get(RequestInfoFactory::class);
+        $this->requestInfoFactory = $this->getDiContainer()->get(RequestInfoFactory::class);
         parent::setUp();
-        $this->database = $coordinator->getDatabase('contacts');
+        $this->database = $this->getCoordinator()->getDatabase('contacts');
     }
 
     protected function tearDown()

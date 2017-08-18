@@ -7,27 +7,10 @@ use Cundd\Stairtower\DataAccess\CoordinatorInterface;
 use Cundd\Stairtower\Domain\Model\Document;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Cundd\Stairtower\Expand\ExpandConfiguration;
-use Cundd\Stairtower\Expand\ExpandResolver;
+use Cundd\Stairtower\Tests\Fixtures\ExpandResolverWithCoordinatorSetter;
 use Cundd\Stairtower\Tests\Unit\AbstractDatabaseBasedCase;
-
-/**
- * Dummy for Expand Resolver
- */
-class ExpandResolver_withInjectableCoordinator extends ExpandResolver
-{
-    /**
-     * Sets the Document Access Coordinator
-     *
-     * @param \Cundd\Stairtower\DataAccess\CoordinatorInterface $coordinator
-     * @return $this
-     */
-    public function setCoordinator($coordinator)
-    {
-        $this->coordinator = $coordinator;
-
-        return $this;
-    }
-}
+use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * Expand Resolver test
@@ -35,31 +18,22 @@ class ExpandResolver_withInjectableCoordinator extends ExpandResolver
 class ExpandResolverTest extends AbstractDatabaseBasedCase
 {
     /**
-     * @var ExpandResolver_withInjectableCoordinator
+     * @var ExpandResolverWithCoordinatorSetter
      */
     protected $fixture;
 
     protected function setUp()
     {
-        $this->fixture = $this->getDiContainer()->get(ExpandResolver_withInjectableCoordinator::class);
+        $this->fixture = $this->getDiContainer()->get(ExpandResolverWithCoordinatorSetter::class);
 
-        /** @var \PHPUnit_Framework_MockObject_MockObject|CoordinatorInterface $coordinator */
-        $coordinator = $this->getMockBuilder(CoordinatorInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        /** @var ObjectProphecy|CoordinatorInterface $coordinator */
+        $coordinator = $this->prophesize(CoordinatorInterface::class);
 
-        $coordinator->expects($this->any())
-            ->method('getDatabase')
-            //->will(
-            //    $this->returnCallback(function ($databaseIdentifier) {
-            //        if ($databaseIdentifier === 'people-small') {
-            //            return $this->getSmallPeopleDatabase();
-            //        }
-            //    })
-            //);
-            ->will($this->returnValue($this->getSmallPeopleDatabase()));
+        /** @var string $stringArgument */
+        $stringArgument = Argument::type('string');
+        $coordinator->getDatabase($stringArgument)->willReturn($this->getSmallPeopleDatabase());
 
-        $this->fixture->setCoordinator($coordinator);
+        $this->fixture->setCoordinator($coordinator->reveal());
         $this->setUpXhprof();
     }
 

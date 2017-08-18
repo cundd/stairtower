@@ -5,7 +5,7 @@ namespace Cundd\Stairtower\Tests\Unit\Domain\Model;
 
 
 use Cundd\Stairtower\Constants;
-use Cundd\Stairtower\DataAccess\Coordinator;
+use Cundd\Stairtower\Domain\Model\DatabaseInterface;
 use Cundd\Stairtower\Domain\Model\DatabaseStateInterface;
 use Cundd\Stairtower\Domain\Model\Document;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
@@ -24,18 +24,12 @@ class DatabaseTest extends AbstractDatabaseBasedCase
     protected $fixture;
 
     /**
-     * @var \Cundd\Stairtower\DataAccess\Coordinator
-     */
-    protected $coordinator;
-
-    /**
      * @test
      * @expectedException \Cundd\Stairtower\DataAccess\Exception\ReaderException
      */
     public function invalidDatabaseTest()
     {
-        $this->coordinator = $this->getDiContainer()->get(Coordinator::class);
-        $this->coordinator->getDatabase('congress_members');
+        $this->getCoordinator()->getDatabase('congress_members');
     }
 
     /**
@@ -51,7 +45,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
         $this->assertSame('Beasley Watts', $person->valueForKeyPath('name'));
         $this->assertSame('male', $person->valueForKeyPath('gender'));
 
-        $this->fixture = $this->coordinator->getDatabase('contacts');
+        $this->fixture = $this->getContactsDatabase();
         $person = $this->fixture->findByIdentifier('paul@mckenzy.net');
         $this->assertNotNull($person);
 
@@ -71,7 +65,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
      */
     public function containsTest()
     {
-        $this->fixture = $this->coordinator->getDatabase('contacts');
+        $this->fixture = $this->getContactsDatabase();
 
         $dataInstance = new Document(['email' => 'info@cundd.net'], $this->fixture->getIdentifier());
         $this->assertTrue($this->fixture->contains($dataInstance));
@@ -111,7 +105,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
      */
     public function addTest()
     {
-        $this->fixture = $this->coordinator->getDatabase('contacts');
+        $this->fixture = $this->getContactsDatabase();
 
         $testEmail = 'mail' . time() . '@test.com';
         $dataInstance = new Document(
@@ -134,7 +128,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
      */
     public function removeTest()
     {
-        $this->fixture = $this->coordinator->getDatabase('contacts');
+        $this->fixture = $this->getContactsDatabase();
 
         $testEmail = 'alice@mckenzy.net';
         $dataInstance = new Document(['email' => $testEmail], $this->fixture->getIdentifier());
@@ -150,7 +144,8 @@ class DatabaseTest extends AbstractDatabaseBasedCase
      */
     public function addAndGetStateTest()
     {
-        $this->fixture = $this->coordinator->getDatabase('contacts');
+        $coordinator = $this->getCoordinator();
+        $this->fixture = $coordinator->getDatabase('contacts');
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
 
         $this->fixture->add(
@@ -165,7 +160,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
         );
 
         $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
-        $this->coordinator->commitDatabase($this->fixture);
+        $coordinator->commitDatabase($this->fixture);
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
 
 
@@ -181,7 +176,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
         );
 
         $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
-        $this->coordinator->commitDatabases();
+        $coordinator->commitDatabases();
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
     }
 
@@ -190,18 +185,19 @@ class DatabaseTest extends AbstractDatabaseBasedCase
      */
     public function removeAndGetStateTest()
     {
-        $this->fixture = $this->coordinator->getDatabase('contacts');
+        $coordinator = $this->getCoordinator();
+        $this->fixture = $coordinator->getDatabase('contacts');
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
 
         $this->fixture->remove(new Document(['email' => 'alice@mckenzy.net'], $this->fixture->getIdentifier()));
         $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
-        $this->coordinator->commitDatabase($this->fixture);
+        $coordinator->commitDatabase($this->fixture);
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
 
 
         $this->fixture->remove(new Document(['email' => 'paul@mckenzy.net'], $this->fixture->getIdentifier()));
         $this->assertEquals(DatabaseStateInterface::STATE_DIRTY, $this->fixture->getState());
-        $this->coordinator->commitDatabases();
+        $coordinator->commitDatabases();
         $this->assertEquals(DatabaseStateInterface::STATE_CLEAN, $this->fixture->getState());
     }
 
@@ -268,7 +264,7 @@ class DatabaseTest extends AbstractDatabaseBasedCase
      */
     public function toArrayTest()
     {
-        $this->fixture = $this->coordinator->getDatabase('contacts');
+        $this->fixture = $this->getContactsDatabase();
         $this->assertEquals($this->getAllTestData(), $this->databaseToDataArray($this->fixture));
         $this->assertEquals($this->getAllTestObjects(), $this->fixture->toArray());
     }
@@ -280,8 +276,8 @@ class DatabaseTest extends AbstractDatabaseBasedCase
      */
     public function objectLiveCycleTest()
     {
-        $database1 = $this->coordinator->getDatabase('people-small');
-        $database2 = $this->coordinator->getDatabase('people-small');
+        $database1 = $this->getCoordinator()->getDatabase('people-small');
+        $database2 = $this->getCoordinator()->getDatabase('people-small');
 
         /** @var DocumentInterface $personFromDatabase2 */
         $personFromDatabase2 = $database2->current();
@@ -362,17 +358,21 @@ class DatabaseTest extends AbstractDatabaseBasedCase
 
         $this->setUpXhprof();
 
-        $this->coordinator = $this->getDiContainer()->get(Coordinator::class);
         $this->fixture = $this->getSmallPeopleDatabase();
     }
 
     protected function tearDown()
     {
-//		unset($this->fixture);
-//		unset($this->coordinator);
+        unset($this->fixture);
         parent::tearDown();
     }
 
-
+    /**
+     * @return DatabaseInterface
+     */
+    protected function getContactsDatabase(): DatabaseInterface
+    {
+        return $this->getCoordinator()->getDatabase('contacts');
+    }
 }
  
