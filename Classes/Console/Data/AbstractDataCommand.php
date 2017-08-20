@@ -19,6 +19,9 @@ use Symfony\Component\Console\Input\InputInterface;
  */
 class AbstractDataCommand extends AbstractCommand
 {
+    const ARGUMENT_DOCUMENT_ID = 'identifier';
+    const ARGUMENT_DATABASE_ID = 'database';
+
     /**
      * Simple JSON serializer instance
      *
@@ -71,9 +74,7 @@ class AbstractDataCommand extends AbstractCommand
      */
     protected function findDatabaseInstanceFromInput(InputInterface $input)
     {
-        $databaseIdentifier = $input->getArgument('database');
-
-        return $this->coordinator->getDatabase($databaseIdentifier);
+        return $this->coordinator->getDatabase($input->getArgument(self::ARGUMENT_DATABASE_ID));
     }
 
     /**
@@ -86,7 +87,7 @@ class AbstractDataCommand extends AbstractCommand
      */
     protected function findDataInstanceFromInput(InputInterface $input, $graceful = false)
     {
-        $objectIdentifier = $input->getArgument('identifier');
+        $objectIdentifier = $input->getArgument(self::ARGUMENT_DOCUMENT_ID);
         GeneralUtility::assertDataIdentifier($objectIdentifier);
         $database = $this->findDatabaseInstanceFromInput($input);
         $document = $database->findByIdentifier($objectIdentifier);
@@ -102,4 +103,4 @@ class AbstractDataCommand extends AbstractCommand
 
         return $document;
     }
-} 
+}

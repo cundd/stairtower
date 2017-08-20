@@ -31,13 +31,6 @@ class CreateCommand extends AbstractCommand
                 InputArgument::IS_ARRAY,
                 'Options for the new database (separate with a space)'
             );
-//			->addOption(
-//				'yell',
-//				null,
-//				InputOption::VALUE_NONE,
-//				'If set, the task will yell in uppercase letters'
-//			)
-        ;
     }
 
     /**

@@ -25,14 +25,7 @@ class DropCommand extends AbstractCommand
                 'identifier',
                 InputArgument::REQUIRED,
                 'Unique name of the database to remove'
-            )
-//			->addOption(
-//				'yell',
-//				null,
-//				InputOption::VALUE_NONE,
-//				'If set, the task will yell in uppercase letters'
-//			)
-        ;
+            );
     }
 
     /**

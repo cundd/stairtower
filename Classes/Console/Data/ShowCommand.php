@@ -3,18 +3,14 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Console\Data;
 
-
-use Cundd\Stairtower\Domain\Model\DatabaseInterface;
-use Cundd\Stairtower\Domain\Model\DocumentInterface;
-use Cundd\Stairtower\Filter\FilterResult;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Console command to find data
+ * Console command to show data
  */
-class FilterCommand extends AbstractDataCommand
+class ShowCommand extends AbstractDataCommand
 {
     /**
      * Configure the command
@@ -22,17 +18,17 @@ class FilterCommand extends AbstractDataCommand
     protected function configure()
     {
         $this
-            ->setName('data:filter')
-            ->setDescription('Filter the database by the given query')
+            ->setName('data:show')
+            ->setDescription('Show an entry from a database')
             ->addArgument(
                 self::ARGUMENT_DATABASE_ID,
                 InputArgument::REQUIRED,
                 'Unique name of the database to search in'
             )
             ->addArgument(
-                'query',
+                self::ARGUMENT_DOCUMENT_ID,
                 InputArgument::REQUIRED,
-                'JSON formatted query'
+                'Document identifier to search for'
             );
     }
 
@@ -45,17 +41,14 @@ class FilterCommand extends AbstractDataCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $result = $this->filterDataInstanceFromInput($input);
-        if ($result instanceof DocumentInterface) {
-            $output->write($this->formatter->format($result->getData()));
-        } elseif ($result instanceof FilterResult) {
-            $output->write($this->formatter->format($result->toArray()));
-        } elseif ($result instanceof DatabaseInterface) {
-            $output->write($this->formatter->format($result->toArray()));
+        $document = $this->findDataInstanceFromInput($input, true);
+        if ($document) {
+            $output->write($this->formatter->format($document->getData()));
         } else {
-            $output->write(
+            $output->writeln(
                 sprintf(
-                    '<info>Nothing found in database %s</info>',
+                    '<error>Document with identifier "%s" not found in Database "%s"</error>',
+                    $input->getArgument(self::ARGUMENT_DOCUMENT_ID),
                     $input->getArgument(self::ARGUMENT_DATABASE_ID)
                 )
             );

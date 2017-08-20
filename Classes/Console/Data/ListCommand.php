@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Console\Data;
 
-use Cundd\Stairtower\Console\AbstractCommand;
 use Cundd\Stairtower\Domain\Model\DocumentInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Console command to list data
  */
-class ListCommand extends AbstractCommand
+class ListCommand extends AbstractDataCommand
 {
     /**
      * Configure the command
@@ -23,7 +22,7 @@ class ListCommand extends AbstractCommand
             ->setName('data:list')
             ->setDescription('List data from a databases')
             ->addArgument(
-                'identifier',
+                self::ARGUMENT_DOCUMENT_ID,
                 InputArgument::REQUIRED,
                 'Unique name of the database to create'
             )
@@ -39,11 +38,7 @@ class ListCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $databaseIdentifier = $input->getArgument('identifier');
-        if (!$databaseIdentifier) {
-            throw new \InvalidArgumentException('Missing database identifier argument', 1412524227);
-        }
-        $database = $this->coordinator->getDatabase($databaseIdentifier);
+        $database = $this->findDatabaseInstanceFromInput($input);
 
         /** @var DocumentInterface $document */
         foreach ($database as $document) {
@@ -51,4 +46,4 @@ class ListCommand extends AbstractCommand
             $output->writeln($description);
         }
     }
-} 
+}

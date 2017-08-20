@@ -19,19 +19,7 @@ class ListCommand extends AbstractCommand
     {
         $this
             ->setName('database:list')
-            ->setDescription('List available databases')
-//			->addArgument(
-//				'name',
-//				InputArgument::OPTIONAL,
-//				'Who do you want to greet?'
-//			)
-//			->addOption(
-//				'yell',
-//				null,
-//				InputOption::VALUE_NONE,
-//				'If set, the task will yell in uppercase letters'
-//			)
-        ;
+            ->setDescription('List available databases');
     }
 
     /**
@@ -53,4 +41,4 @@ class ListCommand extends AbstractCommand
             $output->writeln('<info>No databases found</info>');
         }
     }
-} 
+}

@@ -23,7 +23,7 @@ class AddCommand extends AbstractDataCommand
             ->setName('data:add')
             ->setDescription('Add an entry to the database')
             ->addArgument(
-                'database',
+                self::ARGUMENT_DATABASE_ID,
                 InputArgument::REQUIRED,
                 'Unique name of the database to search in'
             )
@@ -73,4 +73,4 @@ class AddCommand extends AbstractDataCommand
             );
         }
     }
-} 
+}

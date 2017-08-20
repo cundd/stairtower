@@ -35,5 +35,4 @@ abstract class AbstractCommand extends Command
      * @Inject
      */
     protected $formatter;
-
 }

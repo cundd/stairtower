@@ -27,6 +27,7 @@ $application->add($diContainer->get(Database\DropCommand::class));
 
 $application->add($diContainer->get(Data\ListCommand::class));
 $application->add($diContainer->get(Data\AddCommand::class));
+$application->add($diContainer->get(Data\ShowCommand::class));
 $application->add($diContainer->get(Data\FilterCommand::class));
 $application->add($diContainer->get(Data\RemoveCommand::class));
 

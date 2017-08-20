@@ -22,12 +22,12 @@ class RemoveCommand extends AbstractDataCommand
             ->setName('data:remove')
             ->setDescription('Remove the data with the given identifier from the given database')
             ->addArgument(
-                'database',
+                self::ARGUMENT_DATABASE_ID,
                 InputArgument::REQUIRED,
                 'Unique name of the database to search in'
             )
             ->addArgument(
-                'identifier',
+                self::ARGUMENT_DOCUMENT_ID,
                 InputArgument::REQUIRED,
                 'Document identifier to search for'
             );
