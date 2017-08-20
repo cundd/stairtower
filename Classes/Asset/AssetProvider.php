@@ -73,6 +73,9 @@ class AssetProvider implements AssetProviderInterface
         $fileInfo = new \finfo(FILEINFO_MIME);
 
         $mimeType = $fileInfo->file($fullPath);
+        if ('; charset=binary' === substr($mimeType, -16)) {
+            $mimeType = substr($mimeType, 0, -16);
+        }
         if ('text/plain' !== substr($mimeType, 0, 10)) {
             return $mimeType;
         }
