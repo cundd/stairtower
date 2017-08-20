@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Cundd\Stairtower\Bootstrap;
 
+use Cundd\Stairtower\Configuration\ConfigurationManager;
 use Cundd\Stairtower\ErrorHandling\CrashHandler;
 use Cundd\Stairtower\ErrorHandling\ErrorHandler;
 
@@ -71,5 +72,28 @@ abstract class AbstractBootstrap
 
         $this->errorHandler = new ErrorHandler();
         $this->errorHandler->register();
+    }
+
+    /**
+     * Configure the data path
+     *
+     * @param string $dataPath
+     * @return AbstractBootstrap
+     */
+    protected function setDataPath($dataPath): AbstractBootstrap
+    {
+        if (!$dataPath) {
+            return $this;
+        }
+
+        if (substr($dataPath, -1) !== '/') {
+            return $this->setDataPath($dataPath . '/');
+        }
+
+        $configurationManager = ConfigurationManager::getSharedInstance();
+        $configurationManager->setConfigurationForKeyPath('dataPath', (string)$dataPath);
+        $configurationManager->setConfigurationForKeyPath('writeDataPath', (string)$dataPath);
+
+        return $this;
     }
 }

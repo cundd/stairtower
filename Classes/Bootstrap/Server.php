@@ -49,7 +49,6 @@ class Server extends AbstractBootstrap
             exit;
         }
 
-        $dataPath = $this->checkArgument('data-path', $options);
         $port = $this->checkArgument('port', $options);
         $ip = $this->checkArgument('ip', $options);
         $serverMode = $this->getServerModeFromOptions($options);
@@ -59,10 +58,7 @@ class Server extends AbstractBootstrap
             $configurationManager->setConfigurationForKeyPath('logLevel', LogLevel::DEBUG);
         }
 
-        if ($dataPath) {
-            $configurationManager->setConfigurationForKeyPath('dataPath', $dataPath);
-            $configurationManager->setConfigurationForKeyPath('writeDataPath', $dataPath);
-        }
+        $this->setDataPath($this->checkArgument('data-path', $options));
 
         // Instantiate the Core
         $bootstrap = new Core();

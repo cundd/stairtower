@@ -47,7 +47,6 @@ class Router extends AbstractBootstrap
      */
     public function configure(array $arguments)
     {
-        $dataPath = getenv(Constants::ENVIRONMENT_KEY_SERVER_DATA_PATH);
         $serverMode = $this->getServerModeFromEnv();
 
         $configurationManager = ConfigurationManager::getSharedInstance();
@@ -56,10 +55,7 @@ class Router extends AbstractBootstrap
             $configurationManager->setConfigurationForKeyPath('logLevel', LogLevel::DEBUG);
         }
 
-        if ($dataPath) {
-            $configurationManager->setConfigurationForKeyPath('dataPath', $dataPath);
-            $configurationManager->setConfigurationForKeyPath('writeDataPath', $dataPath);
-        }
+        $this->setDataPath((string)getenv(Constants::ENVIRONMENT_KEY_SERVER_DATA_PATH));
 
         // Instantiate the Core
         $bootstrap = new Core();
