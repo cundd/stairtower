@@ -249,18 +249,11 @@ class Request implements Immutable, RequestInterface
 
     public function getCookies(): array
     {
+        // TODO: Check if the Cookie Parser should be used here
         $parsedCookies = $this->originalRequest->getCookieParams();
         $cookieObjects = [];
         foreach ($parsedCookies as $cookieName => $cookieValue) {
-            $cookieObjects[$cookieName] = new Cookie(
-                $cookieName,
-                $cookieValue,
-                $parsedCookies['expires'],
-                (string)$parsedCookies['path'],
-                (string)$parsedCookies['domain'],
-                (bool)$parsedCookies['secure'],
-                (bool)($parsedCookies['http_only'] ?? false)
-            );
+            $cookieObjects[$cookieName] = new Cookie($cookieName, $cookieValue);
         }
 
         return $cookieObjects;

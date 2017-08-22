@@ -43,9 +43,6 @@ class CookieParser implements CookieParserInterface
      */
     public function parse($request)
     {
-        if ($request instanceof ServerRequestInterface) {
-            return $request->getCookieParams();
-        }
         if (!($request instanceof RequestInterface)) {
             throw new InvalidArgumentError(
                 sprintf('Could not retrieve cookie header from argument of type %s', GeneralUtility::getType($request)),
