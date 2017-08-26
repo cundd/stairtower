@@ -37,6 +37,7 @@ use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use React\Http\Response;
+use Throwable;
 
 class ResponseBuilder implements ResponseBuilderInterface
 {
@@ -112,7 +113,7 @@ class ResponseBuilder implements ResponseBuilderInterface
     }
 
     public function buildErrorResponse(
-        Exception $error,
+        Throwable $error,
         RequestInterface $request
     ): ResponseInterface {
         $this->writeError($error);

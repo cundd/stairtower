@@ -8,6 +8,7 @@ use Cundd\Stairtower\Server\Handler\HandlerResultInterface;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 interface ResponseBuilderInterface
 {
@@ -18,16 +19,19 @@ interface ResponseBuilderInterface
      * @param RequestInterface       $request
      * @return ResponseInterface
      */
-    public function buildResponseForResult(?HandlerResultInterface $result, RequestInterface $request): ResponseInterface;
+    public function buildResponseForResult(
+        ?HandlerResultInterface $result,
+        RequestInterface $request
+    ): ResponseInterface;
 
     /**
      * Handles the given exception
      *
-     * @param Exception        $error
+     * @param Throwable        $error
      * @param RequestInterface $request
      * @return ResponseInterface
      */
-    public function buildErrorResponse(Exception $error, RequestInterface $request): ResponseInterface;
+    public function buildErrorResponse(Throwable $error, RequestInterface $request): ResponseInterface;
 
     /**
      * Returns the formatter for the given request
@@ -41,8 +45,8 @@ interface ResponseBuilderInterface
     /**
      * Returns the status code that best describes the given error
      *
-     * @param Exception $error
+     * @param Throwable $error
      * @return int
      */
-    public function getStatusCodeForException($error):int;
+    public function getStatusCodeForException($error): int;
 }

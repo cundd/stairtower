@@ -17,9 +17,9 @@ class ExceptionResult implements HandlerResultInterface, Immutable
     /**
      * ExceptionResult constructor
      *
-     * @param $exception
+     * @param \Throwable $exception
      */
-    public function __construct(\Exception $exception)
+    public function __construct(\Throwable $exception)
     {
         $this->exception = $exception;
     }
