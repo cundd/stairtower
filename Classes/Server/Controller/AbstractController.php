@@ -10,6 +10,7 @@ use Cundd\Stairtower\Server\ValueObject\ControllerResult;
 use Cundd\Stairtower\Server\ValueObject\Request;
 use Cundd\Stairtower\Server\ValueObject\RequestInterface;
 use Cundd\Stairtower\View\ViewControllerInterface;
+use Cundd\Stairtower\View\ViewInterface;
 
 /**
  * An abstract Controller implementation
@@ -99,7 +100,9 @@ abstract class AbstractController implements ControllerInterface
         }
 
         // Transform the raw result into a Controller Result if needed
-        if ($rawResult instanceof ControllerResultInterface) {
+        if ($rawResult instanceof ViewInterface) {
+            $result = new ControllerResult(200, $rawResult->render());
+        } elseif ($rawResult instanceof ControllerResultInterface) {
             $result = $rawResult;
         } elseif ($rawResult instanceof HandlerResultInterface) {
             $result = new ControllerResult(
