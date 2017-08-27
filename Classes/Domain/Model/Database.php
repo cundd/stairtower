@@ -88,11 +88,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
         }
     }
 
-    /**
-     * Returns the database identifier
-     *
-     * @return string
-     */
     public function getIdentifier(): string
     {
         return $this->identifier;
@@ -102,12 +97,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
     // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
     // MANAGING OBJECTS
     // MWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMWMW
-    /**
-     * Returns the object with the given identifier
-     *
-     * @param string $identifier
-     * @return DocumentInterface|null
-     */
     public function findByIdentifier(string $identifier): ?DocumentInterface
     {
         // Query the Indexes and return the result if it is not an error
@@ -146,12 +135,6 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
         return null;
     }
 
-    /**
-     * Returns if the database contains the given Document
-     *
-     * @param DocumentInterface|string $document Actual Document instance or it's GUID
-     * @return bool
-     */
     public function contains($document): bool
     {
         if (is_string($document)) {
@@ -167,23 +150,11 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
         return $this->findByIdentifier($identifier) ? true : false;
     }
 
-    /**
-     * Filters the database using the given comparison
-     *
-     * @param ComparisonInterface $comparison
-     * @return FilterResultInterface
-     */
     public function filter(ComparisonInterface $comparison): FilterResultInterface
     {
         return (new Filter($comparison))->filterCollection($this);
     }
 
-    /**
-     * Adds the given Document to the database
-     *
-     * @param DocumentInterface $document
-     * @return DatabaseInterface
-     */
     public function add(DocumentInterface $document): DatabaseInterface
     {
         $this->assertDataInstancesDatabaseIdentifier($document);
@@ -663,8 +634,8 @@ class Database implements DatabaseInterface, DatabaseRawDataInterface, DatabaseO
             );
             DebugUtility::var_dump($this->rawData);
             throw new IndexOutOfRangeException('Invalid index ' . $index, 1411316363);
-
         }
+
         $rawData = $this->rawData[$index];
         $rawData = DocumentUtility::setDocumentIdentifierOfData($rawData);
         $dataObject = new Document($rawData, $this->identifier);
