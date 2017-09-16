@@ -88,6 +88,7 @@ abstract class AbstractController implements ControllerInterface
         // Prepare the Controller for the current request
         $this->initialize();
         $this->setRequest($request);
+        $this->initializeView($action);
         $this->willInvokeAction($action);
 
         $argument = $this->prepareArgumentForRequestAndAction($request, $action, $noArgument);
@@ -113,6 +114,7 @@ abstract class AbstractController implements ControllerInterface
             $result = new ControllerResult(200, $rawResult);
         }
         $this->didInvokeAction($action, $result);
+        $this->resetView();
         $this->unsetRequest();
 
         return $result;
@@ -132,5 +134,26 @@ abstract class AbstractController implements ControllerInterface
         &$noArgument = false
     ) {
         return $request->getParsedBody();
+    }
+
+    protected function initializeView($action)
+    {
+        if ($this instanceof ViewControllerInterface) {
+            $templatePath = $this->getTemplatePath($action);
+            $this->getView()->setTemplatePath($templatePath);
+            $this->getView()->assignMultiple(
+                [
+                    'appNamespace' => $this->getUriBuilder()->getControllerNamespaceForController($this),
+                    'action'       => $this->getRequest()->getActionName(),
+                ]
+            );
+        }
+    }
+
+    protected function resetView()
+    {
+        if ($this instanceof ViewControllerInterface) {
+            $this->resetView();
+        }
     }
 }

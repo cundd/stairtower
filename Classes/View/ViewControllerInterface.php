@@ -32,4 +32,11 @@ interface ViewControllerInterface extends ControllerInterface
      * @return UriBuilderInterface
      */
     public function getUriBuilder();
+
+    /**
+     * Perform actions to prepare the View for handling the next request
+     *
+     * @return void
+     */
+    public function resetView();
 }

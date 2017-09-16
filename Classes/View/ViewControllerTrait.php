@@ -41,6 +41,7 @@ trait ViewControllerTrait
     /**
      * Returns the View instance
      *
+     * @see \Cundd\Stairtower\View\ViewControllerInterface::getView()
      * @return \Cundd\Stairtower\View\ViewInterface
      */
     public function getView()
@@ -56,8 +57,20 @@ trait ViewControllerTrait
     }
 
     /**
+     * Perform actions to prepare the View for handling the next request
+     *
+     * @see \Cundd\Stairtower\View\ViewControllerInterface::resetView()
+     * @return void
+     */
+    public function resetView()
+    {
+        $this->view = null;
+    }
+
+    /**
      * Returns the URI Builder instance
      *
+     * @see \Cundd\Stairtower\View\ViewControllerInterface::getUriBuilder()
      * @return UriBuilderInterface
      */
     public function getUriBuilder()
@@ -78,6 +91,7 @@ trait ViewControllerTrait
     /**
      * Returns the template path for the given action
      *
+     * @see \Cundd\Stairtower\View\ViewControllerInterface::getTemplatePath()
      * @param $action
      * @return string
      */
@@ -139,5 +153,4 @@ trait ViewControllerTrait
             );
         }
     }
-
 }
