@@ -69,7 +69,10 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
             return $originalCollection;
         }
         if ($originalCollection instanceof DatabaseInterface) {
-            return clone $originalCollection;
+            $clone = clone $originalCollection;
+            $clone->rewind();
+
+            return $clone;
         }
 
         $i = 0;
@@ -233,7 +236,6 @@ class FilterResult extends IndexArray implements FilterResultInterface, Immutabl
      */
     public function valid()
     {
-//		DebugUtility::var_dump('valid', parent::valid(), parent::valid(), parent::valid());
         $this->initFilteredCollection();
 
         return parent::valid();
