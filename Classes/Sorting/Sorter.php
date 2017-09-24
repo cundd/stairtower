@@ -161,7 +161,6 @@ class Sorter
         if (is_array($collection)) {
             $dataCollection = SplFixedArray::fromArray($collection);
         } elseif ($collection instanceof Database) {
-//			$dataCollectionRaw = $collection->getRawData();
             $dataCollection = $collection->toFixedArray();
         } else {
             $dataCollection = SplFixedArray::fromArray(iterator_to_array($collection));
